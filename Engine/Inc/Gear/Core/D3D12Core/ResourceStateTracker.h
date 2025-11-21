@@ -17,9 +17,9 @@ namespace Gear
 			{
 			public:
 
-				void setTextureState(Resource::D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state);
+				void trackAndSetResourceState(Resource::D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state);
 
-				void setBufferState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state);
+				void trackAndSetResourceState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state);
 
 				void solvePendingBarriers(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers);
 
@@ -31,9 +31,9 @@ namespace Gear
 
 			private:
 
-				void pushResourceTrackList(Resource::D3D12Resource::Texture* const texture);
+				void pushResourceToTrackList(Resource::D3D12Resource::Texture* const texture);
 
-				void pushResourceTrackList(Resource::D3D12Resource::Buffer* const buffer);
+				void pushResourceToTrackList(Resource::D3D12Resource::Buffer* const buffer);
 
 				//记录使用过的共享且需要状态追踪的资源
 				std::vector<Resource::D3D12Resource::D3D12ResourceBase*> referredResources;

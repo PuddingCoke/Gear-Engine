@@ -230,7 +230,7 @@ Gear::Core::DynamicCBufferManager::AvailableLocation DynamicCBufferManagerPrivat
 void DynamicCBufferManagerPrivate::recordCommands(Gear::Core::D3D12Core::CommandList* const commandList)
 {
 	//把大常量缓冲转变到STATE_COPY_DEST状态，用于内容更新
-	commandList->setBufferState(buffer, D3D12_RESOURCE_STATE_COPY_DEST);
+	commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
 	commandList->transitionResources();
 
@@ -247,7 +247,7 @@ void DynamicCBufferManagerPrivate::recordCommands(Gear::Core::D3D12Core::Command
 	}
 
 	//把大常量缓冲转变到STATE_VERTEX_AND_CONSTANT_BUFFER状态，用于后续使用
-	commandList->setBufferState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+	commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 	commandList->transitionResources();
 }

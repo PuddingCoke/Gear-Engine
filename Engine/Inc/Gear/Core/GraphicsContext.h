@@ -313,10 +313,7 @@ namespace Gear
 
 			for (const Resource::D3D12Resource::D3D12ResourceBase* const resource : resources)
 			{
-				D3D12_RESOURCE_BARRIER barrier = {};
-				barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
-				barrier.UAV.pResource = resource->getResource();
+				const CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource());
 
 				transientUAVBarriers.emplace_back(barrier);
 			}

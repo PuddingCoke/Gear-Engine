@@ -1,10 +1,10 @@
 ﻿#include<Gear/Core/D3D12Core/ResourceStateTracker.h>
 
-void Gear::Core::D3D12Core::ResourceStateTracker::setTextureState(Resource::D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state)
+void Gear::Core::D3D12Core::ResourceStateTracker::trackAndSetResourceState(Resource::D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state)
 {
 	if (texture->getStateTracking())
 	{
-		pushResourceTrackList(texture);
+		pushResourceToTrackList(texture);
 
 		if (mipslice == Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS)
 		{
@@ -17,11 +17,11 @@ void Gear::Core::D3D12Core::ResourceStateTracker::setTextureState(Resource::D3D1
 	}
 }
 
-void Gear::Core::D3D12Core::ResourceStateTracker::setBufferState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state)
+void Gear::Core::D3D12Core::ResourceStateTracker::trackAndSetResourceState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state)
 {
 	if (buffer && buffer->getStateTracking())
 	{
-		pushResourceTrackList(buffer);
+		pushResourceToTrackList(buffer);
 
 		buffer->setState(state);
 	}
@@ -101,14 +101,14 @@ void Gear::Core::D3D12Core::ResourceStateTracker::transitionResources(ID3D12Grap
 	}
 }
 
-void Gear::Core::D3D12Core::ResourceStateTracker::pushResourceTrackList(Resource::D3D12Resource::Texture* const texture)
+void Gear::Core::D3D12Core::ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::Texture* const texture)
 {
 	texture->pushToReferredList(referredResources);
 
 	texture->pushToTrackingList(transitionTextures);
 }
 
-void Gear::Core::D3D12Core::ResourceStateTracker::pushResourceTrackList(Resource::D3D12Resource::Buffer* const buffer)
+void Gear::Core::D3D12Core::ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::Buffer* const buffer)
 {
 	buffer->pushToReferredList(referredResources);
 

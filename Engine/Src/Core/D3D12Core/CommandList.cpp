@@ -167,7 +167,7 @@ void Gear::Core::D3D12Core::CommandList::transitionResources()
 
 void Gear::Core::D3D12Core::CommandList::copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes)
 {
-	setBufferState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
+	trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
 	transitionResources();
 
@@ -176,9 +176,9 @@ void Gear::Core::D3D12Core::CommandList::copyBufferRegion(Resource::D3D12Resourc
 
 void Gear::Core::D3D12Core::CommandList::copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::Buffer* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes)
 {
-	setBufferState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
+	trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
-	setBufferState(srcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	trackAndSetResourceState(srcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 	transitionResources();
 
@@ -187,7 +187,7 @@ void Gear::Core::D3D12Core::CommandList::copyBufferRegion(Resource::D3D12Resourc
 
 void Gear::Core::D3D12Core::CommandList::copyResource(Resource::D3D12Resource::Buffer* const dstBuffer, Resource::D3D12Resource::UploadHeap* const srcBuffer)
 {
-	setBufferState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
+	trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
 	transitionResources();
 
@@ -196,9 +196,9 @@ void Gear::Core::D3D12Core::CommandList::copyResource(Resource::D3D12Resource::B
 
 void Gear::Core::D3D12Core::CommandList::copyResource(Resource::D3D12Resource::Buffer* const dstBuffer, Resource::D3D12Resource::Buffer* const srcBuffer)
 {
-	setBufferState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
+	trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
-	setBufferState(srcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	trackAndSetResourceState(srcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 	transitionResources();
 
@@ -207,9 +207,9 @@ void Gear::Core::D3D12Core::CommandList::copyResource(Resource::D3D12Resource::B
 
 void Gear::Core::D3D12Core::CommandList::copyTextureRegion(Resource::D3D12Resource::Texture* const dstTexture, const uint32_t dstSubresource, Resource::D3D12Resource::Texture* const srcTexture, const uint32_t srcSubresource)
 {
-	setTextureState(dstTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_DEST);
+	trackAndSetResourceState(dstTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_DEST);
 
-	setTextureState(srcTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	trackAndSetResourceState(srcTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 	transitionResources();
 
