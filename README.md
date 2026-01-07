@@ -1,15 +1,13 @@
-# Intro
+# 介绍
 
-A toy graphics engine written mainly for learning purpose
+为了学习图形学写的一个D3D12图形引擎
 
-## To Do
+## 关于如何创建新项目
 
-Just create template project base on SampleProject
+直接基于SampleProject创建模板项目即可
 
-## Note
+## 打开日志
 
-To open log.txt
-
-1. Open Windows Terminal
+1. 打开Windows Terminal
 2. chcp 65001
 3. type log.txt

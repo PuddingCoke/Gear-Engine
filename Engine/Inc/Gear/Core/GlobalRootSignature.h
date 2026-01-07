@@ -12,7 +12,7 @@ namespace Gear
 		namespace GlobalRootSignature
 		{
 
-			//用于使用顶点的时候
+			//用于使用基础着色器的时候
 			const D3D12Core::RootSignature* getBasicShaderRootSignature();
 
 			//用于开启镶嵌细分的时候

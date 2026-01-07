@@ -54,25 +54,6 @@ Gear::Core::VideoEncoder::Encoder::~Encoder()
 	MFShutdown();
 }
 
-void Gear::Core::VideoEncoder::Encoder::displayProgress() const
-{
-	if ((frameEncoded % (frameRate / 4)) == 0)
-	{
-		const uint32_t num = progressBarWidth * frameEncoded / frameToEncode;
-
-		const uint32_t buffLength = 12 + 2 + progressBarWidth + 1 + 6 + 1 + 1;
-
-		wchar_t str[buffLength] = {};
-
-		swprintf_s(str, buffLength, L"Encoding... [%.*s%.*s] %.2f%%",
-			num, L"********************************",
-			progressBarWidth - num, L"////////////////////////////////",
-			100.f * static_cast<float>(frameEncoded) / static_cast<float>(frameToEncode));
-
-		LOGENGINE(str);
-	}
-}
-
 bool Gear::Core::VideoEncoder::Encoder::writeFrame(const void* const bitstreamPtr, const uint32_t bitstreamSize, const bool cleanPoint)
 {
 	frameEncoded++;
@@ -113,4 +94,23 @@ bool Gear::Core::VideoEncoder::Encoder::writeFrame(const void* const bitstreamPt
 	displayProgress();
 
 	return !(frameEncoded == frameToEncode);
+}
+
+void Gear::Core::VideoEncoder::Encoder::displayProgress() const
+{
+	if ((frameEncoded % (frameRate / 4)) == 0)
+	{
+		const uint32_t num = progressBarWidth * frameEncoded / frameToEncode;
+
+		const uint32_t buffLength = 12 + 2 + progressBarWidth + 1 + 6 + 1 + 1;
+
+		wchar_t str[buffLength] = {};
+
+		swprintf_s(str, buffLength, L"Encoding... [%.*s%.*s] %.2f%%",
+			num, L"********************************",
+			progressBarWidth - num, L"////////////////////////////////",
+			100.f * static_cast<float>(frameEncoded) / static_cast<float>(frameToEncode));
+
+		LOGENGINE(str);
+	}
 }

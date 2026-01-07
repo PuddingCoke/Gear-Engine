@@ -44,12 +44,12 @@ namespace Gear
 
 			protected:
 
-				void displayProgress() const;
-
 				//封装比特流
 				bool writeFrame(const void* const bitstreamPtr, const uint32_t bitstreamSize, const bool cleanPoint);
 
 			private:
+
+				void displayProgress() const;
 
 				//不要修改这个值
 				static constexpr uint32_t progressBarWidth = 32;
