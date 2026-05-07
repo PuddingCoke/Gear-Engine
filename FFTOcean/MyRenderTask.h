@@ -166,9 +166,9 @@ public:
 
 		oceanState->get()->SetName(L"oceanState");
 
-		effect->setExposure(0.59f);
+		Graphics::setExposure(0.59f);
 
-		effect->setGamma(0.972f);
+		Graphics::setGamma(0.972f);
 
 		effect->setSoftThreshold(0.85f);
 	}
@@ -266,9 +266,9 @@ protected:
 
 	void recordCommand() override
 	{
-		renderParam.exposure = effect->getExposure();
+		renderParam.exposure = Graphics::getExposure();
 
-		renderParam.gamma = effect->getGamma();
+		renderParam.gamma = Graphics::getGamma();
 
 		updateVertices();
 
@@ -420,9 +420,13 @@ private:
 
 		context->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
-		TextureRenderView* bloomTexture = effect->process(originTexture);
+		auto bloomTexture = effect->process(originTexture);
 
-		blit(bloomTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
+
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+
+		blit(gammaCorrectedTexture);
 	}
 
 	bool getMinMaxMatrix(DirectX::XMMATRIX* minMaxMatrix)

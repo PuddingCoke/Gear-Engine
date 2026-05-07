@@ -197,9 +197,9 @@ public:
 
 		bloomEffect->setIntensity(0.5f);
 
-		bloomEffect->setExposure(0.574f);
+		Graphics::setExposure(0.574f);
 
-		bloomEffect->setGamma(1.578f);
+		Graphics::setGamma(1.578f);
 
 		fxaaEffect = new FXAAEffect(context, Graphics::getWidth(), Graphics::getHeight());
 
@@ -525,9 +525,13 @@ protected:
 
 		TextureRenderView* const bloomTexture = bloomEffect->process(originTexture);
 
-		TextureRenderView* const fxaaTexture = fxaaEffect->process(bloomTexture);
+		TextureRenderView* const toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
 
-		blit(fxaaTexture);
+		TextureRenderView* const fxaaTexture = fxaaEffect->process(toneMappedTexture);
+
+		TextureRenderView* const gammaCorrectedTexture = GammaCorrectEffect::process(context, fxaaTexture);
+
+		blit(gammaCorrectedTexture);
 	}
 
 	UINT ProbeGridPosToIndex(const DirectX::XMUINT3& probeGridPos)

@@ -25,6 +25,10 @@ public:
 			.build();
 
 		Input::Keyboard::addKeyDownEvent(Input::Keyboard::K, [this]() {perframeData.useOriginalVer = ~perframeData.useOriginalVer; });
+
+		Graphics::setExposure(1.f);
+
+		Graphics::setGamma(1.f);
 	}
 
 	~MyRenderTask()
@@ -90,9 +94,13 @@ protected:
 
 		context->draw(3, 1, 0, 0);
 
-		auto outputTexture = effect->process(originTexture);
+		auto bloomTexture = effect->process(originTexture);
 
-		blit(outputTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
+
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+
+		blit(gammaCorrectedTexture);
 	}
 
 private:

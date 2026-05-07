@@ -119,6 +119,9 @@ public:
 				config.logicRunning = !config.logicRunning;
 			});
 
+		Graphics::setExposure(1.f);
+
+		Graphics::setGamma(1.f);
 	}
 
 	~MyRenderTask()
@@ -386,6 +389,8 @@ public:
 			outputTexture = effect->process(colorTex->read());
 		}
 
+		TextureRenderView* texture = nullptr;
+
 		if (config.edgeHighlight)
 		{
 			context->setPipelineState(edgeHighlightState);
@@ -394,12 +399,18 @@ public:
 			context->dispatch(edgeHighlightTexture->getTexture()->getWidth() / 16, edgeHighlightTexture->getTexture()->getHeight() / 9, 1);
 			context->uavBarrier({ edgeHighlightTexture->getTexture() });
 
-			blit(edgeHighlightTexture);
+			texture = edgeHighlightTexture;
 		}
 		else
 		{
-			blit(outputTexture);
+			texture = outputTexture;
 		}
+
+		auto toneMappedTexture = ToneMapEffect::process(context, texture);
+
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+
+		blit(gammaCorrectedTexture);
 	}
 
 private:

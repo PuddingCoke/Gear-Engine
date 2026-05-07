@@ -480,6 +480,18 @@
     <ClInclude Include="Inc\Gear\Core\RenderThread.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\GlobalEffect\ToneMapEffect.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\ToneMapEffectInternal.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\GlobalEffect\GammaCorrectEffect.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\GammaCorrectEffectInternal.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -701,6 +713,12 @@
     <ClCompile Include="Src\Core\RenderThread.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Core\GlobalEffect\ToneMapEffect.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\GlobalEffect\GammaCorrectEffect.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomDownSamplePS.hlsl">
@@ -764,6 +782,8 @@
       <Filter>Shaders\FXAA</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\HDRClampCS.hlsl" />
+    <FxCompile Include="Shaders\ToneMapCS.hlsl" />
+    <FxCompile Include="Shaders\GammaCorrectCS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

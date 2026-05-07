@@ -103,7 +103,7 @@ float4 main(PixelInput input) : SV_TARGET
     
     float F0 = 0.020018673;
     
-    float F = F0 + (1.0 - F0) * pow(1.0 - dot(N, V), 5.0);
+    float F = F0 + (1.0 - F0) * pow(1.0 - max(dot(N, V), 0.0), 5.0);
     
     float3 H = normalize(V + L);
     

@@ -29,23 +29,15 @@ namespace Gear
 
 				~BloomEffect();
 
-				Resource::TextureRenderView* process(Resource::TextureRenderView* const inputTexture) const;
+				Resource::TextureRenderView* process(Resource::TextureRenderView* const inputTexture);
 
 				void imGUICall() override;
-
-				void setExposure(const float exposure);
-
-				void setGamma(const float gamma);
 
 				void setThreshold(const float threshold);
 
 				void setIntensity(const float intensity);
 
 				void setSoftThreshold(const float softThreshold);
-
-				float getExposure() const;
-
-				float getGamma() const;
 
 			private:
 

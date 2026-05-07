@@ -79,7 +79,9 @@ public:
 			colorBuffer = resManager->createTypedBufferView(DXGI_FORMAT_R32G32B32A32_FLOAT, sizeof(DirectX::XMFLOAT4) * numParticles, false, false, true, false, false, true, colors);
 		}
 
-		bloomEffect->setExposure(0.6f);
+		Graphics::setExposure(0.6f);
+
+		Graphics::setGamma(1.f);
 
 		bloomEffect->setThreshold(1.0f);
 
@@ -165,11 +167,13 @@ protected:
 
 		context->draw(numParticles, 1, 0, 0);
 
-		TextureRenderView* bloomTexture = bloomEffect->process(originTexture);
+		auto bloomTexture = bloomEffect->process(originTexture);
 
-		TextureRenderView* fxaaTexture = fxaaEffect->process(bloomTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
 
-		blit(fxaaTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+
+		blit(gammaCorrectedTexture);
 	}
 
 private:

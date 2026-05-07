@@ -32,6 +32,10 @@
 
 #include<Gear/Core/GlobalEffect/Internal/LatLongMapToCubeMapEffectInternal.h>
 
+#include<Gear/Core/GlobalEffect/Internal/ToneMapEffectInternal.h>
+
+#include<Gear/Core/GlobalEffect/Internal/GammaCorrectEffectInternal.h>
+
 #include<ImGUI/imgui.h>
 
 #include<ImGUI/imgui_impl_win32.h>
@@ -473,6 +477,8 @@ void RenderEnginePrivate::end()
 		ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
 		ImGui::SliderInt("Sync Interval", &syncInterval, 0, 3);
 		ImGui::End();
+
+		Gear::Core::Graphics::Internal::imGUICall();
 	}
 
 	//把后备缓冲转变到STATE_RENDER_TARGET，并更新所有动态常量缓冲
@@ -725,6 +731,10 @@ void RenderEnginePrivate::createStaticResources()
 	Gear::Core::GlobalEffect::HDRClampEffect::Internal::initialize();
 
 	Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::initialize(resManager);
+
+	Gear::Core::GlobalEffect::ToneMapEffect::Internal::initialize();
+
+	Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::initialize();
 }
 
 void RenderEnginePrivate::releaseStaticResources()
@@ -734,6 +744,10 @@ void RenderEnginePrivate::releaseStaticResources()
 	Gear::Core::GlobalEffect::HDRClampEffect::Internal::release();
 
 	Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::release();
+
+	Gear::Core::GlobalEffect::ToneMapEffect::Internal::release();
+
+	Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::release();
 }
 
 void Gear::Core::RenderEngine::submitCommandList(Gear::Core::D3D12Core::CommandList* const commandList)

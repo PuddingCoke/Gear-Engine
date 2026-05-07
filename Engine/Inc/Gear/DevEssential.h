@@ -17,6 +17,10 @@
 
 #include<Gear/Core/Effect/EffectBase.h>
 
+#include<Gear/Core/GlobalEffect/ToneMapEffect.h>
+
+#include<Gear/Core/GlobalEffect/GammaCorrectEffect.h>
+
 #include<Gear/Core/D3D12Core/Shader.h>
 
 #include<Gear/Input/Mouse.h>
@@ -44,5 +48,7 @@ using namespace Gear::Core::Effect;
 using namespace Gear::Core::Resource;
 
 using namespace Gear::Core::GlobalShader;
+
+using namespace Gear::Core::GlobalEffect;
 
 #endif // !_DEVESSENTIAL_H_

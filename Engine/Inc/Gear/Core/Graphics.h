@@ -14,6 +14,14 @@ namespace Gear
 		namespace Graphics
 		{
 
+			float getExposure();
+
+			void setExposure(const float exposure);
+
+			float getGamma();
+
+			void setGamma(const float gamma);
+
 			uint32_t getFrameBufferCount();
 
 			uint32_t getFrameIndex();

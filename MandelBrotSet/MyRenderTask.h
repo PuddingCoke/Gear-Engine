@@ -18,9 +18,9 @@ public:
 	{
 		computeState = PipelineStateBuilder::buildComputeState(computeCS);
 
-		effect.setExposure(1.9f);
+		Graphics::setExposure(1.9f);
 
-		effect.setGamma(1.2f);
+		Graphics::setGamma(1.2f);
 
 		effect.setIntensity(0.45f);
 
@@ -98,9 +98,13 @@ protected:
 
 		context->uavBarrier({ originTexture->getTexture() });
 
-		auto bloomTex = effect.process(originTexture);
+		auto bloomTexture = effect.process(originTexture);
 
-		blit(bloomTex);
+		auto toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
+
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+
+		blit(gammaCorrectedTexture);
 	}
 
 private:

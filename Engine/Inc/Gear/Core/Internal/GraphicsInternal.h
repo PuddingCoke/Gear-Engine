@@ -28,6 +28,8 @@ namespace Gear
 
 				void setReservedGlobalCBuffer(Resource::ImmutableCBuffer* const reservedGlobalCBuffer);
 
+				void imGUICall();
+
 			}
 		}
 	}

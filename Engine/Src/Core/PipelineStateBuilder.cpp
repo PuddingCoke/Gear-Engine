@@ -147,7 +147,7 @@ Gear::Core::D3D12Core::PipelineState* Gear::Core::PipelineStateBuilder::build()
 			LOGERROR(L"to enable tessellation you must set both hull shader and domain shader");
 		}
 
-		if ((hullShader == nullptr && domainShader == nullptr && geometryShader == nullptr))
+		if (hullShader == nullptr && domainShader == nullptr && geometryShader == nullptr)
 		{
 			selectedRootSignature = GlobalRootSignature::getBasicShaderRootSignature();
 		}

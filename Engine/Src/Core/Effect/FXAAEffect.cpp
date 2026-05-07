@@ -5,17 +5,17 @@
 #include<Gear/CompiledShaders/FXAA.h>
 
 Gear::Core::Effect::FXAAEffect::FXAAEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height) :
-	EffectBase(context, width, height, DXGI_FORMAT_R8G8B8A8_UNORM), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
-	colorLumaTexture(ResourceManager::createTextureRenderView(width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, false, true,
-		DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R8G8B8A8_UNORM))
+	EffectBase(context, width, height, FMT::RGBA16UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
+	colorLumaTexture(ResourceManager::createTextureRenderView(width, height, FMT::RGBA16UN, 1, 1, false, true,
+		FMT::RGBA16UN, DXGI_FORMAT_UNKNOWN, FMT::RGBA16UN))
 {
 	colorToColorLumaPS = new D3D12Core::Shader(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
 
 	fxaaPS = new D3D12Core::Shader(g_FXAABytes, sizeof(g_FXAABytes));
 
-	colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(colorToColorLumaPS).setRTVFormats({ FMT::RGBA8UN }).build();
+	colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(colorToColorLumaPS).setRTVFormats({ FMT::RGBA16UN }).build();
 
-	fxaaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(fxaaPS).setRTVFormats({ FMT::RGBA8UN }).build();
+	fxaaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(fxaaPS).setRTVFormats({ FMT::RGBA16UN }).build();
 }
 
 Gear::Core::Effect::FXAAEffect::~FXAAEffect()

@@ -17,13 +17,13 @@ ID3D12Device9* Gear::Core::GraphicsDevice::get()
 
 void Gear::Core::GraphicsDevice::Internal::initialize(IUnknown* const adapter)
 {
-	if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_2, IID_PPV_ARGS(&pvt.device))))
+	if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&pvt.device))))
 	{
-		LOGSUCCESS(L"create d3d12 device with feature level", LogColor::brightMagenta, L"D3D_FEATURE_LEVEL_12_2", LogColor::defaultColor, L"succeeded");
+		LOGSUCCESS(L"create d3d12 device with feature level", LogColor::brightMagenta, L"D3D_FEATURE_LEVEL_12_0", LogColor::defaultColor, L"succeeded");
 	}
 	else
 	{
-		LOGERROR(L"your graphics card should support D3D_FEATURE_LEVEL_12_2");
+		LOGERROR(L"your graphics card should support D3D_FEATURE_LEVEL_12_0");
 	}
 }
 

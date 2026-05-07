@@ -21,7 +21,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -132,6 +132,10 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h" />
     <ClInclude Include="Inc\Gear\Core\Effect\FXAAEffect.h" />
+    <ClInclude Include="Inc\Gear\Core\GlobalEffect\GammaCorrectEffect.h" />
+    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\GammaCorrectEffectInternal.h" />
+    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\ToneMapEffectInternal.h" />
+    <ClInclude Include="Inc\Gear\Core\GlobalEffect\ToneMapEffect.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalShader.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\DynamicCBufferManagerInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\GlobalDescriptorHeapInternal.h" />
@@ -222,6 +226,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Inc\DirectXTex\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Src\Core\GlobalEffect\GammaCorrectEffect.cpp" />
+    <ClCompile Include="Src\Core\GlobalEffect\ToneMapEffect.cpp" />
     <ClCompile Include="Src\Core\RenderThread.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\ResourceStateTracker.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\DescriptorHandle.cpp" />
@@ -476,6 +482,12 @@
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Inc/Gear/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Inc/Gear/CompiledShaders/%(Filename).h</HeaderFileOutput>
     </FxCompile>
+    <FxCompile Include="Shaders\GammaCorrectCS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shaders\HDRClampCS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
@@ -655,6 +667,12 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">g_%(Filename)Bytes</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Inc/Gear/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Engine\Shaders</AdditionalIncludeDirectories>
+    </FxCompile>
+    <FxCompile Include="Shaders\ToneMapCS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shaders\VideoEncoder\RGBToNV12CS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>

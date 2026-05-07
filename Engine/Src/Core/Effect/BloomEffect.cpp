@@ -2,6 +2,8 @@
 
 #include<Gear/Core/GlobalShader.h>
 
+#include<Gear/Core/Graphics.h>
+
 #include<Gear/Utils/File.h>
 
 #include<Gear/CompiledShaders/BloomFilterPS.h>
@@ -149,8 +151,12 @@ Gear::Core::Effect::BloomEffect::~BloomEffect()
 		delete bloomUpSampleState;
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::process(Resource::TextureRenderView* const inputTexture) const
+Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::process(Resource::TextureRenderView* const inputTexture)
 {
+	bloomParam.exposure = Gear::Core::Graphics::getExposure();
+
+	bloomParam.gamma = Gear::Core::Graphics::getGamma();
+
 	context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	context->setViewportSimple(width, height);
@@ -261,22 +267,10 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 void Gear::Core::Effect::BloomEffect::imGUICall()
 {
 	ImGui::Begin("Bloom Effect");
-	ImGui::SliderFloat("Exposure", &bloomParam.exposure, 0.0f, 4.f);
-	ImGui::SliderFloat("Gamma", &bloomParam.gamma, 0.0f, 4.f);
 	ImGui::SliderFloat("Threshold", &bloomParam.threshold, 0.0f, 1.f);
 	ImGui::SliderFloat("SoftThreshold", &bloomParam.softThreshold, 0.0f, 1.f);
 	ImGui::SliderFloat("Intensity", &bloomParam.intensity, 0.0f, 4.f);
 	ImGui::End();
-}
-
-void Gear::Core::Effect::BloomEffect::setExposure(const float exposure)
-{
-	bloomParam.exposure = exposure;
-}
-
-void Gear::Core::Effect::BloomEffect::setGamma(const float gamma)
-{
-	bloomParam.gamma = gamma;
 }
 
 void Gear::Core::Effect::BloomEffect::setThreshold(const float threshold)
@@ -292,16 +286,6 @@ void Gear::Core::Effect::BloomEffect::setIntensity(const float intensity)
 void Gear::Core::Effect::BloomEffect::setSoftThreshold(const float softThreshold)
 {
 	bloomParam.softThreshold = softThreshold;
-}
-
-float Gear::Core::Effect::BloomEffect::getExposure() const
-{
-	return bloomParam.exposure;
-}
-
-float Gear::Core::Effect::BloomEffect::getGamma() const
-{
-	return bloomParam.gamma;
 }
 
 void Gear::Core::Effect::BloomEffect::updateCurve(const uint32_t index)
