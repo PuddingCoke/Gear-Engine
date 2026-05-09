@@ -54,7 +54,11 @@ protected:
 
 		scene.draw(context);
 
-		blit(renderTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, renderTexture);
+
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+
+		blit(gammaCorrectedTexture);
 	}
 
 };
