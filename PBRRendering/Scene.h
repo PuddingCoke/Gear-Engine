@@ -18,6 +18,8 @@ public:
 		DirectX::XMFLOAT4 lightColor = { 1.f,1.f,1.f,1.f };
 		float metallic = 0.5f;
 		float roughness = 0.5f;
+		uint32_t enableSpecularIBL = 1;
+		uint32_t enableDiffuseIBL = 1;
 	}sceneInfo;
 
 	Scene(const std::string& filePath, ResourceManager* const resManager, const DXGI_FORMAT rtvFormat) :
@@ -69,7 +71,7 @@ public:
 		}
 	}
 
-	void draw(GraphicsContext* const context)
+	void draw(GraphicsContext* const context, TextureRenderView* const prefilterTexture, TextureRenderView* const brdfLUTTexture, TextureRenderView* const irradianceTexture)
 	{
 		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -91,7 +93,9 @@ public:
 
 		sceneInfo.lightPos = lightPos;
 
-		context->setPSConstants(10, &sceneInfo, 0);
+		context->setPSConstants(12, &sceneInfo, 0);
+
+		context->setPSConstants({ prefilterTexture->getAllSRVIndex(),brdfLUTTexture->getAllSRVIndex(),irradianceTexture->getAllSRVIndex() }, 12);
 
 		for (uint32_t i = 0; i < models.size(); i++)
 		{

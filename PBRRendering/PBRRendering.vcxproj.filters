@@ -36,5 +36,14 @@
   <ItemGroup>
     <FxCompile Include="PBRPS.hlsl" />
     <FxCompile Include="PBRVS.hlsl" />
+    <FxCompile Include="PrefilterPS.hlsl" />
+    <FxCompile Include="SkyboxPS.hlsl" />
+    <FxCompile Include="PrefilterVS.hlsl" />
+    <FxCompile Include="IrradiancePS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="BRDFLUT.dds">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>
