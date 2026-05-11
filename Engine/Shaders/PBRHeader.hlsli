@@ -62,7 +62,7 @@ float3 PBR_BRDFEvaluate(float3 N, float3 V, float3 L, float3 F0, float3 Albedo, 
     
     const float3 F = FresnelSchlick(saturate(dot(H, V)), F0, float3(1.0, 1.0, 1.0));
     
-    const float NdotV = saturate(dot(N, V));
+    const float NdotV = abs(dot(N, V)) + 1e-5f;
     
     const float NdotL = saturate(dot(N, L));
     
