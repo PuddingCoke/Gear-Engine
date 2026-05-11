@@ -792,5 +792,6 @@
     <None Include="Shaders\FXAA\FXAAHeader.hlsli">
       <Filter>Shaders\FXAA</Filter>
     </None>
+    <None Include="Shaders\PBRHeader.hlsli" />
   </ItemGroup>
 </Project>
