@@ -15,7 +15,7 @@ public:
 	struct SceneInfo
 	{
 		DirectX::XMVECTOR lightPos;
-		DirectX::XMFLOAT4 lightColor = { 1.f,1.f,1.f,1.f };
+		DirectX::XMFLOAT4 lightColor = { 5.f,5.f,5.f,1.f };
 		float metallic = 0.5f;
 		float roughness = 0.5f;
 		uint32_t enableSpecularIBL = 1;

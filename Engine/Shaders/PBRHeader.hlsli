@@ -56,6 +56,12 @@ float Fr_DisneyDiffuse(float NdotV, float NdotL, float LdotH, float roughness)
 //roughness为用户控制的感知线性粗糙度
 float3 PBR_BRDFEvaluate(float3 N, float3 V, float3 L, float3 F0, float3 Albedo, float roughness)
 {
+    //使用PBR版本的Sponza测试辐照度场的时候居然出现了NAN问题
+    //TMD的调查了一下发现是这个函数输出了NAN值
+    //这个Moving Frostbite to Physically Based Rendering 3.0给的代码健壮性也太差了
+    //还好被老子发现了，这里得钳制一下输入的粗糙度值
+    roughness = max(roughness, 0.001);
+    
     const float3 H = normalize(L + V);
     
     const float NDF = GGXDistribution(H, N, roughness);

@@ -135,6 +135,14 @@ float3 GetIndirectDiffuse(in float3 P, in float3 N, in ConstantBuffer<Irradiance
         
         sumWeight += weight;
         
+        float3 irradiance = GetIrradiance(N, probeIndex, irradianceOctahedralMap, samplerState);
+        
+        //调试用途
+        if (isnan(irradiance.x) || isnan(irradiance.y) || isnan(irradiance.z))
+        {
+            return float3(1.0, 0.0, 0.0);
+        }
+        
         sumIrradiance += weight * GetIrradiance(N, probeIndex, irradianceOctahedralMap, samplerState);
     }
     

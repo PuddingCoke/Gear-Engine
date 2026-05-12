@@ -1,11 +1,13 @@
 ﻿#include"Common.hlsli"
 
+#include"PBRHeader.hlsli"
+
 #include"Utility.hlsli"
 
 cbuffer TextureIndex : register(b2)
 {
-    uint gPositionTexIndex;
-    uint gNormalSpecularTexIndex;
+    uint gPositionMetallicTexIndex;
+    uint gNormalRoughnessTexIndex;
     uint gBaseColorTexIndex;
     uint shadowTexIndex;
     uint irradianceOctahedralMapTexIndex;
@@ -14,9 +16,9 @@ cbuffer TextureIndex : register(b2)
 
 ConstantBuffer<IrradianceVolume> volume : register(b3);
 
-static Texture2D gPosition = ResourceDescriptorHeap[gPositionTexIndex];
+static Texture2D gPositionMetallic = ResourceDescriptorHeap[gPositionMetallicTexIndex];
 
-static Texture2D gNormalSpecular = ResourceDescriptorHeap[gNormalSpecularTexIndex];
+static Texture2D gNormalRoughness = ResourceDescriptorHeap[gNormalRoughnessTexIndex];
 
 static Texture2D gBaseColor = ResourceDescriptorHeap[gBaseColorTexIndex];
 
@@ -51,34 +53,48 @@ float CalShadow(float3 P)
 
 float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
-    const float3 position = gPosition.Sample(linearClampSampler, texCoord).xyz;
-    const float4 normalSpecular = gNormalSpecular.Sample(linearClampSampler, texCoord);
-    const float3 baseColor = gBaseColor.Sample(linearClampSampler, texCoord).rgb;
+    float4 positionMetallic = gPositionMetallic.Sample(linearClampSampler, texCoord);
     
-    float alpha = gPosition.Sample(linearClampSampler, texCoord).a;
-    
-    if (alpha < 0.8)
+    if (positionMetallic.a > 1.2)
     {
         return float4(0.0, 0.0, 0.0, 1.0);
     }
     
+    float4 normalRoughness = gNormalRoughness.Sample(linearClampSampler, texCoord);
+    
+    float3 baseColor = gBaseColor.Sample(linearClampSampler, texCoord).rgb;
+    
+    float3 position = positionMetallic.xyz;
+    
     float3 outColor = float3(0.0, 0.0, 0.0);
     
-    const float3 N = normalize(normalSpecular.rgb);
-    const float3 V = normalize(perframeResource.eyePos.xyz - position);
+    float3 N = normalize(normalRoughness.xyz);
     
-    const float NdotL = max(0.0, dot(N, volume.lightDir.xyz));
-    const float3 diffuseColor = volume.lightColor.rgb * baseColor.rgb * NdotL;
-        
-    const float3 H = normalize(V + volume.lightDir.xyz);
-    const float NdotH = max(dot(N, H), 0.0);
-    const float3 specularColor = volume.lightColor.rgb * normalSpecular.w * pow(NdotH, 32.0);
+    float3 L = normalize(volume.lightDir.xyz);
+    
+    float3 V = normalize(perframeResource.eyePos.xyz - position);
+    
+    float metallic = positionMetallic.a;
+    
+    float roughness = normalRoughness.a;
    
     float shadow = CalShadow(position);
     
-    outColor += (diffuseColor + specularColor) * shadow;
+    float3 linearColor = pow(baseColor, 2.2);
     
-    outColor += baseColor * GetIndirectDiffuse(position, N, volume, irradianceOctahedralMap, depthOctahedralMap, linearClampSampler);
+    float3 albedo = lerp(linearColor, float3(0.0, 0.0, 0.0), metallic);
+    
+    float3 F0 = float3(0.04, 0.04, 0.04);
+    
+    F0 = lerp(F0, linearColor, metallic);
+    
+    float3 NdotL = saturate(dot(N, L));
+    
+    outColor += PBR_BRDFEvaluate(N, V, L, F0, albedo, roughness) * volume.lightColor.rgb * NdotL * shadow;
+    
+    const float PI = 3.14159265358979323846;
+    
+    outColor += albedo / PI * GetIndirectDiffuse(position, N, volume, irradianceOctahedralMap, depthOctahedralMap, linearClampSampler);
     
     return float4(outColor, 1.0);
 }

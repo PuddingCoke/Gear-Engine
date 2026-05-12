@@ -19,9 +19,9 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		gPosition(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Transparent)),
-		gNormalSpecular(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 1, false, true,
+		gPositionMetallic(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 1, false, true,
+			DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::g_XMHalfPi)),
+		gNormalRoughness(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 1, false, true,
 			DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Transparent)),
 		gBaseColor(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, false, true,
 			DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Transparent)),
@@ -67,6 +67,8 @@ public:
 		radianceCube->getTexture()->setName(L"Radiance Cube");
 
 		distanceCube->getTexture()->setName(L"Distance Cube");
+
+		originTexture->getTexture()->setName(L"Origin Texture");
 
 		shadowPipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
@@ -136,7 +138,7 @@ public:
 
 		depthOctahedralEncodeState = PipelineStateBuilder::buildComputeState(depthOctahedralEncode);
 
-		skybox = resManager->createTextureCube(wAssetPath + L"/sky/kloppenheim_05_4k.hdr", 1024, true);
+		skybox = resManager->createTextureCube( L"E:/Assets/Sponza/sky/kloppenheim_05_4k.hdr", 1024, true);
 
 		{
 			struct CubeRenderParam
@@ -197,13 +199,13 @@ public:
 
 		bloomEffect->setIntensity(0.5f);
 
-		Graphics::setExposure(0.574f);
+		Graphics::setExposure(1.0f);
 
-		Graphics::setGamma(1.578f);
+		Graphics::setGamma(2.2f);
 
 		fxaaEffect = new FXAAEffect(context, Graphics::getWidth(), Graphics::getHeight());
 
-		scene = new Scene(assetPath + "/sponza.dae", resManager);
+		scene = new Scene(assetPath + "Sponza.gltf", resManager);
 
 		updateLightField();
 	}
@@ -219,8 +221,8 @@ public:
 			delete cubeRenderParamBuffer[i];
 		}
 
-		delete gPosition;
-		delete gNormalSpecular;
+		delete gPositionMetallic;
+		delete gNormalRoughness;
 		delete gBaseColor;
 		delete depthTexture;
 		delete shadowTexture;
@@ -291,7 +293,7 @@ protected:
 
 		irradianceVolume.lightDir = { 0.f,sinf(sunAngle),cosf(sunAngle),0.f };
 
-		irradianceVolume.lightColor = DirectX::Colors::White;
+		irradianceVolume.lightColor = DirectX::XMVectorScale(DirectX::Colors::White, 10.f);
 
 		irradianceVolume.lightDir = DirectX::XMVector3Normalize(irradianceVolume.lightDir);
 
@@ -463,16 +465,16 @@ protected:
 		const D3D12Resource::DepthStencilDesc dsDesc = depthTexture->getDSVMipHandle(0);
 
 		context->setRenderTargets({
-			gPosition->getRTVMipHandle(0),
-			gNormalSpecular->getRTVMipHandle(0),
+			gPositionMetallic->getRTVMipHandle(0),
+			gNormalRoughness->getRTVMipHandle(0),
 			gBaseColor->getRTVMipHandle(0)
 			}, dsDesc);
 
 		context->transitionResources();
 
-		context->clearRenderTarget(gPosition->getRTVMipHandle(0), DirectX::Colors::Transparent);
+		context->clearRenderTarget(gPositionMetallic->getRTVMipHandle(0), DirectX::g_XMHalfPi);
 
-		context->clearRenderTarget(gNormalSpecular->getRTVMipHandle(0), DirectX::Colors::Transparent);
+		context->clearRenderTarget(gNormalRoughness->getRTVMipHandle(0), DirectX::Colors::Transparent);
 
 		context->clearRenderTarget(gBaseColor->getRTVMipHandle(0), DirectX::Colors::Transparent);
 
@@ -491,8 +493,8 @@ protected:
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) });
 
 		context->setPSConstants({
-			gPosition->getAllSRVIndex(),
-			gNormalSpecular->getAllSRVIndex(),
+			gPositionMetallic->getAllSRVIndex(),
+			gNormalRoughness->getAllSRVIndex(),
 			gBaseColor->getAllSRVIndex(),
 			shadowTexture->getAllDepthIndex(),
 			irradianceBounceOctahedralMap->getAllSRVIndex(),
@@ -579,9 +581,9 @@ protected:
 
 	float sunAngle;
 
-	TextureRenderView* gPosition;
+	TextureRenderView* gPositionMetallic;
 
-	TextureRenderView* gNormalSpecular;
+	TextureRenderView* gNormalRoughness;
 
 	TextureRenderView* gBaseColor;
 

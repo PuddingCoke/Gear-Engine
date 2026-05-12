@@ -24,9 +24,10 @@ class Model
 {
 public:
 
-	Model(const UINT materialIndex, const UINT vertexCount, const UINT startVertexLocation):
+	Model(const UINT materialIndex, const UINT indexCount, const UINT startIndexLocation, const UINT startVertexLocation) :
 		materialIndex(materialIndex),
-		vertexCount(vertexCount),
+		indexCount(indexCount),
+		startIndexLocation(startIndexLocation),
 		startVertexLocation(startVertexLocation)
 	{
 
@@ -34,17 +35,19 @@ public:
 
 	void draw(GraphicsContext* const context) const
 	{
-		context->draw(vertexCount, 1, startVertexLocation, 0);
+		context->drawIndexed(indexCount, 1, startIndexLocation, startVertexLocation, 0);
 	}
 
 	void drawCube(GraphicsContext* const context) const
 	{
-		context->draw(vertexCount, 6, startVertexLocation, 0);
+		context->drawIndexed(indexCount, 6, startIndexLocation, startVertexLocation, 0);
 	}
 
 	const UINT materialIndex;
 
-	const UINT vertexCount;
+	const UINT indexCount;
+
+	const UINT startIndexLocation;
 
 	const UINT startVertexLocation;
 

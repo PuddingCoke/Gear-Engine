@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-const std::string assetPath = "E:/Assets/Sponza";
+const std::string assetPath = "E:/glTF-Sample-Assets/Models/Sponza/glTF/";
 
-const std::wstring wAssetPath = L"E:/Assets/Sponza";
+const std::wstring wAssetPath = L"E:/glTF-Sample-Assets/Models/Sponza/glTF/";
 
 #include"Model.h"
 #include"Material.h"
@@ -19,7 +19,7 @@ public:
 	{
 		Assimp::Importer importer;
 
-		const aiScene* const scene = importer.ReadFile(filePath, aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+		const aiScene* const scene = importer.ReadFile(filePath, aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_ConvertToLeftHanded);
 
 		for (UINT materialIdx = 0; materialIdx < scene->mNumMaterials; materialIdx++)
 		{
@@ -27,7 +27,7 @@ public:
 
 			aiString texturePath;
 			std::string diffusePath;
-			std::string specularPath;
+			std::string roughnessMetallicPathPath;
 			std::string normalPath;
 
 			if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
@@ -37,17 +37,17 @@ public:
 			}
 			else
 			{
-				diffusePath = assetPath + "/sponza/dummy.dds";
+				diffusePath = assetPath + "dummy.dds";
 			}
 
-			if (material->GetTextureCount(aiTextureType_SPECULAR) > 0)
+			if (material->GetTextureCount(aiTextureType_METALNESS) > 0)
 			{
-				material->GetTexture(aiTextureType_SPECULAR, 0, &texturePath);
-				specularPath = assetPath + texturePath.C_Str();
+				material->GetTexture(aiTextureType_METALNESS, 0, &texturePath);
+				roughnessMetallicPathPath = assetPath + texturePath.C_Str();
 			}
 			else
 			{
-				specularPath = assetPath + "/sponza/dummy_specular.dds";
+				roughnessMetallicPathPath = assetPath + "dummy_specular.dds";
 			}
 
 			if (material->GetTextureCount(aiTextureType_NORMALS) > 0)
@@ -57,15 +57,19 @@ public:
 			}
 			else
 			{
-				normalPath = assetPath + "/sponza/dummy_ddn.dds";
+				normalPath = assetPath + "dummy_ddn.dds";
 			}
 
-			materials.push_back(new Material(resManager, diffusePath, specularPath, normalPath));
+			materials.push_back(new Material(resManager, diffusePath, roughnessMetallicPathPath, normalPath));
 		}
 
 		std::vector<Vertex> vertices;
 
+		std::vector<UINT> indices;
+
 		UINT startVertexLocation = 0;
+
+		UINT startIndexLocation = 0;
 
 		for (UINT meshIdx = 0; meshIdx < scene->mNumMeshes; meshIdx++)
 		{
@@ -85,6 +89,16 @@ public:
 					const aiVector3D& position = mesh->mVertices[vertIdx];
 
 					vert.pos = DirectX::XMFLOAT3(position.x, position.y, position.z);
+
+					//缩放、平移一下
+					//导入到Blender中发现和Crytek Sponza有点区别
+					vert.pos.x *= 12.5f;
+					vert.pos.y *= 12.5f;
+					vert.pos.z *= 12.5f;
+
+					vert.pos.x += 12.74f;
+
+					vert.pos.z -= 3.61f;
 				}
 
 				{
@@ -122,17 +136,35 @@ public:
 				vertices.push_back(vert);
 			}
 
-			models.push_back(new Model(mesh->mMaterialIndex, vertexCount, startVertexLocation));
+			const UINT indexCount = mesh->mNumFaces * 3;
+
+			for (UINT faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++)
+			{
+				const aiFace& face = mesh->mFaces[faceIndex];
+
+				for (UINT index = 0; index < face.mNumIndices; index++)
+				{
+					indices.push_back(face.mIndices[index]);
+				}
+			}
+
+			models.push_back(new Model(mesh->mMaterialIndex, indexCount, startIndexLocation, startVertexLocation));
 
 			startVertexLocation += vertexCount;
+
+			startIndexLocation += indexCount;
 		}
 
 		modelBuffer = resManager->createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertices.size(), true, false, true, false, true, vertices.data());
+
+		indexBuffer = resManager->createTypedBufferView(DXGI_FORMAT_R32_UINT, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
 	}
 
 	~Scene()
 	{
 		delete modelBuffer;
+
+		delete indexBuffer;
 
 		for (UINT i = 0; i < materials.size(); i++)
 		{
@@ -149,6 +181,7 @@ public:
 	{
 		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		context->setVertexBuffers(0, { modelBuffer->getVertexBuffer() });
+		context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
 		for (UINT i = 0; i < models.size(); i++)
 		{
@@ -162,6 +195,7 @@ public:
 	{
 		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		context->setVertexBuffers(0, { modelBuffer->getVertexBuffer() });
+		context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
 		for (UINT i = 0; i < models.size(); i++)
 		{
@@ -177,5 +211,7 @@ private:
 	std::vector<Model*> models;
 
 	BufferView* modelBuffer;
+
+	BufferView* indexBuffer;
 
 };
