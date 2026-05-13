@@ -9,6 +9,8 @@ cbuffer BloomParam : register(b2)
     float gamma;
     float threshold;
     float intensity;
+    float softThreshold;
+    float lensDirtIntensity;
 }
 
 static Texture2D<float4> hdrTexture = ResourceDescriptorHeap[hdrTextureIdx];
@@ -21,11 +23,11 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
 {
     float3 originColor = hdrTexture.Sample(linearClampSampler, texCoord).rgb;
     
-    float3 dirtColor = lensDirtTexture.Sample(linearClampSampler, texCoord).rgb;
+    float3 dirtColor = lensDirtTexture.Sample(linearClampSampler, texCoord).rgb * lensDirtIntensity;
     
-    float3 bloomColor = bloomTexture.Sample(linearClampSampler, texCoord).rgb * (1.0 + dirtColor);
+    float3 bloomColor = bloomTexture.Sample(linearClampSampler, texCoord).rgb * (float3(1.0, 1.0, 1.0) + dirtColor);
     
-    float3 result = lerp(originColor, originColor + bloomColor, intensity);
+    originColor += intensity * bloomColor;
     
-    return float4(result, 1.0);
+    return float4(originColor, 1.0);
 }

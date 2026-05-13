@@ -44,7 +44,9 @@ namespace Gear
 				{
 					D3D12Resource::Buffer* const buffer;
 					D3D12Resource::UploadHeap* const uploadHeap;
-				}getUpdateStruct(const void* const data, const uint64_t size);
+				};
+
+				UpdateStruct getUpdateStruct(const void* const data, const uint64_t size);
 
 				const bool hasSRV;
 

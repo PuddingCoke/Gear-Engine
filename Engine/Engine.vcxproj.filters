@@ -492,6 +492,9 @@
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\GammaCorrectEffectInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\Effect\SSREffect.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -719,6 +722,9 @@
     <ClCompile Include="Src\Core\GlobalEffect\GammaCorrectEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Core\Effect\SSREffect.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomDownSamplePS.hlsl">
@@ -784,6 +790,9 @@
     <FxCompile Include="Shaders\HDRClampCS.hlsl" />
     <FxCompile Include="Shaders\ToneMapCS.hlsl" />
     <FxCompile Include="Shaders\GammaCorrectCS.hlsl" />
+    <FxCompile Include="Shaders\SSR\HiZCopyCS.hlsl" />
+    <FxCompile Include="Shaders\SSR\HiZCreateCS.hlsl" />
+    <FxCompile Include="Shaders\SSR\HiZProcessPS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

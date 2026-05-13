@@ -47,6 +47,7 @@
     <FxCompile Include="DepthOctahedralEncode.hlsl" />
     <FxCompile Include="CubeRenderBouncePS.hlsl" />
     <FxCompile Include="SkybosPShader.hlsl" />
+    <FxCompile Include="SSRCombinePS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Utility.hlsli" />

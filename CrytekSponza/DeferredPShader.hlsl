@@ -31,7 +31,7 @@ static Texture2D tNormal = ResourceDescriptorHeap[normalTexIndex];
 
 PixelOutput main(PixelInput input)
 {
-    float4 baseColor = tDiffuse.Sample(linearWrapSampler, input.uv);
+    float4 baseColor = tDiffuse.Sample(anisotrophicWrapSampler, input.uv);
     
     float dist = distance(perframeResource.eyePos.xyz, input.pos.xyz);
     
@@ -44,11 +44,11 @@ PixelOutput main(PixelInput input)
     float3 T = normalize(input.tangent);
     float3x3 TBN = float3x3(T, B, N);
     
-    float2 roughnessMetallic = tRoughnessMetallic.Sample(linearWrapSampler, input.uv).gb;
+    float2 roughnessMetallic = tRoughnessMetallic.Sample(anisotrophicWrapSampler, input.uv).gb;
     
     PixelOutput output;
     output.positionMetallic = float4(input.pos, roughnessMetallic.g);
-    output.normalRoughness = float4(mul(normalize(tNormal.Sample(linearWrapSampler, input.uv).xyz * 2.0 - 1.0), TBN), roughnessMetallic.r);
+    output.normalRoughness = float4(mul(normalize(tNormal.Sample(anisotrophicWrapSampler, input.uv).xyz * 2.0 - 1.0), TBN), roughnessMetallic.r);
     output.baseColor = baseColor;
     
     return output;

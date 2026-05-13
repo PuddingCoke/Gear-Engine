@@ -66,6 +66,7 @@ Gear::Core::Effect::BloomEffect::BloomEffect(GraphicsContext* const context, con
 	bloomParam.threshold = 1.f;
 	bloomParam.intensity = 1.f;
 	bloomParam.softThreshold = 1.f;
+	bloomParam.lensDirtIntensity = 1.f;
 
 	auto getDefaultBuilder = []
 		{
@@ -257,7 +258,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 		inputTexture->getAllSRVIndex(),
 		swapTexture[0]->read()->getAllSRVIndex(),
 		lensDirtTexture->getAllSRVIndex() }, 0);
-	context->setPSConstants(4, &bloomParam, 3);
+	context->setPSConstants(6, &bloomParam, 3);
 	context->transitionResources();
 	context->draw(3, 1, 0, 0);
 
@@ -270,6 +271,7 @@ void Gear::Core::Effect::BloomEffect::imGUICall()
 	ImGui::SliderFloat("Threshold", &bloomParam.threshold, 0.0f, 1.f);
 	ImGui::SliderFloat("SoftThreshold", &bloomParam.softThreshold, 0.0f, 1.f);
 	ImGui::SliderFloat("Intensity", &bloomParam.intensity, 0.0f, 4.f);
+	ImGui::SliderFloat("Lens Dirt Intensity", &bloomParam.lensDirtIntensity, 0.f, 10.f);
 	ImGui::End();
 }
 

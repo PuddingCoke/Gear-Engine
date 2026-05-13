@@ -6,6 +6,8 @@
 
 #include<Gear/Core/Effect/FXAAEffect.h>
 
+#include<Gear/Core/Effect/SSREffect.h>
+
 #include<Gear/DevEssential.h>
 
 #include"Scene.h"
@@ -29,6 +31,8 @@ public:
 		shadowTexture(ResourceManager::createTextureDepthView(shadowTextureResolution, shadowTextureResolution, DXGI_FORMAT_R32_TYPELESS, 1, 1, false, true)),
 		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
 			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
+		ssrCombinedTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
+			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
 		radianceCube(ResourceManager::createTextureRenderView(probeCaptureResolution, probeCaptureResolution, DXGI_FORMAT_R16G16B16A16_FLOAT, 6, 1, true, true,
 			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT, radianceCubeClearColor)),
 		distanceCube(ResourceManager::createTextureRenderView(probeCaptureResolution, probeCaptureResolution, DXGI_FORMAT_R32_FLOAT, 6, 1, true, true,
@@ -45,6 +49,7 @@ public:
 		irradianceOctahedralEncode(new Shader(Utils::File::getRootFolder() + L"IrradianceOctahedralEncode.cso")),
 		depthOctahedralEncode(new Shader(Utils::File::getRootFolder() + L"DepthOctahedralEncode.cso")),
 		skyboxPShader(new Shader(Utils::File::getRootFolder() + L"SkybosPShader.cso")),
+		ssrCombinePS(new Shader(Utils::File::getRootFolder() + L"SSRCombinePS.cso")),
 		sunAngle(Utils::Math::halfPi - 0.01f)
 	{
 		irradianceOctahedralMap = ResourceManager::createTextureRenderView(6, 6, DXGI_FORMAT_R11G11B10_FLOAT, probeCount, 1, false, true,
@@ -70,6 +75,8 @@ public:
 
 		originTexture->getTexture()->setName(L"Origin Texture");
 
+		ssrCombinedTexture->getTexture()->setName(L"SSR Combined Texture");
+
 		shadowPipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
@@ -87,7 +94,7 @@ public:
 			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setRTVFormats({FMT::RGBA32F,FMT::RGBA32F,FMT::RGBA8UN})
+			.setRTVFormats({ FMT::RGBA32F,FMT::RGBA32F,FMT::RGBA8UN })
 			.setDSVFormat(FMT::D32F)
 			.setVS(deferredVShader)
 			.setPS(deferredPShader)
@@ -134,11 +141,21 @@ public:
 			.setPS(skyboxPShader)
 			.build();
 
+		ssrCombineState = PipelineStateBuilder()
+			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setRasterizerState(PipelineStateHelper::rasterCullNone)
+			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
+			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setRTVFormats({ FMT::RGBA16F })
+			.setVS(GlobalShader::getFullScreenVS())
+			.setPS(ssrCombinePS)
+			.build();
+
 		irradianceOctahedralEncodeState = PipelineStateBuilder::buildComputeState(irradianceOctahedralEncode);
 
 		depthOctahedralEncodeState = PipelineStateBuilder::buildComputeState(depthOctahedralEncode);
 
-		skybox = resManager->createTextureCube( L"E:/Assets/Sponza/sky/kloppenheim_05_4k.hdr", 1024, true);
+		skybox = resManager->createTextureCube(L"E:/Assets/Sponza/sky/kloppenheim_05_4k.hdr", 1024, true);
 
 		{
 			struct CubeRenderParam
@@ -199,13 +216,21 @@ public:
 
 		bloomEffect->setIntensity(0.5f);
 
+		fxaaEffect = new FXAAEffect(context, Graphics::getWidth(), Graphics::getHeight());
+
+		ssrEffect = new SSREffect(context, Graphics::getWidth(), Graphics::getHeight());
+
+		scene = new Scene(assetPath + "Sponza.gltf", resManager);
+
 		Graphics::setExposure(1.0f);
 
 		Graphics::setGamma(2.2f);
 
-		fxaaEffect = new FXAAEffect(context, Graphics::getWidth(), Graphics::getHeight());
+		bloomEffect->setThreshold(0.f);
 
-		scene = new Scene(assetPath + "Sponza.gltf", resManager);
+		bloomEffect->setSoftThreshold(0.f);
+
+		bloomEffect->setIntensity(0.2f);
 
 		updateLightField();
 	}
@@ -227,6 +252,7 @@ public:
 		delete depthTexture;
 		delete shadowTexture;
 		delete originTexture;
+		delete ssrCombinedTexture;
 
 		delete radianceCube;
 		delete distanceCube;
@@ -246,9 +272,11 @@ public:
 		delete cubeRenderPS;
 		delete cubeRenderBouncePS;
 		delete skyboxPShader;
+		delete ssrCombinePS;
 
 		delete bloomEffect;
 		delete fxaaEffect;
+		delete ssrEffect;
 
 		delete shadowPipelineState;
 
@@ -265,6 +293,8 @@ public:
 		delete depthOctahedralEncodeState;
 
 		delete skyboxState;
+
+		delete ssrCombineState;
 	}
 
 	void imGUICall() override
@@ -272,6 +302,11 @@ public:
 		bloomEffect->imGUICall();
 
 		fxaaEffect->imGUICall();
+
+		ImGui::Begin("SSR Parameters");
+		ImGui::SliderFloat("ExponentA", &ssrParameters.exponentA, 0.f, 5.f);
+		ImGui::SliderFloat("ExponentB", &ssrParameters.exponentB, 0.f, 5.f);
+		ImGui::End();
 	}
 
 protected:
@@ -293,7 +328,7 @@ protected:
 
 		irradianceVolume.lightDir = { 0.f,sinf(sunAngle),cosf(sunAngle),0.f };
 
-		irradianceVolume.lightColor = DirectX::XMVectorScale(DirectX::Colors::White, 10.f);
+		irradianceVolume.lightColor = DirectX::XMVectorScale(DirectX::Colors::White, 10.0f);
 
 		irradianceVolume.lightDir = DirectX::XMVector3Normalize(irradianceVolume.lightDir);
 
@@ -525,7 +560,27 @@ protected:
 
 		context->draw(36, 1, 0, 0);
 
-		TextureRenderView* const bloomTexture = bloomEffect->process(originTexture);
+		TextureRenderView* const ssrUVVisibilityTexture = ssrEffect->process(depthTexture, gPositionMetallic, gNormalRoughness);
+
+		context->setPipelineState(ssrCombineState);
+
+		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
+
+		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		context->setRenderTargets({ ssrCombinedTexture->getRTVMipHandle(0) });
+
+		context->setPSConstants({ originTexture->getAllSRVIndex(),ssrUVVisibilityTexture->getAllSRVIndex(),gNormalRoughness->getAllSRVIndex() }, 0);
+
+		context->setPSConstants(2, &ssrParameters, 3);
+
+		context->transitionResources();
+
+		context->clearRenderTarget(ssrCombinedTexture->getRTVMipHandle(0), DirectX::Colors::Black);
+
+		context->draw(3, 1, 0, 0);
+
+		TextureRenderView* const bloomTexture = bloomEffect->process(ssrCombinedTexture);
 
 		TextureRenderView* const toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
 
@@ -575,6 +630,12 @@ protected:
 		DirectX::XMFLOAT4 padding1[7];
 	} irradianceVolume;
 
+	struct SSRParamaters
+	{
+		float exponentA = 1.f;
+		float exponentB = 2.f;
+	}ssrParameters;
+
 	StaticCBuffer* irradianceVolumeBuffer;
 
 	ImmutableCBuffer* cubeRenderParamBuffer[probeCount];
@@ -592,6 +653,8 @@ protected:
 	TextureDepthView* shadowTexture;
 
 	TextureRenderView* originTexture;
+
+	TextureRenderView* ssrCombinedTexture;
 
 	TextureRenderView* radianceCube;
 
@@ -623,6 +686,8 @@ protected:
 
 	PipelineState* skyboxState;
 
+	PipelineState* ssrCombineState;
+
 	Shader* shadowVS;
 
 	Shader* deferredVShader;
@@ -643,8 +708,12 @@ protected:
 
 	Shader* skyboxPShader;
 
+	Shader* ssrCombinePS;
+
 	BloomEffect* bloomEffect;
 
 	FXAAEffect* fxaaEffect;
+
+	SSREffect* ssrEffect;
 
 };

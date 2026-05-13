@@ -7,6 +7,12 @@
 
 #include<Gear/Core/Resource/D3D12Resource/UploadHeap.h>
 
+//向上取整
+constexpr uint32_t dispatchCeil(const uint32_t a, const uint32_t b)
+{
+	return a / b + static_cast<bool>(a % b);
+}
+
 namespace Gear
 {
 	namespace Core

@@ -20,7 +20,13 @@ namespace
 
 		~DynamicCBufferRegion();
 
-		struct Location { void* const dataPtr; const uint32_t subregionIndex; } acquireLocation();
+		struct Location
+		{
+			void* const dataPtr;
+			const uint32_t subregionIndex;
+		};
+
+		Location acquireLocation();
 
 		void reset();
 

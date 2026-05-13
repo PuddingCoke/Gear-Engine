@@ -22,7 +22,9 @@ namespace Gear
 				const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
 				//提供资源视图的位置来通过ResourceDescriptorHeap访问常量缓冲
 				const uint32_t descriptorIndex;
-			} requestLocation(const uint32_t regionIndex);
+			};
+			
+			AvailableLocation requestLocation(const uint32_t regionIndex);
 
 		}
 	}

@@ -86,6 +86,7 @@ namespace Gear
 					float threshold;
 					float intensity;
 					float softThreshold;
+					float lensDirtIntensity;
 				}bloomParam;
 
 				struct BlurParam
