@@ -41,12 +41,12 @@ Gear::Core::D3D12Core::DescriptorHandle Gear::Core::D3D12Core::DescriptorHeap::a
 	}
 #endif // _DEBUG
 
-	return DescriptorHandle(cpuHandleStart, gpuHandleStart, static_cast<uint32_t>(retIndex), incrementSize, 0u, numDescriptors);
+	return DescriptorHandle(cpuHandleStart, gpuHandleStart, static_cast<uint32_t>(retIndex), incrementSize, 0u, numDescriptors, this);
 }
 
 Gear::Core::D3D12Core::DescriptorHandle Gear::Core::D3D12Core::DescriptorHeap::allocDynamicDescriptor(const uint32_t num)
 {
 	const uint64_t retIndex = dynamicIndex.fetch_add(num, std::memory_order_relaxed) % numDynamicDescriptors;
 
-	return DescriptorHandle(cpuHandleStart, gpuHandleStart, static_cast<uint32_t>(retIndex), incrementSize, numDescriptors - numDynamicDescriptors, numDynamicDescriptors);
+	return DescriptorHandle(cpuHandleStart, gpuHandleStart, static_cast<uint32_t>(retIndex), incrementSize, numDescriptors - numDynamicDescriptors, numDynamicDescriptors, this);
 }

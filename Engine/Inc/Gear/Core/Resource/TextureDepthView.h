@@ -36,6 +36,8 @@ namespace Gear
 
 				D3D12Resource::ShaderResourceDesc getDepthMipIndex(const uint32_t mipSlice) const;
 
+				D3D12_GPU_DESCRIPTOR_HANDLE getDepthMipGPUHandle(const uint32_t mipSlice) const;
+
 				D3D12Resource::ShaderResourceDesc getStencilMipIndex(const uint32_t mipSlice) const;
 
 				D3D12Resource::DepthStencilDesc getDSVMipHandle(const uint32_t mipSlice) const;
@@ -55,6 +57,8 @@ namespace Gear
 				uint32_t allStencilSRVIndex;
 
 				std::vector<uint32_t> depthSRVMipIndices;
+
+				std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> depthSRVMipGPUHandles;
 
 				std::vector<uint32_t> stencilSRVMipIndices;
 

@@ -12,6 +12,7 @@ cbuffer TextureIndex : register(b2)
     uint shadowTexIndex;
     uint irradianceOctahedralMapTexIndex;
     uint depthOctahedralMapTexIndex;
+    uint aoTexIndex;
 }
 
 ConstantBuffer<IrradianceVolume> volume : register(b3);
@@ -27,6 +28,8 @@ static Texture2D<float> shadowTexture = ResourceDescriptorHeap[shadowTexIndex];
 static Texture2DArray<float3> irradianceOctahedralMap = ResourceDescriptorHeap[irradianceOctahedralMapTexIndex];
 
 static Texture2DArray<float2> depthOctahedralMap = ResourceDescriptorHeap[depthOctahedralMapTexIndex];
+
+static Texture2D<float> aoTex = ResourceDescriptorHeap[aoTexIndex];
 
 float CalShadow(float3 P)
 {
@@ -90,11 +93,13 @@ float4 main(float2 texCoord : TEXCOORD) : SV_TARGET
     
     float3 NdotL = saturate(dot(N, L));
     
-    outColor += PBR_BRDFEvaluate(N, V, L, F0, albedo, roughness) * volume.lightColor.rgb * NdotL * shadow;
+    float ao = aoTex.Sample(linearClampSampler, texCoord);
+    
+    outColor += PBR_BRDFEvaluate(N, V, L, F0, albedo * ao, roughness) * volume.lightColor.rgb * NdotL * shadow;
     
     const float PI = 3.14159265358979323846;
     
-    outColor += albedo / PI * GetIndirectDiffuse(position, N, volume, irradianceOctahedralMap, depthOctahedralMap, linearClampSampler);
+    outColor += albedo / PI * GetIndirectDiffuse(position, N, volume, irradianceOctahedralMap, depthOctahedralMap, linearClampSampler) * ao;
     
     return float4(outColor, 1.0);
 }

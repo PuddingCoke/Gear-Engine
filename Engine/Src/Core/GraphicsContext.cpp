@@ -181,6 +181,16 @@ void Gear::Core::GraphicsContext::setPipelineState(const D3D12Core::PipelineStat
 	}
 }
 
+void Gear::Core::GraphicsContext::makeGraphicsRootSignatureInvalid()
+{
+	graphicsRootSignature = nullptr;
+}
+
+void Gear::Core::GraphicsContext::makeComputeRootSignatureInvalid()
+{
+	computeRootSignature = nullptr;
+}
+
 void Gear::Core::GraphicsContext::setRenderTargets(const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
 {
 #ifdef _DEBUG

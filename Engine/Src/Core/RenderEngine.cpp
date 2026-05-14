@@ -64,6 +64,8 @@ namespace
 
 		Gear::Core::Resource::D3D12Resource::Texture* getRenderTexture() const;
 
+		ID3D12CommandQueue* getCommandQueue() const;
+
 		bool getDisplayImGuiSurface() const;
 
 		void waitForCurrentFrame();
@@ -420,6 +422,11 @@ Gear::Core::Resource::D3D12Resource::Texture* RenderEnginePrivate::getRenderText
 	return renderTexture;
 }
 
+ID3D12CommandQueue* RenderEnginePrivate::getCommandQueue() const
+{
+	return commandQueue.Get();
+}
+
 bool RenderEnginePrivate::getDisplayImGuiSurface() const
 {
 	return displayImGUISurface;
@@ -763,6 +770,11 @@ Gear::Core::GPUVendor Gear::Core::RenderEngine::getVendor()
 Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::RenderEngine::getRenderTexture()
 {
 	return pvt->getRenderTexture();
+}
+
+ID3D12CommandQueue* Gear::Core::RenderEngine::getCommandQueue()
+{
+	return pvt->getCommandQueue();
 }
 
 bool Gear::Core::RenderEngine::getDisplayImGuiSurface()

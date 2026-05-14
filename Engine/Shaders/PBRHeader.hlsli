@@ -54,6 +54,7 @@ float Fr_DisneyDiffuse(float NdotV, float NdotL, float LdotH, float roughness)
 //输入的所有向量必须为归一化的向量
 //F0和Albedo为使用金属度参数化插值后的结果
 //roughness为用户控制的感知线性粗糙度
+//若要应用AO，请将输入的Albedo预乘AO系数
 float3 PBR_BRDFEvaluate(float3 N, float3 V, float3 L, float3 F0, float3 Albedo, float roughness)
 {
     //使用PBR版本的Sponza测试辐照度场的时候居然出现了NAN问题

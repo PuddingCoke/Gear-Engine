@@ -1,13 +1,13 @@
 ﻿#include<Gear/Core/D3D12Core/DescriptorHandle.h>
 
 Gear::Core::D3D12Core::DescriptorHandle::DescriptorHandle() :
-	cpuHandleStart{}, gpuHandleStart{}, currentOffset(), incrementSize(), baseIndex(), offsetLimit()
+	cpuHandleStart{}, gpuHandleStart{}, currentOffset(), incrementSize(), baseIndex(), offsetLimit(), descriptorHeap(nullptr)
 {
 }
 
 Gear::Core::D3D12Core::DescriptorHandle::DescriptorHandle(const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleStart, const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandleStart,
-	const uint32_t currentOffset, const uint32_t incrementSize, const uint32_t baseIndex, const uint32_t offsetLimit) :
-	cpuHandleStart(cpuHandleStart), gpuHandleStart(gpuHandleStart), currentOffset(currentOffset), incrementSize(incrementSize), baseIndex(baseIndex), offsetLimit(offsetLimit)
+	const uint32_t currentOffset, const uint32_t incrementSize, const uint32_t baseIndex, const uint32_t offsetLimit, const DescriptorHeap* descriptorHeap) :
+	cpuHandleStart(cpuHandleStart), gpuHandleStart(gpuHandleStart), currentOffset(currentOffset), incrementSize(incrementSize), baseIndex(baseIndex), offsetLimit(offsetLimit), descriptorHeap(descriptorHeap)
 {
 }
 
@@ -34,6 +34,11 @@ uint32_t Gear::Core::D3D12Core::DescriptorHandle::getIncrementSize() const
 uint32_t Gear::Core::D3D12Core::DescriptorHandle::getDistToEnd() const
 {
 	return offsetLimit - currentOffset;
+}
+
+const Gear::Core::D3D12Core::DescriptorHeap* Gear::Core::D3D12Core::DescriptorHandle::getDescriptorHeap() const
+{
+	return descriptorHeap;
 }
 
 void Gear::Core::D3D12Core::DescriptorHandle::move(const uint32_t num)

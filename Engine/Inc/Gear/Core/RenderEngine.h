@@ -26,6 +26,8 @@ namespace Gear
 
 			Resource::D3D12Resource::Texture* getRenderTexture();
 
+			ID3D12CommandQueue* getCommandQueue();
+
 			bool getDisplayImGuiSurface();
 
 		}

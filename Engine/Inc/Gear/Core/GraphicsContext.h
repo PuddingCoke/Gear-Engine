@@ -82,6 +82,12 @@ namespace Gear
 
 			void setPipelineState(const D3D12Core::PipelineState* const pipelineState);
 
+			//让图形根签名失效，保证下一次调用setPipelineState时，调用API绑定上根签名
+			void makeGraphicsRootSignatureInvalid();
+
+			//同理
+			void makeComputeRootSignatureInvalid();
+
 			template<size_t N>
 			void setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil = {});
 

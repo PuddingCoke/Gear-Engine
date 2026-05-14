@@ -132,6 +132,7 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h" />
     <ClInclude Include="Inc\Gear\Core\Effect\FXAAEffect.h" />
+    <ClInclude Include="Inc\Gear\Core\Effect\HBAOPlusEffect.h" />
     <ClInclude Include="Inc\Gear\Core\Effect\SSREffect.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\GammaCorrectEffect.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\GammaCorrectEffectInternal.h" />
@@ -227,6 +228,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Inc\DirectXTex\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Src\Core\Effect\HBAOPlusEffect.cpp" />
     <ClCompile Include="Src\Core\Effect\SSREffect.cpp" />
     <ClCompile Include="Src\Core\GlobalEffect\GammaCorrectEffect.cpp" />
     <ClCompile Include="Src\Core\GlobalEffect\ToneMapEffect.cpp" />

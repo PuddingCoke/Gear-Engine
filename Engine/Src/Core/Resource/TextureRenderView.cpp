@@ -75,9 +75,13 @@ Gear::Core::Resource::TextureRenderView::TextureRenderView(D3D12Resource::Textur
 		{
 			srvMipIndices.resize(texture->getMipLevels());
 
+			srvMipGPUHandles.resize(texture->getMipLevels());
+
 			for (uint32_t i = 0; i < texture->getMipLevels(); i++)
 			{
 				srvMipIndices[i] = descriptorHandle.getCurrentIndex();
+
+				srvMipGPUHandles[i] = descriptorHandle.getCurrentGPUHandle();
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 
@@ -289,6 +293,11 @@ Gear::Core::Resource::D3D12Resource::ShaderResourceDesc Gear::Core::Resource::Te
 	desc.textureDesc.mipSlice = mipSlice;
 
 	return desc;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE Gear::Core::Resource::TextureRenderView::getSRVMipGPUHandle(const uint32_t mipSlice) const
+{
+	return srvMipGPUHandles[mipSlice];
 }
 
 Gear::Core::Resource::D3D12Resource::ShaderResourceDesc Gear::Core::Resource::TextureRenderView::getUAVMipIndex(const uint32_t mipSlice) const

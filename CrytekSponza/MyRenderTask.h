@@ -8,6 +8,8 @@
 
 #include<Gear/Core/Effect/SSREffect.h>
 
+#include<Gear/Core/Effect/HBAOPlusEffect.h>
+
 #include<Gear/DevEssential.h>
 
 #include"Scene.h"
@@ -212,6 +214,8 @@ public:
 			}
 		}
 
+		hbaoPlusEffect = new HBAOPlusEffect(context, Graphics::getWidth(), Graphics::getHeight());
+
 		bloomEffect = new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
 
 		bloomEffect->setIntensity(0.5f);
@@ -222,7 +226,7 @@ public:
 
 		scene = new Scene(assetPath + "Sponza.gltf", resManager);
 
-		Graphics::setExposure(1.0f);
+		Graphics::setExposure(0.6f);
 
 		Graphics::setGamma(2.2f);
 
@@ -230,7 +234,7 @@ public:
 
 		bloomEffect->setSoftThreshold(0.f);
 
-		bloomEffect->setIntensity(0.2f);
+		bloomEffect->setIntensity(0.17f);
 
 		updateLightField();
 	}
@@ -274,6 +278,7 @@ public:
 		delete skyboxPShader;
 		delete ssrCombinePS;
 
+		delete hbaoPlusEffect;
 		delete bloomEffect;
 		delete fxaaEffect;
 		delete ssrEffect;
@@ -299,6 +304,8 @@ public:
 
 	void imGUICall() override
 	{
+		hbaoPlusEffect->imGUICall();
+
 		bloomEffect->imGUICall();
 
 		fxaaEffect->imGUICall();
@@ -306,6 +313,11 @@ public:
 		ImGui::Begin("SSR Parameters");
 		ImGui::SliderFloat("ExponentA", &ssrParameters.exponentA, 0.f, 5.f);
 		ImGui::SliderFloat("ExponentB", &ssrParameters.exponentB, 0.f, 5.f);
+		ImGui::End();
+
+		ImGui::Begin("Clip Parameters");
+		ImGui::SliderFloat("Clip Max Distance", &clipParameters.clipMaxDistance, 0.f, 2048.f);
+		ImGui::SliderFloat("Clip Exponent", &clipParameters.clipExponent, 0.f, 1.f);
 		ImGui::End();
 	}
 
@@ -328,7 +340,7 @@ protected:
 
 		irradianceVolume.lightDir = { 0.f,sinf(sunAngle),cosf(sunAngle),0.f };
 
-		irradianceVolume.lightColor = DirectX::XMVectorScale(DirectX::Colors::White, 10.0f);
+		irradianceVolume.lightColor = DirectX::XMVectorScale(DirectX::Colors::White, 13.5f);
 
 		irradianceVolume.lightDir = DirectX::XMVector3Normalize(irradianceVolume.lightDir);
 
@@ -505,6 +517,8 @@ protected:
 			gBaseColor->getRTVMipHandle(0)
 			}, dsDesc);
 
+		context->setPSConstants(2, &clipParameters, 3);
+
 		context->transitionResources();
 
 		context->clearRenderTarget(gPositionMetallic->getRTVMipHandle(0), DirectX::g_XMHalfPi);
@@ -516,6 +530,8 @@ protected:
 		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0);
 
 		scene->render(context);
+
+		TextureRenderView* const aoTexture = hbaoPlusEffect->process(depthTexture, gNormalRoughness);
 
 		context->setPipelineState(deferredFinalPipelineState);
 
@@ -533,7 +549,8 @@ protected:
 			gBaseColor->getAllSRVIndex(),
 			shadowTexture->getAllDepthIndex(),
 			irradianceBounceOctahedralMap->getAllSRVIndex(),
-			depthOctahedralMap->getAllSRVIndex()
+			depthOctahedralMap->getAllSRVIndex(),
+			aoTexture->getAllSRVIndex()
 			}, 0);
 
 		context->setPSConstantBuffer(irradianceVolumeBuffer);
@@ -636,6 +653,12 @@ protected:
 		float exponentB = 2.f;
 	}ssrParameters;
 
+	struct ClipParameters
+	{
+		float clipMaxDistance = 1024.f;
+		float clipExponent = 0.3f;
+	}clipParameters;
+
 	StaticCBuffer* irradianceVolumeBuffer;
 
 	ImmutableCBuffer* cubeRenderParamBuffer[probeCount];
@@ -709,6 +732,8 @@ protected:
 	Shader* skyboxPShader;
 
 	Shader* ssrCombinePS;
+
+	HBAOPlusEffect* hbaoPlusEffect;
 
 	BloomEffect* bloomEffect;
 

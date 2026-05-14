@@ -35,6 +35,8 @@ namespace Gear
 
 				D3D12Resource::ShaderResourceDesc getSRVMipIndex(const uint32_t mipSlice) const;
 
+				D3D12_GPU_DESCRIPTOR_HANDLE getSRVMipGPUHandle(const uint32_t mipSlice) const;
+
 				D3D12Resource::ShaderResourceDesc getUAVMipIndex(const uint32_t mipSlice) const;
 
 				D3D12Resource::RenderTargetDesc getRTVMipHandle(const uint32_t mipSlice) const;
@@ -54,6 +56,8 @@ namespace Gear
 				uint32_t allSRVIndex;
 
 				std::vector<uint32_t> srvMipIndices;
+
+				std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> srvMipGPUHandles;
 
 				std::vector<uint32_t> uavMipIndices;
 

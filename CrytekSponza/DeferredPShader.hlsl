@@ -21,6 +21,8 @@ cbuffer TextureIndex : register(b2)
     uint diffuseTexIndex;
     uint roughnessMetallicTexIndex;
     uint normalTexIndex;
+    float clipMaxDistance;
+    float clipExponent;
 }
 
 static Texture2D tDiffuse = ResourceDescriptorHeap[diffuseTexIndex];
@@ -35,7 +37,7 @@ PixelOutput main(PixelInput input)
     
     float dist = distance(perframeResource.eyePos.xyz, input.pos.xyz);
     
-    float alphaBlendFactor = 1.0 - pow(dist / 512.0, 0.4);
+    float alphaBlendFactor = 1.0 - pow(dist / clipMaxDistance, clipExponent);
     
     clip(baseColor.a - alphaBlendFactor);
     

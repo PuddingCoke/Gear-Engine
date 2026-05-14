@@ -166,9 +166,13 @@ Gear::Core::Resource::TextureDepthView::TextureDepthView(D3D12Resource::Texture*
 
 			depthSRVMipIndices.resize(mipLevels);
 
+			depthSRVMipGPUHandles.resize(mipLevels);
+
 			for (uint32_t i = 0; i < texture->getMipLevels(); i++)
 			{
 				depthSRVMipIndices[i] = descriptorHandle.getCurrentIndex();
+
+				depthSRVMipGPUHandles[i] = descriptorHandle.getCurrentGPUHandle();
 
 				D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 
@@ -415,6 +419,11 @@ Gear::Core::Resource::D3D12Resource::ShaderResourceDesc Gear::Core::Resource::Te
 	desc.textureDesc.mipSlice = mipSlice;
 
 	return desc;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE Gear::Core::Resource::TextureDepthView::getDepthMipGPUHandle(const uint32_t mipSlice) const
+{
+	return depthSRVMipGPUHandles[mipSlice];
 }
 
 Gear::Core::Resource::D3D12Resource::ShaderResourceDesc Gear::Core::Resource::TextureDepthView::getStencilMipIndex(const uint32_t mipSlice) const
