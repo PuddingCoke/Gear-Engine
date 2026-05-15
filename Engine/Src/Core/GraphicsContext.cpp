@@ -181,6 +181,11 @@ void Gear::Core::GraphicsContext::setPipelineState(const D3D12Core::PipelineStat
 	}
 }
 
+void Gear::Core::GraphicsContext::makePipelineStateInvalid()
+{
+	currentPipelineState = nullptr;
+}
+
 void Gear::Core::GraphicsContext::makeGraphicsRootSignatureInvalid()
 {
 	graphicsRootSignature = nullptr;

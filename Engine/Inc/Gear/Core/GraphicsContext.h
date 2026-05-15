@@ -82,7 +82,10 @@ namespace Gear
 
 			void setPipelineState(const D3D12Core::PipelineState* const pipelineState);
 
-			//让图形根签名失效，保证下一次调用setPipelineState时，调用API绑定上根签名
+			//让管线状态失效，保证下次调用setPipelineState时必定调用API绑定管线装填
+			void makePipelineStateInvalid();
+
+			//同理
 			void makeGraphicsRootSignatureInvalid();
 
 			//同理

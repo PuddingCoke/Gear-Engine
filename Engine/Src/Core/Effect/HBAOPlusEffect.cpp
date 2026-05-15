@@ -126,9 +126,12 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::HBAOPlusEffect::pro
 		LOGERROR(L"renderAO method failed, fail code:", static_cast<uint32_t>(status));
 	}
 
-	//使用Nsight调试后发现RenderAO居然不会恢复根签名
-	//这会让引擎内部绑定的图形根签名失效
-	//所以在这里要调用makeGraphicsRootSignatureInvalid
+	//使用Nsight调试后发现RenderAO居然不会恢复管线状态和根签名
+	//这会让引擎内部追踪的图形根签名失效
+	//对于管线状态来说存在RenderAO之前和之后使用同一个管线状态的可能 
+	//所以得在这里让管线状态和图形根签名失效
+	context->makePipelineStateInvalid();
+	
 	context->makeGraphicsRootSignatureInvalid();
 
 	return outputTexture;
