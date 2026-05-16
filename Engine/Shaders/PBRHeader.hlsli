@@ -1,10 +1,5 @@
-﻿float GGXDistribution(float3 M, float3 N, float roughness)
+﻿float GGXDistribution(float3 M, float3 N, float alphaG2)
 {
-    //alphaG = r^2 书中的公式
-    float alphaG2 = roughness * roughness;
-    
-    alphaG2 *= alphaG2;
-    
     float MdotN = saturate(dot(M, N));
     
     float denominator = MdotN * MdotN * (alphaG2 - 1.0) + 1.0;
@@ -15,12 +10,8 @@
 }
 
 //这个函数使用了优化算法，其结果已经除以了4*NdotL*NdotV
-float HeightCorrelatedSmithG_2(float NdotL, float NdotV, float roughness)
+float HeightCorrelatedSmithG_2(float NdotL, float NdotV, float alphaG2)
 {
-    float alphaG = roughness * roughness;
-    
-    float alphaG2 = alphaG * alphaG;
-    
     float Lambda_GGXV = NdotL * sqrt((-NdotV * alphaG2 + NdotV) * NdotV + alphaG2);
     
     float Lambda_GGXL = NdotV * sqrt((-NdotL * alphaG2 + NdotL) * NdotL + alphaG2);
@@ -63,9 +54,14 @@ float3 PBR_BRDFEvaluate(float3 N, float3 V, float3 L, float3 F0, float3 Albedo, 
     //还好被老子发现了，这里得钳制一下输入的粗糙度值
     roughness = max(roughness, 0.001);
     
+    //alphaG = r^2 书中的公式
+    const float alphaG = roughness * roughness;
+    
+    const float alphaG2 = alphaG * alphaG;
+    
     const float3 H = normalize(L + V);
     
-    const float NDF = GGXDistribution(H, N, roughness);
+    const float NDF = GGXDistribution(H, N, alphaG2);
     
     const float3 F = FresnelSchlick(saturate(dot(H, V)), F0, float3(1.0, 1.0, 1.0));
     
@@ -75,7 +71,7 @@ float3 PBR_BRDFEvaluate(float3 N, float3 V, float3 L, float3 F0, float3 Albedo, 
     
     const float LdotH = saturate(dot(L, H));
     
-    const float G = HeightCorrelatedSmithG_2(NdotL, NdotV, roughness);
+    const float G = HeightCorrelatedSmithG_2(NdotL, NdotV, alphaG2);
     
     const float3 specular = F * NDF * G;
     

@@ -31,6 +31,17 @@ static Texture2D tRoughnessMetallic = ResourceDescriptorHeap[roughnessMetallicTe
 
 static Texture2D tNormal = ResourceDescriptorHeap[normalTexIndex];
 
+float ToksvigEquation(float alphaG, float averageNormalLength)
+{
+    float alphaP = 2.0 / (alphaG * alphaG) - 2.0;
+
+    float alphaPPrime = averageNormalLength * alphaP / max((averageNormalLength + alphaP * (1.0 - averageNormalLength)), 1e-6);
+    
+    float alphaGPrime = sqrt(2.0 / (alphaPPrime + 2.0));
+    
+    return alphaGPrime;
+}
+
 PixelOutput main(PixelInput input)
 {
     float4 baseColor = tDiffuse.Sample(anisotrophicWrapSampler, input.uv);
@@ -46,11 +57,19 @@ PixelOutput main(PixelInput input)
     float3 T = normalize(input.tangent);
     float3x3 TBN = float3x3(T, B, N);
     
+    float3 normal = tNormal.Sample(anisotrophicWrapSampler, input.uv).xyz * 2.0 - 1.0;
+    
     float2 roughnessMetallic = tRoughnessMetallic.Sample(anisotrophicWrapSampler, input.uv).gb;
     
+    float roughness = max(roughnessMetallic.r, 0.001);
+    
+    roughness = sqrt(ToksvigEquation(roughness * roughness, length(normal)));
+    
+    float metallic = roughnessMetallic.g;
+    
     PixelOutput output;
-    output.positionMetallic = float4(input.pos, roughnessMetallic.g);
-    output.normalRoughness = float4(mul(normalize(tNormal.Sample(anisotrophicWrapSampler, input.uv).xyz * 2.0 - 1.0), TBN), roughnessMetallic.r);
+    output.positionMetallic = float4(input.pos, metallic);
+    output.normalRoughness = float4(mul(normalize(normal), TBN), roughness);
     output.baseColor = baseColor;
     
     return output;
