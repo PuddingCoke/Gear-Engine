@@ -22,7 +22,7 @@ public:
 
 		particleCS = new Shader(L"ParticleCS.hlsl", DXCCompiler::ShaderProfile::COMPUTE);
 
-		particleComputeState = PipelineStateBuilder::buildComputeState(particleCS);
+		particleComputeState = PipelineStateBuilder::build(particleCS);
 
 		particleRenderState = PipelineStateBuilder()
 			.setInputElements({

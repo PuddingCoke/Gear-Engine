@@ -89,9 +89,9 @@ Gear::Core::Effect::BloomEffect::BloomEffect(GraphicsContext* const context, con
 
 	bloomFinalState = getDefaultBuilder().setPS(bloomFinal).build();
 
-	bloomHBlurState = PipelineStateBuilder::buildComputeState(bloomHBlur);
+	bloomHBlurState = PipelineStateBuilder::build(bloomHBlur);
 
-	bloomVBlurState = PipelineStateBuilder::buildComputeState(bloomVBlur);
+	bloomVBlurState = PipelineStateBuilder::build(bloomVBlur);
 
 }
 

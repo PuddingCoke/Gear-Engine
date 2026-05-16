@@ -43,7 +43,7 @@ void Gear::Core::GlobalEffect::ToneMapEffect::Internal::initialize()
 {
 	pvt.toneMapCS = new D3D12Core::Shader(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes));
 
-	pvt.toneMapState = PipelineStateBuilder::buildComputeState(pvt.toneMapCS);
+	pvt.toneMapState = PipelineStateBuilder::build(pvt.toneMapCS);
 
 	pvt.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
 		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);

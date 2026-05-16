@@ -16,9 +16,9 @@ Gear::Core::Effect::SSREffect::SSREffect(GraphicsContext* const context, const u
 
 	hiZProcessPS = new D3D12Core::Shader(g_HiZProcessPSBytes, sizeof(g_HiZProcessPSBytes));
 
-	hiZCopyState = PipelineStateBuilder::buildComputeState(hiZCopyCS);
+	hiZCopyState = PipelineStateBuilder::build(hiZCopyCS);
 
-	hiZCreateState = PipelineStateBuilder::buildComputeState(hiZCreateCS);
+	hiZCreateState = PipelineStateBuilder::build(hiZCreateCS);
 
 	hiZProcessState = PipelineStateBuilder()
 		.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))

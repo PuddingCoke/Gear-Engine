@@ -82,33 +82,33 @@ public:
 
 		simulationParam.vorticityIntensity = config.vorticityIntensity;
 
-		splatVelocityState = PipelineStateBuilder::buildComputeState(splatVelocityCS);
+		splatVelocityState = PipelineStateBuilder::build(splatVelocityCS);
 
-		splatColorState = PipelineStateBuilder::buildComputeState(splatColorCS);
+		splatColorState = PipelineStateBuilder::build(splatColorCS);
 
-		vorticityState = PipelineStateBuilder::buildComputeState(vorticityCS);
+		vorticityState = PipelineStateBuilder::build(vorticityCS);
 
-		vorticityConfinementState = PipelineStateBuilder::buildComputeState(vorticityConfinementCS);
+		vorticityConfinementState = PipelineStateBuilder::build(vorticityConfinementCS);
 
-		divergenceState = PipelineStateBuilder::buildComputeState(divergenceCS);
+		divergenceState = PipelineStateBuilder::build(divergenceCS);
 
-		pressureResetState = PipelineStateBuilder::buildComputeState(pressureResetCS);
+		pressureResetState = PipelineStateBuilder::build(pressureResetCS);
 
-		pressureState = PipelineStateBuilder::buildComputeState(pressureCS);
+		pressureState = PipelineStateBuilder::build(pressureCS);
 
-		gradientSubtractState = PipelineStateBuilder::buildComputeState(gradientSubtractCS);
+		gradientSubtractState = PipelineStateBuilder::build(gradientSubtractCS);
 
-		velocityAdvectionState = PipelineStateBuilder::buildComputeState(velocityAdvectionCS);
+		velocityAdvectionState = PipelineStateBuilder::build(velocityAdvectionCS);
 
-		colorAdvectionState = PipelineStateBuilder::buildComputeState(colorAdvectionCS);
+		colorAdvectionState = PipelineStateBuilder::build(colorAdvectionCS);
 
-		velocityBoundaryState = PipelineStateBuilder::buildComputeState(velocityBoundaryCS);
+		velocityBoundaryState = PipelineStateBuilder::build(velocityBoundaryCS);
 
-		pressureBoundaryState = PipelineStateBuilder::buildComputeState(pressureBoundaryCS);
+		pressureBoundaryState = PipelineStateBuilder::build(pressureBoundaryCS);
 
-		phongShadeState = PipelineStateBuilder::buildComputeState(phongShadeCS);
+		phongShadeState = PipelineStateBuilder::build(phongShadeCS);
 
-		edgeHighlightState = PipelineStateBuilder::buildComputeState(edgeHighlightCS);
+		edgeHighlightState = PipelineStateBuilder::build(edgeHighlightCS);
 
 		effect = new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
 

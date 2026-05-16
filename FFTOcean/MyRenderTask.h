@@ -73,17 +73,17 @@ public:
 			.setPS(oceanPS)
 			.build();
 
-		spectrumState = PipelineStateBuilder::buildComputeState(spectrumCS);
+		spectrumState = PipelineStateBuilder::build(spectrumCS);
 
-		conjugateState = PipelineStateBuilder::buildComputeState(conjugateCS);
+		conjugateState = PipelineStateBuilder::build(conjugateCS);
 
-		displacementSpectrumState = PipelineStateBuilder::buildComputeState(displacementSpectrumCS);
+		displacementSpectrumState = PipelineStateBuilder::build(displacementSpectrumCS);
 
-		ifftState = PipelineStateBuilder::buildComputeState(ifftCS);
+		ifftState = PipelineStateBuilder::build(ifftCS);
 
-		permutationState = PipelineStateBuilder::buildComputeState(permutationCS);
+		permutationState = PipelineStateBuilder::build(permutationCS);
 
-		waveMergeState = PipelineStateBuilder::buildComputeState(waveMergeCS);
+		waveMergeState = PipelineStateBuilder::build(waveMergeCS);
 
 		tildeh0Texture = createTexture(textureResolution, DXGI_FORMAT_R32G32_FLOAT);
 

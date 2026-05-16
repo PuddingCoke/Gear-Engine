@@ -16,11 +16,11 @@ public:
 		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, false, true,
 			DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN))
 	{
-		whiteNoiseState = PipelineStateBuilder::buildComputeState(whiteNoiseCS);
+		whiteNoiseState = PipelineStateBuilder::build(whiteNoiseCS);
 
-		evolveState = PipelineStateBuilder::buildComputeState(evolveCS);
+		evolveState = PipelineStateBuilder::build(evolveCS);
 
-		visualizeState = PipelineStateBuilder::buildComputeState(visualizeCS);
+		visualizeState = PipelineStateBuilder::build(visualizeCS);
 
 		swapTexture = new SwapTexture([] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, 1, 1, false, true,
 			DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN); });

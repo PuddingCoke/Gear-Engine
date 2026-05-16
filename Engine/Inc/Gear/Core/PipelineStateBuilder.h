@@ -51,27 +51,14 @@ namespace Gear
 
 			D3D12Core::PipelineState* build();
 
-			static D3D12Core::PipelineState* buildComputeState(const D3D12Core::Shader* const shader);
+			//用于计算管线状态
+			static D3D12Core::PipelineState* build(const D3D12Core::Shader* const shader);
 
 		private:
-
-			PipelineStateBuilder& setCS(const D3D12Core::Shader* const cs);
 
 			std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements;
 
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsDesc;
-
-			const D3D12Core::Shader* vertexShader;
-
-			const D3D12Core::Shader* hullShader;
-
-			const D3D12Core::Shader* domainShader;
-
-			const D3D12Core::Shader* geometryShader;
-
-			const D3D12Core::Shader* pixelShader;
-
-			const D3D12Core::Shader* computeShader;
 
 		};
 

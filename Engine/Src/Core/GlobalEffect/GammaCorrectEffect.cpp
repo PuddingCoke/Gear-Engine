@@ -43,7 +43,7 @@ void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::initialize()
 {
 	pvt.gammaCorrectCS = new D3D12Core::Shader(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes));
 
-	pvt.gammaCorrectState = PipelineStateBuilder::buildComputeState(pvt.gammaCorrectCS);
+	pvt.gammaCorrectState = PipelineStateBuilder::build(pvt.gammaCorrectCS);
 
 	pvt.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
 		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);

@@ -16,7 +16,7 @@ public:
 		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_UNORM, 1, 1, false, true,
 			DXGI_FORMAT_R16G16B16A16_UNORM, DXGI_FORMAT_R16G16B16A16_UNORM, DXGI_FORMAT_UNKNOWN))
 	{
-		computeState = PipelineStateBuilder::buildComputeState(computeCS);
+		computeState = PipelineStateBuilder::build(computeCS);
 
 		Graphics::setExposure(1.9f);
 

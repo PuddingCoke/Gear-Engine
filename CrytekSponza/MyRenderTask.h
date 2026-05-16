@@ -153,9 +153,9 @@ public:
 			.setPS(ssrCombinePS)
 			.build();
 
-		irradianceOctahedralEncodeState = PipelineStateBuilder::buildComputeState(irradianceOctahedralEncode);
+		irradianceOctahedralEncodeState = PipelineStateBuilder::build(irradianceOctahedralEncode);
 
-		depthOctahedralEncodeState = PipelineStateBuilder::buildComputeState(depthOctahedralEncode);
+		depthOctahedralEncodeState = PipelineStateBuilder::build(depthOctahedralEncode);
 
 		skybox = resManager->createTextureCube(L"E:/Assets/Sponza/sky/kloppenheim_05_4k.hdr", 1024, true);
 

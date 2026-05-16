@@ -7,7 +7,7 @@
 #include<Gear/Core/GlobalShader.h>
 
 Gear::Core::PipelineStateBuilder::PipelineStateBuilder() :
-	vertexShader(nullptr), hullShader(nullptr), geometryShader(nullptr), domainShader(nullptr), pixelShader(nullptr), computeShader(nullptr), graphicsDesc{}
+	graphicsDesc{}
 {
 }
 
@@ -17,35 +17,60 @@ Gear::Core::PipelineStateBuilder::~PipelineStateBuilder()
 
 Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setVS(const D3D12Core::Shader* const vs)
 {
-	vertexShader = vs;
+	if (vs == nullptr)
+	{
+		LOGERROR(L"顶点着色器指针不能是nullptr");
+	}
+
+	graphicsDesc.VS = vs->getByteCode();
 
 	return *this;
 }
 
 Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setHS(const D3D12Core::Shader* const hs)
 {
-	hullShader = hs;
+	if (hs == nullptr)
+	{
+		LOGERROR(L"外壳着色器指针不能是nullptr");
+	}
+
+	graphicsDesc.HS = hs->getByteCode();
 
 	return *this;
 }
 
 Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setDS(const D3D12Core::Shader* const ds)
 {
-	domainShader = ds;
+	if (ds == nullptr)
+	{
+		LOGERROR(L"域着色器指针不能是nullptr");
+	}
+
+	graphicsDesc.DS = ds->getByteCode();
 
 	return *this;
 }
 
 Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setGS(const D3D12Core::Shader* const gs)
 {
-	geometryShader = gs;
+	if (gs == nullptr)
+	{
+		LOGERROR(L"几何着色器指针不能是nullptr");
+	}
+
+	graphicsDesc.GS = gs->getByteCode();
 
 	return *this;
 }
 
 Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setPS(const D3D12Core::Shader* const ps)
 {
-	pixelShader = ps;
+	if (ps == nullptr)
+	{
+		LOGERROR(L"像素着色器指针不能是nullptr");
+	}
+
+	graphicsDesc.PS = ps->getByteCode();
 
 	return *this;
 }
@@ -109,81 +134,67 @@ Gear::Core::D3D12Core::PipelineState* Gear::Core::PipelineStateBuilder::build()
 
 	D3D12Core::PipelineState::PipelineStateType pipelineStateType;
 
-	if (computeShader)
+	const bool hasVertexShader = graphicsDesc.VS.BytecodeLength;
+
+	const bool hasHullShader = graphicsDesc.HS.BytecodeLength;
+
+	const bool hasDomainShader = graphicsDesc.DS.BytecodeLength;
+
+	const bool hasGeometryShader = graphicsDesc.GS.BytecodeLength;
+
+	const bool hasPixelShader = graphicsDesc.PS.BytecodeLength;
+
+	if (!hasVertexShader)
 	{
-		selectedRootSignature = GlobalRootSignature::getComputeShaderRootSignature();
+		LOGERROR(L"必须设置顶点着色器");
+	}
+	else if ((!hasHullShader && hasDomainShader) || (hasHullShader && !hasDomainShader))
+	{
+		LOGERROR(L"如果需要镶嵌细分，那么外壳着色器和域着色器必须都被设置");
+	}
 
-		pipelineStateType = D3D12Core::PipelineState::PipelineStateType::COMPUTE;
-
-		D3D12_COMPUTE_PIPELINE_STATE_DESC computeDesc = {};
-		computeDesc.pRootSignature = selectedRootSignature->get();
-		computeDesc.CS = computeShader->getByteCode();
-
-		CHECKERROR(GraphicsDevice::get()->CreateComputePipelineState(&computeDesc, IID_PPV_ARGS(&id3d12PipelineState)));
+	if (!hasHullShader && !hasDomainShader && !hasGeometryShader)
+	{
+		selectedRootSignature = GlobalRootSignature::getBasicShaderRootSignature();
+	}
+	else if (hasHullShader && hasDomainShader && !hasGeometryShader)
+	{
+		selectedRootSignature = GlobalRootSignature::getTessellationRootSignature();
+	}
+	else if (!hasHullShader && !hasDomainShader && hasGeometryShader)
+	{
+		selectedRootSignature = GlobalRootSignature::getGeometryShaderRootSignature();
 	}
 	else
 	{
-		if (vertexShader)
-			graphicsDesc.VS = vertexShader->getByteCode();
-
-		if (hullShader)
-			graphicsDesc.HS = hullShader->getByteCode();
-
-		if (domainShader)
-			graphicsDesc.DS = domainShader->getByteCode();
-
-		if (geometryShader)
-			graphicsDesc.GS = geometryShader->getByteCode();
-
-		if (pixelShader)
-			graphicsDesc.PS = pixelShader->getByteCode();
-
-		if (vertexShader == nullptr)
-		{
-			LOGERROR(L"you must set vertex shader");
-		}
-		else if ((hullShader == nullptr && domainShader != nullptr) || (hullShader != nullptr && domainShader == nullptr))
-		{
-			LOGERROR(L"to enable tessellation you must set both hull shader and domain shader");
-		}
-
-		if (hullShader == nullptr && domainShader == nullptr && geometryShader == nullptr)
-		{
-			selectedRootSignature = GlobalRootSignature::getBasicShaderRootSignature();
-		}
-		else if (hullShader != nullptr && domainShader != nullptr && geometryShader == nullptr)
-		{
-			selectedRootSignature = GlobalRootSignature::getTessellationRootSignature();
-		}
-		else if (hullShader == nullptr && domainShader == nullptr && geometryShader != nullptr)
-		{
-			selectedRootSignature = GlobalRootSignature::getGeometryShaderRootSignature();
-		}
-		else
-		{
-			selectedRootSignature = GlobalRootSignature::getAllGraphicsShaderRootSignature();
-		}
-
-		pipelineStateType = D3D12Core::PipelineState::PipelineStateType::GRAPHICS;
-
-		graphicsDesc.pRootSignature = selectedRootSignature->get();
-		graphicsDesc.SampleMask = UINT_MAX;
-		graphicsDesc.SampleDesc.Count = 1;
-
-		CHECKERROR(GraphicsDevice::get()->CreateGraphicsPipelineState(&graphicsDesc, IID_PPV_ARGS(&id3d12PipelineState)));
+		selectedRootSignature = GlobalRootSignature::getAllGraphicsShaderRootSignature();
 	}
 
-	return new D3D12Core::PipelineState(id3d12PipelineState, selectedRootSignature, pipelineStateType);
+	graphicsDesc.pRootSignature = selectedRootSignature->get();
+	graphicsDesc.SampleMask = UINT_MAX;
+	graphicsDesc.SampleDesc.Count = 1;
+
+	CHECKERROR(GraphicsDevice::get()->CreateGraphicsPipelineState(&graphicsDesc, IID_PPV_ARGS(&id3d12PipelineState)));
+
+	return new D3D12Core::PipelineState(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::GRAPHICS);
 }
 
-Gear::Core::D3D12Core::PipelineState* Gear::Core::PipelineStateBuilder::buildComputeState(const D3D12Core::Shader* const shader)
+Gear::Core::D3D12Core::PipelineState* Gear::Core::PipelineStateBuilder::build(const D3D12Core::Shader* const shader)
 {
-	return PipelineStateBuilder().setCS(shader).build();
-}
+	if (shader == nullptr)
+	{
+		LOGERROR(L"计算着色器指针不能是nullptr");
+	}
 
-Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setCS(const D3D12Core::Shader* const cs)
-{
-	computeShader = cs;
+	ComPtr<ID3D12PipelineState> id3d12PipelineState;
 
-	return *this;
+	const D3D12Core::RootSignature* selectedRootSignature = GlobalRootSignature::getComputeShaderRootSignature();
+
+	D3D12_COMPUTE_PIPELINE_STATE_DESC computeDesc = {};
+	computeDesc.pRootSignature = selectedRootSignature->get();
+	computeDesc.CS = shader->getByteCode();
+
+	CHECKERROR(GraphicsDevice::get()->CreateComputePipelineState(&computeDesc, IID_PPV_ARGS(&id3d12PipelineState)));
+
+	return new D3D12Core::PipelineState(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE);
 }
