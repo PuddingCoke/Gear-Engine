@@ -5,7 +5,7 @@ Gear::Core::Resource::D3D12Resource::UploadHeap::UploadHeap(const uint64_t size,
 {
 }
 
-Gear::Core::Resource::D3D12Resource::UploadHeap::UploadHeap(UploadHeap* const heap) :
+Gear::Core::Resource::D3D12Resource::UploadHeap::UploadHeap(UploadHeap& heap) :
 	D3D12ResourceBase(heap)
 {
 }

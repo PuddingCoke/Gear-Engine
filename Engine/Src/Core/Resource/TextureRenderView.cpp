@@ -259,7 +259,7 @@ Gear::Core::Resource::TextureRenderView::TextureRenderView(const TextureRenderVi
 	rtvMipHandles(trv.rtvMipHandles),
 	viewGPUHandles(trv.viewGPUHandles),
 	viewCPUHandles(trv.viewCPUHandles),
-	texture(new D3D12Resource::Texture(trv.texture))
+	texture(new D3D12Resource::Texture(*trv.texture))
 {
 }
 

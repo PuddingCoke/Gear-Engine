@@ -16,13 +16,13 @@ Gear::Core::Resource::D3D12Resource::Buffer::Buffer(const ComPtr<ID3D12Resource>
 {
 }
 
-Gear::Core::Resource::D3D12Resource::Buffer::Buffer(Buffer* const buff) :
+Gear::Core::Resource::D3D12Resource::Buffer::Buffer(Buffer& buff) :
 	D3D12ResourceBase(buff),
-	globalState(buff->globalState),
+	globalState(buff.globalState),
 	internalState(D3D12_RESOURCE_STATE_UNKNOWN),
 	transitionState(D3D12_RESOURCE_STATE_UNKNOWN)
 {
-	buff->resetInternalStates();
+	buff.resetInternalStates();
 }
 
 Gear::Core::Resource::D3D12Resource::Buffer::~Buffer()

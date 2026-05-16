@@ -38,7 +38,7 @@ namespace Gear
 
 					Buffer(const ComPtr<ID3D12Resource>& buffer, const bool stateTracking, const uint32_t initialState);
 
-					Buffer(Buffer* const);
+					Buffer(Buffer&);
 
 					virtual ~Buffer();
 

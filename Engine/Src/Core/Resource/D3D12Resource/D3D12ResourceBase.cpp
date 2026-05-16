@@ -23,8 +23,8 @@ Gear::Core::Resource::D3D12Resource::D3D12ResourceBase::D3D12ResourceBase(const 
 	Gear::Core::GraphicsDevice::get()->CreateCommittedResource(&properties, flags, &desc, initialState, clearValues, IID_PPV_ARGS(&resource));
 }
 
-Gear::Core::Resource::D3D12Resource::D3D12ResourceBase::D3D12ResourceBase(D3D12ResourceBase* const res) :
-	resource(res->resource), stateTracking(res->stateTracking), sharedResource(res->sharedResource),
+Gear::Core::Resource::D3D12Resource::D3D12ResourceBase::D3D12ResourceBase(D3D12ResourceBase& res) :
+	resource(res.resource), stateTracking(res.stateTracking), sharedResource(res.sharedResource),
 	inReferredList(false), inTrackingList(false)
 {
 	*sharedResource = true;

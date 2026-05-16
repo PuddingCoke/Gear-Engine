@@ -29,18 +29,18 @@ Gear::Core::Resource::D3D12Resource::Texture::Texture(const ComPtr<ID3D12Resourc
 	transitionState = new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels);
 }
 
-Gear::Core::Resource::D3D12Resource::Texture::Texture(Texture* const tex) :
+Gear::Core::Resource::D3D12Resource::Texture::Texture(Texture& tex) :
 	D3D12ResourceBase(tex),
-	width(tex->width),
-	height(tex->height),
-	arraySize(tex->arraySize),
-	mipLevels(tex->mipLevels),
-	format(tex->format),
-	globalState(tex->globalState),
+	width(tex.width),
+	height(tex.height),
+	arraySize(tex.arraySize),
+	mipLevels(tex.mipLevels),
+	format(tex.format),
+	globalState(tex.globalState),
 	internalState(new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels)),
 	transitionState(new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
 {
-	tex->resetInternalStates();
+	tex.resetInternalStates();
 }
 
 Gear::Core::Resource::D3D12Resource::Texture::~Texture()

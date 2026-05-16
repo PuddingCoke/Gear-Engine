@@ -42,7 +42,7 @@ namespace Gear
 
 					Texture(const ComPtr<ID3D12Resource>& texture, const bool stateTracking, const uint32_t initialState);
 
-					Texture(Texture* const);
+					Texture(Texture&);
 
 					virtual ~Texture();
 

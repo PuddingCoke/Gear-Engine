@@ -25,7 +25,7 @@ namespace Gear
 
 					ReadbackHeap(const uint64_t size, const D3D12_HEAP_FLAGS flags = D3D12_HEAP_FLAG_NONE);
 
-					ReadbackHeap(ReadbackHeap* const);
+					ReadbackHeap(ReadbackHeap&);
 
 					virtual ~ReadbackHeap();
 

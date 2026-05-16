@@ -5,7 +5,7 @@ Gear::Core::Resource::D3D12Resource::ReadbackHeap::ReadbackHeap(const uint64_t s
 {
 }
 
-Gear::Core::Resource::D3D12Resource::ReadbackHeap::ReadbackHeap(ReadbackHeap* const heap) :
+Gear::Core::Resource::D3D12Resource::ReadbackHeap::ReadbackHeap(ReadbackHeap& heap) :
 	D3D12ResourceBase(heap)
 {
 }

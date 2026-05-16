@@ -373,7 +373,7 @@ Gear::Core::Resource::TextureDepthView::TextureDepthView(const TextureDepthView&
 	depthSRVMipIndices(tdv.depthSRVMipIndices),
 	stencilSRVMipIndices(tdv.stencilSRVMipIndices),
 	dsvMipHandles(tdv.dsvMipHandles),
-	texture(new D3D12Resource::Texture(tdv.texture))
+	texture(new D3D12Resource::Texture(*tdv.texture))
 {
 }
 
