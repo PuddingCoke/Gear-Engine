@@ -81,3 +81,21 @@ float3 PBR_BRDFEvaluate(float3 N, float3 V, float3 L, float3 F0, float3 Albedo, 
     
     return (specular + diffuse) / PI;
 }
+
+//使用Toksvig公式调整粗糙度
+float ToksvigRoughnessAdjust(float roughness, float averageNormalLength)
+{
+    roughness = max(roughness, 0.001);
+    
+    float alphaG = roughness * roughness;
+    
+    float alphaP = 2.0 / (alphaG * alphaG) - 2.0;
+
+    float alphaPPrime = averageNormalLength * alphaP / max((averageNormalLength + alphaP * (1.0 - averageNormalLength)), 1e-6);
+    
+    float alphaGPrime = sqrt(2.0 / (alphaPPrime + 2.0));
+    
+    float adjustedRoughness = sqrt(alphaGPrime);
+    
+    return adjustedRoughness;
+}

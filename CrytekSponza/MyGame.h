@@ -17,7 +17,7 @@ public:
 	FPSCamera camera;
 
 	MyGame():
-		camera({ 0.f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 100.f)
+		camera({ 0.f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 70.f)
 	{
 		MainCamera::setProj(Utils::Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 

@@ -1,5 +1,7 @@
 ﻿#include"Common.hlsli"
 
+#include"PBRHeader.hlsli"
+
 struct PixelInput
 {
     float3 pos : POSITION;
@@ -31,17 +33,6 @@ static Texture2D tRoughnessMetallic = ResourceDescriptorHeap[roughnessMetallicTe
 
 static Texture2D tNormal = ResourceDescriptorHeap[normalTexIndex];
 
-float ToksvigEquation(float alphaG, float averageNormalLength)
-{
-    float alphaP = 2.0 / (alphaG * alphaG) - 2.0;
-
-    float alphaPPrime = averageNormalLength * alphaP / max((averageNormalLength + alphaP * (1.0 - averageNormalLength)), 1e-6);
-    
-    float alphaGPrime = sqrt(2.0 / (alphaPPrime + 2.0));
-    
-    return alphaGPrime;
-}
-
 PixelOutput main(PixelInput input)
 {
     float4 baseColor = tDiffuse.Sample(anisotrophicWrapSampler, input.uv);
@@ -63,7 +54,7 @@ PixelOutput main(PixelInput input)
     
     float roughness = max(roughnessMetallic.r, 0.001);
     
-    roughness = sqrt(ToksvigEquation(roughness * roughness, length(normal)));
+    roughness = ToksvigRoughnessAdjust(roughness, length(normal));
     
     float metallic = roughnessMetallic.g;
     
