@@ -82,7 +82,10 @@ namespace Gear
 
 			void setPipelineState(const D3D12Core::PipelineState* const pipelineState);
 
-			//让管线状态失效，保证下次调用setPipelineState时必定调用API绑定管线装填
+			void makeUserDefinedGlobalConstantBufferInvalid();
+
+			//让内部追踪的管线状态失效
+			//保证下次调用setPipelineState时必定调用图形API绑定管线状态
 			void makePipelineStateInvalid();
 
 			//同理
@@ -90,6 +93,9 @@ namespace Gear
 
 			//同理
 			void makeComputeRootSignatureInvalid();
+
+			//重置内部追踪的状态
+			void resetTrackedStates();
 
 			template<size_t N>
 			void setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil = {});

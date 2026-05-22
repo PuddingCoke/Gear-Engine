@@ -8,12 +8,9 @@ Gear::Core::GraphicsContext::GraphicsContext() :
 	commandList(new D3D12Core::CommandList(D3D12_COMMAND_LIST_TYPE_DIRECT)),
 	vp{ 0.f,0.f,0.f,0.f,0.f,1.f },
 	rt{ 0,0,0,0 },
-	resourceIndices{},
-	userDefinedGlobalConstantBuffer(nullptr),
-	currentPipelineState(nullptr),
-	graphicsRootSignature(nullptr),
-	computeRootSignature(nullptr)
+	resourceIndices{}
 {
+	resetTrackedStates();
 }
 
 Gear::Core::GraphicsContext::~GraphicsContext()
@@ -181,6 +178,11 @@ void Gear::Core::GraphicsContext::setPipelineState(const D3D12Core::PipelineStat
 	}
 }
 
+void Gear::Core::GraphicsContext::makeUserDefinedGlobalConstantBufferInvalid()
+{
+	userDefinedGlobalConstantBuffer = nullptr;
+}
+
 void Gear::Core::GraphicsContext::makePipelineStateInvalid()
 {
 	currentPipelineState = nullptr;
@@ -194,6 +196,17 @@ void Gear::Core::GraphicsContext::makeGraphicsRootSignatureInvalid()
 void Gear::Core::GraphicsContext::makeComputeRootSignatureInvalid()
 {
 	computeRootSignature = nullptr;
+}
+
+void Gear::Core::GraphicsContext::resetTrackedStates()
+{
+	makeUserDefinedGlobalConstantBufferInvalid();
+
+	makePipelineStateInvalid();
+
+	makeGraphicsRootSignatureInvalid();
+
+	makeComputeRootSignatureInvalid();
 }
 
 void Gear::Core::GraphicsContext::setRenderTargets(const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
@@ -331,14 +344,7 @@ void Gear::Core::GraphicsContext::begin()
 
 	commandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap()->get(), GlobalDescriptorHeap::getSamplerHeap()->get());
 
-	//重置状态
-	userDefinedGlobalConstantBuffer = nullptr;
-
-	currentPipelineState = nullptr;
-
-	graphicsRootSignature = nullptr;
-
-	computeRootSignature = nullptr;
+	resetTrackedStates();
 }
 
 Gear::Core::D3D12Core::CommandList* Gear::Core::GraphicsContext::getCommandList() const
