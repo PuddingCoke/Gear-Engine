@@ -133,11 +133,11 @@ namespace Gear
 
 			void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const uint32_t values[4]);
 
-			void draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation) const;
+			void draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation);
 
-			void drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation) const;
+			void drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation);
 
-			void dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ) const;
+			void dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ);
 
 			template<size_t N>
 			void uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N]);
@@ -168,6 +168,8 @@ namespace Gear
 			void getResourceIndicesFromDescs(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N]);
 
 			void pushRootConstantBufferDesc(const RootConstantBufferDesc& desc);
+
+			void setRootConstantBuffers();
 
 			void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
 

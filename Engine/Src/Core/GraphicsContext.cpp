@@ -136,27 +136,6 @@ void Gear::Core::GraphicsContext::setCSConstantBuffer(const Resource::ImmutableC
 void Gear::Core::GraphicsContext::transitionResources()
 {
 	commandList->transitionResources();
-
-	if (rootConstantBufferDescs.size())
-	{
-		for (uint32_t i = 0; i < rootConstantBufferDescs.size(); i++)
-		{
-			const uint32_t rootParameterIndex = rootConstantBufferDescs[i].rootParameterIndex;
-
-			const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = rootConstantBufferDescs[i].gpuAddress;
-
-			if (rootConstantBufferDescs[i].type == RootConstantBufferDesc::GRAPHICS)
-			{
-				commandList->setGraphicsRootConstantBuffer(rootParameterIndex, gpuAddress);
-			}
-			else
-			{
-				commandList->setComputeRootConstantBuffer(rootParameterIndex, gpuAddress);
-			}
-		}
-
-		rootConstantBufferDescs.clear();
-	}
 }
 
 void Gear::Core::GraphicsContext::setPipelineState(const D3D12Core::PipelineState* const pipelineState)
@@ -323,18 +302,24 @@ void Gear::Core::GraphicsContext::clearUnorderedAccess(const Resource::D3D12Reso
 	uavBarrier({ resource });
 }
 
-void Gear::Core::GraphicsContext::draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation) const
+void Gear::Core::GraphicsContext::draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation)
 {
+	setRootConstantBuffers();
+
 	commandList->drawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
-void Gear::Core::GraphicsContext::drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation) const
+void Gear::Core::GraphicsContext::drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation)
 {
+	setRootConstantBuffers();
+	
 	commandList->drawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
-void Gear::Core::GraphicsContext::dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ) const
+void Gear::Core::GraphicsContext::dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ)
 {
+	setRootConstantBuffers();
+
 	commandList->dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
 
@@ -355,6 +340,30 @@ Gear::Core::D3D12Core::CommandList* Gear::Core::GraphicsContext::getCommandList(
 void Gear::Core::GraphicsContext::pushRootConstantBufferDesc(const RootConstantBufferDesc& desc)
 {
 	rootConstantBufferDescs.emplace_back(desc);
+}
+
+void Gear::Core::GraphicsContext::setRootConstantBuffers()
+{
+	if (rootConstantBufferDescs.size())
+	{
+		for (uint32_t i = 0; i < rootConstantBufferDescs.size(); i++)
+		{
+			const uint32_t rootParameterIndex = rootConstantBufferDescs[i].rootParameterIndex;
+
+			const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = rootConstantBufferDescs[i].gpuAddress;
+
+			if (rootConstantBufferDescs[i].type == RootConstantBufferDesc::GRAPHICS)
+			{
+				commandList->setGraphicsRootConstantBuffer(rootParameterIndex, gpuAddress);
+			}
+			else
+			{
+				commandList->setComputeRootConstantBuffer(rootParameterIndex, gpuAddress);
+			}
+		}
+
+		rootConstantBufferDescs.clear();
+	}
 }
 
 void Gear::Core::GraphicsContext::setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature)
