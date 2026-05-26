@@ -36,7 +36,7 @@ namespace Gear
 				ComPtr<ID3D12PipelineState> pipelineState;
 
 				//引用
-				const RootSignature* rootSignature;
+				const RootSignature* const rootSignature;
 
 				const PipelineStateType pipelineStateType;
 
