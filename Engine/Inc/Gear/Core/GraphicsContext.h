@@ -150,14 +150,9 @@ namespace Gear
 
 			struct RootConstantBufferDesc
 			{
-				enum Type
-				{
-					GRAPHICS, COMPUTE
-				} type;
+				const uint32_t rootParameterIndex;
 
-				uint32_t rootParameterIndex;
-
-				D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
+				const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
 			};
 
 			template<size_t N>
@@ -169,7 +164,7 @@ namespace Gear
 
 			void pushRootConstantBufferDesc(const RootConstantBufferDesc& desc);
 
-			void setRootConstantBuffers();
+			void setRootConstantBuffers(const bool isGraphicsRootSignature);
 
 			void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
 

@@ -132,8 +132,6 @@ Gear::Core::D3D12Core::PipelineState* Gear::Core::PipelineStateBuilder::build()
 
 	const D3D12Core::RootSignature* selectedRootSignature = nullptr;
 
-	D3D12Core::PipelineState::PipelineStateType pipelineStateType;
-
 	const bool hasVertexShader = graphicsDesc.VS.BytecodeLength;
 
 	const bool hasHullShader = graphicsDesc.HS.BytecodeLength;

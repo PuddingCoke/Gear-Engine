@@ -21,7 +21,7 @@ namespace Gear
 					COMPUTE
 				};
 
-				PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState,const RootSignature* const rootSignature, const PipelineStateType pipelineStateType);
+				PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType);
 
 				~PipelineState();
 
