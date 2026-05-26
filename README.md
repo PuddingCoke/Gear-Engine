@@ -11,3 +11,9 @@
 1. 打开Windows Terminal
 2. chcp 65001
 3. type log.txt
+
+## 待完成事项
+
+<!-- TODO Begin -->
+- 优化RootSignature类，目前根参数索引都是硬编码的，真得好好重写一下
+<!-- TODO END -->

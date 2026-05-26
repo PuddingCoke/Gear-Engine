@@ -5,6 +5,7 @@ from tkinter import messagebox, ttk
 
 
 TASKS_FILE = Path(__file__).with_name("tasks.json")
+README_FILE = Path(__file__).parent.parent / "README.md"
 
 
 class TodoApp:
@@ -94,6 +95,31 @@ class TodoApp:
             json.dumps(self.tasks, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+        self.update_readme()
+
+    def update_readme(self) -> None:
+        if not README_FILE.exists():
+            return
+
+        readme_text = README_FILE.read_text(encoding="utf-8")
+
+        begin_marker = "<!-- TODO Begin -->"
+        end_marker = "<!-- TODO END -->"
+
+        if begin_marker not in readme_text or end_marker not in readme_text:
+            return
+
+        before, _ = readme_text.split(begin_marker, 1)
+        _, after = readme_text.split(end_marker, 1)
+
+        if self.tasks:
+            lines = [f"- {task}" for task in self.tasks]
+            tasks_block = "\n".join(lines)
+            new_readme = f"{before}{begin_marker}\n{tasks_block}\n{end_marker}{after}"
+        else:
+            new_readme = f"{before}{begin_marker}\n{end_marker}{after}"
+
+        README_FILE.write_text(new_readme, encoding="utf-8")
 
     def add_task(self, event: tk.Event | None = None) -> None:
         text = self.task_entry.get().strip()
