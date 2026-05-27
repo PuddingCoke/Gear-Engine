@@ -6,7 +6,7 @@ using namespace Gear;
 
 int wmain(int argc, const wchar_t* argv[])
 {
-	const InitializationParam param = InitializationParam::RealTime(1920, 1080, L"Crytek Sponza", false);
+	const InitializationParam param = InitializationParam::RealTime(1920, 1080, L"Crytek Sponza", true);
 
 #ifdef _DEBUG
 	try

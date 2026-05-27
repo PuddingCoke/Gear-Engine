@@ -16,4 +16,5 @@
 
 <!-- TODO Begin -->
 - 优化RootSignature类，目前根参数索引都是硬编码的，真得好好重写一下
+- RAII 引擎目前大量使用了裸指针、new、delete。这对于以后的开发来说是大隐患
 <!-- TODO END -->
