@@ -15,17 +15,19 @@
 下面这些资料对我帮助极大，不仅是理解 D3D12 本身，更直接影响了整个引擎架构的设计思路：
 
 - **微软官方 D3D12 文档**
-[Direct3D 12 programming guide](https://learn.microsoft.com/en-us/windows/win32/direct3d12/directx-12-programming-guide)
+  - [Direct3D 12 programming guide](https://learn.microsoft.com/en-us/windows/win32/direct3d12/directx-12-programming-guide)
+  
 - **微软 D3D12 教学视频**
-[DirectX 12: Heaps and Resources in DirectX 12](https://youtu.be/fnYVSP9QgNM?si=CrsEvkPb9AXO3aQJ)
-[DirectX 12: Resources Barriers and You](https://youtu.be/Db2TaG49SRg?si=431Q0uY2z3Bv3sBa)
-[Resource Binding in DirectX 12 (pt.1)](https://youtu.be/Uwhhdktaofg?si=1NP2gKoBFS1kNdrA)
-[Resource Binding in DirectX 12 (pt.2)](https://youtu.be/Wbnw87tYqVg?si=LEFuvwMcQ0DAawiQ)
-[Resource Binding in DirectX 12 (pt.3)](https://youtu.be/9YdIMYJ96Aw?si=LUb0IKb-0IcnhExs)
-[DirectX 12: DirectX 11 to DirectX 12 porting guide](https://youtu.be/BV64mdOCgZo?si=kFWL8WGC-2Y8hl0x)
-[DirectX 12: Resource Barriers and State Tracking](https://youtu.be/nmB2XMasz2o?si=XxneEtW2KhcmcdQW)
+  - [DirectX 12: Heaps and Resources in DirectX 12](https://youtu.be/fnYVSP9QgNM?si=CrsEvkPb9AXO3aQJ)
+  - [DirectX 12: Resources Barriers and You](https://youtu.be/Db2TaG49SRg?si=431Q0uY2z3Bv3sBa)
+  - [Resource Binding in DirectX 12 (pt.1)](https://youtu.be/Uwhhdktaofg?si=1NP2gKoBFS1kNdrA)
+  - [Resource Binding in DirectX 12 (pt.2)](https://youtu.be/Wbnw87tYqVg?si=LEFuvwMcQ0DAawiQ)
+  - [Resource Binding in DirectX 12 (pt.3)](https://youtu.be/9YdIMYJ96Aw?si=LUb0IKb-0IcnhExs)
+  - [DirectX 12: DirectX 11 to DirectX 12 porting guide](https://youtu.be/BV64mdOCgZo?si=kFWL8WGC-2Y8hl0x)
+  - [DirectX 12: Resource Barriers and State Tracking](https://youtu.be/nmB2XMasz2o?si=XxneEtW2KhcmcdQW)
+
 - **NVIDIA 引擎设计最佳实践**
-[D3D12 Dos and Don'ts](https://developer.nvidia.com/dx12-dos-and-donts)
+  - [D3D12 Dos and Don'ts](https://developer.nvidia.com/dx12-dos-and-donts)
 
 ---
 
