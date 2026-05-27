@@ -136,8 +136,6 @@ protected:
 
 		context->setCSConstants(sizeof(SimulationParam) / 4, &simulationParam, 1);
 
-		context->transitionResources();
-
 		context->dispatch(numParticles / 100, 1, 1);
 
 		context->uavBarrier({ positionBuffer->getBuffer() });
@@ -158,8 +156,6 @@ protected:
 			});
 
 		context->setGSConstants(sizeof(SimulationParam) / 4, &simulationParam, 0);
-
-		context->transitionResources();
 
 		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 

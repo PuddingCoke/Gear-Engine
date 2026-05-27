@@ -92,8 +92,6 @@ protected:
 
 		context->setCSConstants(2, &accParam, sizeof(SimulationParam) / 4 + 1);
 
-		context->transitionResources();
-
 		context->dispatch(Graphics::getWidth() / 16, Graphics::getHeight() / 9, 1);
 
 		context->uavBarrier({ originTexture->getTexture() });

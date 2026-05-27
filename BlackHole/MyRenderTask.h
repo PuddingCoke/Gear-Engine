@@ -90,8 +90,6 @@ protected:
 
 		context->setPSConstants(sizeof(PerframeData) / 4ull, &perframeData, 2);
 
-		context->transitionResources();
-
 		context->draw(3, 1, 0, 0);
 
 		auto bloomTexture = effect->process(originTexture);

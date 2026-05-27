@@ -48,8 +48,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::FXAAEffect::process
 
 	context->setPSConstants({ inputTexture->getAllSRVIndex() }, 0);
 
-	context->transitionResources();
-
 	context->draw(3, 1, 0, 0);
 
 	context->setPipelineState(fxaaState);
@@ -63,8 +61,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::FXAAEffect::process
 	context->setPSConstants({ colorLumaTexture->getAllSRVIndex() }, 0);
 
 	context->setPSConstants(4, &fxaaParam, 1);
-
-	context->transitionResources();
 
 	context->draw(3, 1, 0, 0);
 

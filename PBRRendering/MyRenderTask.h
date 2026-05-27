@@ -189,8 +189,6 @@ protected:
 
 			context->setPSConstants(1, &roughness, 1);
 
-			context->transitionResources();
-
 			context->draw(36, 6, 0, 0);
 		}
 	}
@@ -207,8 +205,6 @@ protected:
 
 		context->setPSConstants({ envCube->getAllSRVIndex() }, 0);
 
-		context->transitionResources();
-
 		context->draw(36, 6, 0, 0);
 	}
 
@@ -217,8 +213,6 @@ protected:
 		context->setRenderTargets({ renderTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
-
-		context->transitionResources();
 
 		context->clearRenderTarget(renderTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 
@@ -237,8 +231,6 @@ protected:
 		context->setRenderTargets({ renderTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 
 		context->setPSConstants({ envCube->getAllSRVIndex() }, 0);
-
-		context->transitionResources();
 
 		context->draw(36, 1, 0, 0);
 

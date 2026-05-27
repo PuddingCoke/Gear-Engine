@@ -24,8 +24,6 @@ void Gear::Core::GlobalEffect::HDRClampEffect::process(GraphicsContext* const co
 
 		context->setCSConstants({ inOutTexture->getUAVMipIndex(0) }, 0);
 
-		context->transitionResources();
-
 		context->dispatch(inOutTexture->getTexture()->getWidth() / 16 + 1, inOutTexture->getTexture()->getHeight() / 16 + 1, 1);
 
 		context->uavBarrier({ inOutTexture->getTexture() });

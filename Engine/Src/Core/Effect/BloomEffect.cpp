@@ -165,7 +165,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 	context->setRenderTargets({ filteredTexture->getRTVMipHandle(0) }, {});
 	context->setPSConstants({ inputTexture->getAllSRVIndex() }, 0);
 	context->setPSConstants(5, &bloomParam, 1);
-	context->transitionResources();
 	context->draw(3, 1, 0, 0);
 
 	context->setViewportSimple(resolutions[0].x, resolutions[0].y);
@@ -173,7 +172,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 	context->setRenderTargets({ swapTexture[0]->write()->getRTVMipHandle(0) }, {});
 	context->setPSConstants({ filteredTexture->getAllSRVIndex() }, 0);
 	context->setPSConstants(4, &bloomParam, 1);
-	context->transitionResources();
 	context->draw(3, 1, 0, 0);
 	swapTexture[0]->swap();
 
@@ -184,7 +182,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 		context->setViewportSimple(resolutions[i + 1].x, resolutions[i + 1].y);
 		context->setRenderTargets({ swapTexture[i + 1]->write()->getRTVMipHandle(0) }, {});
 		context->setPSConstants({ swapTexture[i]->read()->getAllSRVIndex() }, 0);
-		context->transitionResources();
 		context->draw(3, 1, 0, 0);
 		swapTexture[i + 1]->swap();
 	}
@@ -197,7 +194,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 
 	context->setCSConstantBuffer(blurParamBuffer[blurSteps - 1]);
 
-	context->transitionResources();
 	context->dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
 	context->uavBarrier({ swapTexture[blurSteps - 1]->write()->getTexture() });
 	swapTexture[blurSteps - 1]->swap();
@@ -210,7 +206,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 
 	context->setCSConstantBuffer(blurParamBuffer[blurSteps - 1]);
 
-	context->transitionResources();
 	context->dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
 	context->uavBarrier({ swapTexture[blurSteps - 1]->write()->getTexture() });
 	swapTexture[blurSteps - 1]->swap();
@@ -225,7 +220,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 
 		context->setCSConstantBuffer(blurParamBuffer[blurSteps - 2 - i]);
 
-		context->transitionResources();
 		context->dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 		context->uavBarrier({ swapTexture[blurSteps - 2 - i]->write()->getTexture() });
 		swapTexture[blurSteps - 2 - i]->swap();
@@ -238,7 +232,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 
 		context->setCSConstantBuffer(blurParamBuffer[blurSteps - 2 - i]);
 
-		context->transitionResources();
 		context->dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
 		context->uavBarrier({ swapTexture[blurSteps - 2 - i]->write()->getTexture() });
 
@@ -246,7 +239,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 		context->setPipelineState(bloomUpSampleState);
 		context->setRenderTargets({ swapTexture[blurSteps - 2 - i]->write()->getRTVMipHandle(0) }, {});
 		context->setPSConstants({ swapTexture[blurSteps - 1 - i]->read()->getAllSRVIndex() }, 0);
-		context->transitionResources();
 		context->draw(3, 1, 0, 0);
 		swapTexture[blurSteps - 2 - i]->swap();
 	}
@@ -259,7 +251,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 		swapTexture[0]->read()->getAllSRVIndex(),
 		lensDirtTexture->getAllSRVIndex() }, 0);
 	context->setPSConstants(6, &bloomParam, 3);
-	context->transitionResources();
 	context->draw(3, 1, 0, 0);
 
 	return outputTexture;

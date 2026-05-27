@@ -75,8 +75,6 @@ public:
 
 		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
 
-		context->transitionResources();
-
 		context->draw(vertexNum, 1, 0, 0);
 	}
 

@@ -372,8 +372,6 @@ protected:
 
 		context->setVSConstantBuffer(irradianceVolumeBuffer);
 
-		context->transitionResources();
-
 		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0);
 
 		scene->render(context);
@@ -413,8 +411,6 @@ protected:
 
 		context->setPSConstantBuffer(cubeRenderBuffer);
 
-		context->transitionResources();
-
 		context->clearRenderTarget(radianceCube->getRTVMipHandle(0), radianceCubeClearColor);
 
 		context->clearRenderTarget(distanceCube->getRTVMipHandle(0), distanceCubeClearColor);
@@ -432,8 +428,6 @@ protected:
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
-		context->transitionResources();
-
 		context->dispatch(1, 1, 1);
 
 		context->uavBarrier({ irradianceOctahedralMap->getTexture() });
@@ -446,8 +440,6 @@ protected:
 			}, 0);
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
-
-		context->transitionResources();
 
 		context->dispatch(1, 1, 1);
 
@@ -477,8 +469,6 @@ protected:
 
 		context->setPSConstantBuffer(cubeRenderBuffer);
 
-		context->transitionResources();
-
 		context->clearRenderTarget(radianceCube->getRTVMipHandle(0), radianceCubeClearColor);
 
 		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0);
@@ -493,8 +483,6 @@ protected:
 			}, 0);
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
-
-		context->transitionResources();
 
 		context->dispatch(1, 1, 1);
 
@@ -518,8 +506,6 @@ protected:
 			}, dsDesc);
 
 		context->setPSConstants(2, &clipParameters, 3);
-
-		context->transitionResources();
 
 		context->clearRenderTarget(gPositionMetallic->getRTVMipHandle(0), DirectX::g_XMHalfPi);
 
@@ -555,8 +541,6 @@ protected:
 
 		context->setPSConstantBuffer(irradianceVolumeBuffer);
 
-		context->transitionResources();
-
 		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 
 		context->draw(3, 1, 0, 0);
@@ -573,8 +557,6 @@ protected:
 
 		context->setPSConstants({ skybox->getAllSRVIndex() }, 0);
 
-		context->transitionResources();
-
 		context->draw(36, 1, 0, 0);
 
 		TextureRenderView* const ssrUVVisibilityTexture = ssrEffect->process(depthTexture, gPositionMetallic, gNormalRoughness);
@@ -590,8 +572,6 @@ protected:
 		context->setPSConstants({ originTexture->getAllSRVIndex(),ssrUVVisibilityTexture->getAllSRVIndex(),gNormalRoughness->getAllSRVIndex() }, 0);
 
 		context->setPSConstants(2, &ssrParameters, 3);
-
-		context->transitionResources();
 
 		context->clearRenderTarget(ssrCombinedTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 

@@ -53,8 +53,6 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContex
 
 	context->setPSConstants({ inputTexture->getAllSRVIndex() }, 0);
 
-	context->transitionResources();
-
 	context->draw(36, 6, 0, 0);
 }
 

@@ -30,8 +30,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::ToneMapEffect
 
 	context->setCSConstants(1, &exposure, 2);
 
-	context->transitionResources();
-
 	context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
 
 	context->uavBarrier({ pvt.outputTexture->getTexture() });

@@ -26,8 +26,6 @@ void Gear::Core::GlobalEffect::BackBufferBlitEffect::process(GraphicsContext* co
 
 	context->setPSConstants({ inputTexture->getAllSRVIndex() }, 0);
 
-	context->transitionResources();
-
 	context->draw(3, 1, 0, 0);
 }
 

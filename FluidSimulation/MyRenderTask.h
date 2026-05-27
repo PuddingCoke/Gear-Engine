@@ -201,14 +201,12 @@ public:
 		{
 			context->setPipelineState(splatVelocityState);
 			context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
-			context->transitionResources();
 			context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 			context->uavBarrier({ velocityTex->write()->getTexture() });
 			velocityTex->swap();
 
 			context->setPipelineState(splatColorState);
 			context->setCSConstants({ colorTex->read()->getAllSRVIndex(),colorTex->write()->getUAVMipIndex(0) }, 0);
-			context->transitionResources();
 			context->dispatch(colorTex->width / 16, colorTex->height / 9, 1);
 			context->uavBarrier({ colorTex->write()->getTexture() });
 			colorTex->swap();
@@ -220,14 +218,12 @@ public:
 		//calculate vorticity
 		context->setPipelineState(vorticityState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),vorticityTex->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(vorticityTex->getTexture()->getWidth() / 16, vorticityTex->getTexture()->getHeight() / 9, 1);
 		context->uavBarrier({ vorticityTex->getTexture() });
 
 		//apply vorticity confinement
 		context->setPipelineState(vorticityConfinementState);
 		context->setCSConstants({ vorticityTex->getAllSRVIndex(),velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
@@ -235,7 +231,6 @@ public:
 		//obstacle
 		context->setPipelineState(velocityBoundaryState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
@@ -246,14 +241,12 @@ public:
 		//calculate divergence
 		context->setPipelineState(divergenceState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),divergenceTex->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(divergenceTex->getTexture()->getWidth() / 16, divergenceTex->getTexture()->getHeight() / 9, 1);
 		context->uavBarrier({ divergenceTex->getTexture() });
 
 		//reset pressure
 		context->setPipelineState(pressureResetState);
 		context->setCSConstants({ pressureTex->write()->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(pressureTex->width / 16, pressureTex->height / 9, 1);
 		context->uavBarrier({ pressureTex->write()->getTexture() });
 		pressureTex->swap();
@@ -263,7 +256,6 @@ public:
 		{
 			context->setPipelineState(pressureState);
 			context->setCSConstants({ divergenceTex->getAllSRVIndex(),pressureTex->read()->getAllSRVIndex(),pressureTex->write()->getUAVMipIndex(0) }, 0);
-			context->transitionResources();
 			context->dispatch(pressureTex->width / 16, pressureTex->height / 9, 1);
 			context->uavBarrier({ pressureTex->write()->getTexture() });
 			pressureTex->swap();
@@ -271,7 +263,6 @@ public:
 			//obstacle
 			context->setPipelineState(pressureBoundaryState);
 			context->setCSConstants({ pressureTex->read()->getAllSRVIndex(),pressureTex->write()->getUAVMipIndex(0) }, 0);
-			context->transitionResources();
 			context->dispatch(pressureTex->width / 16, pressureTex->height / 9, 1);
 			context->uavBarrier({ pressureTex->write()->getTexture() });
 			pressureTex->swap();
@@ -280,7 +271,6 @@ public:
 		//velocity subtract gradient of pressure
 		context->setPipelineState(gradientSubtractState);
 		context->setCSConstants({ pressureTex->read()->getAllSRVIndex(),velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
@@ -288,7 +278,6 @@ public:
 		//obstacle
 		context->setPipelineState(velocityBoundaryState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
@@ -299,7 +288,6 @@ public:
 		//velocity advection
 		context->setPipelineState(velocityAdvectionState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
@@ -307,7 +295,6 @@ public:
 		//obstacle
 		context->setPipelineState(velocityBoundaryState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
@@ -315,7 +302,6 @@ public:
 		//color advection
 		context->setPipelineState(colorAdvectionState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),colorTex->read()->getAllSRVIndex(),colorTex->write()->getUAVMipIndex(0) }, 0);
-		context->transitionResources();
 		context->dispatch(colorTex->width / 16, colorTex->height / 9, 1);
 		context->uavBarrier({ colorTex->write()->getTexture() });
 		colorTex->swap();
@@ -378,7 +364,6 @@ public:
 		{
 			context->setPipelineState(phongShadeState);
 			context->setCSConstants({ colorTex->read()->getAllSRVIndex(),phongShadeTexture->getUAVMipIndex(0) }, 0);
-			context->transitionResources();
 			context->dispatch(phongShadeTexture->getTexture()->getWidth() / 16, phongShadeTexture->getTexture()->getHeight() / 9, 1);
 			context->uavBarrier({ phongShadeTexture->getTexture() });
 
@@ -395,7 +380,6 @@ public:
 		{
 			context->setPipelineState(edgeHighlightState);
 			context->setCSConstants({ outputTexture->getAllSRVIndex(),edgeHighlightTexture->getUAVMipIndex(0) }, 0);
-			context->transitionResources();
 			context->dispatch(edgeHighlightTexture->getTexture()->getWidth() / 16, edgeHighlightTexture->getTexture()->getHeight() / 9, 1);
 			context->uavBarrier({ edgeHighlightTexture->getTexture() });
 

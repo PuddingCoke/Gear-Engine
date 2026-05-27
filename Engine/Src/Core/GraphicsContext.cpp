@@ -133,11 +133,6 @@ void Gear::Core::GraphicsContext::setCSConstantBuffer(const Resource::ImmutableC
 	pushRootConstantBufferDesc({ computeRootSignature->getCSConstantBufferParameterIndex(),immutableCBuffer->getGPUAddress() });
 }
 
-void Gear::Core::GraphicsContext::transitionResources()
-{
-	commandList->transitionResources();
-}
-
 void Gear::Core::GraphicsContext::setPipelineState(const D3D12Core::PipelineState* const pipelineState)
 {
 	if (pipelineState != currentPipelineState)
@@ -183,14 +178,36 @@ void Gear::Core::GraphicsContext::clearDefRenderTarget(const float clearValue[4]
 	commandList->clearRenderTarget(Graphics::getBackBufferHandle(), clearValue, 0, nullptr);
 }
 
-void Gear::Core::GraphicsContext::clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]) const
+void Gear::Core::GraphicsContext::clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4])
 {
-	commandList->clearRenderTarget(desc.rtvHandle, clearValue, 0, nullptr);
+	renderTargetClearDescs.emplace_back(RenderTargetClearDesc{ desc.rtvHandle,{clearValue[0],clearValue[1],clearValue[2],clearValue[3]} });
 }
 
-void Gear::Core::GraphicsContext::clearDepthStencil(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil) const
+void Gear::Core::GraphicsContext::clearDepthStencil(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
 {
-	commandList->clearDepthStencil(desc.dsvHandle, flags, depth, stencil, 0, nullptr);
+	depthStencilClearDescs.emplace_back(DepthStencilClearDesc{ desc.dsvHandle,flags,depth,stencil });
+}
+
+void Gear::Core::GraphicsContext::clearRenderTargetInstant(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4])
+{
+	clearRenderTarget(desc, clearValue);
+
+	setResourceState(desc);
+
+	transitionResources();
+
+	flushRenderTargetClearDescs();
+}
+
+void Gear::Core::GraphicsContext::clearDepthStencilInstant(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
+{
+	clearDepthStencil(desc, flags, depth, stencil);
+
+	setResourceState(desc);
+
+	transitionResources();
+
+	flushDepthStencilClearDescs();
 }
 
 void Gear::Core::GraphicsContext::setIndexBuffer(const Resource::D3D12Resource::IndexBufferDesc& indexBuffer)
@@ -278,21 +295,35 @@ void Gear::Core::GraphicsContext::clearUnorderedAccess(const Resource::D3D12Reso
 
 void Gear::Core::GraphicsContext::draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation)
 {
-	setRootConstantBuffers(true);
+	transitionResources();
+
+	flushRootConstantBufferDescs(true);
+
+	flushRenderTargetClearDescs();
+
+	flushDepthStencilClearDescs();
 
 	commandList->drawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
 void Gear::Core::GraphicsContext::drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation)
 {
-	setRootConstantBuffers(true);
+	transitionResources();
+
+	flushRootConstantBufferDescs(true);
+
+	flushRenderTargetClearDescs();
+
+	flushDepthStencilClearDescs();
 
 	commandList->drawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
 void Gear::Core::GraphicsContext::dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ)
 {
-	setRootConstantBuffers(false);
+	transitionResources();
+
+	flushRootConstantBufferDescs(false);
 
 	commandList->dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
@@ -339,12 +370,17 @@ Gear::Core::D3D12Core::CommandList* Gear::Core::GraphicsContext::getCommandList(
 	return commandList;
 }
 
+void Gear::Core::GraphicsContext::transitionResources()
+{
+	commandList->transitionResources();
+}
+
 void Gear::Core::GraphicsContext::pushRootConstantBufferDesc(const RootConstantBufferDesc& desc)
 {
 	rootConstantBufferDescs.emplace_back(desc);
 }
 
-void Gear::Core::GraphicsContext::setRootConstantBuffers(const bool isGraphicsRootSignature)
+void Gear::Core::GraphicsContext::flushRootConstantBufferDescs(const bool isGraphicsRootSignature)
 {
 	if (rootConstantBufferDescs.size())
 	{
@@ -364,6 +400,32 @@ void Gear::Core::GraphicsContext::setRootConstantBuffers(const bool isGraphicsRo
 		}
 
 		rootConstantBufferDescs.clear();
+	}
+}
+
+void Gear::Core::GraphicsContext::flushRenderTargetClearDescs()
+{
+	if (renderTargetClearDescs.size())
+	{
+		for (const RenderTargetClearDesc& desc : renderTargetClearDescs)
+		{
+			commandList->clearRenderTarget(desc.handle, desc.clearValue, 0, nullptr);
+		}
+
+		renderTargetClearDescs.clear();
+	}
+}
+
+void Gear::Core::GraphicsContext::flushDepthStencilClearDescs()
+{
+	if (depthStencilClearDescs.size())
+	{
+		for (const DepthStencilClearDesc& desc : depthStencilClearDescs)
+		{
+			commandList->clearDepthStencil(desc.handle, desc.flags, desc.depth, desc.stencil, 0, nullptr);
+		}
+
+		depthStencilClearDescs.clear();
 	}
 }
 

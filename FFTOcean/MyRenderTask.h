@@ -375,8 +375,6 @@ private:
 		context->setPSConstants({
 			enviromentCube->getAllSRVIndex() }, 0);
 
-		context->transitionResources();
-
 		context->draw(36, 1, 0, 0);
 
 		context->setPipelineState(oceanState);
@@ -413,8 +411,6 @@ private:
 			enviromentCube->getAllSRVIndex() }, 0);
 
 		context->setPSConstantBuffer(renderParamBuffer);
-
-		context->transitionResources();
 
 		context->clearDepthStencil(depthStencilDesc, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0);
 

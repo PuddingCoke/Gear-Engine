@@ -77,9 +77,6 @@ namespace Gear
 
 			void setCSConstantBuffer(const Resource::ImmutableCBuffer* const immutableCBuffer);
 
-			//绑定资源后必须调用这个方法！！
-			void transitionResources();
-
 			void setPipelineState(const D3D12Core::PipelineState* const pipelineState);
 
 			template<size_t N>
@@ -91,9 +88,17 @@ namespace Gear
 
 			void clearDefRenderTarget(const float clearValue[4]) const;
 
-			void clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]) const;
+			//推迟到draw call进行清理
+			void clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
 
-			void clearDepthStencil(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil) const;
+			//推迟到draw call进行清理
+			void clearDepthStencil(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
+
+			//立刻进行清理
+			void clearRenderTargetInstant(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
+
+			//立刻进行清理
+			void clearDepthStencilInstant(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
 
 			template<size_t N>
 			void setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N]);
@@ -150,6 +155,26 @@ namespace Gear
 				const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
 			};
 
+			struct RenderTargetClearDesc
+			{
+				const D3D12_CPU_DESCRIPTOR_HANDLE handle;
+
+				const float clearValue[4];
+			};
+
+			struct DepthStencilClearDesc
+			{
+				const D3D12_CPU_DESCRIPTOR_HANDLE handle;
+
+				const D3D12_CLEAR_FLAGS flags;
+
+				const float depth;
+
+				const uint8_t stencil;
+			};
+
+			void transitionResources();
+
 			template<size_t N>
 			void setShaderResources(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState);
 
@@ -159,7 +184,11 @@ namespace Gear
 
 			void pushRootConstantBufferDesc(const RootConstantBufferDesc& desc);
 
-			void setRootConstantBuffers(const bool isGraphicsRootSignature);
+			void flushRootConstantBufferDescs(const bool isGraphicsRootSignature);
+
+			void flushRenderTargetClearDescs();
+
+			void flushDepthStencilClearDescs();
 
 			void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
 
@@ -198,6 +227,10 @@ namespace Gear
 			uint32_t resourceIndices[32];
 
 			std::vector<RootConstantBufferDesc> rootConstantBufferDescs;
+
+			std::vector<RenderTargetClearDesc> renderTargetClearDescs;
+
+			std::vector<DepthStencilClearDesc> depthStencilClearDescs;
 
 			//这些是内部追踪的状态，用于减少图形API的调用
 			const D3D12Core::PipelineState* currentPipelineState;

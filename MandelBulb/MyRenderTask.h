@@ -94,8 +94,6 @@ protected:
 
 		context->setRenderTargets({ accumulatedTexture->getRTVMipHandle(0) }, {});
 
-		context->transitionResources();
-
 		context->draw(3, 1, 0, 0);
 
 		context->setPipelineState(displayState);
@@ -103,8 +101,6 @@ protected:
 		context->setPSConstants({ accumulatedTexture->getAllSRVIndex() }, 0);
 
 		context->setDefRenderTarget();
-
-		context->transitionResources();
 
 		context->draw(3, 1, 0, 0);
 	}

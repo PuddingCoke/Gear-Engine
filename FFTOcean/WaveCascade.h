@@ -63,8 +63,6 @@ public:
 			tempTexture->getUAVMipIndex(0),
 			inputTexture->getAllSRVIndex() }, 0);
 
-		context->transitionResources();
-
 		context->dispatch(size, 1, 1);
 
 		context->uavBarrier({
@@ -73,8 +71,6 @@ public:
 		context->setCSConstants({
 			inputTexture->getUAVMipIndex(0),
 			tempTexture->getAllSRVIndex() }, 0);
-
-		context->transitionResources();
 
 		context->dispatch(size, 1, 1);
 
@@ -85,8 +81,6 @@ public:
 
 		context->setCSConstants({
 			inputTexture->getUAVMipIndex(0) }, 0);
-
-		context->transitionResources();
 
 		context->dispatch(size / 8, size / 8, 1);
 
@@ -105,8 +99,6 @@ public:
 
 		context->setCSConstantBuffer(spectrumParamBuffer);
 
-		context->transitionResources();
-
 		context->dispatch(size / 8, size / 8, 1);
 
 		context->uavBarrier({
@@ -118,8 +110,6 @@ public:
 		context->setCSConstants({
 			waveSpectrumTexture->getUAVMipIndex(0),
 			tildeh0Texture->getAllSRVIndex() }, 0);
-
-		context->transitionResources();
 
 		context->dispatch(size / 8, size / 8, 1);
 
@@ -138,8 +128,6 @@ public:
 			DxxDzz->getUAVMipIndex(0),
 			waveDataTexture->getAllSRVIndex(),
 			waveSpectrumTexture->getAllSRVIndex() }, 0);
-
-		context->transitionResources();
 
 		context->dispatch(size / 8, size / 8, 1);
 
@@ -170,8 +158,6 @@ public:
 			DyDxz->getAllSRVIndex(),
 			DyxDyz->getAllSRVIndex(),
 			DxxDzz->getAllSRVIndex() }, 0);
-
-		context->transitionResources();
 
 		context->dispatch(size / 8, size / 8, 1);
 

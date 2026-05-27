@@ -70,8 +70,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(
 
 	context->setCSConstants({ depthTexture->getDepthMipIndex(0),hiZTexture->getUAVMipIndex(0) }, 0);
 
-	context->transitionResources();
-
 	context->dispatch(
 		dispatchCeil(hiZTexture->getTexture()->getWidth(), 16u),
 		dispatchCeil(hiZTexture->getTexture()->getHeight(), 16u),
@@ -84,8 +82,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(
 	for (uint32_t i = 0; i < hiZMiplvel - 1; i++)
 	{
 		context->setCSConstants({ hiZTexture->getSRVMipIndex(i),hiZTexture->getUAVMipIndex(i + 1) }, 0);
-
-		context->transitionResources();
 
 		context->dispatch(
 			dispatchCeil(hiZTexture->getTexture()->getWidth() >> (i + 1u), 16u),
@@ -108,8 +104,6 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(
 	int maxLevel = static_cast<int>(hiZTexture->getTexture()->getMipLevels() - 1u);
 
 	context->setPSConstants(1, &maxLevel, 3u);
-
-	context->transitionResources();
 
 	context->draw(3, 1, 0, 0);
 

@@ -81,8 +81,6 @@ protected:
 
 		context->setCSConstants(1, &uintSeed, 1);
 
-		context->transitionResources();
-
 		context->dispatch(swapTexture->width / 16, swapTexture->height / 9, 1);
 
 		context->uavBarrier({ swapTexture->write()->getTexture() });
@@ -98,8 +96,6 @@ protected:
 			swapTexture->write()->getUAVMipIndex(0) }, 0);
 
 		context->setCSConstants(8, &simulationParam, 2);
-
-		context->transitionResources();
 
 		context->dispatch(swapTexture->width / 16, swapTexture->height / 9, 1);
 
@@ -127,8 +123,6 @@ protected:
 
 		context->setCSConstants({ originTexture->getUAVMipIndex(0),
 			swapTexture->read()->getAllSRVIndex() }, 0);
-
-		context->transitionResources();
 
 		context->dispatch(swapTexture->width / 16, swapTexture->height / 9, 1);
 
