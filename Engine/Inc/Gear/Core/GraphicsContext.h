@@ -82,21 +82,6 @@ namespace Gear
 
 			void setPipelineState(const D3D12Core::PipelineState* const pipelineState);
 
-			void makeUserDefinedGlobalConstantBufferInvalid();
-
-			//让内部追踪的管线状态失效
-			//保证下次调用setPipelineState时必定调用图形API绑定管线状态
-			void makePipelineStateInvalid();
-
-			//同理
-			void makeGraphicsRootSignatureInvalid();
-
-			//同理
-			void makeComputeRootSignatureInvalid();
-
-			//重置内部追踪的状态
-			void resetTrackedStates();
-
 			template<size_t N>
 			void setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil = {});
 
@@ -115,7 +100,7 @@ namespace Gear
 
 			void setIndexBuffer(const Resource::D3D12Resource::IndexBufferDesc& indexBuffers);
 
-			void setPrimitiveTopology(const D3D12_PRIMITIVE_TOPOLOGY topology) const;
+			void setPrimitiveTopology(const D3D12_PRIMITIVE_TOPOLOGY topology);
 
 			void setViewport(const float width, const float height);
 
@@ -144,6 +129,16 @@ namespace Gear
 
 			void begin();
 
+			//重置内部追踪的状态
+			void resetTrackedStates();
+
+			void resetPipelineState();
+
+			void resetTrackedGraphicsStates();
+
+			void resetTrackedComputeStates();
+			/////////////////
+
 			D3D12Core::CommandList* getCommandList() const;
 
 		private:
@@ -171,7 +166,6 @@ namespace Gear
 			void setComputeRootSignature(const D3D12Core::RootSignature* const rootSignature);
 
 			//根据Desc设置对应资源的转变状态
-
 			void setResourceState(const Resource::D3D12Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState);
 
 			void setResourceState(const Resource::D3D12Resource::RenderTargetDesc& desc);
@@ -183,6 +177,17 @@ namespace Gear
 			void setResourceState(const Resource::D3D12Resource::IndexBufferDesc& desc);
 
 			Resource::D3D12Resource::D3D12ResourceBase* setResourceState(const Resource::D3D12Resource::ClearUAVDesc& desc);
+			////////////////////////////
+
+			//重置内部追踪的状态
+			void resetGraphicsRootSignature();
+
+			void resetPrimitiveTopology();
+
+			void resetComputeRootSignature();
+
+			void resetUserDefinedGlobalConstantBuffer();
+			/////////////////
 
 			D3D12_VIEWPORT vp;
 
@@ -194,13 +199,17 @@ namespace Gear
 
 			std::vector<RootConstantBufferDesc> rootConstantBufferDescs;
 
+			//这些是内部追踪的状态，用于减少图形API的调用
+			const D3D12Core::PipelineState* currentPipelineState;
+
 			const Resource::ImmutableCBuffer* userDefinedGlobalConstantBuffer;
 
-			const D3D12Core::PipelineState* currentPipelineState;
+			D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
 
 			const D3D12Core::RootSignature* graphicsRootSignature;
 
 			const D3D12Core::RootSignature* computeRootSignature;
+			////////////////////////////////////////
 
 			std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> transientRTVHandles;
 

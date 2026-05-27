@@ -157,37 +157,6 @@ void Gear::Core::GraphicsContext::setPipelineState(const D3D12Core::PipelineStat
 	}
 }
 
-void Gear::Core::GraphicsContext::makeUserDefinedGlobalConstantBufferInvalid()
-{
-	userDefinedGlobalConstantBuffer = nullptr;
-}
-
-void Gear::Core::GraphicsContext::makePipelineStateInvalid()
-{
-	currentPipelineState = nullptr;
-}
-
-void Gear::Core::GraphicsContext::makeGraphicsRootSignatureInvalid()
-{
-	graphicsRootSignature = nullptr;
-}
-
-void Gear::Core::GraphicsContext::makeComputeRootSignatureInvalid()
-{
-	computeRootSignature = nullptr;
-}
-
-void Gear::Core::GraphicsContext::resetTrackedStates()
-{
-	makeUserDefinedGlobalConstantBufferInvalid();
-
-	makePipelineStateInvalid();
-
-	makeGraphicsRootSignatureInvalid();
-
-	makeComputeRootSignatureInvalid();
-}
-
 void Gear::Core::GraphicsContext::setRenderTargets(const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
 {
 #ifdef _DEBUG
@@ -231,9 +200,14 @@ void Gear::Core::GraphicsContext::setIndexBuffer(const Resource::D3D12Resource::
 	commandList->setIndexBuffer(&indexBuffer.ibv);
 }
 
-void Gear::Core::GraphicsContext::setPrimitiveTopology(const D3D12_PRIMITIVE_TOPOLOGY topology) const
+void Gear::Core::GraphicsContext::setPrimitiveTopology(const D3D12_PRIMITIVE_TOPOLOGY topology)
 {
-	commandList->setPrimitiveTopology(topology);
+	if (topology != primitiveTopology)
+	{
+		primitiveTopology = topology;
+
+		commandList->setPrimitiveTopology(primitiveTopology);
+	}
 }
 
 void Gear::Core::GraphicsContext::setViewport(const float width, const float height)
@@ -312,7 +286,7 @@ void Gear::Core::GraphicsContext::draw(const uint32_t vertexCountPerInstance, co
 void Gear::Core::GraphicsContext::drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation)
 {
 	setRootConstantBuffers(true);
-	
+
 	commandList->drawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
@@ -330,6 +304,34 @@ void Gear::Core::GraphicsContext::begin()
 	commandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap()->get(), GlobalDescriptorHeap::getSamplerHeap()->get());
 
 	resetTrackedStates();
+}
+
+void Gear::Core::GraphicsContext::resetTrackedStates()
+{
+	resetPipelineState();
+
+	resetTrackedGraphicsStates();
+
+	resetTrackedComputeStates();
+
+	resetUserDefinedGlobalConstantBuffer();
+}
+
+void Gear::Core::GraphicsContext::resetPipelineState()
+{
+	currentPipelineState = nullptr;
+}
+
+void Gear::Core::GraphicsContext::resetTrackedGraphicsStates()
+{
+	resetGraphicsRootSignature();
+
+	resetPrimitiveTopology();
+}
+
+void Gear::Core::GraphicsContext::resetTrackedComputeStates()
+{
+	resetComputeRootSignature();
 }
 
 Gear::Core::D3D12Core::CommandList* Gear::Core::GraphicsContext::getCommandList() const
@@ -465,4 +467,24 @@ Gear::Core::Resource::D3D12Resource::D3D12ResourceBase* Gear::Core::GraphicsCont
 	}
 
 	return resource;
+}
+
+void Gear::Core::GraphicsContext::resetGraphicsRootSignature()
+{
+	graphicsRootSignature = nullptr;
+}
+
+void Gear::Core::GraphicsContext::resetPrimitiveTopology()
+{
+	primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+}
+
+void Gear::Core::GraphicsContext::resetComputeRootSignature()
+{
+	computeRootSignature = nullptr;
+}
+
+void Gear::Core::GraphicsContext::resetUserDefinedGlobalConstantBuffer()
+{
+	userDefinedGlobalConstantBuffer = nullptr;
 }
