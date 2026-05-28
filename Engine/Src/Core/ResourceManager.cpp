@@ -119,12 +119,11 @@ Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::ResourceManager::creat
 	//这里要小心点，因为D3D12资源是由第三方库创建的，所以要注意资源的初始状态
 	//我查看了下源码发现资源一开始其实是处于D3D12_RESOURCE_STATE_COMMON
 	//但是这里有一个叫Implicit State Transitions即隐式状态转变的东西要注意
-	//因为我在调试引擎的时候发现了一个奇怪的现象，搜索相关资料后找到了下面这个网站，他告诉了我答案
+	//因为我很久以前在调试引擎的时候发现了一个奇怪的报错现象，搜索相关资料后找到了下面这个网站，它告诉了我答案
 	//https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#implicit-state-transitions
 	//资源一开始虽然是处于COMMOM状态，但是UpdateSubresources中存在CopyBufferRegion
 	//这个操作执行完后，资源的状态实际上会被提升为D3D12_RESOURCE_STATE_COPY_DEST
 	//这就是为什么引擎内部追踪的初始状态会被设置为D3D12_RESOURCE_STATE_COPY_DEST
-	//这个地方有点坑，最好留个注释，养成好习惯
 	if (fileExtension == L"bmp" || fileExtension == L"jpg" || fileExtension == L"jpeg" || fileExtension == L"png" || fileExtension == L"tiff")
 	{
 		std::unique_ptr<uint8_t[]> decodedData;
