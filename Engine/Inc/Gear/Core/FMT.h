@@ -3,17 +3,23 @@
 #ifndef _GEAR_CORE_FMT_H_
 #define _GEAR_CORE_FMT_H_
 
+/// <summary>
+/// 我最开始学习的是OpenGL，非常喜欢里面资源格式的命名
+/// 我于是仿照OpenGL资源格式的命名规范，在这个头文件里增加了一些常用DXGI_FORMAT的别名
+/// 这也是我在我的D3D11老项目中做的事，它带来的改善是非常大的，日常敲代码轻松太多了
+/// </summary>
+
 #include<cstdint>
 
 #include<dxgiformat.h>
 
-/// <summary>
-/// 通道顺序 + 每通道比特 + 类型
-/// </summary>
 namespace Gear
 {
 	namespace Core
 	{
+		/// <summary>
+		/// 通道顺序 + 每通道比特 + 类型
+		/// </summary>
 		namespace FMT
 		{
 			//Int
