@@ -47,9 +47,35 @@ Gear 的搭建围绕几个核心原则：
 
 这个引擎里不少类的思想来自我开始学图形学以来的各种实践以及接触到的一些东西。它们来自不同的时代和不同的 API 生态，但在 Gear 里融合到了一起。
 
-- **Effect 系统** 的灵感来自 **Effects 11**（Direct3D 11 时代的 Effect Framework）。那个框架用 .fx 文件把 Shader、RenderState、Pass 打包成一个自包含的 Effect 对象，Gear 里的 `EffectBase` 和各个 `*Effect` 子类延续了同样的思路——一个后处理效果就是一个自包含单元，自己管理 PSO、Shader、资源，对外只暴露 `process()`。
-- **RenderTask** 的概念源自 **dispatch call** 思想的泛化。GPU 端的 dispatch call 是把一个计算任务派发到 Compute Shader 去执行，RenderTask 则是把一整个渲染任务派发到一个独立录制的命令列表中。每个 Task 只关心自己这一段录制逻辑，引擎在帧末尾统一提交，和 GPU 上调度 compute 格子有异曲同工的地方。
-- **Game 类和启动流程** 那种
+#### Effect 系统 
+
+它的灵感来自 **Effects 11**（Direct3D 11 时代的 Effect Framework）。那个框架用 .fx 文件把 Shader、RenderState、Pass 打包成一个自包含的 Effect 对象，Gear 里的 `EffectBase` 和各个 `*Effect` 子类延续了同样的思路——一个后处理效果就是一个自包含单元，自己管理 PSO、Shader、资源，对外只暴露 `process()`。
+
+#### RenderTask 
+
+这一概念源自 **dispatch call** 思想的泛化。GPU 端的 dispatch call 是把一个计算任务派发到 Compute Shader 去执行，RenderTask 则是把一整个渲染任务派发到一个独立录制的命令列表中。每个 Task 只关心自己这一段录制逻辑，引擎在帧末尾统一提交，和 GPU 上调度 compute 格子有异曲同工的地方。
+
+#### PipelineResourceDesc.h 
+
+这个头文件中的所有结构体的设计灵感来自 D3D12 原生 API 中的 `D3D12_SHADER_RESOURCE_VIEW_DESC`、`D3D12_RENDER_TARGET_VIEW_DESC` 和 `D3D12_UNORDERED_ACCESS_VIEW_DESC`。这些结构体使用 union 区分不同的资源子类型（如 Buffer 和 Texture），Gear 里的 `ShaderResourceDesc`、`RenderTargetDesc`、`DepthStencilDesc` 等遵循了同样的模式——用 enum 标记资源类型、用 union 承载类型特定的描述数据。在进行资源绑定时，用户不需要手动调用 D3D12 API，只需调用高级资源（如 `TextureRenderView`）暴露的 `get` 方法获取对应的描述结构体，传入 `GraphicsContext`中，引擎内部便会利用传递过来的结构体完成期望的资源绑定，并且在draw call和dispatch call前自动插入资源屏障。
+
+#### Bindless设计
+
+它的设计来自微软发布的关于Shader Model 6.6的[文档](https://microsoft.github.io/DirectX-Specs/d3d/HLSL_ShaderModel6_6.html)和[WickedEngine](https://wickedengine.net/2021/04/06/bindless-descriptors/)相关的实践。这么做会让引擎的资源绑定框架较为容易编写，此外也解放了着色器，大幅提高了它的灵活度，可以像下方的样例代码那样轻松地访问或修改资源。
+
+```hlsl
+cbuffer TextureIndices : register(b2)
+{
+    uint colorReadTexIndex;
+    uint colorWriteTexIndex;
+}
+
+static Texture2D<float4> colorReadTex = ResourceDescriptorHeap[colorReadTexIndex];
+
+static RWTexture2D<float4> colorWriteTex = ResourceDescriptorHeap[colorWriteTexIndex];
+```
+
+#### 启动流程
 
   ```cpp
   Gear::initialize();
@@ -60,9 +86,18 @@ Gear 的搭建围绕几个核心原则：
   Gear::release();
   ```
 
-  的写法其实来自于 **libgdx**（一个 Java 游戏框架）。libgdx 里也是创建一个 `ApplicationListener`（相当于 `Game`），然后交给框架的 `initialize` / `render` / `dispose` 生命周期去驱动。这种框架控制主循环、用户只关心游戏逻辑的模式在 Gear 里被完整地搬了过来。之所以会想到它，是因为我很久以前——大概大一的时候——用它做过小游戏，那种简洁的启动流程一直留在脑子里。
+  上述写法其实来自于 **libgdx**（一个 Java 游戏框架）。libgdx 里也是创建一个 `ApplicationListener`（相当于 `Game`类），然后交给框架的 `initialize` / `render` / `dispose` 生命周期去驱动。这种框架控制主循环、用户只关心游戏逻辑的模式在 Gear 里被完整地搬了过来。之所以会想到它，是因为我很久以前——大概大一的时候——用它做过小游戏，那种简洁的启动流程一直留在脑子里。
+
+---
 
 自**libgdx**后我还有 OpenGL 和 D3D11 的代码实践积累，再加上编写这个引擎的过程中我也在不停地学图形学知识和 C++，各种重构和新想法不断往里塞，这个引擎才慢慢变成今天这个样子。
+
+### 当前限制与设计说明
+
+- **资源绑定与 Shader Model 6.6**：目前的资源绑定框架基于 Shader Model 6.6 设计。如果不使用 SM 6.6，那么资源绑定框架对我来说会较为难以设计。好在支持 Shader Model 6.6 的显卡覆盖范围还是比较广的，最低端的卡大约可以到 GTX 1650 Ti、GTX 1660 Ti 这个级别。
+- **Bindless 设计倾向**：编写引擎之初我查阅了 NVIDIA 的 D3D12 Dos and Don'ts，里面明确提到了"Prefer a 'bindless' design."。Gear 当前的资源绑定路线正是朝着 bindless 方向走的，这也是选择 SM 6.6 作为最低 Shader Model 门槛的原因之一。
+- **多线程指令录制**：引擎在设计上是原生支持多线程录制命令列表的，`Game` 基类里有方法可以调度子渲染线程。不过目前我还没有进行充分的测试，所有示例项目都只使用**一个**子渲染线程来记录指令。后续需要更多验证后再在生产环境中启用多线程录制。
+- **离线渲染的硬件限制**：由于我手头只有一张 NVIDIA 的显卡，当前视频编码模块（NVENC）只封装了 NVIDIA 的编码 API，无法为 AMD（AMF）或 Intel（QSV）等其他厂商的显卡编写视频编码封装。后续如果有能力接触到其他厂商的硬件，可能会进行相应的实现。
 
 ### 运行模式
 
