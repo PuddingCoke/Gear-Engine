@@ -54,21 +54,6 @@ public:
 		ssrCombinePS(new Shader(Utils::File::getRootFolder() + L"SSRCombinePS.cso")),
 		sunAngle(Utils::Math::halfPi - 0.01f)
 	{
-		irradianceOctahedralMap = ResourceManager::createTextureRenderView(6, 6, DXGI_FORMAT_R11G11B10_FLOAT, probeCount, 1, false, true,
-			DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_UNKNOWN);
-
-		irradianceBounceOctahedralMap = ResourceManager::createTextureRenderView(6, 6, DXGI_FORMAT_R11G11B10_FLOAT, probeCount, 1, false, true,
-			DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_UNKNOWN);
-
-		depthOctahedralMap = ResourceManager::createTextureRenderView(16, 16, DXGI_FORMAT_R16G16_FLOAT, probeCount, 1, false, true,
-			DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_UNKNOWN);
-
-		irradianceOctahedralMap->getTexture()->setName(L"Irradiance Octahedral Map");
-
-		irradianceBounceOctahedralMap->getTexture()->setName(L"Irradiance Bounce Octahedral Map");
-
-		depthOctahedralMap->getTexture()->setName(L"Depth Octahedral Map");
-
 		shadowTexture->getTexture()->setName(L"Shadow Texture");
 
 		radianceCube->getTexture()->setName(L"Radiance Cube");
@@ -236,7 +221,37 @@ public:
 
 		bloomEffect->setIntensity(0.17f);
 
-		updateLightField();
+		irradianceOctahedralMap = ResourceManager::createTextureRenderView(6, 6, DXGI_FORMAT_R11G11B10_FLOAT, probeCount, 1, false, true,
+			DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_UNKNOWN);
+
+		const bool irradianceDataExist = Utils::File::exist(L"Irradiance_Bounce_Octahedral_Map.dds");
+
+		irradianceBounceOctahedralMap = irradianceDataExist ? resManager->createTextureRenderView(L"Irradiance_Bounce_Octahedral_Map.dds", true, true, false) : ResourceManager::createTextureRenderView(6, 6, DXGI_FORMAT_R11G11B10_FLOAT, probeCount, 1, false, true,
+			DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_UNKNOWN);
+
+		const bool depthDataExist = Utils::File::exist(L"Depth_Octahedral_Map.dds");
+
+		depthOctahedralMap = depthDataExist ? resManager->createTextureRenderView(L"Depth_Octahedral_Map.dds", true, true, false) : ResourceManager::createTextureRenderView(16, 16, DXGI_FORMAT_R16G16_FLOAT, probeCount, 1, false, true,
+			DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_UNKNOWN);
+
+		irradianceOctahedralMap->getTexture()->setName(L"Irradiance Octahedral Map");
+
+		irradianceBounceOctahedralMap->getTexture()->setName(L"Irradiance Bounce Octahedral Map");
+
+		depthOctahedralMap->getTexture()->setName(L"Depth Octahedral Map");
+
+		updateShadow();
+
+		if (!irradianceDataExist && !depthDataExist)
+		{
+			LOGUSER(L"未侦测到预烘焙数据，开始计算辐照度场与距离场");
+
+			updateLightProbe();
+		}
+		else
+		{
+			LOGUSER(L"侦测到预烘焙数据，直接读取对应文件");
+		}
 	}
 
 	~MyRenderTask()
@@ -333,6 +348,13 @@ protected:
 
 	void updateLightField()
 	{
+		updateShadow();
+
+		updateLightProbe();
+	}
+
+	void updateShadow()
+	{
 		const float xSize = 183;
 		const float ySize = 130;
 		const float distance = 260.f;
@@ -353,13 +375,6 @@ protected:
 
 		context->updateBuffer(irradianceVolumeBuffer, &irradianceVolume, sizeof(IrradianceVolume));
 
-		updateShadow();
-
-		updateLightProbe();
-	}
-
-	void updateShadow()
-	{
 		context->setPipelineState(shadowPipelineState);
 
 		const D3D12Resource::DepthStencilDesc dsDesc = shadowTexture->getDSVMipHandle(0);

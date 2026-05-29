@@ -12,6 +12,8 @@
 
 #include<vector>
 
+#include<Windows.h>
+
 namespace
 {
     struct FilePrivate
@@ -99,6 +101,11 @@ std::vector<uint8_t> Gear::Utils::File::readAllBinary(const std::wstring& filePa
     file.close();
 
     return bytes;
+}
+
+bool Gear::Utils::File::exist(const std::wstring& filePath)
+{
+    return GetFileAttributesW(filePath.c_str()) != INVALID_FILE_ATTRIBUTES;
 }
 
 void Gear::Utils::File::Internal::setRootFolder(const std::wstring& rootFolder)

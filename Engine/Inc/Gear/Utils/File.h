@@ -28,6 +28,8 @@ namespace Gear
 
 			std::vector<uint8_t> readAllBinary(const std::wstring& filePath);
 
+			bool exist(const std::wstring& filePath);
+
 		}
 	}
 }
