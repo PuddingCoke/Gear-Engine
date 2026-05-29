@@ -498,6 +498,9 @@
     <ClInclude Include="Inc\Gear\Core\Effect\HBAOPlusEffect.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\TOPOLOGY.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">

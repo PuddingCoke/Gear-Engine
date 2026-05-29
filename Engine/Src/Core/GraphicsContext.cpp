@@ -538,7 +538,7 @@ void Gear::Core::GraphicsContext::resetGraphicsRootSignature()
 
 void Gear::Core::GraphicsContext::resetPrimitiveTopology()
 {
-	primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+	primitiveTopology = TOPOLOGY::UNDEFINED;
 }
 
 void Gear::Core::GraphicsContext::resetComputeRootSignature()

@@ -5,6 +5,8 @@
 
 #include"ResourceStateTracker.h"
 
+#include<Gear/Core/TOPOLOGY.h>
+
 #include<Gear/Core/Resource/D3D12Resource/UploadHeap.h>
 
 //向上取整
