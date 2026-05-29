@@ -32,7 +32,7 @@ public:
 			.setBlendState(PipelineStateHelper::blendAddtive)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::POINT)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
 			.setVS(particleVS)
