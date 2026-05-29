@@ -26,8 +26,8 @@ public:
 
 		particleRenderState = PipelineStateBuilder()
 			.setInputElements({
-				{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-				{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+				{"POSITION", 0, FMT::RGBA32F, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+				{"COLOR", 0, FMT::RGBA32F, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
 				})
 			.setBlendState(PipelineStateHelper::blendAddtive)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
@@ -44,10 +44,10 @@ public:
 
 		fxaaEffect = new FXAAEffect(context, Core::Graphics::getWidth(), Core::Graphics::getHeight());
 
-		originTexture = ResourceManager::createTextureRenderView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black);
+		originTexture = ResourceManager::createTextureRenderView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
+			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black);
 
-		depthTexture = ResourceManager::createTextureDepthView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), DXGI_FORMAT_D32_FLOAT, 1, 1, false, true);
+		depthTexture = ResourceManager::createTextureDepthView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
 
 		{
 			DirectX::XMFLOAT4* const positions = new DirectX::XMFLOAT4[numParticles];
@@ -74,9 +74,9 @@ public:
 				}
 			}
 
-			positionBuffer = resManager->createTypedBufferView(DXGI_FORMAT_R32G32B32A32_FLOAT, sizeof(DirectX::XMFLOAT4) * numParticles, false, true, true, false, false, true, positions);
+			positionBuffer = resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numParticles, false, true, true, false, false, true, positions);
 
-			colorBuffer = resManager->createTypedBufferView(DXGI_FORMAT_R32G32B32A32_FLOAT, sizeof(DirectX::XMFLOAT4) * numParticles, false, false, true, false, false, true, colors);
+			colorBuffer = resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numParticles, false, false, true, false, false, true, colors);
 		}
 
 		Graphics::setExposure(0.6f);

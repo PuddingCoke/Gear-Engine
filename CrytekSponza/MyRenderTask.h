@@ -23,23 +23,23 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		gPositionMetallic(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::g_XMHalfPi)),
-		gNormalRoughness(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R32G32B32A32_FLOAT, DirectX::Colors::Transparent)),
-		gBaseColor(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, false, true,
-			DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R8G8B8A8_UNORM, DirectX::Colors::Transparent)),
-		depthTexture(ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_TYPELESS, 1, 1, false, true)),
-		shadowTexture(ResourceManager::createTextureDepthView(shadowTextureResolution, shadowTextureResolution, DXGI_FORMAT_R32_TYPELESS, 1, 1, false, true)),
-		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-		ssrCombinedTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black)),
-		radianceCube(ResourceManager::createTextureRenderView(probeCaptureResolution, probeCaptureResolution, DXGI_FORMAT_R16G16B16A16_FLOAT, 6, 1, true, true,
-			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT, radianceCubeClearColor)),
-		distanceCube(ResourceManager::createTextureRenderView(probeCaptureResolution, probeCaptureResolution, DXGI_FORMAT_R32_FLOAT, 6, 1, true, true,
-			DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R32_FLOAT, distanceCubeClearColor)),
-		depthCube(ResourceManager::createTextureDepthView(probeCaptureResolution, probeCaptureResolution, DXGI_FORMAT_D32_FLOAT, 6, 1, true, true)),
+		gPositionMetallic(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA32F, 1, 1, false, true,
+			FMT::RGBA32F, FMT::UNKNOWN, FMT::RGBA32F, DirectX::g_XMHalfPi)),
+		gNormalRoughness(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA32F, 1, 1, false, true,
+			FMT::RGBA32F, FMT::UNKNOWN, FMT::RGBA32F, DirectX::Colors::Transparent)),
+		gBaseColor(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true,
+			FMT::RGBA8UN, FMT::UNKNOWN, FMT::RGBA8UN, DirectX::Colors::Transparent)),
+		depthTexture(ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true)),
+		shadowTexture(ResourceManager::createTextureDepthView(shadowTextureResolution, shadowTextureResolution, FMT::R32TL, 1, 1, false, true)),
+		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
+			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black)),
+		ssrCombinedTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
+			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black)),
+		radianceCube(ResourceManager::createTextureRenderView(probeCaptureResolution, probeCaptureResolution, FMT::RGBA16F, 6, 1, true, true,
+			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, radianceCubeClearColor)),
+		distanceCube(ResourceManager::createTextureRenderView(probeCaptureResolution, probeCaptureResolution, FMT::R32F, 6, 1, true, true,
+			FMT::R32F, FMT::UNKNOWN, FMT::R32F, distanceCubeClearColor)),
+		depthCube(ResourceManager::createTextureDepthView(probeCaptureResolution, probeCaptureResolution, FMT::D32F, 6, 1, true, true)),
 		irradianceVolumeBuffer(ResourceManager::createStaticCBuffer(sizeof(IrradianceVolume), true)),
 		shadowVS(new Shader(Utils::File::getRootFolder() + L"ShadowVS.cso")),
 		deferredVShader(new Shader(Utils::File::getRootFolder() + L"DeferredVShader.cso")),
@@ -221,18 +221,18 @@ public:
 
 		bloomEffect->setIntensity(0.17f);
 
-		irradianceOctahedralMap = ResourceManager::createTextureRenderView(6, 6, DXGI_FORMAT_R11G11B10_FLOAT, probeCount, 1, false, true,
-			DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_UNKNOWN);
+		irradianceOctahedralMap = ResourceManager::createTextureRenderView(6, 6, FMT::RG11B10F, probeCount, 1, false, true,
+			FMT::RG11B10F, FMT::RG11B10F, FMT::UNKNOWN);
 
 		const bool irradianceDataExist = Utils::File::exist(L"Irradiance_Bounce_Octahedral_Map.dds");
 
-		irradianceBounceOctahedralMap = irradianceDataExist ? resManager->createTextureRenderView(L"Irradiance_Bounce_Octahedral_Map.dds", true, true, false) : ResourceManager::createTextureRenderView(6, 6, DXGI_FORMAT_R11G11B10_FLOAT, probeCount, 1, false, true,
-			DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_R11G11B10_FLOAT, DXGI_FORMAT_UNKNOWN);
+		irradianceBounceOctahedralMap = irradianceDataExist ? resManager->createTextureRenderView(L"Irradiance_Bounce_Octahedral_Map.dds", true, true, false) : ResourceManager::createTextureRenderView(6, 6, FMT::RG11B10F, probeCount, 1, false, true,
+			FMT::RG11B10F, FMT::RG11B10F, FMT::UNKNOWN);
 
 		const bool depthDataExist = Utils::File::exist(L"Depth_Octahedral_Map.dds");
 
-		depthOctahedralMap = depthDataExist ? resManager->createTextureRenderView(L"Depth_Octahedral_Map.dds", true, true, false) : ResourceManager::createTextureRenderView(16, 16, DXGI_FORMAT_R16G16_FLOAT, probeCount, 1, false, true,
-			DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_R16G16_FLOAT, DXGI_FORMAT_UNKNOWN);
+		depthOctahedralMap = depthDataExist ? resManager->createTextureRenderView(L"Depth_Octahedral_Map.dds", true, true, false) : ResourceManager::createTextureRenderView(16, 16, FMT::RG16F, probeCount, 1, false, true,
+			FMT::RG16F, FMT::RG16F, FMT::UNKNOWN);
 
 		irradianceOctahedralMap->getTexture()->setName(L"Irradiance Octahedral Map");
 

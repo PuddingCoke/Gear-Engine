@@ -29,42 +29,42 @@ public:
 	{
 		const DirectX::XMUINT2 simRes = { Graphics::getWidth() >> config.resolutionFactor,Graphics::getHeight() >> config.resolutionFactor };
 
-		velocityTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, DXGI_FORMAT_R32G32_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_R32G32_FLOAT, DXGI_FORMAT_UNKNOWN); });
+		velocityTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true,
+			FMT::RG32F, FMT::RG32F, FMT::UNKNOWN); });
 
 		velocityTex->read()->getTexture()->getResource()->SetName(L"Velocity Texture (0)");
 
 		velocityTex->write()->getTexture()->getResource()->SetName(L"Velocity Texture (1)");
 
-		colorTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN); });
+		colorTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
+			FMT::RGBA16F, FMT::RGBA16F, FMT::UNKNOWN); });
 
 		colorTex->read()->getTexture()->getResource()->SetName(L"Color Texture (0)");
 
 		colorTex->write()->getTexture()->getResource()->SetName(L"Color Texture (1)");
 
-		divergenceTex = ResourceManager::createTextureRenderView(simRes.x, simRes.y, DXGI_FORMAT_R32_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN);
+		divergenceTex = ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true,
+			FMT::R32F, FMT::R32F, FMT::UNKNOWN);
 
 		divergenceTex->getTexture()->getResource()->SetName(L"Divergence Texture");
 
-		pressureTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, DXGI_FORMAT_R32_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN); });
+		pressureTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true,
+			FMT::R32F, FMT::R32F, FMT::UNKNOWN); });
 
 		pressureTex->read()->getTexture()->getResource()->SetName(L"Pressure Texture (0)");
 
 		pressureTex->write()->getTexture()->getResource()->SetName(L"Pressure Texture (1)");
 
-		vorticityTex = ResourceManager::createTextureRenderView(simRes.x, simRes.y, DXGI_FORMAT_R32_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN);
+		vorticityTex = ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true,
+			FMT::R32F, FMT::R32F, FMT::UNKNOWN);
 
 		vorticityTex->getTexture()->getResource()->SetName(L"Vorticity Texture");
 
-		phongShadeTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN);
+		phongShadeTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
+			FMT::RGBA16F, FMT::RGBA16F, FMT::UNKNOWN);
 
-		edgeHighlightTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, false, true,
-			DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN);
+		edgeHighlightTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true,
+			FMT::RGBA8UN, FMT::RGBA8UN, FMT::UNKNOWN);
 
 		simulationParamBuffer = ResourceManager::createDynamicCBuffer(sizeof(SimulationParam));
 

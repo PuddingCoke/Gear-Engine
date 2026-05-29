@@ -7,17 +7,17 @@ Gear::Core::Resource::TextureDepthView::TextureDepthView(D3D12Resource::Texture*
 	const uint32_t arraySize = texture->getArraySize();
 	const DXGI_FORMAT resFormat = texture->getFormat();
 
-	DXGI_FORMAT depthSRVFormat = DXGI_FORMAT_UNKNOWN;
-	DXGI_FORMAT stencilSRVFormat = DXGI_FORMAT_UNKNOWN;
-	DXGI_FORMAT dsvFormat = DXGI_FORMAT_UNKNOWN;
+	DXGI_FORMAT depthSRVFormat = FMT::UNKNOWN;
+	DXGI_FORMAT stencilSRVFormat = FMT::UNKNOWN;
+	DXGI_FORMAT dsvFormat = FMT::UNKNOWN;
 
 	switch (resFormat)
 	{
-	case DXGI_FORMAT_D32_FLOAT:
-		dsvFormat = DXGI_FORMAT_D32_FLOAT;
+	case FMT::D32F:
+		dsvFormat = FMT::D32F;
 		break;
-	case DXGI_FORMAT_D16_UNORM:
-		dsvFormat = DXGI_FORMAT_D16_UNORM;
+	case FMT::D16UN:
+		dsvFormat = FMT::D16UN;
 		break;
 	case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
 		dsvFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
@@ -25,13 +25,13 @@ Gear::Core::Resource::TextureDepthView::TextureDepthView(D3D12Resource::Texture*
 	case DXGI_FORMAT_D24_UNORM_S8_UINT:
 		dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		break;
-	case DXGI_FORMAT_R32_TYPELESS:
-		depthSRVFormat = DXGI_FORMAT_R32_FLOAT;
-		dsvFormat = DXGI_FORMAT_D32_FLOAT;
+	case FMT::R32TL:
+		depthSRVFormat = FMT::R32F;
+		dsvFormat = FMT::D32F;
 		break;
-	case DXGI_FORMAT_R16_TYPELESS:
-		depthSRVFormat = DXGI_FORMAT_R16_UNORM;
-		dsvFormat = DXGI_FORMAT_D16_UNORM;
+	case FMT::R16TL:
+		depthSRVFormat = FMT::R16UN;
+		dsvFormat = FMT::D16UN;
 		break;
 	case DXGI_FORMAT_R32G8X24_TYPELESS:
 		depthSRVFormat = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
@@ -48,9 +48,9 @@ Gear::Core::Resource::TextureDepthView::TextureDepthView(D3D12Resource::Texture*
 		break;
 	}
 
-	hasDepthSRV = (depthSRVFormat != DXGI_FORMAT_UNKNOWN);
+	hasDepthSRV = (depthSRVFormat != FMT::UNKNOWN);
 
-	hasStencilSRV = (stencilSRVFormat != DXGI_FORMAT_UNKNOWN);
+	hasStencilSRV = (stencilSRVFormat != FMT::UNKNOWN);
 
 	//创建DSV
 	{

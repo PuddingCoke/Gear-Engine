@@ -42,6 +42,7 @@ namespace Gear
 
 			Resource::ImmutableCBuffer* getReservedGlobalCBuffer();
 
+			//据说把后背缓冲设置成FMT::BGRA8UN格式会有更好的性能
 			constexpr DXGI_FORMAT backBufferFormat = FMT::BGRA8UN;
 
 		}

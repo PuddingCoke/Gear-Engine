@@ -13,8 +13,8 @@ public:
 		whiteNoiseCS(new Shader(Utils::File::getRootFolder() + L"WhiteNoiseCS.cso")),
 		evolveCS(new Shader(Utils::File::getRootFolder() + L"EvolveCS.cso")),
 		visualizeCS(new Shader(Utils::File::getRootFolder() + L"VisualizeCS.cso")),
-		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, false, true,
-			DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN))
+		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true,
+			FMT::RGBA8UN, FMT::RGBA8UN, FMT::UNKNOWN))
 	{
 		whiteNoiseState = PipelineStateBuilder::build(whiteNoiseCS);
 
@@ -22,8 +22,8 @@ public:
 
 		visualizeState = PipelineStateBuilder::build(visualizeCS);
 
-		swapTexture = new SwapTexture([] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN); });
+		swapTexture = new SwapTexture([] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true,
+			FMT::R32F, FMT::R32F, FMT::UNKNOWN); });
 
 		initialize();
 	}

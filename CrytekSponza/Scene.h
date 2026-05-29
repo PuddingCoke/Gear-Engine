@@ -169,7 +169,7 @@ public:
 
 		modelBuffer = resManager->createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertices.size(), true, false, true, false, true, vertices.data());
 
-		indexBuffer = resManager->createTypedBufferView(DXGI_FORMAT_R32_UINT, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
+		indexBuffer = resManager->createTypedBufferView(FMT::R32UI, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
 	}
 
 	~Scene()

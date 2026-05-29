@@ -7,7 +7,7 @@
 Gear::Core::Effect::FXAAEffect::FXAAEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height) :
 	EffectBase(context, width, height, FMT::RGBA16UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
 	colorLumaTexture(ResourceManager::createTextureRenderView(width, height, FMT::RGBA16UN, 1, 1, false, true,
-		FMT::RGBA16UN, DXGI_FORMAT_UNKNOWN, FMT::RGBA16UN))
+		FMT::RGBA16UN, FMT::UNKNOWN, FMT::RGBA16UN))
 {
 	colorToColorLumaPS = new D3D12Core::Shader(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
 

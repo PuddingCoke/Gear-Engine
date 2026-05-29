@@ -18,7 +18,7 @@ namespace
 
 void Gear::Core::GlobalEffect::HDRClampEffect::process(GraphicsContext* const context, Resource::TextureRenderView* const inOutTexture)
 {
-	if (inOutTexture->getTexture()->getFormat() == DXGI_FORMAT_R16G16B16A16_FLOAT)
+	if (inOutTexture->getTexture()->getFormat() == FMT::RGBA16F)
 	{
 		context->setPipelineState(pvt.hdrClampState);
 

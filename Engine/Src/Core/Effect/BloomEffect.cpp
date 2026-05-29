@@ -19,10 +19,10 @@
 #include<Gear/CompiledShaders/BloomKarisAveragePS.h>
 
 Gear::Core::Effect::BloomEffect::BloomEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager* const resManager) :
-	EffectBase(context, width, height, DXGI_FORMAT_R16G16B16A16_FLOAT),
+	EffectBase(context, width, height, FMT::RGBA16F),
 	lensDirtTexture(resManager->createTextureRenderView(Utils::File::getRootFolder() + L"bloom_dirt_mask.png", true)),
-	filteredTexture(ResourceManager::createTextureRenderView(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
-		DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT))
+	filteredTexture(ResourceManager::createTextureRenderView(width, height, FMT::RGBA16F, 1, 1, false, true,
+		FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F))
 {
 	filteredTexture->getTexture()->setName(L"Bloom Effect Filtered Texture");
 
@@ -42,8 +42,8 @@ Gear::Core::Effect::BloomEffect::BloomEffect(GraphicsContext* const context, con
 
 			swapTexture[i] = new Resource::SwapTexture(
 				[=] {
-					return ResourceManager::createTextureRenderView(resolutions[i].x, resolutions[i].y, DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
-						DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT);
+					return ResourceManager::createTextureRenderView(resolutions[i].x, resolutions[i].y, FMT::RGBA16F, 1, 1, false, true,
+						FMT::RGBA16F, FMT::RGBA16F, FMT::RGBA16F);
 				}
 			);
 

@@ -11,7 +11,7 @@ Gear::Core::Resource::CounterBufferView::CounterBufferView(const bool persistent
 		D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 		desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-		desc.Format = DXGI_FORMAT_R32_TYPELESS;
+		desc.Format = FMT::R32TL;
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.NumElements = 1;
 		desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
@@ -26,7 +26,7 @@ Gear::Core::Resource::CounterBufferView::CounterBufferView(const bool persistent
 	{
 		D3D12_UNORDERED_ACCESS_VIEW_DESC desc = {};
 		desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-		desc.Format = DXGI_FORMAT_R32_TYPELESS;
+		desc.Format = FMT::R32TL;
 		desc.Buffer.FirstElement = 0;
 		desc.Buffer.NumElements = 1;
 		desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;

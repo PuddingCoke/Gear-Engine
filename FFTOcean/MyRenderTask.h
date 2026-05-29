@@ -49,7 +49,7 @@ public:
 			.build();
 
 		gridDebugState = PipelineStateBuilder()
-			.setInputElements({ {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0} })
+			.setInputElements({ {"POSITION",0,FMT::RGB32F,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0} })
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
@@ -60,7 +60,7 @@ public:
 			.build();
 
 		oceanState = PipelineStateBuilder()
-			.setInputElements({ {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0} })
+			.setInputElements({ {"POSITION",0,FMT::RGB32F,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0} })
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
@@ -85,9 +85,9 @@ public:
 
 		waveMergeState = PipelineStateBuilder::build(waveMergeCS);
 
-		tildeh0Texture = createTexture(textureResolution, DXGI_FORMAT_R32G32_FLOAT);
+		tildeh0Texture = createTexture(textureResolution, FMT::RG32F);
 
-		tempTexture = createTexture(textureResolution, DXGI_FORMAT_R32G32_FLOAT);
+		tempTexture = createTexture(textureResolution, FMT::RG32F);
 
 		WaveCascade::spectrumState = spectrumState;
 
@@ -105,10 +105,10 @@ public:
 
 		WaveCascade::tempTexture = tempTexture;
 
-		originTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, false, true,
-			DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::Colors::Black);
+		originTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
+			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black);
 
-		depthTexture = ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), DXGI_FORMAT_R32_TYPELESS, 1, 1, false, true);
+		depthTexture = ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true);
 
 		effect = new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
 
@@ -141,7 +141,7 @@ public:
 				}
 			}
 
-			indexBuffer = resManager->createTypedBufferView(DXGI_FORMAT_R32_UINT, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
+			indexBuffer = resManager->createTypedBufferView(FMT::R32UI, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
 		}
 
 		randomGaussTexture = resManager->createTextureRenderView(textureResolution, textureResolution, RandomDataType::GAUSS, true);
@@ -295,7 +295,7 @@ private:
 
 	static TextureRenderView* createTexture(const UINT& resolution, const DXGI_FORMAT& format)
 	{
-		return ResourceManager::createTextureRenderView(resolution, resolution, format, 1, 1, false, true, format, format, DXGI_FORMAT_UNKNOWN);
+		return ResourceManager::createTextureRenderView(resolution, resolution, format, 1, 1, false, true, format, format, FMT::UNKNOWN);
 	}
 
 	void calculateInitialSpectrum()

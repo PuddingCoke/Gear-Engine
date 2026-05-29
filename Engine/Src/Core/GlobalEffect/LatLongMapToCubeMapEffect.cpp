@@ -32,13 +32,13 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContex
 {
 	switch (outputTexture->getTexture()->getFormat())
 	{
-	case DXGI_FORMAT_R8G8B8A8_UNORM:
+	case FMT::RGBA8UN:
 		context->setPipelineState(pvt.equirectangularR8State);
 		break;
-	case DXGI_FORMAT_R16G16B16A16_FLOAT:
+	case FMT::RGBA16F:
 		context->setPipelineState(pvt.equirectangularR16State);
 		break;
-	case DXGI_FORMAT_R32G32B32A32_FLOAT:
+	case FMT::RGBA32F:
 		context->setPipelineState(pvt.equirectangularR32State);
 		break;
 	}

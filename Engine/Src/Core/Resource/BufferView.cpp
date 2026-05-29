@@ -7,11 +7,11 @@ Gear::Core::Resource::BufferView::BufferView(D3D12Resource::Buffer* const buffer
 {
 	setNumCBVSRVUAVDescriptors(static_cast<uint32_t>(createSRV) + static_cast<uint32_t>(createUAV));
 
-	const bool isTypedBuffer = (structureByteStride == 0 && format != DXGI_FORMAT_UNKNOWN);
+	const bool isTypedBuffer = (structureByteStride == 0 && format != FMT::UNKNOWN);
 
-	const bool isStructuredBuffer = (structureByteStride != 0 && format == DXGI_FORMAT_UNKNOWN);
+	const bool isStructuredBuffer = (structureByteStride != 0 && format == FMT::UNKNOWN);
 
-	const bool isByteAddressBuffer = (structureByteStride == 0 && format == DXGI_FORMAT_UNKNOWN);
+	const bool isByteAddressBuffer = (structureByteStride == 0 && format == FMT::UNKNOWN);
 
 	if (getNumCBVSRVUAVDescriptors())
 	{
@@ -41,7 +41,7 @@ Gear::Core::Resource::BufferView::BufferView(D3D12Resource::Buffer* const buffer
 			}
 			else if (isByteAddressBuffer)
 			{
-				desc.Format = DXGI_FORMAT_R32_TYPELESS;
+				desc.Format = FMT::R32TL;
 				desc.Buffer.NumElements = static_cast<uint32_t>(size) / 4;
 				desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
 			}
@@ -70,7 +70,7 @@ Gear::Core::Resource::BufferView::BufferView(D3D12Resource::Buffer* const buffer
 			}
 			else if (isByteAddressBuffer)
 			{
-				desc.Format = DXGI_FORMAT_R32_TYPELESS;
+				desc.Format = FMT::R32TL;
 				desc.Buffer.NumElements = static_cast<uint32_t>(size) / 4;
 				desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 			}

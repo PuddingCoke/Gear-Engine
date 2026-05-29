@@ -9,23 +9,23 @@ public:
 	WaveCascade(const UINT size, GraphicsContext* const context) :
 		size(size), context(context)
 	{
-		waveDataTexture = createTexture(size, DXGI_FORMAT_R32G32B32A32_FLOAT);
+		waveDataTexture = createTexture(size, FMT::RGBA32F);
 
-		waveSpectrumTexture = createTexture(size, DXGI_FORMAT_R32G32B32A32_FLOAT);
+		waveSpectrumTexture = createTexture(size, FMT::RGBA32F);
 
-		DxDz = createTexture(size, DXGI_FORMAT_R32G32_FLOAT);
+		DxDz = createTexture(size, FMT::RG32F);
 
-		DyDxz = createTexture(size, DXGI_FORMAT_R32G32_FLOAT);
+		DyDxz = createTexture(size, FMT::RG32F);
 
-		DyxDyz = createTexture(size, DXGI_FORMAT_R32G32_FLOAT);
+		DyxDyz = createTexture(size, FMT::RG32F);
 
-		DxxDzz = createTexture(size, DXGI_FORMAT_R32G32_FLOAT);
+		DxxDzz = createTexture(size, FMT::RG32F);
 
-		displacementTexture = createTexture(size, DXGI_FORMAT_R32G32B32A32_FLOAT);
+		displacementTexture = createTexture(size, FMT::RGBA32F);
 
-		derivativeTexture = createTexture(size, DXGI_FORMAT_R32G32B32A32_FLOAT);
+		derivativeTexture = createTexture(size, FMT::RGBA32F);
 
-		jacobianTexture = createTexture(size, DXGI_FORMAT_R32_FLOAT);
+		jacobianTexture = createTexture(size, FMT::R32F);
 
 		displacementTexture->getTexture()->setName(L"displacementTexture");
 
@@ -200,7 +200,7 @@ private:
 
 	static TextureRenderView* createTexture(const UINT& resolution, const DXGI_FORMAT& format)
 	{
-		return ResourceManager::createTextureRenderView(resolution, resolution, format, 1, 1, false, true, format, format, DXGI_FORMAT_UNKNOWN);
+		return ResourceManager::createTextureRenderView(resolution, resolution, format, 1, 1, false, true, format, format, FMT::UNKNOWN);
 	}
 
 	const UINT size;

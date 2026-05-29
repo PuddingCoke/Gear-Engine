@@ -117,12 +117,12 @@ Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::ResourceManager::creat
 	}
 
 	//这里要小心点，因为D3D12资源是由第三方库创建的，所以要注意资源的初始状态
-	//我查看了下源码发现资源一开始其实是处于D3D12_RESOURCE_STATE_COMMON
+	//我查看了下源码发现资源一开始其实是处于D3D12_RESOURCE_STATE_COMMON状态
 	//但是这里有一个叫Implicit State Transitions即隐式状态转变的东西要注意
-	//因为我很久以前在调试引擎的时候发现了一个奇怪的报错现象，搜索相关资料后找到了下面这个网站，它告诉了我答案
+	//因为我很久以前在调试引擎的时候发现了一个奇怪的报错现象，搜索相关资料后找到了下面这个网站
 	//https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#implicit-state-transitions
 	//资源一开始虽然是处于COMMOM状态，但是UpdateSubresources中存在CopyBufferRegion
-	//这个操作执行完后，资源的状态实际上会被提升为D3D12_RESOURCE_STATE_COPY_DEST
+	//这个操作执行完后，资源的状态实际上会从D3D12_RESOURCE_STATE_COMMON被提升到D3D12_RESOURCE_STATE_COPY_DEST
 	//这就是为什么引擎内部追踪的初始状态会被设置为D3D12_RESOURCE_STATE_COPY_DEST
 	if (fileExtension == L"bmp" || fileExtension == L"jpg" || fileExtension == L"jpeg" || fileExtension == L"png" || fileExtension == L"tiff")
 	{
@@ -238,7 +238,7 @@ Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::ResourceManager::creat
 			};
 		}
 
-		texture = new Resource::D3D12Resource::Texture(width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, true, resFlags);
+		texture = new Resource::D3D12Resource::Texture(width, height, FMT::RGBA8UN, 1, 1, true, resFlags);
 
 		const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
@@ -273,7 +273,7 @@ Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::ResourceManager::creat
 			};
 		}
 
-		texture = new Resource::D3D12Resource::Texture(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, 1, 1, true, resFlags);
+		texture = new Resource::D3D12Resource::Texture(width, height, FMT::RGBA16F, 1, 1, true, resFlags);
 
 		const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
@@ -427,7 +427,7 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createStructuredB
 		buffer->setStateTracking(false);
 	}
 
-	return new Resource::BufferView(buffer, structureByteStride, DXGI_FORMAT_UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
+	return new Resource::BufferView(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 }
 
 Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent)
@@ -441,7 +441,7 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createStructuredB
 
 	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
 
-	return new Resource::BufferView(buffer, structureByteStride, DXGI_FORMAT_UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
+	return new Resource::BufferView(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 }
 
 Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data)
@@ -471,7 +471,7 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createByteAddress
 		buffer->setStateTracking(false);
 	}
 
-	return new Resource::BufferView(buffer, 0, DXGI_FORMAT_UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
+	return new Resource::BufferView(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
 }
 
 Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent)
@@ -485,22 +485,22 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createByteAddress
 
 	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
 
-	return new Resource::BufferView(buffer, 0, DXGI_FORMAT_UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
+	return new Resource::BufferView(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
 }
 
 Gear::Core::Resource::TextureDepthView* Gear::Core::ResourceManager::createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)
 {
-	DXGI_FORMAT clearValueFormat = DXGI_FORMAT_UNKNOWN;
+	DXGI_FORMAT clearValueFormat = FMT::UNKNOWN;
 
 	switch (resFormat)
 	{
-	case DXGI_FORMAT_D32_FLOAT:
-	case DXGI_FORMAT_R32_TYPELESS:
-		clearValueFormat = DXGI_FORMAT_D32_FLOAT;
+	case FMT::D32F:
+	case FMT::R32TL:
+		clearValueFormat = FMT::D32F;
 		break;
-	case DXGI_FORMAT_D16_UNORM:
-	case DXGI_FORMAT_R16_TYPELESS:
-		clearValueFormat = DXGI_FORMAT_D16_UNORM;
+	case FMT::D16UN:
+	case FMT::R16TL:
+		clearValueFormat = FMT::D16UN;
 		break;
 	case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
 	case DXGI_FORMAT_R32G8X24_TYPELESS:
@@ -564,20 +564,20 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 	if (stateTracking)
 	{
 		return new Resource::TextureRenderView(texture, isTextureCube, persistent, texture->getFormat(),
-			hasUAV ? texture->getFormat() : DXGI_FORMAT_UNKNOWN, hasRTV ? texture->getFormat() : DXGI_FORMAT_UNKNOWN);
+			hasUAV ? texture->getFormat() : FMT::UNKNOWN, hasRTV ? texture->getFormat() : FMT::UNKNOWN);
 	}
 	else
 	{
 		return new Resource::TextureRenderView(texture, isTextureCube, persistent, texture->getFormat(),
-			DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_UNKNOWN);
+			FMT::UNKNOWN, FMT::UNKNOWN);
 	}
 }
 
 Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 {
-	const bool hasRTV = (rtvFormat != DXGI_FORMAT_UNKNOWN);
+	const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
 
-	const bool hasUAV = (uavFormat != DXGI_FORMAT_UNKNOWN);
+	const bool hasUAV = (uavFormat != FMT::UNKNOWN);
 
 	bool stateTracking = true;
 
@@ -611,9 +611,9 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 		texture->setStateTracking(false);
 	}
 
-	if (srvFormat == DXGI_FORMAT_UNKNOWN)
+	if (srvFormat == FMT::UNKNOWN)
 	{
-		return new Resource::TextureRenderView(texture, false, persistent, texture->getFormat(), DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_UNKNOWN);
+		return new Resource::TextureRenderView(texture, false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 	}
 	else
 	{
@@ -623,15 +623,15 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 
 Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color)
 {
-	const bool hasRTV = (rtvFormat != DXGI_FORMAT_UNKNOWN);
+	const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
 
-	const bool hasUAV = (uavFormat != DXGI_FORMAT_UNKNOWN);
+	const bool hasUAV = (uavFormat != FMT::UNKNOWN);
 
 	if ((!hasRTV) && (!hasUAV))
 	{
 		LOGERROR(L"you must set UAV or RTV format for customized render texture view");
 	}
-	else if (srvFormat == DXGI_FORMAT_UNKNOWN)
+	else if (srvFormat == FMT::UNKNOWN)
 	{
 		LOGERROR(L"customized render texture view must have a valid SRV format");
 	}
@@ -676,18 +676,18 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 
 	GlobalEffect::HDRClampEffect::process(context, equirectangularMap);
 
-	DXGI_FORMAT resFormat = DXGI_FORMAT_UNKNOWN;
+	DXGI_FORMAT resFormat = FMT::UNKNOWN;
 
 	switch (FMT::getByteSize(equirectangularMap->getTexture()->getFormat()))
 	{
 	case 4:
-		resFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		resFormat = FMT::RGBA8UN;
 		break;
 	case 8:
-		resFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		resFormat = FMT::RGBA16F;
 		break;
 	case 16:
-		resFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		resFormat = FMT::RGBA32F;
 		break;
 	default:
 		LOGERROR(L"not supported equirectangular texture format");
@@ -695,7 +695,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 	}
 
 	Resource::TextureRenderView* const cubeMap = createTextureRenderView(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false,
-		resFormat, DXGI_FORMAT_UNKNOWN, resFormat);
+		resFormat, FMT::UNKNOWN, resFormat);
 
 	deferredRelease(cubeMap);
 
@@ -747,12 +747,12 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 	if (stateTracking)
 	{
 		return new Resource::TextureRenderView(dstTexture, true, persistent, dstTexture->getFormat(),
-			hasUAV ? dstTexture->getFormat() : DXGI_FORMAT_UNKNOWN, hasRTV ? dstTexture->getFormat() : DXGI_FORMAT_UNKNOWN);
+			hasUAV ? dstTexture->getFormat() : FMT::UNKNOWN, hasRTV ? dstTexture->getFormat() : FMT::UNKNOWN);
 	}
 	else
 	{
 		return new Resource::TextureRenderView(dstTexture, true, persistent, dstTexture->getFormat(),
-			DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_UNKNOWN);
+			FMT::UNKNOWN, FMT::UNKNOWN);
 	}
 }
 
@@ -773,9 +773,9 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 		}
 	}
 
-	const bool hasRTV = (rtvFormat != DXGI_FORMAT_UNKNOWN);
+	const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
 
-	const bool hasUAV = (uavFormat != DXGI_FORMAT_UNKNOWN);
+	const bool hasUAV = (uavFormat != FMT::UNKNOWN);
 
 	bool stateTracking = true;
 
@@ -818,9 +818,9 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 		dstTexture->setStateTracking(false);
 	}
 
-	if (srvFormat == DXGI_FORMAT_UNKNOWN)
+	if (srvFormat == FMT::UNKNOWN)
 	{
-		return new Resource::TextureRenderView(dstTexture, true, persistent, dstTexture->getFormat(), DXGI_FORMAT_UNKNOWN, DXGI_FORMAT_UNKNOWN);
+		return new Resource::TextureRenderView(dstTexture, true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 	}
 	else
 	{
