@@ -45,7 +45,7 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContex
 
 	context->setViewportSimple(outputTexture->getTexture()->getWidth(), outputTexture->getTexture()->getHeight());
 
-	context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 	context->setRenderTargets({ outputTexture->getRTVMipHandle(0) }, {});
 
@@ -70,7 +70,7 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::initialize(R
 				.setRasterizerState(PipelineStateHelper::rasterCullNone)
 				.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 				.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-				.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+				.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE);
 			};
 
 		pvt.equirectangularR8State = getBuilder().setRTVFormats({ FMT::RGBA8UN }).build();

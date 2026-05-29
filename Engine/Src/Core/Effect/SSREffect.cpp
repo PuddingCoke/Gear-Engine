@@ -24,7 +24,7 @@ Gear::Core::Effect::SSREffect::SSREffect(GraphicsContext* const context, const u
 		.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 		.setRasterizerState(PipelineStateHelper::rasterCullNone)
 		.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-		.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+		.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 		.setRTVFormats({ outputTextureFormat })
 		.setVS(GlobalShader::getFullScreenVS())
 		.setPS(hiZProcessPS)
@@ -95,7 +95,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(
 
 	context->setViewportSimple(width, height);
 
-	context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 	context->setRenderTargets({ outputTexture->getRTVMipHandle(0) });
 

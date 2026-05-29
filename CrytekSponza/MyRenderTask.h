@@ -67,7 +67,7 @@ public:
 		shadowPipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterShadow)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats()
@@ -78,7 +78,7 @@ public:
 		deferredPipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats({ FMT::RGBA32F,FMT::RGBA32F,FMT::RGBA8UN })
@@ -96,7 +96,7 @@ public:
 		probeCapturePipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats({ FMT::RGBA16F,FMT::R32F })
@@ -108,7 +108,7 @@ public:
 		probeCaptureBouncePipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats({ FMT::RGBA16F })
@@ -121,7 +121,7 @@ public:
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLessEqual)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
 			.setVS(GlobalShader::getTextureCubeVS())
@@ -132,7 +132,7 @@ public:
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setVS(GlobalShader::getFullScreenVS())
 			.setPS(ssrCombinePS)
@@ -540,7 +540,7 @@ protected:
 
 		context->setScissorRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) });
 
@@ -566,7 +566,7 @@ protected:
 
 		context->setScissorRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, dsDesc);
 
@@ -580,7 +580,7 @@ protected:
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setRenderTargets({ ssrCombinedTexture->getRTVMipHandle(0) });
 

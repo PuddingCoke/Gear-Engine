@@ -42,7 +42,7 @@ public:
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setVS(GlobalShader::getTextureCubeVS())
 			.setPS(textureCubePS)
@@ -53,7 +53,7 @@ public:
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ Graphics::backBufferFormat })
 			.setVS(gridDebugVS)
 			.setPS(gridDebugPS)
@@ -64,7 +64,7 @@ public:
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::PATCH)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
 			.setVS(oceanVS)
@@ -352,7 +352,7 @@ private:
 
 		context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->transitionResources();
 
@@ -368,7 +368,7 @@ private:
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, {});
 
@@ -381,7 +381,7 @@ private:
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+		context->setPrimitiveTopology(TOPOLOGY::PATCH3CONTROL);
 
 		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
 

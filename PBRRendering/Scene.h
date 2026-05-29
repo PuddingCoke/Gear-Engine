@@ -41,7 +41,7 @@ public:
 				{"NORMAL",0,FMT::RGB32F,0,12,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0}
 				})
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats({ rtvFormat })
@@ -73,7 +73,7 @@ public:
 
 	void draw(GraphicsContext* const context, TextureRenderView* const prefilterTexture, TextureRenderView* const brdfLUTTexture, TextureRenderView* const irradianceTexture)
 	{
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setPipelineState(pipelineState);
 

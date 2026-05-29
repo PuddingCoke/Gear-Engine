@@ -42,7 +42,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::FXAAEffect::process
 
 	context->setViewportSimple(width, height);
 
-	context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 	context->setRenderTargets({ colorLumaTexture->getRTVMipHandle(0) });
 
@@ -54,7 +54,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::FXAAEffect::process
 
 	context->setViewportSimple(width, height);
 
-	context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 	context->setRenderTargets({ outputTexture->getRTVMipHandle(0) });
 

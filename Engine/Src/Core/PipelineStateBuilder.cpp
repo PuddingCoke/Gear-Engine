@@ -122,7 +122,7 @@ Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setDefaultFu
 	return setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 		.setRasterizerState(PipelineStateHelper::rasterCullNone)
 		.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-		.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+		.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 		.setVS(GlobalShader::getFullScreenVS());
 }
 

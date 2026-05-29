@@ -22,7 +22,7 @@ void Gear::Core::GlobalEffect::BackBufferBlitEffect::process(GraphicsContext* co
 
 	context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
-	context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 	context->setPSConstants({ inputTexture->getAllSRVIndex() }, 0);
 

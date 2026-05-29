@@ -11,6 +11,8 @@ static_assert(sizeof(double) == 8, "size of double must be 8");
 
 #include<Gear/Utils/Logger.h>
 
+#include<Gear/Core/TOPOLOGY.h>
+
 #include<D3D12Headers/d3dx12.h>
 
 #include<dxgi1_6.h>

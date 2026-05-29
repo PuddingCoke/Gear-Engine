@@ -191,7 +191,7 @@ public:
 
 	void render(GraphicsContext* const context)
 	{
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 		context->setVertexBuffers(0, { modelBuffer->getVertexBuffer() });
 		context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
@@ -205,7 +205,7 @@ public:
 	//rasterize whole scene to a texture cube
 	void renderCube(GraphicsContext* const context)
 	{
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 		context->setVertexBuffers(0, { modelBuffer->getVertexBuffer() });
 		context->setIndexBuffer(indexBuffer->getIndexBuffer());
 

@@ -148,7 +148,7 @@ protected:
 
 		context->setViewportSimple(Core::Graphics::getWidth(), Core::Graphics::getHeight());
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+		context->setPrimitiveTopology(TOPOLOGY::POINTLIST);
 
 		context->setVertexBuffers(0, {
 			positionBuffer->getVertexBuffer(),

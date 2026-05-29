@@ -32,7 +32,7 @@ public:
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLessEqual)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
 			.setVS(GlobalShader::getTextureCubeVS())
@@ -91,7 +91,7 @@ public:
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.build();
 
@@ -106,7 +106,7 @@ public:
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.build();
 
@@ -175,7 +175,7 @@ protected:
 
 			context->setPipelineState(prefilterState);
 
-			context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 			context->setViewportSimple(width, height);
 
@@ -197,7 +197,7 @@ protected:
 	{
 		context->setPipelineState(irradianceState);
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setViewportSimple(irradianceCube->getTexture()->getWidth(), irradianceCube->getTexture()->getHeight());
 
@@ -226,7 +226,7 @@ protected:
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setRenderTargets({ renderTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 

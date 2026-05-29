@@ -75,7 +75,7 @@ Gear::Core::Effect::BloomEffect::BloomEffect(GraphicsContext* const context, con
 				.setVS(GlobalShader::getFullScreenVS())
 				.setRasterizerState(PipelineStateHelper::rasterCullNone)
 				.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-				.setPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE)
+				.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 				.setRTVFormats({ FMT::RGBA16F });
 		};
 
@@ -158,7 +158,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::BloomEffect::proces
 
 	bloomParam.gamma = Gear::Core::Graphics::getGamma();
 
-	context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 	context->setViewportSimple(width, height);
 	context->setPipelineState(bloomFilterState);

@@ -80,7 +80,7 @@ protected:
 
 		accumulatedTexture->copyDescriptors();
 
-		context->setPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setViewport(Graphics::getWidth(), Graphics::getHeight());
 
