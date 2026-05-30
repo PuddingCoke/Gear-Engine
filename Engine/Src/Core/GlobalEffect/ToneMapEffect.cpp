@@ -46,6 +46,8 @@ void Gear::Core::GlobalEffect::ToneMapEffect::Internal::initialize()
 	pvt.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
 		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
 
+	pvt.outputTexture->getTexture()->setName(L"Tone Mapped Texture");
+
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"ToneMapEffect", LogColor::defaultColor, L"succeeded");
 }
 

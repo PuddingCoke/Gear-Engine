@@ -46,6 +46,8 @@ void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::initialize()
 	pvt.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
 		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
 
+	pvt.outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
+
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"GammaCorrectEffect", LogColor::defaultColor, L"succeeded");
 }
 

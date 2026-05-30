@@ -16,6 +16,8 @@ Gear::Core::Effect::FXAAEffect::FXAAEffect(GraphicsContext* const context, const
 	colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(colorToColorLumaPS).setRTVFormats({ FMT::RGBA16UN }).build();
 
 	fxaaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(fxaaPS).setRTVFormats({ FMT::RGBA16UN }).build();
+
+	outputTexture->getTexture()->setName(L"FXAA Processed Texture");
 }
 
 Gear::Core::Effect::FXAAEffect::~FXAAEffect()

@@ -104,7 +104,7 @@ class TodoApp:
         readme_text = README_FILE.read_text(encoding="utf-8")
 
         begin_marker = "<!-- TODO Begin -->"
-        end_marker = "<!-- TODO END -->"
+        end_marker = "<!-- TODO End -->"
 
         if begin_marker not in readme_text or end_marker not in readme_text:
             return
