@@ -66,6 +66,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PBRRendering", "PBRRenderin
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SteeringBehavior", "SteeringBehavior\SteeringBehavior.vcxproj", "{09DB6183-84B7-416F-852A-5FB04C0BB9FB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -33,7 +33,12 @@ namespace Gear
 				D3D12_LOGIC_OP_NOOP,D3D12_COLOR_WRITE_ENABLE_ALL
 			} };
 
-			constexpr D3D12_BLEND_DESC blendNone = { false,false,{false,false} };
+			constexpr D3D12_BLEND_DESC blendNone = { false,false,
+				{false,false,
+				D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
+				D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
+				D3D12_LOGIC_OP_NOOP,D3D12_COLOR_WRITE_ENABLE_ALL
+			} };
 
 			constexpr D3D12_RASTERIZER_DESC rasterShadow = { D3D12_FILL_MODE_SOLID,D3D12_CULL_MODE_BACK,false,16,0.f,4.f,true };
 
