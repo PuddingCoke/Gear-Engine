@@ -40,7 +40,7 @@ public:
 				{"POSITION",0,FMT::RGB32F,0,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0},
 				{"NORMAL",0,FMT::RGB32F,0,12,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0}
 				})
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)

@@ -29,7 +29,7 @@ public:
 		envCube = resManager->createTextureCube(L"E:\\Assets\\sundowner_deck_4k.hdr", 1024, true);
 
 		skyboxState = PipelineStateBuilder()
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLessEqual)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
@@ -89,7 +89,7 @@ public:
 			.setVS(prefilterVS)
 			.setPS(prefilterPS)
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
@@ -104,7 +104,7 @@ public:
 			.setVS(prefilterVS)
 			.setPS(irradiancePS)
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })

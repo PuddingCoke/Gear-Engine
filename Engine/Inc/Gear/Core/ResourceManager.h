@@ -7,6 +7,8 @@
 
 #include<Gear/Core/Resource/SwapTexture.h>
 
+#include<Gear/Core/Resource/SwapBuffer.h>
+
 #include<Gear/Core/Resource/ImmutableCBuffer.h>
 
 #include<Gear/Core/Resource/StaticCBuffer.h>

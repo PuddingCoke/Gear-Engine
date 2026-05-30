@@ -71,7 +71,7 @@ Gear::Core::Effect::BloomEffect::BloomEffect(GraphicsContext* const context, con
 	auto getDefaultBuilder = []
 		{
 			return PipelineStateBuilder()
-				.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+				.setBlendState(PipelineStateHelper::blendReplace)
 				.setVS(GlobalShader::getFullScreenVS())
 				.setRasterizerState(PipelineStateHelper::rasterCullNone)
 				.setDepthStencilState(PipelineStateHelper::depthCompareNone)

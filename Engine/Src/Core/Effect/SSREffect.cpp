@@ -21,7 +21,7 @@ Gear::Core::Effect::SSREffect::SSREffect(GraphicsContext* const context, const u
 	hiZCreateState = PipelineStateBuilder::build(hiZCreateCS);
 
 	hiZProcessState = PipelineStateBuilder()
-		.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+		.setBlendState(PipelineStateHelper::blendReplace)
 		.setRasterizerState(PipelineStateHelper::rasterCullNone)
 		.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 		.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)

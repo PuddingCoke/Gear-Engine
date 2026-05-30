@@ -39,7 +39,7 @@ public:
 		spectrumParam[2].mapLength = lengthScale2;
 
 		textureCubeState = PipelineStateBuilder()
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
@@ -50,7 +50,7 @@ public:
 
 		gridDebugState = PipelineStateBuilder()
 			.setInputElements({ {"POSITION",0,FMT::RGB32F,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0} })
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
@@ -61,7 +61,7 @@ public:
 
 		oceanState = PipelineStateBuilder()
 			.setInputElements({ {"POSITION",0,FMT::RGB32F,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0} })
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::PATCH)

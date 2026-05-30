@@ -9,7 +9,7 @@ namespace Gear
 {
 	struct InitializationParam
 	{
-		//在使用nsight调试前请关闭ImGui，否则程序会莫名崩溃
+		//使用nsight调试前请关闭ImGui，否则程序会莫名崩溃
 		static InitializationParam RealTime(const uint32_t width, const uint32_t height, const std::wstring& title, const bool enableImGuiSurface = true);
 
 		static InitializationParam VideoRender(const uint32_t width, const uint32_t height, const uint32_t second = 60u);

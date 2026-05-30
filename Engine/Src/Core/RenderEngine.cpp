@@ -8,6 +8,8 @@
 
 #include<Gear/Core/Graphics.h>
 
+#include<Gear/Core/MainCamera.h>
+
 #include<Gear/Utils/Random.h>
 
 #include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
@@ -216,6 +218,9 @@ RenderEnginePrivate::RenderEnginePrivate(const uint32_t width, const uint32_t he
 	Gear::Core::GlobalRootSignature::Internal::initialize();
 
 	Gear::Core::DynamicCBufferManager::Internal::initialize();
+
+	//设置默认的2D投影矩阵
+	Gear::Core::MainCamera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, static_cast<float>(Gear::Core::Graphics::getWidth()), 0, static_cast<float>(Gear::Core::Graphics::getHeight()), -1.f, 1.f));
 
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};

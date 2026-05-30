@@ -68,7 +68,7 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::initialize(R
 				.setVS(pvt.equirectangularVS)
 				.setPS(pvt.equirectangularPS)
 				.setRasterizerState(PipelineStateHelper::rasterCullNone)
-				.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+				.setBlendState(PipelineStateHelper::blendReplace)
 				.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 				.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE);
 			};

@@ -501,6 +501,12 @@
     <ClInclude Include="Inc\Gear\Core\TOPOLOGY.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\Resource\SwappableBase.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\Resource\SwapBuffer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">

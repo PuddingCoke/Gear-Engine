@@ -66,7 +66,7 @@ public:
 
 		shadowPipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterShadow)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
@@ -77,7 +77,7 @@ public:
 
 		deferredPipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
@@ -95,7 +95,7 @@ public:
 
 		probeCapturePipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
@@ -107,7 +107,7 @@ public:
 
 		probeCaptureBouncePipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
@@ -118,7 +118,7 @@ public:
 			.build();
 
 		skyboxState = PipelineStateBuilder()
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLessEqual)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
@@ -129,7 +129,7 @@ public:
 			.build();
 
 		ssrCombineState = PipelineStateBuilder()
-			.setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)

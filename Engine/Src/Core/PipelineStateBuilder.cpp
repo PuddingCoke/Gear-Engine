@@ -119,7 +119,7 @@ Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setDepthSten
 
 Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setDefaultFullScreenState()
 {
-	return setBlendState(CD3DX12_BLEND_DESC(D3D12_DEFAULT))
+	return setBlendState(PipelineStateHelper::blendReplace)
 		.setRasterizerState(PipelineStateHelper::rasterCullNone)
 		.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 		.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)

@@ -65,6 +65,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PBRRendering", "PBRRenderin
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SteeringBehavior", "SteeringBehavior\SteeringBehavior.vcxproj", "{09DB6183-84B7-416F-852A-5FB04C0BB9FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -123,6 +125,10 @@ Global
 		{B4514BF1-4A83-4810-8C0C-C086343FDFCD}.Debug|x64.Build.0 = Debug|x64
 		{B4514BF1-4A83-4810-8C0C-C086343FDFCD}.Release|x64.ActiveCfg = Release|x64
 		{B4514BF1-4A83-4810-8C0C-C086343FDFCD}.Release|x64.Build.0 = Release|x64
+		{09DB6183-84B7-416F-852A-5FB04C0BB9FB}.Debug|x64.ActiveCfg = Debug|x64
+		{09DB6183-84B7-416F-852A-5FB04C0BB9FB}.Debug|x64.Build.0 = Debug|x64
+		{09DB6183-84B7-416F-852A-5FB04C0BB9FB}.Release|x64.ActiveCfg = Release|x64
+		{09DB6183-84B7-416F-852A-5FB04C0BB9FB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

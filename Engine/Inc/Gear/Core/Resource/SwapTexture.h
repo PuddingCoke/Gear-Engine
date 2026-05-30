@@ -5,7 +5,7 @@
 
 #include"TextureRenderView.h"
 
-#include<functional>
+#include"SwappableBase.h"
 
 namespace Gear
 {
@@ -13,27 +13,17 @@ namespace Gear
 	{
 		namespace Resource
 		{
-			class SwapTexture
+			class SwapTexture :public SwappableBase<TextureRenderView>
 			{
-			private:
-
-				TextureRenderView* texture0;
-
-				TextureRenderView* texture1;
-
 			public:
 
 				SwapTexture() = delete;
 
-				SwapTexture(const std::function<TextureRenderView* (void)>& factoryFunc);
+				SwapTexture(const std::function<TextureRenderView* (void)>& readTextureFunc, const std::function<TextureRenderView* (void)>& writeTextureFunc);
+
+				SwapTexture(const std::function<TextureRenderView* (void)>& textureFunc);
 
 				~SwapTexture();
-
-				TextureRenderView* read() const;
-
-				TextureRenderView* write() const;
-
-				void swap();
 
 				const uint32_t width;
 

@@ -160,6 +160,8 @@
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\LatLongMapToCubeMapEffectInternal.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\LatLongMapToCubeMapEffect.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\GlobalEffectHeader.h" />
+    <ClInclude Include="Inc\Gear\Core\Resource\SwapBuffer.h" />
+    <ClInclude Include="Inc\Gear\Core\Resource\SwappableBase.h" />
     <ClInclude Include="Inc\Gear\Core\TOPOLOGY.h" />
     <ClInclude Include="Inc\Gear\DevEssential.h" />
     <ClInclude Include="Inc\Gear\Input\Internal\KeyboardInternal.h" />
