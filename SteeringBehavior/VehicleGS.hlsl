@@ -23,33 +23,20 @@ void main(
     float2 up = normalize(float2(-right.y, right.x)) * 5.0;
     
     GSOutput output;
+        
+    output.position = mul(input[0].position + float4(-right + up, 0.0, 0.0), perframeResource.proj);
+    output.texCoord = float2(0.0, 0.0);
+    outputs.Append(output);
     
-    {
-        output.position = mul(input[0].position + float4(-right - up, 0.0, 0.0), perframeResource.proj);
-        output.texCoord = float2(0.0, 1.0);
-        outputs.Append(output);
-        
-        output.position = mul(input[0].position + float4(-right + up, 0.0, 0.0), perframeResource.proj);
-        output.texCoord = float2(0.0, 0.0);
-        outputs.Append(output);
-        
-        output.position = mul(input[0].position + float4(right + up, 0.0, 0.0), perframeResource.proj);
-        output.texCoord = float2(1.0, 0.0);
-        outputs.Append(output);
-    }
+    output.position = mul(input[0].position + float4(right + up, 0.0, 0.0), perframeResource.proj);
+    output.texCoord = float2(1.0, 0.0);
+    outputs.Append(output);
     
-    {
-        
-        output.position = mul(input[0].position + float4(right + up, 0.0, 0.0), perframeResource.proj);
-        output.texCoord = float2(1.0, 0.0);
-        outputs.Append(output);
-     
-        output.position = mul(input[0].position + float4(-right - up, 0.0, 0.0), perframeResource.proj);
-        output.texCoord = float2(0.0, 1.0);
-        outputs.Append(output);
-        
-        output.position = mul(input[0].position + float4(right - up, 0.0, 0.0), perframeResource.proj);
-        output.texCoord = float2(1.0, 1.0);
-        outputs.Append(output);
-    }
+    output.position = mul(input[0].position + float4(-right - up, 0.0, 0.0), perframeResource.proj);
+    output.texCoord = float2(0.0, 1.0);
+    outputs.Append(output);
+    
+    output.position = mul(input[0].position + float4(right - up, 0.0, 0.0), perframeResource.proj);
+    output.texCoord = float2(1.0, 1.0);
+    outputs.Append(output);
 }

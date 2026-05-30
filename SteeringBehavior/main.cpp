@@ -8,7 +8,7 @@ using namespace Gear;
 
 int wmain(int argc, const wchar_t* argv[])
 {
-	const InitializationParam param = InitializationParam::RealTime(1920, 1080, L"Steering Behavior", false);
+	const InitializationParam param = InitializationParam::RealTime(1920, 1080, L"Steering Behavior", true);
 
 #ifdef _DEBUG
 	try

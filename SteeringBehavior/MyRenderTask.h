@@ -53,7 +53,7 @@ public:
 		stepState = PipelineStateBuilder::build(stepCS);
 
 		vehicleRenderState = PipelineStateBuilder()
-			.setRasterizerState(PipelineStateHelper::rasterCullNone)
+			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setBlendState(PipelineStateHelper::blendDefault)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setVS(vehicleVS)
@@ -108,6 +108,8 @@ protected:
 
 	void recordCommand() override
 	{
+		simulationParam.mousePos = DirectX::XMFLOAT2(Input::Mouse::getX(), Input::Mouse::getY());
+
 		context->setPipelineState(stepState);
 
 		context->setCSConstants({
@@ -115,7 +117,7 @@ protected:
 			positionVelocity->read()->getSRVIndex(),
 			maxSpeedMaxForce->getSRVIndex() }, 0);
 
-		context->setCSConstants(2, &simulationParam, 3);
+		context->setCSConstants(sizeof(SimulationParam) / sizeof(uint32_t), &simulationParam, 3);
 
 		context->dispatch(dispatchCeil(numVehicle, 32), 1, 1);
 
@@ -154,6 +156,8 @@ private:
 	{
 		uint32_t numVehicle;
 		float speedMultiply;
+		DirectX::XMFLOAT2 mousePos;
+		float fleeRadius = 75.f;
 	} simulationParam;
 
 	static constexpr uint32_t numVehicle = 1000;

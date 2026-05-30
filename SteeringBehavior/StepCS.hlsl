@@ -11,6 +11,10 @@ cbuffer StepParameters : register(b2)
     uint numVehicle;
     
     float speedMultiply;
+    
+    float2 mousePos;
+    
+    float fleeRadius;
 }
 
 static RWBuffer<float4> positionVelocityWrite = ResourceDescriptorHeap[positionVelocityWriteIndex];
@@ -44,6 +48,15 @@ void setMag(inout float2 v, float mag)
 float2 seek(float2 target)
 {
     float2 force = target - position;
+    setMag(force, mSpeed);
+    force -= velocity;
+    limitMag(force, mForce);
+    return force;
+}
+
+float2 flee(float2 target)
+{
+    float2 force = position - target;
     setMag(force, mSpeed);
     force -= velocity;
     limitMag(force, mForce);
@@ -160,6 +173,11 @@ void main(uint DTid : SV_DispatchThreadID)
     float2 coh = cohesion();
     
     float2 acceleration = sep + ali + coh;
+    
+    if (distance(position, mousePos) < fleeRadius)
+    {
+        acceleration += flee(mousePos) * 3.0;
+    }
     
     float scaledDt = perframeResource.deltaTime * speedMultiply;
     
