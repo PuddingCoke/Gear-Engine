@@ -12,7 +12,7 @@ struct GSOutput
     float4 position : SV_POSITION;
 };
 
-[maxvertexcount(6)]
+[maxvertexcount(4)]
 void main(
 	point GSInput input[1],
 	inout TriangleStream<GSOutput> outputs
