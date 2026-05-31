@@ -60,7 +60,7 @@ public:
 				normalPath = assetPath + "dummy_ddn.dds";
 			}
 
-			materials.push_back(new Material(resManager, diffusePath, roughnessMetallicPathPath, normalPath));
+			materials.push_back(makeUnique<Material>(resManager, diffusePath, roughnessMetallicPathPath, normalPath));
 		}
 
 		std::vector<Vertex> vertices;
@@ -148,7 +148,7 @@ public:
 				}
 			}
 
-			models.push_back(new Model(mesh->mMaterialIndex, indexCount, startIndexLocation, startVertexLocation));
+			models.push_back(makeUnique<Model>(mesh->mMaterialIndex, indexCount, startIndexLocation, startVertexLocation));
 
 			startVertexLocation += vertexCount;
 
@@ -162,15 +162,6 @@ public:
 
 	~Scene()
 	{
-		for (UINT i = 0; i < materials.size(); i++)
-		{
-			delete materials[i];
-		}
-
-		for (UINT i = 0; i < models.size(); i++)
-		{
-			delete models[i];
-		}
 	}
 
 	void render(GraphicsContext* const context)
@@ -202,9 +193,9 @@ public:
 
 private:
 
-	std::vector<Material*> materials;
+	std::vector<UniquePtr<Material>> materials;
 
-	std::vector<Model*> models;
+	std::vector<UniquePtr<Model>> models;
 
 	UniquePtr<BufferView> modelBuffer;
 

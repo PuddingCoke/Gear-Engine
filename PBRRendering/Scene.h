@@ -32,7 +32,7 @@ public:
 
 		for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 		{
-			models.push_back(new Model(scene, scene->mMeshes[i], resManager));
+			models.push_back(makeUnique<Model>(scene, scene->mMeshes[i], resManager));
 		}
 
 		pipelineState = PipelineStateBuilder()
@@ -53,13 +53,6 @@ public:
 
 	~Scene()
 	{
-		for (uint32_t i = 0; i < models.size(); i++)
-		{
-			if (models[i])
-			{
-				delete models[i];
-			}
-		}
 	}
 
 	void draw(GraphicsContext* const context, TextureRenderView& prefilterTexture, TextureRenderView& brdfLUTTexture, TextureRenderView& irradianceTexture)
@@ -96,6 +89,6 @@ public:
 
 private:
 
-	std::vector<Model*> models;
+	std::vector<UniquePtr<Model>> models;
 
 };
