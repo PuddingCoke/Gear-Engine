@@ -140,7 +140,7 @@ namespace
 
 		int32_t syncInterval;
 
-		Gear::Core::Resource::DynamicCBuffer* reservedGlobalCBuffer;
+		Gear::Core::Resource::DynamicCBuffer* engineDefinedGlobalCBuffer;
 
 		Gear::Core::ResourceManager* resManager;
 
@@ -255,9 +255,9 @@ RenderEnginePrivate::RenderEnginePrivate(const uint32_t width, const uint32_t he
 
 	prepareCommandList = new Gear::Core::D3D12Core::CommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-	reservedGlobalCBuffer = Gear::Core::ResourceManager::createDynamicCBuffer(sizeof(PerframeResource)).release();
+	engineDefinedGlobalCBuffer = Gear::Core::ResourceManager::createDynamicCBuffer(sizeof(PerframeResource)).release();
 
-	Gear::Core::Graphics::Internal::setReservedGlobalCBuffer(reservedGlobalCBuffer);
+	Gear::Core::Graphics::Internal::setEngineDefinedGlobalCBuffer(engineDefinedGlobalCBuffer);
 
 	//确保准备命令列表总是处于容器第一个位置
 	begin();
@@ -350,9 +350,9 @@ RenderEnginePrivate::~RenderEnginePrivate()
 		delete[] backBufferHandles;
 	}
 
-	if (reservedGlobalCBuffer)
+	if (engineDefinedGlobalCBuffer)
 	{
-		delete reservedGlobalCBuffer;
+		delete engineDefinedGlobalCBuffer;
 	}
 
 	if (prepareCommandList)
@@ -476,7 +476,7 @@ void RenderEnginePrivate::begin()
 
 	Gear::Core::Graphics::Internal::renderedFrameCountInc();
 
-	reservedGlobalCBuffer->acquireDataPtr();
+	engineDefinedGlobalCBuffer->acquireDataPtr();
 }
 
 void RenderEnginePrivate::end()
@@ -510,7 +510,7 @@ void RenderEnginePrivate::end()
 		DirectX::XMFLOAT2(1.f / Gear::Core::Graphics::getWidth(), 1.f / Gear::Core::Graphics::getHeight())
 		};
 
-		reservedGlobalCBuffer->updateData(&perframeResource);
+		engineDefinedGlobalCBuffer->updateData(&perframeResource);
 	}
 
 	//使用最后一个命令列表做些收尾工作

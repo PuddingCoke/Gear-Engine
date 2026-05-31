@@ -26,7 +26,7 @@ namespace Gear
 
 				void setBackBufferHandle(const D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle);
 
-				void setReservedGlobalCBuffer(Resource::ImmutableCBuffer* const reservedGlobalCBuffer);
+				void setEngineDefinedGlobalCBuffer(Resource::ImmutableCBuffer* const engineDefinedGlobalCBuffer);
 
 				void imGUICall();
 

@@ -35,7 +35,7 @@ namespace Gear
 
 				ID3D12RootSignature* get() const;
 
-				static uint32_t getReservedGlobalConstantBufferParameterIndex();
+				static uint32_t getEngineDefinedGlobalConstantBufferParameterIndex();
 
 				static uint32_t getUserDefinedGlobalConstantBufferParameterIndex();
 
@@ -76,15 +76,35 @@ namespace Gear
 					TYPECOUNT
 				};
 
-				uint32_t getShaderConstantsParameterIndex(const ShaderType shaderType) const;
+				static constexpr struct ShaderGlobalParameterIndices
+				{
+
+					uint32_t engineDefinedGlobalConstantBufferParameterIndex;
+
+					uint32_t userDefinedGlobalConstantBufferParameterIndex;
+
+				} globalParameterIndices{ 0,1 };//这里的数值禁止改变
+
+				struct ShaderLocalParameterIndices
+				{
+
+					ShaderLocalParameterIndices();
+
+					//着色器每个Draw Call可用的常量被赋予的Root Parameter索引
+					uint32_t constantsParameterIndex;
+
+					//着色器每个Draw Call可用的常量缓冲被赋予的Root Parameter索引
+					uint32_t constantBufferParameterIndex;
+
+				} localParameterIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];//V H G D P C，与ShaderType中枚举表示的整数值一一对应
+
+				ShaderLocalParameterIndices getLocalParameterIndices(const ShaderType shaderType) const;
+
+				uint32_t getLocalConstantsParameterIndex(const ShaderType shaderType) const;
+
+				uint32_t getLocalConstantBufferParameterIndex(const ShaderType shaderType) const;
 
 				ComPtr<ID3D12RootSignature> rootSignature;
-
-				//存储每个着色器的32位常量数量，顺序为V H D G P C，它会被用来检测错误
-				const uint32_t numConstants[static_cast<uint32_t>(ShaderType::TYPECOUNT)];
-
-				//存储每个着色器的根参数的开始位置，顺序同上
-				uint32_t rootParameterStartIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];
 
 			};
 		}

@@ -437,7 +437,7 @@ void Gear::Core::GraphicsContext::setGraphicsRootSignature(const D3D12Core::Root
 
 		commandList->setGraphicsRootSignature(rootSignature->get());
 
-		commandList->setGraphicsRootConstantBuffer(D3D12Core::RootSignature::getReservedGlobalConstantBufferParameterIndex(), Graphics::getReservedGlobalCBuffer()->getGPUAddress());
+		commandList->setGraphicsRootConstantBuffer(D3D12Core::RootSignature::getEngineDefinedGlobalConstantBufferParameterIndex(), Graphics::getEngineDefinedGlobalCBuffer()->getGPUAddress());
 
 		if (userDefinedGlobalConstantBuffer)
 			commandList->setGraphicsRootConstantBuffer(D3D12Core::RootSignature::getUserDefinedGlobalConstantBufferParameterIndex(), userDefinedGlobalConstantBuffer->getGPUAddress());
@@ -452,7 +452,7 @@ void Gear::Core::GraphicsContext::setComputeRootSignature(const D3D12Core::RootS
 
 		commandList->setComputeRootSignature(rootSignature->get());
 
-		commandList->setComputeRootConstantBuffer(D3D12Core::RootSignature::getReservedGlobalConstantBufferParameterIndex(), Graphics::getReservedGlobalCBuffer()->getGPUAddress());
+		commandList->setComputeRootConstantBuffer(D3D12Core::RootSignature::getEngineDefinedGlobalConstantBufferParameterIndex(), Graphics::getEngineDefinedGlobalCBuffer()->getGPUAddress());
 
 		if (userDefinedGlobalConstantBuffer)
 			commandList->setComputeRootConstantBuffer(D3D12Core::RootSignature::getUserDefinedGlobalConstantBufferParameterIndex(), userDefinedGlobalConstantBuffer->getGPUAddress());

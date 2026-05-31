@@ -14,7 +14,7 @@ namespace
 	{
 
 		float exposure = 1.f;
-		
+
 		float gamma = 2.2f;
 
 		uint32_t frameBufferCount = 0;
@@ -35,7 +35,7 @@ namespace
 
 		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle;
 
-		Gear::Core::Resource::ImmutableCBuffer* reservedGlobalCBuffer;
+		Gear::Core::Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer;
 
 	}pvt;
 }
@@ -105,9 +105,9 @@ D3D12_CPU_DESCRIPTOR_HANDLE Gear::Core::Graphics::getBackBufferHandle()
 	return pvt.backBufferHandle;
 }
 
-Gear::Core::Resource::ImmutableCBuffer* Gear::Core::Graphics::getReservedGlobalCBuffer()
+Gear::Core::Resource::ImmutableCBuffer* Gear::Core::Graphics::getEngineDefinedGlobalCBuffer()
 {
-	return pvt.reservedGlobalCBuffer;
+	return pvt.engineDefinedGlobalCBuffer;
 }
 
 void Gear::Core::Graphics::Internal::initialize(const uint32_t frameBufferCount, const uint32_t width, const uint32_t height)
@@ -146,9 +146,9 @@ void Gear::Core::Graphics::Internal::setBackBufferHandle(const D3D12_CPU_DESCRIP
 	pvt.backBufferHandle = backBufferHandle;
 }
 
-void Gear::Core::Graphics::Internal::setReservedGlobalCBuffer(Resource::ImmutableCBuffer* const reservedGlobalCBuffer)
+void Gear::Core::Graphics::Internal::setEngineDefinedGlobalCBuffer(Resource::ImmutableCBuffer* const engineDefinedGlobalCBuffer)
 {
-	pvt.reservedGlobalCBuffer = reservedGlobalCBuffer;
+	pvt.engineDefinedGlobalCBuffer = engineDefinedGlobalCBuffer;
 }
 
 void Gear::Core::Graphics::Internal::imGUICall()

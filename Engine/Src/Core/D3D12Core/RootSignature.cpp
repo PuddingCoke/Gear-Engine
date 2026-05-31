@@ -1,33 +1,33 @@
 ﻿#include<Gear/Core/D3D12Core/RootSignature.h>
 
-Gear::Core::D3D12Core::RootSignature::RootSignature(const uint32_t numVSConstants, const uint32_t numHSConstants, const uint32_t numDSConstants, const uint32_t numGSConstants, const uint32_t numPSConstants, const uint32_t numCSConstants, CD3DX12_STATIC_SAMPLER_DESC* const samplerDescs, const uint32_t samplerCount, const D3D12_ROOT_SIGNATURE_FLAGS signatureFlags) :
-	numConstants{ numVSConstants,numHSConstants,numDSConstants,numGSConstants,numPSConstants,numCSConstants }, rootParameterStartIndices{}
+Gear::Core::D3D12Core::RootSignature::RootSignature(const uint32_t numVSConstants, const uint32_t numHSConstants, const uint32_t numDSConstants, const uint32_t numGSConstants, const uint32_t numPSConstants, const uint32_t numCSConstants, CD3DX12_STATIC_SAMPLER_DESC* const samplerDescs, const uint32_t samplerCount, const D3D12_ROOT_SIGNATURE_FLAGS signatureFlags)
 {
-	const uint32_t numRootParameters = 2u
+	//根据全局和局部结构体的大小和传入的参数计算需要多少个根参数
+	const uint32_t numRootParameters = static_cast<uint32_t>(sizeof(ShaderGlobalParameterIndices) / sizeof(uint32_t))
 		+ (static_cast<bool>(numVSConstants)
 			+ static_cast<bool>(numHSConstants)
 			+ static_cast<bool>(numDSConstants)
 			+ static_cast<bool>(numGSConstants)
 			+ static_cast<bool>(numPSConstants)
-			+ static_cast<bool>(numCSConstants)) * 2u;
+			+ static_cast<bool>(numCSConstants)) * static_cast<uint32_t>(sizeof(ShaderLocalParameterIndices) / sizeof(uint32_t));
 
 	std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters;
 
 	rootParameters.resize(numRootParameters);
 
+	uint32_t rootParameterIndex = 0u;
+
+	//全局根参数的初始化顺序禁止改变
+
 	//由引擎决定的所有着色器可见的全局常量缓冲
-	rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters[rootParameterIndex++].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
+
 	//由用户决定的所有着色器可见的全局常量缓冲
-	rootParameters[1].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters[rootParameterIndex++].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
 
 	{
-		uint32_t rootParameterIndex = 2u;
-
-		auto setShaderRootParameter = [this](CD3DX12_ROOT_PARAMETER1* const rootParameters, uint32_t& rootParameterIndex,
-			const ShaderType shaderType, const uint32_t numConstants)
+		auto getShaderVisibility = [](const ShaderType shaderType)
 			{
-				rootParameterStartIndices[static_cast<uint32_t>(shaderType)] = rootParameterIndex;
-
 				D3D12_SHADER_VISIBILITY shaderVisibility;
 
 				switch (shaderType)
@@ -54,28 +54,54 @@ Gear::Core::D3D12Core::RootSignature::RootSignature(const uint32_t numVSConstant
 					break;
 				}
 
+				return shaderVisibility;
+			};
+
+		auto setShaderLocalConstantsParameter = [getShaderVisibility](ShaderLocalParameterIndices& localParameterIndices, CD3DX12_ROOT_PARAMETER1* const rootParameters,
+			uint32_t& rootParameterIndex, const ShaderType shaderType, const uint32_t numConstants)
+			{
+				const D3D12_SHADER_VISIBILITY shaderVisibility = getShaderVisibility(shaderType);
+
+				localParameterIndices.constantsParameterIndex = rootParameterIndex;
+
 				rootParameters[rootParameterIndex++].InitAsConstants(numConstants, 2, 0, shaderVisibility);
+			};
+
+		auto setShaderLocalConstantBufferParameter = [getShaderVisibility](ShaderLocalParameterIndices& localParameterIndices, CD3DX12_ROOT_PARAMETER1* const rootParameters,
+			uint32_t& rootParameterIndex, const ShaderType shaderType)
+			{
+				const D3D12_SHADER_VISIBILITY shaderVisibility = getShaderVisibility(shaderType);
+
+				localParameterIndices.constantBufferParameterIndex = rootParameterIndex;
 
 				rootParameters[rootParameterIndex++].InitAsConstantBufferView(3, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, shaderVisibility);
 			};
 
+		auto setShaderLocalParameter = [this, setShaderLocalConstantsParameter, setShaderLocalConstantBufferParameter]
+		(CD3DX12_ROOT_PARAMETER1* const rootParameters, uint32_t& rootParameterIndex, const ShaderType shaderType, const uint32_t numConstants)
+			{
+				setShaderLocalConstantsParameter(localParameterIndices[static_cast<uint32_t>(shaderType)], rootParameters, rootParameterIndex, shaderType, numConstants);
+
+				setShaderLocalConstantBufferParameter(localParameterIndices[static_cast<uint32_t>(shaderType)], rootParameters, rootParameterIndex, shaderType);
+			};
+
 		if (numVSConstants)
-			setShaderRootParameter(rootParameters.data(), rootParameterIndex, ShaderType::VERTEX, numVSConstants);
+			setShaderLocalParameter(rootParameters.data(), rootParameterIndex, ShaderType::VERTEX, numVSConstants);
 
 		if (numHSConstants)
-			setShaderRootParameter(rootParameters.data(), rootParameterIndex, ShaderType::HULL, numHSConstants);
+			setShaderLocalParameter(rootParameters.data(), rootParameterIndex, ShaderType::HULL, numHSConstants);
 
 		if (numDSConstants)
-			setShaderRootParameter(rootParameters.data(), rootParameterIndex, ShaderType::DOMAIN, numDSConstants);
+			setShaderLocalParameter(rootParameters.data(), rootParameterIndex, ShaderType::DOMAIN, numDSConstants);
 
 		if (numGSConstants)
-			setShaderRootParameter(rootParameters.data(), rootParameterIndex, ShaderType::GEOMETRY, numGSConstants);
+			setShaderLocalParameter(rootParameters.data(), rootParameterIndex, ShaderType::GEOMETRY, numGSConstants);
 
 		if (numPSConstants)
-			setShaderRootParameter(rootParameters.data(), rootParameterIndex, ShaderType::PIXEL, numPSConstants);
+			setShaderLocalParameter(rootParameters.data(), rootParameterIndex, ShaderType::PIXEL, numPSConstants);
 
 		if (numCSConstants)
-			setShaderRootParameter(rootParameters.data(), rootParameterIndex, ShaderType::COMPUTE, numCSConstants);
+			setShaderLocalParameter(rootParameters.data(), rootParameterIndex, ShaderType::COMPUTE, numCSConstants);
 	}
 
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc{};
@@ -100,82 +126,82 @@ ID3D12RootSignature* Gear::Core::D3D12Core::RootSignature::get() const
 	return rootSignature.Get();
 }
 
-uint32_t Gear::Core::D3D12Core::RootSignature::getReservedGlobalConstantBufferParameterIndex()
+uint32_t Gear::Core::D3D12Core::RootSignature::getEngineDefinedGlobalConstantBufferParameterIndex()
 {
-	return 0u;
+	return globalParameterIndices.engineDefinedGlobalConstantBufferParameterIndex;
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getUserDefinedGlobalConstantBufferParameterIndex()
 {
-	return 1u;
+	return globalParameterIndices.userDefinedGlobalConstantBufferParameterIndex;
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getVSConstantsParameterIndex() const
 {
-	return getShaderConstantsParameterIndex(ShaderType::VERTEX);
+	return getLocalConstantsParameterIndex(ShaderType::VERTEX);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getVSConstantBufferParameterIndex() const
 {
-	return getVSConstantsParameterIndex() + 1u;
+	return getLocalConstantBufferParameterIndex(ShaderType::VERTEX);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getHSConstantsParameterIndex() const
 {
-	return getShaderConstantsParameterIndex(ShaderType::HULL);
+	return getLocalConstantsParameterIndex(ShaderType::HULL);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getHSConstantBufferParameterIndex() const
 {
-	return getHSConstantsParameterIndex() + 1u;
+	return getLocalConstantBufferParameterIndex(ShaderType::HULL);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getDSConstantsParameterIndex() const
 {
-	return getShaderConstantsParameterIndex(ShaderType::DOMAIN);
+	return getLocalConstantsParameterIndex(ShaderType::DOMAIN);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getDSConstantBufferParameterIndex() const
 {
-	return getDSConstantsParameterIndex() + 1u;
+	return getLocalConstantBufferParameterIndex(ShaderType::DOMAIN);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getGSConstantsParameterIndex() const
 {
-	return getShaderConstantsParameterIndex(ShaderType::GEOMETRY);
+	return getLocalConstantsParameterIndex(ShaderType::GEOMETRY);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getGSConstantBufferParameterIndex() const
 {
-	return getGSConstantsParameterIndex() + 1u;
+	return getLocalConstantBufferParameterIndex(ShaderType::GEOMETRY);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getPSConstantsParameterIndex() const
 {
-	return getShaderConstantsParameterIndex(ShaderType::PIXEL);
+	return getLocalConstantsParameterIndex(ShaderType::PIXEL);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getPSConstantBufferParameterIndex() const
 {
-	return getPSConstantsParameterIndex() + 1u;
+	return getLocalConstantBufferParameterIndex(ShaderType::PIXEL);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getCSConstantsParameterIndex() const
 {
-	return getShaderConstantsParameterIndex(ShaderType::COMPUTE);
+	return getLocalConstantsParameterIndex(ShaderType::COMPUTE);
 }
 
 uint32_t Gear::Core::D3D12Core::RootSignature::getCSConstantBufferParameterIndex() const
 {
-	return getCSConstantsParameterIndex() + 1u;
+	return getLocalConstantBufferParameterIndex(ShaderType::COMPUTE);
 }
 
-uint32_t Gear::Core::D3D12Core::RootSignature::getShaderConstantsParameterIndex(const ShaderType shaderType) const
+Gear::Core::D3D12Core::RootSignature::ShaderLocalParameterIndices Gear::Core::D3D12Core::RootSignature::getLocalParameterIndices(const ShaderType shaderType) const
 {
 	const uint32_t index = static_cast<uint32_t>(shaderType);
 
 #ifdef _DEBUG
-	if (rootParameterStartIndices[index] == 0)
+	if (localParameterIndices[index].constantsParameterIndex == 0)
 	{
 		std::wstring errorString = L"there is no root parameter for ";
 
@@ -209,5 +235,21 @@ uint32_t Gear::Core::D3D12Core::RootSignature::getShaderConstantsParameterIndex(
 	}
 #endif // _DEBUG
 
-	return rootParameterStartIndices[index];
+	return localParameterIndices[index];
+}
+
+uint32_t Gear::Core::D3D12Core::RootSignature::getLocalConstantsParameterIndex(const ShaderType shaderType) const
+{
+	return getLocalParameterIndices(shaderType).constantsParameterIndex;
+}
+
+uint32_t Gear::Core::D3D12Core::RootSignature::getLocalConstantBufferParameterIndex(const ShaderType shaderType) const
+{
+	return getLocalParameterIndices(shaderType).constantBufferParameterIndex;
+}
+
+Gear::Core::D3D12Core::RootSignature::ShaderLocalParameterIndices::ShaderLocalParameterIndices() :
+	constantsParameterIndex(0),
+	constantBufferParameterIndex(0)
+{
 }
