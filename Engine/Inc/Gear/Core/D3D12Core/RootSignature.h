@@ -80,7 +80,7 @@ namespace Gear
 				{
 
 					uint32_t engineDefinedGlobalConstantBufferParameterIndex;
-
+					
 					uint32_t userDefinedGlobalConstantBufferParameterIndex;
 
 				} globalParameterIndices{ 0,1 };//这里的数值禁止改变

@@ -1,5 +1,7 @@
 ﻿#include<Gear/Core/D3D12Core/RootSignature.h>
 
+#include<Gear/Core/D3D12Core/ShaderRegisterLayout.h>
+
 Gear::Core::D3D12Core::RootSignature::RootSignature(const uint32_t numVSConstants, const uint32_t numHSConstants, const uint32_t numDSConstants, const uint32_t numGSConstants, const uint32_t numPSConstants, const uint32_t numCSConstants, CD3DX12_STATIC_SAMPLER_DESC* const samplerDescs, const uint32_t samplerCount, const D3D12_ROOT_SIGNATURE_FLAGS signatureFlags)
 {
 	//根据全局和局部结构体的大小和传入的参数计算需要多少个根参数
@@ -20,10 +22,10 @@ Gear::Core::D3D12Core::RootSignature::RootSignature(const uint32_t numVSConstant
 	//全局根参数的初始化顺序禁止改变
 
 	//由引擎决定的所有着色器可见的全局常量缓冲
-	rootParameters[rootParameterIndex++].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters[rootParameterIndex++].InitAsConstantBufferView(ShaderRegisterLayout::EngineGlobalCBRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
 
 	//由用户决定的所有着色器可见的全局常量缓冲
-	rootParameters[rootParameterIndex++].InitAsConstantBufferView(1, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters[rootParameterIndex++].InitAsConstantBufferView(ShaderRegisterLayout::UserGlobalCBRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
 
 	{
 		auto getShaderVisibility = [](const ShaderType shaderType)
@@ -64,7 +66,7 @@ Gear::Core::D3D12Core::RootSignature::RootSignature(const uint32_t numVSConstant
 
 				localParameterIndices.constantsParameterIndex = rootParameterIndex;
 
-				rootParameters[rootParameterIndex++].InitAsConstants(numConstants, 2, 0, shaderVisibility);
+				rootParameters[rootParameterIndex++].InitAsConstants(numConstants, ShaderRegisterLayout::DrawCallConstantsRegister, 0, shaderVisibility);
 			};
 
 		auto setShaderLocalConstantBufferParameter = [getShaderVisibility](ShaderLocalParameterIndices& localParameterIndices, CD3DX12_ROOT_PARAMETER1* const rootParameters,
@@ -74,7 +76,7 @@ Gear::Core::D3D12Core::RootSignature::RootSignature(const uint32_t numVSConstant
 
 				localParameterIndices.constantBufferParameterIndex = rootParameterIndex;
 
-				rootParameters[rootParameterIndex++].InitAsConstantBufferView(3, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, shaderVisibility);
+				rootParameters[rootParameterIndex++].InitAsConstantBufferView(ShaderRegisterLayout::DrawCallConstantBufferRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, shaderVisibility);
 			};
 
 		auto setShaderLocalParameter = [this, setShaderLocalConstantsParameter, setShaderLocalConstantBufferParameter]
