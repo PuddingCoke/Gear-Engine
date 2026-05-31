@@ -29,14 +29,14 @@ public:
 	{
 		const DirectX::XMUINT2 simRes = { Graphics::getWidth() >> config.resolutionFactor,Graphics::getHeight() >> config.resolutionFactor };
 
-		velocityTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true,
+		velocityTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true,
 			FMT::RG32F, FMT::RG32F, FMT::UNKNOWN); });
 
 		velocityTex->read()->getTexture()->getResource()->SetName(L"Velocity Texture (0)");
 
 		velocityTex->write()->getTexture()->getResource()->SetName(L"Velocity Texture (1)");
 
-		colorTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
+		colorTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
 			FMT::RGBA16F, FMT::RGBA16F, FMT::UNKNOWN); });
 
 		colorTex->read()->getTexture()->getResource()->SetName(L"Color Texture (0)");
@@ -48,7 +48,7 @@ public:
 
 		divergenceTex->getTexture()->getResource()->SetName(L"Divergence Texture");
 
-		pressureTex = new SwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true,
+		pressureTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true,
 			FMT::R32F, FMT::R32F, FMT::UNKNOWN); });
 
 		pressureTex->read()->getTexture()->getResource()->SetName(L"Pressure Texture (0)");
@@ -82,35 +82,35 @@ public:
 
 		simulationParam.vorticityIntensity = config.vorticityIntensity;
 
-		splatVelocityState = PipelineStateBuilder::build(splatVelocityCS);
+		splatVelocityState = PipelineStateBuilder::build(*splatVelocityCS);
 
-		splatColorState = PipelineStateBuilder::build(splatColorCS);
+		splatColorState = PipelineStateBuilder::build(*splatColorCS);
 
-		vorticityState = PipelineStateBuilder::build(vorticityCS);
+		vorticityState = PipelineStateBuilder::build(*vorticityCS);
 
-		vorticityConfinementState = PipelineStateBuilder::build(vorticityConfinementCS);
+		vorticityConfinementState = PipelineStateBuilder::build(*vorticityConfinementCS);
 
-		divergenceState = PipelineStateBuilder::build(divergenceCS);
+		divergenceState = PipelineStateBuilder::build(*divergenceCS);
 
-		pressureResetState = PipelineStateBuilder::build(pressureResetCS);
+		pressureResetState = PipelineStateBuilder::build(*pressureResetCS);
 
-		pressureState = PipelineStateBuilder::build(pressureCS);
+		pressureState = PipelineStateBuilder::build(*pressureCS);
 
-		gradientSubtractState = PipelineStateBuilder::build(gradientSubtractCS);
+		gradientSubtractState = PipelineStateBuilder::build(*gradientSubtractCS);
 
-		velocityAdvectionState = PipelineStateBuilder::build(velocityAdvectionCS);
+		velocityAdvectionState = PipelineStateBuilder::build(*velocityAdvectionCS);
 
-		colorAdvectionState = PipelineStateBuilder::build(colorAdvectionCS);
+		colorAdvectionState = PipelineStateBuilder::build(*colorAdvectionCS);
 
-		velocityBoundaryState = PipelineStateBuilder::build(velocityBoundaryCS);
+		velocityBoundaryState = PipelineStateBuilder::build(*velocityBoundaryCS);
 
-		pressureBoundaryState = PipelineStateBuilder::build(pressureBoundaryCS);
+		pressureBoundaryState = PipelineStateBuilder::build(*pressureBoundaryCS);
 
-		phongShadeState = PipelineStateBuilder::build(phongShadeCS);
+		phongShadeState = PipelineStateBuilder::build(*phongShadeCS);
 
-		edgeHighlightState = PipelineStateBuilder::build(edgeHighlightCS);
+		edgeHighlightState = PipelineStateBuilder::build(*edgeHighlightCS);
 
-		effect = new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
+		effect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
 
 		effect->setThreshold(0.f);
 
@@ -127,50 +127,6 @@ public:
 	~MyRenderTask()
 	{
 		Input::Keyboard::removeKeyDownEvent(Input::Keyboard::K, kDownEventID);
-
-
-		delete effect;
-
-		delete colorTex;
-		delete velocityTex;
-		delete vorticityTex;
-		delete divergenceTex;
-		delete pressureTex;
-
-		delete phongShadeTexture;
-		delete edgeHighlightTexture;
-
-		delete simulationParamBuffer;
-
-		delete splatVelocityCS;
-		delete splatColorCS;
-		delete vorticityCS;
-		delete vorticityConfinementCS;
-		delete divergenceCS;
-		delete pressureResetCS;
-		delete pressureCS;
-		delete gradientSubtractCS;
-		delete velocityAdvectionCS;
-		delete colorAdvectionCS;
-		delete velocityBoundaryCS;
-		delete pressureBoundaryCS;
-		delete phongShadeCS;
-		delete edgeHighlightCS;
-
-		delete splatVelocityState;
-		delete splatColorState;
-		delete vorticityState;
-		delete vorticityConfinementState;
-		delete divergenceState;
-		delete pressureResetState;
-		delete pressureState;
-		delete gradientSubtractState;
-		delete velocityAdvectionState;
-		delete colorAdvectionState;
-		delete velocityBoundaryState;
-		delete pressureBoundaryState;
-		delete phongShadeState;
-		delete edgeHighlightState;
 	}
 
 	void imGUICall() override
@@ -199,13 +155,13 @@ public:
 	{
 		if (config.vortex || (Input::Mouse::onMove() && Input::Mouse::getLeftDown()))
 		{
-			context->setPipelineState(splatVelocityState);
+			context->setPipelineState(*splatVelocityState);
 			context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
 			context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 			context->uavBarrier({ velocityTex->write()->getTexture() });
 			velocityTex->swap();
 
-			context->setPipelineState(splatColorState);
+			context->setPipelineState(*splatColorState);
 			context->setCSConstants({ colorTex->read()->getAllSRVIndex(),colorTex->write()->getUAVMipIndex(0) }, 0);
 			context->dispatch(colorTex->width / 16, colorTex->height / 9, 1);
 			context->uavBarrier({ colorTex->write()->getTexture() });
@@ -216,20 +172,20 @@ public:
 	void vorticityConfinement()
 	{
 		//calculate vorticity
-		context->setPipelineState(vorticityState);
+		context->setPipelineState(*vorticityState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),vorticityTex->getUAVMipIndex(0) }, 0);
 		context->dispatch(vorticityTex->getTexture()->getWidth() / 16, vorticityTex->getTexture()->getHeight() / 9, 1);
 		context->uavBarrier({ vorticityTex->getTexture() });
 
 		//apply vorticity confinement
-		context->setPipelineState(vorticityConfinementState);
+		context->setPipelineState(*vorticityConfinementState);
 		context->setCSConstants({ vorticityTex->getAllSRVIndex(),velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
 
 		//obstacle
-		context->setPipelineState(velocityBoundaryState);
+		context->setPipelineState(*velocityBoundaryState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
@@ -239,13 +195,13 @@ public:
 	void project()
 	{
 		//calculate divergence
-		context->setPipelineState(divergenceState);
+		context->setPipelineState(*divergenceState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),divergenceTex->getUAVMipIndex(0) }, 0);
 		context->dispatch(divergenceTex->getTexture()->getWidth() / 16, divergenceTex->getTexture()->getHeight() / 9, 1);
 		context->uavBarrier({ divergenceTex->getTexture() });
 
 		//reset pressure
-		context->setPipelineState(pressureResetState);
+		context->setPipelineState(*pressureResetState);
 		context->setCSConstants({ pressureTex->write()->getUAVMipIndex(0) }, 0);
 		context->dispatch(pressureTex->width / 16, pressureTex->height / 9, 1);
 		context->uavBarrier({ pressureTex->write()->getTexture() });
@@ -254,14 +210,14 @@ public:
 		//calculate pressure
 		for (UINT i = 0; i < config.pressureIteraion; i++)
 		{
-			context->setPipelineState(pressureState);
+			context->setPipelineState(*pressureState);
 			context->setCSConstants({ divergenceTex->getAllSRVIndex(),pressureTex->read()->getAllSRVIndex(),pressureTex->write()->getUAVMipIndex(0) }, 0);
 			context->dispatch(pressureTex->width / 16, pressureTex->height / 9, 1);
 			context->uavBarrier({ pressureTex->write()->getTexture() });
 			pressureTex->swap();
 
 			//obstacle
-			context->setPipelineState(pressureBoundaryState);
+			context->setPipelineState(*pressureBoundaryState);
 			context->setCSConstants({ pressureTex->read()->getAllSRVIndex(),pressureTex->write()->getUAVMipIndex(0) }, 0);
 			context->dispatch(pressureTex->width / 16, pressureTex->height / 9, 1);
 			context->uavBarrier({ pressureTex->write()->getTexture() });
@@ -269,14 +225,14 @@ public:
 		}
 
 		//velocity subtract gradient of pressure
-		context->setPipelineState(gradientSubtractState);
+		context->setPipelineState(*gradientSubtractState);
 		context->setCSConstants({ pressureTex->read()->getAllSRVIndex(),velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
 
 		//obstacle
-		context->setPipelineState(velocityBoundaryState);
+		context->setPipelineState(*velocityBoundaryState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
@@ -286,21 +242,21 @@ public:
 	void advect()
 	{
 		//velocity advection
-		context->setPipelineState(velocityAdvectionState);
+		context->setPipelineState(*velocityAdvectionState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
 
 		//obstacle
-		context->setPipelineState(velocityBoundaryState);
+		context->setPipelineState(*velocityBoundaryState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, 0);
 		context->dispatch(velocityTex->width / 16, velocityTex->height / 9, 1);
 		context->uavBarrier({ velocityTex->write()->getTexture() });
 		velocityTex->swap();
 
 		//color advection
-		context->setPipelineState(colorAdvectionState);
+		context->setPipelineState(*colorAdvectionState);
 		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),colorTex->read()->getAllSRVIndex(),colorTex->write()->getUAVMipIndex(0) }, 0);
 		context->dispatch(colorTex->width / 16, colorTex->height / 9, 1);
 		context->uavBarrier({ colorTex->write()->getTexture() });
@@ -345,7 +301,7 @@ public:
 
 		simulationParamBuffer->simpleUpdate(&simulationParam);
 
-		context->setGlobalConstantBuffer(simulationParamBuffer);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 
 		if (config.logicRunning)
 		{
@@ -362,58 +318,58 @@ public:
 
 		if (config.phongShading)
 		{
-			context->setPipelineState(phongShadeState);
+			context->setPipelineState(*phongShadeState);
 			context->setCSConstants({ colorTex->read()->getAllSRVIndex(),phongShadeTexture->getUAVMipIndex(0) }, 0);
 			context->dispatch(phongShadeTexture->getTexture()->getWidth() / 16, phongShadeTexture->getTexture()->getHeight() / 9, 1);
 			context->uavBarrier({ phongShadeTexture->getTexture() });
 
-			outputTexture = effect->process(phongShadeTexture);
+			outputTexture = effect->process(*phongShadeTexture);
 		}
 		else
 		{
-			outputTexture = effect->process(colorTex->read());
+			outputTexture = effect->process(*colorTex->read());
 		}
 
 		TextureRenderView* texture = nullptr;
 
 		if (config.edgeHighlight)
 		{
-			context->setPipelineState(edgeHighlightState);
+			context->setPipelineState(*edgeHighlightState);
 			context->setCSConstants({ outputTexture->getAllSRVIndex(),edgeHighlightTexture->getUAVMipIndex(0) }, 0);
 			context->dispatch(edgeHighlightTexture->getTexture()->getWidth() / 16, edgeHighlightTexture->getTexture()->getHeight() / 9, 1);
 			context->uavBarrier({ edgeHighlightTexture->getTexture() });
 
-			texture = edgeHighlightTexture;
+			texture = edgeHighlightTexture.get();
 		}
 		else
 		{
 			texture = outputTexture;
 		}
 
-		auto toneMappedTexture = ToneMapEffect::process(context, texture);
+		auto toneMappedTexture = ToneMapEffect::process(context, *texture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
 
-		blit(gammaCorrectedTexture);
+		blit(*gammaCorrectedTexture);
 	}
 
 private:
 
-	BloomEffect* effect;
+	UniquePtr<BloomEffect> effect;
 
-	SwapTexture* colorTex;
+	UniquePtr<SwapTexture> colorTex;
 
-	SwapTexture* velocityTex;
+	UniquePtr<SwapTexture> velocityTex;
 
-	TextureRenderView* vorticityTex;
+	UniquePtr<TextureRenderView> vorticityTex;
 
-	TextureRenderView* divergenceTex;
+	UniquePtr<TextureRenderView> divergenceTex;
 
-	SwapTexture* pressureTex;
+	UniquePtr<SwapTexture> pressureTex;
 
-	TextureRenderView* phongShadeTexture;
+	UniquePtr<TextureRenderView> phongShadeTexture;
 
-	TextureRenderView* edgeHighlightTexture;
+	UniquePtr<TextureRenderView> edgeHighlightTexture;
 
 	struct Configuration
 	{
@@ -452,66 +408,66 @@ private:
 		DirectX::XMFLOAT4 padding1[10] = {};
 	} simulationParam;
 
-	int kDownEventID;
+	uint64_t kDownEventID;
 
-	DynamicCBuffer* simulationParamBuffer;
+	UniquePtr<DynamicCBuffer> simulationParamBuffer;
 
 	Utils::Timer colorUpdateTimer;
 
-	Shader* splatVelocityCS;
+	UniquePtr<Shader> splatVelocityCS;
 
-	PipelineState* splatVelocityState;
+	UniquePtr<PipelineState> splatVelocityState;
 
-	Shader* splatColorCS;
+	UniquePtr<Shader> splatColorCS;
 
-	PipelineState* splatColorState;
+	UniquePtr<PipelineState> splatColorState;
 
-	Shader* vorticityCS;
+	UniquePtr<Shader> vorticityCS;
 
-	PipelineState* vorticityState;
+	UniquePtr<PipelineState> vorticityState;
 
-	Shader* vorticityConfinementCS;
+	UniquePtr<Shader> vorticityConfinementCS;
 
-	PipelineState* vorticityConfinementState;
+	UniquePtr<PipelineState> vorticityConfinementState;
 
-	Shader* divergenceCS;
+	UniquePtr<Shader> divergenceCS;
 
-	PipelineState* divergenceState;
+	UniquePtr<PipelineState> divergenceState;
 
-	Shader* pressureResetCS;
+	UniquePtr<Shader> pressureResetCS;
 
-	PipelineState* pressureResetState;
+	UniquePtr<PipelineState> pressureResetState;
 
-	Shader* pressureCS;
+	UniquePtr<Shader> pressureCS;
 
-	PipelineState* pressureState;
+	UniquePtr<PipelineState> pressureState;
 
-	Shader* gradientSubtractCS;
+	UniquePtr<Shader> gradientSubtractCS;
 
-	PipelineState* gradientSubtractState;
+	UniquePtr<PipelineState> gradientSubtractState;
 
-	Shader* velocityAdvectionCS;
+	UniquePtr<Shader> velocityAdvectionCS;
 
-	PipelineState* velocityAdvectionState;
+	UniquePtr<PipelineState> velocityAdvectionState;
 
-	Shader* colorAdvectionCS;
+	UniquePtr<Shader> colorAdvectionCS;
 
-	PipelineState* colorAdvectionState;
+	UniquePtr<PipelineState> colorAdvectionState;
 
-	Shader* velocityBoundaryCS;
+	UniquePtr<Shader> velocityBoundaryCS;
 
-	PipelineState* velocityBoundaryState;
+	UniquePtr<PipelineState> velocityBoundaryState;
 
-	Shader* pressureBoundaryCS;
+	UniquePtr<Shader> pressureBoundaryCS;
 
-	PipelineState* pressureBoundaryState;
+	UniquePtr<PipelineState> pressureBoundaryState;
 
-	Shader* phongShadeCS;
+	UniquePtr<Shader> phongShadeCS;
 
-	PipelineState* phongShadeState;
+	UniquePtr<PipelineState> phongShadeState;
 
-	Shader* edgeHighlightCS;
+	UniquePtr<Shader> edgeHighlightCS;
 
-	PipelineState* edgeHighlightState;
+	UniquePtr<PipelineState> edgeHighlightState;
 
 };

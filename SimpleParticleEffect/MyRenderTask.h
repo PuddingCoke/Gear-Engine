@@ -22,7 +22,7 @@ public:
 
 		particleCS = Shader::create(L"ParticleCS.hlsl", DXCCompiler::ShaderProfile::COMPUTE);
 
-		particleComputeState = PipelineStateBuilder::build(particleCS);
+		particleComputeState = PipelineStateBuilder::build(*particleCS);
 
 		particleRenderState = PipelineStateBuilder()
 			.setInputElements({
@@ -35,14 +35,14 @@ public:
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::POINT)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
-			.setVS(particleVS)
-			.setGS(particleGS)
-			.setPS(particlePS)
+			.setVS(*particleVS)
+			.setGS(*particleGS)
+			.setPS(*particlePS)
 			.build();
 
-		bloomEffect = new BloomEffect(context, Core::Graphics::getWidth(), Core::Graphics::getHeight(), resManager);
+		bloomEffect = BloomEffect::create(context, Core::Graphics::getWidth(), Core::Graphics::getHeight(), resManager);
 
-		fxaaEffect = new FXAAEffect(context, Core::Graphics::getWidth(), Core::Graphics::getHeight());
+		fxaaEffect = FXAAEffect::create(context, Core::Graphics::getWidth(), Core::Graphics::getHeight());
 
 		originTexture = ResourceManager::createTextureRenderView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
 			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black);
@@ -90,25 +90,6 @@ public:
 
 	~MyRenderTask()
 	{
-		delete particleComputeState;
-
-		delete particleRenderState;
-
-		delete bloomEffect;
-		delete fxaaEffect;
-
-		delete particleVS;
-		delete particleGS;
-		delete particlePS;
-
-		delete particleCS;
-
-		delete originTexture;
-
-		delete depthTexture;
-
-		delete positionBuffer;
-		delete colorBuffer;
 	}
 
 	void imGUICall() override
@@ -130,7 +111,7 @@ protected:
 
 	void recordCommand() override
 	{
-		context->setPipelineState(particleComputeState);
+		context->setPipelineState(*particleComputeState);
 
 		context->setCSConstants({ positionBuffer->getUAVIndex() }, 0);
 
@@ -142,7 +123,7 @@ protected:
 
 		const D3D12Resource::DepthStencilDesc dsDesc = depthTexture->getDSVMipHandle(0);
 
-		context->setPipelineState(particleRenderState);
+		context->setPipelineState(*particleRenderState);
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, dsDesc);
 
@@ -163,13 +144,13 @@ protected:
 
 		context->draw(numParticles, 1, 0, 0);
 
-		auto bloomTexture = bloomEffect->process(originTexture);
+		auto bloomTexture = bloomEffect->process(*originTexture);
 
-		auto toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
 
-		blit(gammaCorrectedTexture);
+		blit(*gammaCorrectedTexture);
 	}
 
 private:
@@ -182,28 +163,28 @@ private:
 		int simulationSteps;
 	} simulationParam;
 
-	BloomEffect* bloomEffect;
+	UniquePtr<BloomEffect> bloomEffect;
 
-	FXAAEffect* fxaaEffect;
+	UniquePtr<FXAAEffect> fxaaEffect;
 
-	PipelineState* particleComputeState;
+	UniquePtr<PipelineState> particleComputeState;
 
-	PipelineState* particleRenderState;
+	UniquePtr<PipelineState> particleRenderState;
 
-	Shader* particleVS;
+	UniquePtr<Shader> particleVS;
 
-	Shader* particleGS;
+	UniquePtr<Shader> particleGS;
 
-	Shader* particlePS;
+	UniquePtr<Shader> particlePS;
 
-	Shader* particleCS;
+	UniquePtr<Shader> particleCS;
 
-	TextureRenderView* originTexture;
+	UniquePtr<TextureRenderView> originTexture;
 
-	TextureDepthView* depthTexture;
+	UniquePtr<TextureDepthView> depthTexture;
 
-	BufferView* positionBuffer;
+	UniquePtr<BufferView> positionBuffer;
 
-	BufferView* colorBuffer;
+	UniquePtr<BufferView> colorBuffer;
 
 };

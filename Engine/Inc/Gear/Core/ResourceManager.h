@@ -105,6 +105,14 @@ namespace Gear
 			UniquePtr<Resource::TextureRenderView> createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent,
 				const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
 
+			static UniquePtr<Resource::SwapBuffer> createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& readBufferFunc, const std::function<UniquePtr<Resource::BufferView>(void)>& writeBufferFunc);
+
+			static UniquePtr<Resource::SwapBuffer> createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& bufferFunc);
+
+			static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::TextureRenderView>(void)>& writeTextureFunc);
+
+			static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& textureFunc);
+
 		protected:
 
 			//处理高级任务，比如从等距柱状图创建立方体贴图

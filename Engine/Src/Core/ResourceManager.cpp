@@ -831,3 +831,23 @@ UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::
 		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, srvFormat, uavFormat, rtvFormat);
 	}
 }
+
+UniquePtr<Gear::Core::Resource::SwapBuffer> Gear::Core::ResourceManager::createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& readBufferFunc, const std::function<UniquePtr<Resource::BufferView>(void)>& writeBufferFunc)
+{
+	return makeUnique<Resource::SwapBuffer>(readBufferFunc, writeBufferFunc);
+}
+
+UniquePtr<Gear::Core::Resource::SwapBuffer> Gear::Core::ResourceManager::createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& bufferFunc)
+{
+	return makeUnique<Resource::SwapBuffer>(bufferFunc, bufferFunc);
+}
+
+UniquePtr<Gear::Core::Resource::SwapTexture> Gear::Core::ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::TextureRenderView>(void)>& writeTextureFunc)
+{
+	return makeUnique<Resource::SwapTexture>(readTextureFunc, writeTextureFunc);
+}
+
+UniquePtr<Gear::Core::Resource::SwapTexture> Gear::Core::ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& textureFunc)
+{
+	return makeUnique<Resource::SwapTexture>(textureFunc, textureFunc);
+}

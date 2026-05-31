@@ -20,13 +20,13 @@ public:
 			.setDefaultFullScreenState()
 			.setBlendState(PipelineStateHelper::blendDefault)
 			.setRTVFormats({ accumulatedTexture->getTexture()->getFormat() })
-			.setPS(accumulateShader)
+			.setPS(*accumulateShader)
 			.build();
 
 		displayState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
 			.setRTVFormats({ Graphics::backBufferFormat })
-			.setPS(displayShader)
+			.setPS(*displayShader)
 			.build();
 
 		Input::Mouse::addMoveEvent([this]()
@@ -59,15 +59,6 @@ public:
 
 	~MyRenderTask()
 	{
-		delete accumulateShader;
-
-		delete displayShader;
-
-		delete accumulatedTexture;
-
-		delete accumulateState;
-
-		delete displayState;
 	}
 
 protected:
@@ -86,7 +77,7 @@ protected:
 
 		context->setScissorRect(0.f, 0.f, static_cast<float>(Graphics::getWidth()), static_cast<float>(Graphics::getHeight()));
 
-		context->setPipelineState(accumulateState);
+		context->setPipelineState(*accumulateState);
 
 		context->setPSConstants(2, &accumulateParam, 0);
 
@@ -96,7 +87,7 @@ protected:
 
 		context->draw(3, 1, 0, 0);
 
-		context->setPipelineState(displayState);
+		context->setPipelineState(*displayState);
 
 		context->setPSConstants({ accumulatedTexture->getAllSRVIndex() }, 0);
 
@@ -107,15 +98,15 @@ protected:
 
 private:
 
-	Shader* accumulateShader;
+	UniquePtr<Shader> accumulateShader;
 
-	Shader* displayShader;
+	UniquePtr<Shader> displayShader;
 
-	TextureRenderView* accumulatedTexture;
+	UniquePtr<TextureRenderView> accumulatedTexture;
 
-	PipelineState* accumulateState;
+	UniquePtr<PipelineState> accumulateState;
 
-	PipelineState* displayState;
+	UniquePtr<PipelineState> displayState;
 
 	struct CameraParam
 	{

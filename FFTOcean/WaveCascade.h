@@ -36,32 +36,15 @@ public:
 
 	~WaveCascade()
 	{
-		delete waveDataTexture;
-
-		delete waveSpectrumTexture;
-
-		delete DxDz;
-
-		delete DyDxz;
-
-		delete DyxDyz;
-
-		delete DxxDzz;
-
-		delete displacementTexture;
-
-		delete derivativeTexture;
-
-		delete jacobianTexture;
 	}
 
-	void ifftPermutation(TextureRenderView* const inputTexture)
+	void ifftPermutation(TextureRenderView& inputTexture)
 	{
-		context->setPipelineState(ifftState);
+		context->setPipelineState(*ifftState);
 
 		context->setCSConstants({
 			tempTexture->getUAVMipIndex(0),
-			inputTexture->getAllSRVIndex() }, 0);
+			inputTexture.getAllSRVIndex() }, 0);
 
 		context->dispatch(size, 1, 1);
 
@@ -69,28 +52,28 @@ public:
 			tempTexture->getTexture() });
 
 		context->setCSConstants({
-			inputTexture->getUAVMipIndex(0),
+			inputTexture.getUAVMipIndex(0),
 			tempTexture->getAllSRVIndex() }, 0);
 
 		context->dispatch(size, 1, 1);
 
 		context->uavBarrier({
-			inputTexture->getTexture() });
+			inputTexture.getTexture() });
 
-		context->setPipelineState(permutationState);
+		context->setPipelineState(*permutationState);
 
 		context->setCSConstants({
-			inputTexture->getUAVMipIndex(0) }, 0);
+			inputTexture.getUAVMipIndex(0) }, 0);
 
 		context->dispatch(size / 8, size / 8, 1);
 
 		context->uavBarrier({
-			inputTexture->getTexture() });
+			inputTexture.getTexture() });
 	}
 
-	void calculateInitialSpectrum(ImmutableCBuffer* const spectrumParamBuffer)
+	void calculateInitialSpectrum(ImmutableCBuffer& spectrumParamBuffer)
 	{
-		context->setPipelineState(spectrumState);
+		context->setPipelineState(*spectrumState);
 
 		context->setCSConstants({
 			tildeh0Texture->getUAVMipIndex(0),
@@ -105,7 +88,7 @@ public:
 			tildeh0Texture->getTexture(),
 			waveDataTexture->getTexture() });
 
-		context->setPipelineState(conjugateState);
+		context->setPipelineState(*conjugateState);
 
 		context->setCSConstants({
 			waveSpectrumTexture->getUAVMipIndex(0),
@@ -119,7 +102,7 @@ public:
 
 	void calculateTimeDependentSpectrum()
 	{
-		context->setPipelineState(displacementSpectrumState);
+		context->setPipelineState(*displacementSpectrumState);
 
 		context->setCSConstants({
 			DxDz->getUAVMipIndex(0),
@@ -140,15 +123,15 @@ public:
 
 	void calculateDisplacementAndDerivative()
 	{
-		ifftPermutation(DxDz);
+		ifftPermutation(*DxDz);
 
-		ifftPermutation(DyDxz);
+		ifftPermutation(*DyDxz);
 
-		ifftPermutation(DyxDyz);
+		ifftPermutation(*DyxDyz);
 
-		ifftPermutation(DxxDzz);
+		ifftPermutation(*DxxDzz);
 
-		context->setPipelineState(waveMergeState);
+		context->setPipelineState(*waveMergeState);
 
 		context->setCSConstants({
 			displacementTexture->getUAVMipIndex(0),
@@ -188,17 +171,17 @@ public:
 	static TextureRenderView* tildeh0Texture;
 
 	//Dx Dy Dz
-	TextureRenderView* displacementTexture;
+	UniquePtr<TextureRenderView> displacementTexture;
 
 	//dDy/dx dDy/dz dDx/dx dDz/dz
-	TextureRenderView* derivativeTexture;
+	UniquePtr<TextureRenderView> derivativeTexture;
 
 	//J
-	TextureRenderView* jacobianTexture;
+	UniquePtr<TextureRenderView> jacobianTexture;
 
 private:
 
-	static TextureRenderView* createTexture(const UINT& resolution, const DXGI_FORMAT& format)
+	static UniquePtr<TextureRenderView> createTexture(const UINT& resolution, const DXGI_FORMAT& format)
 	{
 		return ResourceManager::createTextureRenderView(resolution, resolution, format, 1, 1, false, true, format, format, FMT::UNKNOWN);
 	}
@@ -209,23 +192,23 @@ private:
 
 	//k.x 1.0/length(K) k.z angularSpeed
 	//x y z w
-	TextureRenderView* waveDataTexture;
+	UniquePtr<TextureRenderView> waveDataTexture;
 
 	//(tildeh0(k), conj(tildeh0(-k)))
 	//x y z w
-	TextureRenderView* waveSpectrumTexture;
+	UniquePtr<TextureRenderView> waveSpectrumTexture;
 
 	//Dx Dz
-	TextureRenderView* DxDz;
+	UniquePtr<TextureRenderView> DxDz;
 
 	//Dy dDx/dz
-	TextureRenderView* DyDxz;
+	UniquePtr<TextureRenderView> DyDxz;
 
 	//dDy/dx dDy/dz
-	TextureRenderView* DyxDyz;
+	UniquePtr<TextureRenderView> DyxDyz;
 
 	//dDx/dx dDz/dz
-	TextureRenderView* DxxDzz;
+	UniquePtr<TextureRenderView> DxxDzz;
 
 };
 

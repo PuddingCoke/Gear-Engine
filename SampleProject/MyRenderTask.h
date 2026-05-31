@@ -15,15 +15,12 @@ public:
 		pipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
 			.setRTVFormats({ Graphics::backBufferFormat })
-			.setPS(pixelShader)
+			.setPS(*pixelShader)
 			.build();
 	}
 
 	~MyRenderTask()
 	{
-		delete pipelineState;
-
-		delete pixelShader;
 	}
 
 protected:
@@ -32,7 +29,7 @@ protected:
 	{
 		context->setDefRenderTarget();
 
-		context->setPipelineState(pipelineState);
+		context->setPipelineState(*pipelineState);
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
@@ -43,8 +40,8 @@ protected:
 
 private:
 
-	PipelineState* pipelineState;
+	UniquePtr<PipelineState> pipelineState;
 
-	Shader* pixelShader;
+	UniquePtr<Shader> pixelShader;
 
 };

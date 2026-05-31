@@ -36,7 +36,7 @@ public:
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
 			.setVS(GlobalShader::getTextureCubeVS())
-			.setPS(skyboxPS)
+			.setPS(*skyboxPS)
 			.build();
 
 		prefilterCube = ResourceManager::createTextureRenderView(1024, 1024, FMT::RGBA16F, 6, 6, true, true,
@@ -86,8 +86,8 @@ public:
 		}
 
 		prefilterState = PipelineStateBuilder()
-			.setVS(prefilterVS)
-			.setPS(prefilterPS)
+			.setVS(*prefilterVS)
+			.setPS(*prefilterPS)
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
@@ -101,8 +101,8 @@ public:
 		irradianceCube->getTexture()->setName(L"Irradiance Cube");
 
 		irradianceState = PipelineStateBuilder()
-			.setVS(prefilterVS)
-			.setPS(irradiancePS)
+			.setVS(*prefilterVS)
+			.setPS(*irradiancePS)
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
@@ -119,48 +119,6 @@ public:
 
 	~MyRenderTask()
 	{
-		if (renderTexture)
-			delete renderTexture;
-
-		if (depthTexture)
-			delete depthTexture;
-
-		if (envCube)
-			delete envCube;
-
-		if (irradianceCube)
-			delete irradianceCube;
-
-		if (prefilterCube)
-			delete prefilterCube;
-
-		if (skyboxPS)
-			delete skyboxPS;
-
-		if (skyboxState)
-			delete skyboxState;
-
-		if (viewProjMatrixBuffer)
-			delete viewProjMatrixBuffer;
-
-		if (irradiancePS)
-			delete irradiancePS;
-
-		if (irradianceState)
-			delete irradianceState;
-
-		if (prefilterVS)
-			delete prefilterVS;
-
-		if (prefilterPS)
-			delete prefilterPS;
-
-		if (prefilterState)
-			delete prefilterState;
-
-		if (brdfLUTTexture)
-			delete brdfLUTTexture;
-
 	}
 
 protected:
@@ -173,7 +131,7 @@ protected:
 
 			const uint32_t height = (prefilterCube->getTexture()->getHeight() >> i);
 
-			context->setPipelineState(prefilterState);
+			context->setPipelineState(*prefilterState);
 
 			context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
@@ -181,7 +139,7 @@ protected:
 
 			context->setRenderTargets({ prefilterCube->getRTVMipHandle(i) });
 
-			context->setVSConstantBuffer(viewProjMatrixBuffer);
+			context->setVSConstantBuffer(*viewProjMatrixBuffer);
 
 			context->setPSConstants({ envCube->getAllSRVIndex() }, 0);
 
@@ -195,7 +153,7 @@ protected:
 
 	void calcIrradianceCube()
 	{
-		context->setPipelineState(irradianceState);
+		context->setPipelineState(*irradianceState);
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
@@ -219,10 +177,10 @@ protected:
 		context->clearDepthStencil(depthTexture->getDSVMipHandle(0), D3D12_CLEAR_FLAG_DEPTH, 1.f, 0);
 
 		//基本物体
-		scene.draw(context, prefilterCube, brdfLUTTexture, irradianceCube);
+		scene.draw(context, *prefilterCube, *brdfLUTTexture, *irradianceCube);
 
 		//天空盒
-		context->setPipelineState(skyboxState);
+		context->setPipelineState(*skyboxState);
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
@@ -234,11 +192,11 @@ protected:
 
 		context->draw(36, 1, 0, 0);
 
-		auto toneMappedTexture = ToneMapEffect::process(context, renderTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, *renderTexture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
 
-		blit(gammaCorrectedTexture);
+		blit(*gammaCorrectedTexture);
 	}
 
 	void imGUICall() override
@@ -255,33 +213,33 @@ private:
 
 	Scene scene;
 
-	TextureRenderView* renderTexture;
+	UniquePtr<TextureRenderView> renderTexture;
 
-	TextureDepthView* depthTexture;
+	UniquePtr<TextureDepthView> depthTexture;
 
-	TextureRenderView* envCube;
+	UniquePtr<TextureRenderView> envCube;
 
-	TextureRenderView* irradianceCube;
+	UniquePtr<TextureRenderView> irradianceCube;
 
-	TextureRenderView* prefilterCube;
+	UniquePtr<TextureRenderView> prefilterCube;
 
-	TextureRenderView* brdfLUTTexture;
+	UniquePtr<TextureRenderView> brdfLUTTexture;
 
-	Shader* skyboxPS;
+	UniquePtr<Shader> skyboxPS;
 
-	PipelineState* skyboxState;
+	UniquePtr<PipelineState> skyboxState;
 
-	Shader* irradiancePS;
+	UniquePtr<Shader> irradiancePS;
 
-	PipelineState* irradianceState;
+	UniquePtr<PipelineState> irradianceState;
 
-	Shader* prefilterVS;
+	UniquePtr<Shader> prefilterVS;
 
-	Shader* prefilterPS;
+	UniquePtr<Shader> prefilterPS;
 
-	PipelineState* prefilterState;
+	UniquePtr<PipelineState> prefilterState;
 
 	//使用SV_RenderTargetIndex一次性绘制到六个面上分别需要六个对应的矩阵
-	ImmutableCBuffer* viewProjMatrixBuffer;
+	UniquePtr<ImmutableCBuffer> viewProjMatrixBuffer;
 
 };

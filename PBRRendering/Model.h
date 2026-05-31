@@ -62,16 +62,11 @@ public:
 
 	~Model()
 	{
-		if (vertexBuffer)
-			delete vertexBuffer;
-
-		if (materialBuffer)
-			delete materialBuffer;
 	}
 
 	void draw(GraphicsContext* const context) const
 	{
-		context->setPSConstantBuffer(materialBuffer);
+		context->setPSConstantBuffer(*materialBuffer);
 
 		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
 
@@ -80,8 +75,8 @@ public:
 
 private:
 
-	BufferView* vertexBuffer;
+	UniquePtr<BufferView> vertexBuffer;
 
-	ImmutableCBuffer* materialBuffer;
+	UniquePtr<ImmutableCBuffer> materialBuffer;
 
 };

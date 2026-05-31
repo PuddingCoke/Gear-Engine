@@ -6,11 +6,11 @@ class Scene
 {
 public:
 
-	PipelineState* pipelineState;
+	UniquePtr<PipelineState> pipelineState;
 
-	Shader* vertexShader;
+	UniquePtr<Shader> vertexShader;
 
-	Shader* pixelShader;
+	UniquePtr<Shader> pixelShader;
 
 	struct SceneInfo
 	{
@@ -46,22 +46,13 @@ public:
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats({ rtvFormat })
 			.setDSVFormat(FMT::D32F)
-			.setVS(vertexShader)
-			.setPS(pixelShader)
+			.setVS(*vertexShader)
+			.setPS(*pixelShader)
 			.build();
 	}
 
 	~Scene()
 	{
-		if (vertexShader)
-			delete vertexShader;
-
-		if (pixelShader)
-			delete pixelShader;
-
-		if (pipelineState)
-			delete pipelineState;
-
 		for (uint32_t i = 0; i < models.size(); i++)
 		{
 			if (models[i])
@@ -71,11 +62,11 @@ public:
 		}
 	}
 
-	void draw(GraphicsContext* const context, TextureRenderView* const prefilterTexture, TextureRenderView* const brdfLUTTexture, TextureRenderView* const irradianceTexture)
+	void draw(GraphicsContext* const context, TextureRenderView& prefilterTexture, TextureRenderView& brdfLUTTexture, TextureRenderView& irradianceTexture)
 	{
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setPipelineState(pipelineState);
+		context->setPipelineState(*pipelineState);
 
 		/*
 		cbuffer SceneInfo : register(b2)
@@ -95,7 +86,7 @@ public:
 
 		context->setPSConstants(12, &sceneInfo, 0);
 
-		context->setPSConstants({ prefilterTexture->getAllSRVIndex(),brdfLUTTexture->getAllSRVIndex(),irradianceTexture->getAllSRVIndex() }, 12);
+		context->setPSConstants({ prefilterTexture.getAllSRVIndex(),brdfLUTTexture.getAllSRVIndex(),irradianceTexture.getAllSRVIndex() }, 12);
 
 		for (uint32_t i = 0; i < models.size(); i++)
 		{

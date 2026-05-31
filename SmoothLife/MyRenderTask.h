@@ -16,13 +16,13 @@ public:
 		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true,
 			FMT::RGBA8UN, FMT::RGBA8UN, FMT::UNKNOWN))
 	{
-		whiteNoiseState = PipelineStateBuilder::build(whiteNoiseCS);
+		whiteNoiseState = PipelineStateBuilder::build(*whiteNoiseCS);
 
-		evolveState = PipelineStateBuilder::build(evolveCS);
+		evolveState = PipelineStateBuilder::build(*evolveCS);
 
-		visualizeState = PipelineStateBuilder::build(visualizeCS);
+		visualizeState = PipelineStateBuilder::build(*visualizeCS);
 
-		swapTexture = new SwapTexture([] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true,
+		swapTexture = ResourceManager::createSwapTexture([] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true,
 			FMT::R32F, FMT::R32F, FMT::UNKNOWN); });
 
 		initialize();
@@ -30,21 +30,6 @@ public:
 
 	~MyRenderTask()
 	{
-		delete whiteNoiseState;
-
-		delete evolveState;
-		
-		delete visualizeState;
-
-		delete whiteNoiseCS;
-
-		delete evolveCS;
-
-		delete visualizeCS;
-
-		delete swapTexture;
-
-		delete originTexture;
 	}
 
 	/*
@@ -71,55 +56,55 @@ public:
 
 protected:
 
-	void whiteNoise(SwapTexture* swapTexture)
+	void whiteNoise(SwapTexture& swapTexture)
 	{
-		context->setPipelineState(whiteNoiseState);
+		context->setPipelineState(*whiteNoiseState);
 
-		context->setCSConstants({ swapTexture->write()->getUAVMipIndex(0) }, 0);
+		context->setCSConstants({ swapTexture.write()->getUAVMipIndex(0) }, 0);
 
 		UINT uintSeed = Utils::Random::genUint();
 
 		context->setCSConstants(1, &uintSeed, 1);
 
-		context->dispatch(swapTexture->width / 16, swapTexture->height / 9, 1);
+		context->dispatch(swapTexture.width / 16, swapTexture.height / 9, 1);
 
-		context->uavBarrier({ swapTexture->write()->getTexture() });
+		context->uavBarrier({ swapTexture.write()->getTexture() });
 
-		swapTexture->swap();
+		swapTexture.swap();
 	}
 
-	void evolve(SwapTexture* swapTexture)
+	void evolve(SwapTexture& swapTexture)
 	{
-		context->setPipelineState(evolveState);
+		context->setPipelineState(*evolveState);
 
-		context->setCSConstants({ swapTexture->read()->getAllSRVIndex(),
-			swapTexture->write()->getUAVMipIndex(0) }, 0);
+		context->setCSConstants({ swapTexture.read()->getAllSRVIndex(),
+			swapTexture.write()->getUAVMipIndex(0) }, 0);
 
 		context->setCSConstants(8, &simulationParam, 2);
 
-		context->dispatch(swapTexture->width / 16, swapTexture->height / 9, 1);
+		context->dispatch(swapTexture.width / 16, swapTexture.height / 9, 1);
 
-		context->uavBarrier({ swapTexture->write()->getTexture() });
+		context->uavBarrier({ swapTexture.write()->getTexture() });
 
-		swapTexture->swap();
+		swapTexture.swap();
 	}
 
 	void initialize()
 	{
-		whiteNoise(swapTexture);
+		whiteNoise(*swapTexture);
 	}
 
 	void step()
 	{
 		while (timer.update(Graphics::getDeltaTime()))
 		{
-			evolve(swapTexture);
+			evolve(*swapTexture);
 		}
 	}
 
 	void visualize()
 	{
-		context->setPipelineState(visualizeState);
+		context->setPipelineState(*visualizeState);
 
 		context->setCSConstants({ originTexture->getUAVMipIndex(0),
 			swapTexture->read()->getAllSRVIndex() }, 0);
@@ -128,7 +113,7 @@ protected:
 
 		context->uavBarrier({ originTexture->getTexture() });
 
-		blit(originTexture);
+		blit(*originTexture);
 	}
 
 	void recordCommand() override
@@ -137,7 +122,7 @@ protected:
 
 		if (Input::Keyboard::onKeyDown(Input::Keyboard::K))
 		{
-			whiteNoise(swapTexture);
+			whiteNoise(*swapTexture);
 		}
 
 		step();
@@ -159,21 +144,21 @@ private:
 		float alpha_m = 0.147f;
 	}simulationParam;
 
-	Shader* whiteNoiseCS;
+	UniquePtr<Shader> whiteNoiseCS;
 
-	PipelineState* whiteNoiseState;
+	UniquePtr<PipelineState> whiteNoiseState;
 
-	Shader* evolveCS;
+	UniquePtr<Shader> evolveCS;
 
-	PipelineState* evolveState;
+	UniquePtr<PipelineState> evolveState;
 
-	Shader* visualizeCS;
+	UniquePtr<Shader> visualizeCS;
 
-	PipelineState* visualizeState;
+	UniquePtr<PipelineState> visualizeState;
 
-	SwapTexture* swapTexture;
+	UniquePtr<SwapTexture> swapTexture;
 
-	TextureRenderView* originTexture;
+	UniquePtr<TextureRenderView> originTexture;
 
 	Utils::Timer timer;
 

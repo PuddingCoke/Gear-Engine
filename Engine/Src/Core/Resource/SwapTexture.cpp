@@ -7,11 +7,6 @@ Gear::Core::Resource::SwapTexture::SwapTexture(const std::function<UniquePtr<Tex
 {
 }
 
-Gear::Core::Resource::SwapTexture::SwapTexture(const std::function<UniquePtr<TextureRenderView>(void)>& textureFunc) :
-	SwapTexture(textureFunc, textureFunc)
-{
-}
-
 Gear::Core::Resource::SwapTexture::~SwapTexture()
 {
 }

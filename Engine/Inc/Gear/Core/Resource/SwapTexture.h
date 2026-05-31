@@ -21,8 +21,6 @@ namespace Gear
 
 				SwapTexture(const std::function<UniquePtr<TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<TextureRenderView>(void)>& writeTextureFunc);
 
-				SwapTexture(const std::function<UniquePtr<TextureRenderView>(void)>& textureFunc);
-
 				~SwapTexture();
 
 				const uint32_t width;

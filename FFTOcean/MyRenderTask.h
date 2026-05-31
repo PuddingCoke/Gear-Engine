@@ -17,7 +17,7 @@ public:
 		camera(camera),
 		renderParamBuffer(ResourceManager::createDynamicCBuffer(sizeof(RenderParam))),
 		spectrumParamBuffer{ ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true),ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true),ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true) },
-		cascade{ new WaveCascade(textureResolution,context),new WaveCascade(textureResolution,context),new WaveCascade(textureResolution,context) },
+		cascade{ makeUnique<WaveCascade>(textureResolution,context),makeUnique<WaveCascade>(textureResolution,context),makeUnique<WaveCascade>(textureResolution,context) },
 		textureCubePS(Shader::create(Utils::File::getRootFolder() + L"TextureCubePS.cso")),
 		gridDebugVS(Shader::create(Utils::File::getRootFolder() + L"GridDebugVS.cso")),
 		gridDebugPS(Shader::create(Utils::File::getRootFolder() + L"GridDebugPS.cso")),
@@ -45,7 +45,7 @@ public:
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setVS(GlobalShader::getTextureCubeVS())
-			.setPS(textureCubePS)
+			.setPS(*textureCubePS)
 			.build();
 
 		gridDebugState = PipelineStateBuilder()
@@ -55,8 +55,8 @@ public:
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ Graphics::backBufferFormat })
-			.setVS(gridDebugVS)
-			.setPS(gridDebugPS)
+			.setVS(*gridDebugVS)
+			.setPS(*gridDebugPS)
 			.build();
 
 		oceanState = PipelineStateBuilder()
@@ -67,50 +67,50 @@ public:
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::PATCH)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
-			.setVS(oceanVS)
-			.setHS(oceanHS)
-			.setDS(oceanDS)
-			.setPS(oceanPS)
+			.setVS(*oceanVS)
+			.setHS(*oceanHS)
+			.setDS(*oceanDS)
+			.setPS(*oceanPS)
 			.build();
 
-		spectrumState = PipelineStateBuilder::build(spectrumCS);
+		spectrumState = PipelineStateBuilder::build(*spectrumCS);
 
-		conjugateState = PipelineStateBuilder::build(conjugateCS);
+		conjugateState = PipelineStateBuilder::build(*conjugateCS);
 
-		displacementSpectrumState = PipelineStateBuilder::build(displacementSpectrumCS);
+		displacementSpectrumState = PipelineStateBuilder::build(*displacementSpectrumCS);
 
-		ifftState = PipelineStateBuilder::build(ifftCS);
+		ifftState = PipelineStateBuilder::build(*ifftCS);
 
-		permutationState = PipelineStateBuilder::build(permutationCS);
+		permutationState = PipelineStateBuilder::build(*permutationCS);
 
-		waveMergeState = PipelineStateBuilder::build(waveMergeCS);
+		waveMergeState = PipelineStateBuilder::build(*waveMergeCS);
 
 		tildeh0Texture = createTexture(textureResolution, FMT::RG32F);
 
 		tempTexture = createTexture(textureResolution, FMT::RG32F);
 
-		WaveCascade::spectrumState = spectrumState;
+		WaveCascade::spectrumState = spectrumState.get();
 
-		WaveCascade::conjugateState = conjugateState;
+		WaveCascade::conjugateState = conjugateState.get();
 
-		WaveCascade::displacementSpectrumState = displacementSpectrumState;
+		WaveCascade::displacementSpectrumState = displacementSpectrumState.get();
 
-		WaveCascade::ifftState = ifftState;
+		WaveCascade::ifftState = ifftState.get();
 
-		WaveCascade::permutationState = permutationState;
+		WaveCascade::permutationState = permutationState.get();
 
-		WaveCascade::waveMergeState = waveMergeState;
+		WaveCascade::waveMergeState = waveMergeState.get();
 
-		WaveCascade::tildeh0Texture = tildeh0Texture;
+		WaveCascade::tildeh0Texture = tildeh0Texture.get();
 
-		WaveCascade::tempTexture = tempTexture;
+		WaveCascade::tempTexture = tempTexture.get();
 
 		originTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
 			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black);
 
 		depthTexture = ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true);
 
-		effect = new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
+		effect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
 
 		vertexBuffer = resManager->createStructuredBufferView(sizeof(DirectX::XMFLOAT3), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * vertices.size()), false, false, true, true, true, vertices.data());
 
@@ -146,7 +146,7 @@ public:
 
 		randomGaussTexture = resManager->createTextureRenderView(textureResolution, textureResolution, RandomDataType::GAUSS, true);
 
-		WaveCascade::randomGaussTexture = randomGaussTexture;
+		WaveCascade::randomGaussTexture = randomGaussTexture.get();
 
 		enviromentCube = resManager->createTextureCube(L"E:/Assets/Ocean/autumn_field_puresky_4k.exr", 1024, true);
 
@@ -175,76 +175,6 @@ public:
 
 	~MyRenderTask()
 	{
-		delete textureCubeState;
-
-		delete gridDebugState;
-
-		delete oceanState;
-
-		delete spectrumState;
-
-		delete conjugateState;
-
-		delete displacementSpectrumState;
-
-		delete ifftState;
-
-		delete permutationState;
-
-		delete waveMergeState;
-
-		delete vertexBuffer;
-
-		delete indexBuffer;
-
-		delete textureCubePS;
-
-		delete gridDebugVS;
-
-		delete gridDebugPS;
-
-		delete oceanVS;
-
-		delete oceanHS;
-
-		delete oceanDS;
-
-		delete oceanPS;
-
-		delete spectrumCS;
-
-		delete conjugateCS;
-
-		delete displacementSpectrumCS;
-
-		delete ifftCS;
-
-		delete permutationCS;
-
-		delete waveMergeCS;
-
-		delete enviromentCube;
-
-		delete randomGaussTexture;
-
-		delete tildeh0Texture;
-
-		delete tempTexture;
-
-		delete originTexture;
-
-		delete depthTexture;
-
-		delete effect;
-
-		delete renderParamBuffer;
-
-		for (UINT i = 0; i < cascadeNum; i++)
-		{
-			delete spectrumParamBuffer[i];
-
-			delete cascade[i];
-		}
 	}
 
 	void imGUICall() override
@@ -279,7 +209,7 @@ protected:
 
 private:
 
-	//do not change this!
+	//不要改动这个值
 	static constexpr UINT cascadeNum = 3;
 
 	static constexpr float lengthScale0 = 250.f;
@@ -288,12 +218,12 @@ private:
 
 	static constexpr float lengthScale2 = 5.f;
 
-	//do not change this!
+	//不要改动这个值
 	static constexpr UINT textureResolution = 512;
 
 	static constexpr UINT gridSize = 128;
 
-	static TextureRenderView* createTexture(const UINT& resolution, const DXGI_FORMAT& format)
+	static UniquePtr<TextureRenderView> createTexture(const UINT& resolution, const DXGI_FORMAT& format)
 	{
 		return ResourceManager::createTextureRenderView(resolution, resolution, format, 1, 1, false, true, format, format, FMT::UNKNOWN);
 	}
@@ -324,9 +254,9 @@ private:
 
 		for (UINT i = 0; i < cascadeNum; i++)
 		{
-			context->updateBuffer(spectrumParamBuffer[i], &spectrumParam[i], sizeof(SpectrumParam));
+			context->updateBuffer(*spectrumParamBuffer[i], &spectrumParam[i], sizeof(SpectrumParam));
 
-			cascade[i]->calculateInitialSpectrum(spectrumParamBuffer[i]);
+			cascade[i]->calculateInitialSpectrum(*spectrumParamBuffer[i]);
 		}
 	}
 
@@ -364,7 +294,7 @@ private:
 
 		renderParamBuffer->simpleUpdate(&renderParam);
 
-		context->setPipelineState(textureCubeState);
+		context->setPipelineState(*textureCubeState);
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
@@ -377,7 +307,7 @@ private:
 
 		context->draw(36, 1, 0, 0);
 
-		context->setPipelineState(oceanState);
+		context->setPipelineState(*oceanState);
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
@@ -396,7 +326,7 @@ private:
 			cascade[1]->displacementTexture->getAllSRVIndex(),
 			cascade[2]->displacementTexture->getAllSRVIndex() }, 0);
 
-		context->setDSConstantBuffer(renderParamBuffer);
+		context->setDSConstantBuffer(*renderParamBuffer);
 
 		context->setPSConstants({
 			cascade[0]->displacementTexture->getAllSRVIndex(),
@@ -410,19 +340,19 @@ private:
 			cascade[2]->jacobianTexture->getAllSRVIndex(),
 			enviromentCube->getAllSRVIndex() }, 0);
 
-		context->setPSConstantBuffer(renderParamBuffer);
+		context->setPSConstantBuffer(*renderParamBuffer);
 
 		context->clearDepthStencil(depthStencilDesc, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0);
 
 		context->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
-		auto bloomTexture = effect->process(originTexture);
+		auto bloomTexture = effect->process(*originTexture);
 
-		auto toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
 
-		blit(gammaCorrectedTexture);
+		blit(*gammaCorrectedTexture);
 	}
 
 	bool getMinMaxMatrix(DirectX::XMMATRIX* minMaxMatrix)
@@ -672,7 +602,7 @@ private:
 			}
 		}
 
-		context->updateBuffer(vertexBuffer, vertices.data(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * vertices.size()));
+		context->updateBuffer(*vertexBuffer, vertices.data(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * vertices.size()));
 	}
 
 	struct SpectrumParam
@@ -704,79 +634,79 @@ private:
 		DirectX::XMFLOAT4 padding1[13] = {};
 	} renderParam;
 
-	BufferView* vertexBuffer;
+	UniquePtr<BufferView> vertexBuffer;
 
-	BufferView* indexBuffer;
+	UniquePtr<BufferView> indexBuffer;
 
-	Shader* textureCubePS;
+	UniquePtr<Shader> textureCubePS;
 
-	PipelineState* textureCubeState;
+	UniquePtr<PipelineState> textureCubeState;
 
-	Shader* gridDebugVS;
+	UniquePtr<Shader> gridDebugVS;
 
-	Shader* gridDebugPS;
+	UniquePtr<Shader> gridDebugPS;
 
-	PipelineState* gridDebugState;
+	UniquePtr<PipelineState> gridDebugState;
 
-	Shader* oceanVS;
+	UniquePtr<Shader> oceanVS;
 
-	Shader* oceanHS;
+	UniquePtr<Shader> oceanHS;
 
-	Shader* oceanDS;
+	UniquePtr<Shader> oceanDS;
 
-	Shader* oceanPS;
+	UniquePtr<Shader> oceanPS;
 
-	PipelineState* oceanState;
+	UniquePtr<PipelineState> oceanState;
 
-	Shader* spectrumCS;
+	UniquePtr<Shader> spectrumCS;
 
-	PipelineState* spectrumState;
+	UniquePtr<PipelineState> spectrumState;
 
-	Shader* conjugateCS;
+	UniquePtr<Shader> conjugateCS;
 
-	PipelineState* conjugateState;
+	UniquePtr<PipelineState> conjugateState;
 
-	Shader* displacementSpectrumCS;
+	UniquePtr<Shader> displacementSpectrumCS;
 
-	PipelineState* displacementSpectrumState;
+	UniquePtr<PipelineState> displacementSpectrumState;
 
-	Shader* ifftCS;
+	UniquePtr<Shader> ifftCS;
 
-	PipelineState* ifftState;
+	UniquePtr<PipelineState> ifftState;
 
 	//sign correction
-	Shader* permutationCS;
+	UniquePtr<Shader> permutationCS;
 
-	PipelineState* permutationState;
+	UniquePtr<PipelineState> permutationState;
 
-	Shader* waveMergeCS;
+	UniquePtr<Shader> waveMergeCS;
 
-	PipelineState* waveMergeState;
+	UniquePtr<PipelineState> waveMergeState;
 
-	TextureRenderView* enviromentCube;
+	UniquePtr<TextureRenderView> enviromentCube;
 
 	//4 channel random gaussian distribution texture
 	//mean 0 standard deviation 1
-	TextureRenderView* randomGaussTexture;
+	UniquePtr<TextureRenderView> randomGaussTexture;
 
 	//(tildeh0(k))
 	//x y
-	TextureRenderView* tildeh0Texture;
+	UniquePtr<TextureRenderView> tildeh0Texture;
 
 	//intermediate texture for ifft compute
-	TextureRenderView* tempTexture;
+	UniquePtr<TextureRenderView> tempTexture;
 
-	TextureRenderView* originTexture;
+	UniquePtr<TextureRenderView> originTexture;
 
-	TextureDepthView* depthTexture;
+	UniquePtr<TextureDepthView> depthTexture;
 
-	BloomEffect* effect;
+	UniquePtr<BloomEffect> effect;
 
-	DynamicCBuffer* renderParamBuffer;
+	UniquePtr<DynamicCBuffer> renderParamBuffer;
 
-	StaticCBuffer* spectrumParamBuffer[cascadeNum];
+	UniquePtr<StaticCBuffer> spectrumParamBuffer[cascadeNum];
 
-	WaveCascade* cascade[cascadeNum];
+	UniquePtr<WaveCascade> cascade[cascadeNum];
 
 	FPSCamera* camera;
 

@@ -45,7 +45,7 @@ Gear::Core::Effect::BloomEffect::BloomEffect(GraphicsContext* const context, con
 		{
 			resolutions[i] = DirectX::XMUINT2(width >> (i + 1), height >> (i + 1));
 
-			swapTexture[i] = makeUnique<Resource::SwapTexture>(
+			swapTexture[i] = ResourceManager::createSwapTexture(
 				[=] {
 					return ResourceManager::createTextureRenderView(resolutions[i].x, resolutions[i].y, FMT::RGBA16F, 1, 1, false, true,
 						FMT::RGBA16F, FMT::RGBA16F, FMT::RGBA16F);

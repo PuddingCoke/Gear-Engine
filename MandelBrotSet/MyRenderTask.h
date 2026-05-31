@@ -11,18 +11,18 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		effect(context, Graphics::getWidth(), Graphics::getHeight(), resManager),
+		effect(BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), resManager)),
 		computeCS(Shader::create(Utils::File::getRootFolder() + L"ComputeCS.cso")),
 		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true,
 			FMT::RGBA16UN, FMT::RGBA16UN, FMT::UNKNOWN))
 	{
-		computeState = PipelineStateBuilder::build(computeCS);
+		computeState = PipelineStateBuilder::build(*computeCS);
 
 		Graphics::setExposure(1.9f);
 
 		Graphics::setGamma(1.2f);
 
-		effect.setIntensity(0.45f);
+		effect->setIntensity(0.45f);
 
 		param.scale = 0.4f;
 
@@ -33,11 +33,6 @@ public:
 
 	~MyRenderTask()
 	{
-		delete computeCS;
-
-		delete computeState;
-
-		delete originTexture;
 	}
 
 	void imGUICall() override
@@ -50,7 +45,7 @@ public:
 		ImGui::Text("Scale %f", param.scale);
 		ImGui::End();
 
-		effect.imGUICall();
+		effect->imGUICall();
 	}
 
 protected:
@@ -84,7 +79,7 @@ protected:
 
 		accParam.floatSeed = Graphics::getTimeElapsed();
 
-		context->setPipelineState(computeState);
+		context->setPipelineState(*computeState);
 
 		context->setCSConstants({ originTexture->getUAVMipIndex(0) }, 0);
 
@@ -96,22 +91,22 @@ protected:
 
 		context->uavBarrier({ originTexture->getTexture() });
 
-		auto bloomTexture = effect.process(originTexture);
+		auto bloomTexture = effect->process(*originTexture);
 
-		auto toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
 
-		blit(gammaCorrectedTexture);
+		blit(*gammaCorrectedTexture);
 	}
 
 private:
 
-	Shader* computeCS;
+	UniquePtr<Shader> computeCS;
 
-	PipelineState* computeState;
+	UniquePtr<PipelineState> computeState;
 
-	TextureRenderView* originTexture;
+	UniquePtr<TextureRenderView> originTexture;
 
 	struct SimulationParam
 	{
@@ -128,6 +123,6 @@ private:
 		float floatSeed;
 	} accParam;
 
-	BloomEffect effect;
+	UniquePtr<BloomEffect> effect;
 
 };

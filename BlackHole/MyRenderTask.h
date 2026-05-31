@@ -21,7 +21,7 @@ public:
 		pipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
 			.setRTVFormats({ originTexture->getTexture()->getFormat() })
-			.setPS(blackHoleShader)
+			.setPS(*blackHoleShader)
 			.build();
 
 		Input::Keyboard::addKeyDownEvent(Input::Keyboard::K, [this]() {perframeData.useOriginalVer = ~perframeData.useOriginalVer; });
@@ -33,17 +33,6 @@ public:
 
 	~MyRenderTask()
 	{
-		delete pipelineState;
-
-		delete blackHoleShader;
-
-		delete noiseTexture;
-
-		delete diskTexture;
-
-		delete originTexture;
-
-		delete effect;
 	}
 
 	void imGUICall() override
@@ -72,7 +61,7 @@ protected:
 	{
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) });
 
-		context->setPipelineState(pipelineState);
+		context->setPipelineState(*pipelineState);
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
@@ -92,28 +81,28 @@ protected:
 
 		context->draw(3, 1, 0, 0);
 
-		auto bloomTexture = effect->process(originTexture);
+		auto bloomTexture = effect->process(*originTexture);
 
-		auto toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
+		auto toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
 
-		blit(gammaCorrectedTexture);
+		blit(*gammaCorrectedTexture);
 	}
 
 private:
 
-	PipelineState* pipelineState;
+	UniquePtr<PipelineState> pipelineState;
 
-	Shader* blackHoleShader;
+	UniquePtr<Shader> blackHoleShader;
 
-	TextureRenderView* noiseTexture;
+	UniquePtr<TextureRenderView> noiseTexture;
 
-	TextureRenderView* diskTexture;
+	UniquePtr<TextureRenderView> diskTexture;
 
-	TextureRenderView* originTexture;
+	UniquePtr<TextureRenderView> originTexture;
 
-	BloomEffect* effect;
+	UniquePtr<BloomEffect> effect;
 
 	struct PerframeData
 	{

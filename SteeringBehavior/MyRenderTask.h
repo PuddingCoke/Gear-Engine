@@ -36,7 +36,7 @@ public:
 				maxSpeedMaxForceArray[i] = DirectX::XMFLOAT2(3.f, 0.1f);
 			}
 
-			positionVelocity = new SwapBuffer(
+			positionVelocity = ResourceManager::createSwapBuffer(
 				[&] {return resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numVehicle, true, true, true, false, false, true, positionVelocityArray); },
 				[&] {return ResourceManager::createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numVehicle, true, true, true, false, false, true); });
 
@@ -50,15 +50,15 @@ public:
 			delete[] maxSpeedMaxForceArray;
 		}
 
-		stepState = PipelineStateBuilder::build(stepCS);
+		stepState = PipelineStateBuilder::build(*stepCS);
 
 		vehicleRenderState = PipelineStateBuilder()
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setBlendState(PipelineStateHelper::blendDefault)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setVS(vehicleVS)
-			.setGS(vehicleGS)
-			.setPS(vehiclePS)
+			.setVS(*vehicleVS)
+			.setGS(*vehicleGS)
+			.setPS(*vehiclePS)
 			.setRTVFormats({ renderTexture->getTexture()->getFormat() })
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::POINT)
 			.setInputElements(
@@ -73,35 +73,6 @@ public:
 
 	~MyRenderTask()
 	{
-		if (positionVelocity)
-			delete positionVelocity;
-
-		if (maxSpeedMaxForce)
-			delete maxSpeedMaxForce;
-
-		if (renderTexture)
-			delete renderTexture;
-
-		if (arrowTexture)
-			delete arrowTexture;
-
-		if (stepState)
-			delete stepState;
-
-		if (stepCS)
-			delete stepCS;
-
-		if (vehicleRenderState)
-			delete vehicleRenderState;
-
-		if (vehicleVS)
-			delete vehicleVS;
-
-		if (vehicleGS)
-			delete vehicleGS;
-
-		if (vehiclePS)
-			delete vehiclePS;
 	}
 
 protected:
@@ -110,7 +81,7 @@ protected:
 	{
 		simulationParam.mousePos = DirectX::XMFLOAT2(Input::Mouse::getX(), Input::Mouse::getY());
 
-		context->setPipelineState(stepState);
+		context->setPipelineState(*stepState);
 
 		context->setCSConstants({
 			positionVelocity->write()->getUAVIndex(),
@@ -123,7 +94,7 @@ protected:
 
 		positionVelocity->swap();
 
-		context->setPipelineState(vehicleRenderState);
+		context->setPipelineState(*vehicleRenderState);
 
 		context->setRenderTargets({ renderTexture->getRTVMipHandle(0) });
 
@@ -139,18 +110,18 @@ protected:
 
 		context->draw(numVehicle, 1, 0, 0);
 
-		blit(renderTexture);
+		blit(*renderTexture);
 	}
 
 private:
 
-	SwapBuffer* positionVelocity;
+	UniquePtr<SwapBuffer> positionVelocity;
 
-	BufferView* maxSpeedMaxForce;
+	UniquePtr<BufferView> maxSpeedMaxForce;
 
-	TextureRenderView* renderTexture;
+	UniquePtr<TextureRenderView> renderTexture;
 
-	TextureRenderView* arrowTexture;
+	UniquePtr<TextureRenderView> arrowTexture;
 
 	struct SimulationParam
 	{
@@ -162,16 +133,16 @@ private:
 
 	static constexpr uint32_t numVehicle = 1000;
 
-	PipelineState* stepState;
+	UniquePtr<PipelineState> stepState;
 
-	Shader* stepCS;
+	UniquePtr<Shader> stepCS;
 
-	PipelineState* vehicleRenderState;
+	UniquePtr<PipelineState> vehicleRenderState;
 
-	Shader* vehicleVS;
+	UniquePtr<Shader> vehicleVS;
 
-	Shader* vehicleGS;
+	UniquePtr<Shader> vehicleGS;
 
-	Shader* vehiclePS;
+	UniquePtr<Shader> vehiclePS;
 
 };
