@@ -17,13 +17,15 @@ namespace Gear
 			{
 			public:
 
+				static UniquePtr<HBAOPlusEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+
 				HBAOPlusEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height);
 
 				~HBAOPlusEffect();
 
 				void imGUICall() override;
 
-				Resource::TextureRenderView* process(Resource::TextureDepthView* const depthTexture, Resource::TextureRenderView* const gNormal);
+				Resource::TextureRenderView* process(Resource::TextureDepthView& depthTexture, Resource::TextureRenderView& gNormal);
 
 			private:
 

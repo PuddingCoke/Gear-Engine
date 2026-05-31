@@ -4,43 +4,34 @@
 
 #include<Gear/CompiledShaders/FXAA.h>
 
+UniquePtr<Gear::Core::Effect::FXAAEffect> Gear::Core::Effect::FXAAEffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height)
+{
+	return makeUnique<FXAAEffect>(context, width, height);
+}
+
 Gear::Core::Effect::FXAAEffect::FXAAEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height) :
 	EffectBase(context, width, height, FMT::RGBA16UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
 	colorLumaTexture(ResourceManager::createTextureRenderView(width, height, FMT::RGBA16UN, 1, 1, false, true,
 		FMT::RGBA16UN, FMT::UNKNOWN, FMT::RGBA16UN))
 {
-	colorToColorLumaPS = new D3D12Core::Shader(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
+	colorToColorLumaPS = D3D12Core::Shader::create(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
 
-	fxaaPS = new D3D12Core::Shader(g_FXAABytes, sizeof(g_FXAABytes));
+	fxaaPS = D3D12Core::Shader::create(g_FXAABytes, sizeof(g_FXAABytes));
 
-	colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(colorToColorLumaPS).setRTVFormats({ FMT::RGBA16UN }).build();
+	colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*colorToColorLumaPS).setRTVFormats({ FMT::RGBA16UN }).build();
 
-	fxaaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(fxaaPS).setRTVFormats({ FMT::RGBA16UN }).build();
+	fxaaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*fxaaPS).setRTVFormats({ FMT::RGBA16UN }).build();
 
 	outputTexture->getTexture()->setName(L"FXAA Processed Texture");
 }
 
 Gear::Core::Effect::FXAAEffect::~FXAAEffect()
 {
-	if (colorLumaTexture)
-		delete colorLumaTexture;
-
-	if (colorToColorLumaPS)
-		delete colorToColorLumaPS;
-
-	if (fxaaPS)
-		delete fxaaPS;
-
-	if (colorToColorLumaState)
-		delete colorToColorLumaState;
-
-	if (fxaaState)
-		delete fxaaState;
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::FXAAEffect::process(Resource::TextureRenderView* const inputTexture) const
+Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::FXAAEffect::process(Resource::TextureRenderView& inputTexture) const
 {
-	context->setPipelineState(colorToColorLumaState);
+	context->setPipelineState(*colorToColorLumaState);
 
 	context->setViewportSimple(width, height);
 
@@ -48,11 +39,11 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::FXAAEffect::process
 
 	context->setRenderTargets({ colorLumaTexture->getRTVMipHandle(0) });
 
-	context->setPSConstants({ inputTexture->getAllSRVIndex() }, 0);
+	context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
 
 	context->draw(3, 1, 0, 0);
 
-	context->setPipelineState(fxaaState);
+	context->setPipelineState(*fxaaState);
 
 	context->setViewportSimple(width, height);
 
@@ -66,7 +57,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::FXAAEffect::process
 
 	context->draw(3, 1, 0, 0);
 
-	return outputTexture;
+	return outputTexture.get();
 }
 
 void Gear::Core::Effect::FXAAEffect::imGUICall()

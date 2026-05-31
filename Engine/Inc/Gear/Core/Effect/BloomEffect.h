@@ -25,11 +25,13 @@ namespace Gear
 
 				static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
 
+				static UniquePtr<BloomEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager* const resManager);
+
 				BloomEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager* const resManager);
 
 				~BloomEffect();
 
-				Resource::TextureRenderView* process(Resource::TextureRenderView* const inputTexture);
+				Resource::TextureRenderView* process(Resource::TextureRenderView& inputTexture);
 
 				void imGUICall() override;
 
@@ -43,41 +45,41 @@ namespace Gear
 
 				void updateCurve(const uint32_t index);
 
-				D3D12Core::Shader* bloomFilter;
+				UniquePtr<D3D12Core::Shader> bloomFilter;
 
-				D3D12Core::PipelineState* bloomFilterState;
+				UniquePtr<D3D12Core::PipelineState> bloomFilterState;
 
-				D3D12Core::Shader* bloomHBlur;
+				UniquePtr<D3D12Core::Shader> bloomHBlur;
 
-				D3D12Core::PipelineState* bloomHBlurState;
+				UniquePtr<D3D12Core::PipelineState> bloomHBlurState;
 
-				D3D12Core::Shader* bloomVBlur;
+				UniquePtr<D3D12Core::Shader> bloomVBlur;
 
-				D3D12Core::PipelineState* bloomVBlurState;
+				UniquePtr<D3D12Core::PipelineState> bloomVBlurState;
 
-				D3D12Core::Shader* bloomFinal;
+				UniquePtr<D3D12Core::Shader> bloomFinal;
 
-				D3D12Core::PipelineState* bloomFinalState;
+				UniquePtr<D3D12Core::PipelineState> bloomFinalState;
 
-				D3D12Core::Shader* bloomDownSample;
+				UniquePtr<D3D12Core::Shader> bloomDownSample;
 
-				D3D12Core::PipelineState* bloomDownSampleState;
+				UniquePtr<D3D12Core::PipelineState> bloomDownSampleState;
 
-				D3D12Core::Shader* bloomKarisAverage;
+				UniquePtr<D3D12Core::Shader> bloomKarisAverage;
 
-				D3D12Core::PipelineState* bloomKarisAverageState;
+				UniquePtr<D3D12Core::PipelineState> bloomKarisAverageState;
 
-				D3D12Core::PipelineState* bloomUpSampleState;
+				UniquePtr<D3D12Core::PipelineState> bloomUpSampleState;
 
 				DirectX::XMUINT2 resolutions[blurSteps];
 
-				Resource::TextureRenderView* lensDirtTexture;
+				UniquePtr<Resource::TextureRenderView> lensDirtTexture;
 
-				Resource::SwapTexture* swapTexture[blurSteps];
+				UniquePtr<Resource::SwapTexture> swapTexture[blurSteps];
 
-				Resource::TextureRenderView* filteredTexture;
+				UniquePtr<Resource::TextureRenderView> filteredTexture;
 
-				Resource::StaticCBuffer* blurParamBuffer[blurSteps];
+				UniquePtr<Resource::StaticCBuffer> blurParamBuffer[blurSteps];
 
 				struct BloomParam
 				{

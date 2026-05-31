@@ -13,7 +13,7 @@ namespace Gear
 		{
 			namespace ToneMapEffect
 			{
-				Resource::TextureRenderView* process(GraphicsContext* const context, Resource::TextureRenderView* const inputTexture);
+				Resource::TextureRenderView* process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture);
 			}
 		}
 	}

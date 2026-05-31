@@ -15,62 +15,37 @@ Gear::Core::PipelineStateBuilder::~PipelineStateBuilder()
 {
 }
 
-Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setVS(const D3D12Core::Shader* const vs)
+Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setVS(const D3D12Core::Shader& vs)
 {
-	if (vs == nullptr)
-	{
-		LOGERROR(L"顶点着色器指针不能是nullptr");
-	}
-
-	graphicsDesc.VS = vs->getByteCode();
+	graphicsDesc.VS = vs.getByteCode();
 
 	return *this;
 }
 
-Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setHS(const D3D12Core::Shader* const hs)
+Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setHS(const D3D12Core::Shader& hs)
 {
-	if (hs == nullptr)
-	{
-		LOGERROR(L"外壳着色器指针不能是nullptr");
-	}
-
-	graphicsDesc.HS = hs->getByteCode();
+	graphicsDesc.HS = hs.getByteCode();
 
 	return *this;
 }
 
-Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setDS(const D3D12Core::Shader* const ds)
+Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setDS(const D3D12Core::Shader& ds)
 {
-	if (ds == nullptr)
-	{
-		LOGERROR(L"域着色器指针不能是nullptr");
-	}
-
-	graphicsDesc.DS = ds->getByteCode();
+	graphicsDesc.DS = ds.getByteCode();
 
 	return *this;
 }
 
-Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setGS(const D3D12Core::Shader* const gs)
+Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setGS(const D3D12Core::Shader& gs)
 {
-	if (gs == nullptr)
-	{
-		LOGERROR(L"几何着色器指针不能是nullptr");
-	}
-
-	graphicsDesc.GS = gs->getByteCode();
+	graphicsDesc.GS = gs.getByteCode();
 
 	return *this;
 }
 
-Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setPS(const D3D12Core::Shader* const ps)
+Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setPS(const D3D12Core::Shader& ps)
 {
-	if (ps == nullptr)
-	{
-		LOGERROR(L"像素着色器指针不能是nullptr");
-	}
-
-	graphicsDesc.PS = ps->getByteCode();
+	graphicsDesc.PS = ps.getByteCode();
 
 	return *this;
 }
@@ -126,7 +101,7 @@ Gear::Core::PipelineStateBuilder& Gear::Core::PipelineStateBuilder::setDefaultFu
 		.setVS(GlobalShader::getFullScreenVS());
 }
 
-Gear::Core::D3D12Core::PipelineState* Gear::Core::PipelineStateBuilder::build()
+UniquePtr<Gear::Core::D3D12Core::PipelineState> Gear::Core::PipelineStateBuilder::build()
 {
 	ComPtr<ID3D12PipelineState> id3d12PipelineState;
 
@@ -174,25 +149,20 @@ Gear::Core::D3D12Core::PipelineState* Gear::Core::PipelineStateBuilder::build()
 
 	CHECKERROR(GraphicsDevice::get()->CreateGraphicsPipelineState(&graphicsDesc, IID_PPV_ARGS(&id3d12PipelineState)));
 
-	return new D3D12Core::PipelineState(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::GRAPHICS);
+	return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::GRAPHICS);
 }
 
-Gear::Core::D3D12Core::PipelineState* Gear::Core::PipelineStateBuilder::build(const D3D12Core::Shader* const shader)
+UniquePtr<Gear::Core::D3D12Core::PipelineState> Gear::Core::PipelineStateBuilder::build(const D3D12Core::Shader& cs)
 {
-	if (shader == nullptr)
-	{
-		LOGERROR(L"计算着色器指针不能是nullptr");
-	}
-
 	ComPtr<ID3D12PipelineState> id3d12PipelineState;
 
 	const D3D12Core::RootSignature* selectedRootSignature = GlobalRootSignature::getComputeShaderRootSignature();
 
 	D3D12_COMPUTE_PIPELINE_STATE_DESC computeDesc = {};
 	computeDesc.pRootSignature = selectedRootSignature->get();
-	computeDesc.CS = shader->getByteCode();
+	computeDesc.CS = cs.getByteCode();
 
 	CHECKERROR(GraphicsDevice::get()->CreateComputePipelineState(&computeDesc, IID_PPV_ARGS(&id3d12PipelineState)));
 
-	return new D3D12Core::PipelineState(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE);
+	return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE);
 }

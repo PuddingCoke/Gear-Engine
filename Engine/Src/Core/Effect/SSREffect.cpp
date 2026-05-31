@@ -6,19 +6,24 @@
 
 #include<Gear/CompiledShaders/HiZProcessPS.h>
 
+UniquePtr<Gear::Core::Effect::SSREffect> Gear::Core::Effect::SSREffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height)
+{
+	return makeUnique<SSREffect>(context, width, height);
+}
+
 Gear::Core::Effect::SSREffect::SSREffect(GraphicsContext* const context, const uint32_t width, const uint32_t height) :
 	EffectBase(context, width, height, outputTextureFormat),
 	hiZTexture(ResourceManager::createTextureRenderView(width, height, hiZTextureFormat, 1, hiZMiplvel, false, true, hiZTextureFormat, hiZTextureFormat, FMT::UNKNOWN))
 {
-	hiZCopyCS = new D3D12Core::Shader(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes));
+	hiZCopyCS = D3D12Core::Shader::create(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes));
 
-	hiZCreateCS = new D3D12Core::Shader(g_HiZCreateCSBytes, sizeof(g_HiZCreateCSBytes));
+	hiZCreateCS = D3D12Core::Shader::create(g_HiZCreateCSBytes, sizeof(g_HiZCreateCSBytes));
 
-	hiZProcessPS = new D3D12Core::Shader(g_HiZProcessPSBytes, sizeof(g_HiZProcessPSBytes));
+	hiZProcessPS = D3D12Core::Shader::create(g_HiZProcessPSBytes, sizeof(g_HiZProcessPSBytes));
 
-	hiZCopyState = PipelineStateBuilder::build(hiZCopyCS);
+	hiZCopyState = PipelineStateBuilder::build(*hiZCopyCS);
 
-	hiZCreateState = PipelineStateBuilder::build(hiZCreateCS);
+	hiZCreateState = PipelineStateBuilder::build(*hiZCreateCS);
 
 	hiZProcessState = PipelineStateBuilder()
 		.setBlendState(PipelineStateHelper::blendReplace)
@@ -27,7 +32,7 @@ Gear::Core::Effect::SSREffect::SSREffect(GraphicsContext* const context, const u
 		.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 		.setRTVFormats({ outputTextureFormat })
 		.setVS(GlobalShader::getFullScreenVS())
-		.setPS(hiZProcessPS)
+		.setPS(*hiZProcessPS)
 		.build();
 
 	hiZTexture->getTexture()->setName(L"Hi-Z Accelerate Texture");
@@ -37,26 +42,6 @@ Gear::Core::Effect::SSREffect::SSREffect(GraphicsContext* const context, const u
 
 Gear::Core::Effect::SSREffect::~SSREffect()
 {
-	if (hiZTexture)
-		delete hiZTexture;
-
-	if (hiZCopyState)
-		delete hiZCopyState;
-
-	if (hiZCreateState)
-		delete hiZCreateState;
-
-	if (hiZProcessState)
-		delete hiZProcessState;
-
-	if (hiZCopyCS)
-		delete hiZCopyCS;
-
-	if (hiZCreateCS)
-		delete hiZCreateCS;
-
-	if (hiZProcessPS)
-		delete hiZProcessPS;
 }
 
 void Gear::Core::Effect::SSREffect::imGUICall()
@@ -64,11 +49,11 @@ void Gear::Core::Effect::SSREffect::imGUICall()
 
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(Resource::TextureDepthView* const depthTexture, Resource::TextureRenderView* const gPosition, Resource::TextureRenderView* const gNormal)
+Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(Resource::TextureDepthView& depthTexture, Resource::TextureRenderView& gPosition, Resource::TextureRenderView& gNormal)
 {
-	context->setPipelineState(hiZCopyState);
+	context->setPipelineState(*hiZCopyState);
 
-	context->setCSConstants({ depthTexture->getDepthMipIndex(0),hiZTexture->getUAVMipIndex(0) }, 0);
+	context->setCSConstants({ depthTexture.getDepthMipIndex(0),hiZTexture->getUAVMipIndex(0) }, 0);
 
 	context->dispatch(
 		dispatchCeil(hiZTexture->getTexture()->getWidth(), 16u),
@@ -77,7 +62,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(
 
 	context->uavBarrier({ hiZTexture->getTexture() });
 
-	context->setPipelineState(hiZCreateState);
+	context->setPipelineState(*hiZCreateState);
 
 	for (uint32_t i = 0; i < hiZMiplvel - 1; i++)
 	{
@@ -91,7 +76,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(
 		context->uavBarrier({ hiZTexture->getTexture() });
 	}
 
-	context->setPipelineState(hiZProcessState);
+	context->setPipelineState(*hiZProcessState);
 
 	context->setViewportSimple(width, height);
 
@@ -99,7 +84,7 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(
 
 	context->setRenderTargets({ outputTexture->getRTVMipHandle(0) });
 
-	context->setPSConstants({ gPosition->getAllSRVIndex(),gNormal->getAllSRVIndex(),hiZTexture->getAllSRVIndex() }, 0);
+	context->setPSConstants({ gPosition.getAllSRVIndex(),gNormal.getAllSRVIndex(),hiZTexture->getAllSRVIndex() }, 0);
 
 	int maxLevel = static_cast<int>(hiZTexture->getTexture()->getMipLevels() - 1u);
 
@@ -107,5 +92,5 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::SSREffect::process(
 
 	context->draw(3, 1, 0, 0);
 
-	return outputTexture;
+	return outputTexture.get();
 }

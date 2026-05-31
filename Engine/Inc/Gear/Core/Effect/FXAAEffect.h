@@ -15,11 +15,13 @@ namespace Gear
 			{
 			public:
 
+				static UniquePtr<FXAAEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+
 				FXAAEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height);
 
 				~FXAAEffect();
 
-				Resource::TextureRenderView* process(Resource::TextureRenderView* const inputTexture) const;
+				Resource::TextureRenderView* process(Resource::TextureRenderView& inputTexture) const;
 
 				void imGUICall() override;
 
@@ -31,7 +33,7 @@ namespace Gear
 
 			private:
 
-				Resource::TextureRenderView* colorLumaTexture;
+				UniquePtr<Resource::TextureRenderView> colorLumaTexture;
 
 				struct FXAAParam
 				{
@@ -41,13 +43,13 @@ namespace Gear
 					float fxaaQualityEdgeThresholdMin;
 				} fxaaParam;
 
-				D3D12Core::Shader* colorToColorLumaPS;
+				UniquePtr<D3D12Core::Shader> colorToColorLumaPS;
 
-				D3D12Core::PipelineState* colorToColorLumaState;
+				UniquePtr<D3D12Core::PipelineState> colorToColorLumaState;
 
-				D3D12Core::Shader* fxaaPS;
+				UniquePtr<D3D12Core::Shader> fxaaPS;
 
-				D3D12Core::PipelineState* fxaaState;
+				UniquePtr<D3D12Core::PipelineState> fxaaState;
 
 			};
 		}

@@ -16,9 +16,9 @@ namespace Gear
 			{
 			public:
 
-				SwappableBase(const std::function<T* (void)>& readObjectFunc, const std::function<T* (void)>& writeObjectFunc);
+				SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc);
 
-				SwappableBase(const std::function<T* (void)>& objectFunc);
+				SwappableBase(const std::function<UniquePtr<T>(void)>& objectFunc);
 
 				~SwappableBase();
 
@@ -30,20 +30,20 @@ namespace Gear
 
 			private:
 
-				T* readObject;
+				UniquePtr<T> readObject;
 
-				T* writeObject;
+				UniquePtr<T> writeObject;
 
 			};
 
 			template<typename T>
-			inline SwappableBase<T>::SwappableBase(const std::function<T* (void)>& readObjectFunc, const std::function<T* (void)>& writeObjectFunc) :
+			inline SwappableBase<T>::SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc) :
 				readObject(readObjectFunc()), writeObject(writeObjectFunc())
 			{
 			}
 
 			template<typename T>
-			inline SwappableBase<T>::SwappableBase(const std::function<T* (void)>& objectFunc) :
+			inline SwappableBase<T>::SwappableBase(const std::function<UniquePtr<T>(void)>& objectFunc) :
 				SwappableBase<T>(objectFunc, objectFunc)
 			{
 			}
@@ -51,33 +51,24 @@ namespace Gear
 			template<typename T>
 			inline SwappableBase<T>::~SwappableBase()
 			{
-				if (readObject)
-					delete readObject;
-
-				if (writeObject)
-					delete writeObject;
 			}
 
 			template<typename T>
 			inline T* SwappableBase<T>::read() const
 			{
-				return readObject;
+				return readObject.get();
 			}
 
 			template<typename T>
 			inline T* SwappableBase<T>::write() const
 			{
-				return writeObject;
+				return writeObject.get();
 			}
 
 			template<typename T>
 			inline void SwappableBase<T>::swap()
 			{
-				T* const tempObject = readObject;
-
-				readObject = writeObject;
-
-				writeObject = tempObject;
+				readObject.swap(writeObject);
 			}
 		}
 	}

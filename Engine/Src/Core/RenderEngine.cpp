@@ -255,7 +255,7 @@ RenderEnginePrivate::RenderEnginePrivate(const uint32_t width, const uint32_t he
 
 	prepareCommandList = new Gear::Core::D3D12Core::CommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-	reservedGlobalCBuffer = Gear::Core::ResourceManager::createDynamicCBuffer(sizeof(PerframeResource));
+	reservedGlobalCBuffer = Gear::Core::ResourceManager::createDynamicCBuffer(sizeof(PerframeResource)).release();
 
 	Gear::Core::Graphics::Internal::setReservedGlobalCBuffer(reservedGlobalCBuffer);
 

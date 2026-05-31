@@ -16,32 +16,34 @@ namespace Gear
 			{
 			public:
 
+				static UniquePtr<SSREffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+
 				SSREffect(GraphicsContext* const context, const uint32_t width, const uint32_t height);
 
 				~SSREffect();
 
 				Resource::TextureRenderView* process(
-					Resource::TextureDepthView* const depthTexture,
-					Resource::TextureRenderView* const gPosition,
-					Resource::TextureRenderView* const gNormal);
+					Resource::TextureDepthView& depthTexture,
+					Resource::TextureRenderView& gPosition,
+					Resource::TextureRenderView& gNormal);
 
 				void imGUICall() override;
 
 			private:
 
-				Resource::TextureRenderView* hiZTexture;
+				UniquePtr<Resource::TextureRenderView> hiZTexture;
 
-				D3D12Core::Shader* hiZCopyCS;
+				UniquePtr<D3D12Core::Shader> hiZCopyCS;
 
-				D3D12Core::Shader* hiZCreateCS;
+				UniquePtr<D3D12Core::Shader> hiZCreateCS;
 
-				D3D12Core::Shader* hiZProcessPS;
+				UniquePtr<D3D12Core::Shader> hiZProcessPS;
 
-				D3D12Core::PipelineState* hiZCopyState;
+				UniquePtr<D3D12Core::PipelineState> hiZCopyState;
 
-				D3D12Core::PipelineState* hiZCreateState;
+				UniquePtr<D3D12Core::PipelineState> hiZCreateState;
 
-				D3D12Core::PipelineState* hiZProcessState;
+				UniquePtr<D3D12Core::PipelineState> hiZProcessState;
 
 				static constexpr uint32_t hiZMiplvel = 4u;
 

@@ -19,15 +19,15 @@ namespace Gear
 
 			~PipelineStateBuilder();
 
-			PipelineStateBuilder& setVS(const D3D12Core::Shader* const vs);
+			PipelineStateBuilder& setVS(const D3D12Core::Shader& vs);
 
-			PipelineStateBuilder& setHS(const D3D12Core::Shader* const hs);
+			PipelineStateBuilder& setHS(const D3D12Core::Shader& hs);
 
-			PipelineStateBuilder& setDS(const D3D12Core::Shader* const ds);
+			PipelineStateBuilder& setDS(const D3D12Core::Shader& ds);
 
-			PipelineStateBuilder& setGS(const D3D12Core::Shader* const gs);
+			PipelineStateBuilder& setGS(const D3D12Core::Shader& gs);
 
-			PipelineStateBuilder& setPS(const D3D12Core::Shader* const ps);
+			PipelineStateBuilder& setPS(const D3D12Core::Shader& ps);
 
 			template<size_t N>
 			PipelineStateBuilder& setRTVFormats(const DXGI_FORMAT(&rtvFormats)[N]);
@@ -49,10 +49,10 @@ namespace Gear
 
 			PipelineStateBuilder& setDefaultFullScreenState();
 
-			D3D12Core::PipelineState* build();
+			UniquePtr<D3D12Core::PipelineState> build();
 
 			//用于计算管线状态
-			static D3D12Core::PipelineState* build(const D3D12Core::Shader* const shader);
+			static UniquePtr<D3D12Core::PipelineState> build(const D3D12Core::Shader& cs);
 
 		private:
 

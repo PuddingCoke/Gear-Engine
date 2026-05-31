@@ -23,6 +23,14 @@ namespace Gear
 
 				void operator=(const Shader&) = delete;
 
+				D3D12_SHADER_BYTECODE getByteCode() const;
+
+				static UniquePtr<Shader> create(const uint8_t* const bytes, const size_t byteSize);
+
+				static UniquePtr<Shader> create(const std::wstring& filePath);
+
+				static UniquePtr<Shader> create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
+
 				//byte code
 				Shader(const uint8_t* const bytes, const size_t byteSize);
 
@@ -31,8 +39,6 @@ namespace Gear
 
 				//hlsl
 				Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
-
-				D3D12_SHADER_BYTECODE getByteCode() const;
 
 			private:
 

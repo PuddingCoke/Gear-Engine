@@ -42,8 +42,9 @@ namespace Gear
 
 			protected:
 
-				Resource::TextureRenderView* const outputTexture;
+				UniquePtr<Resource::TextureRenderView> outputTexture;
 
+				//引用
 				GraphicsContext* const context;
 
 				const uint32_t width;

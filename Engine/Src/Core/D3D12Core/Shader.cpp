@@ -2,6 +2,21 @@
 
 #include<Gear/Utils/File.h>
 
+UniquePtr<Gear::Core::D3D12Core::Shader> Gear::Core::D3D12Core::Shader::create(const uint8_t* const bytes, const size_t byteSize)
+{
+	return makeUnique<Shader>(bytes, byteSize);
+}
+
+UniquePtr<Gear::Core::D3D12Core::Shader> Gear::Core::D3D12Core::Shader::create(const std::wstring& filePath)
+{
+	return makeUnique<Shader>(filePath);
+}
+
+UniquePtr<Gear::Core::D3D12Core::Shader> Gear::Core::D3D12Core::Shader::create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
+{
+	return makeUnique<Shader>(filePath, profile);
+}
+
 Gear::Core::D3D12Core::Shader::Shader(const uint8_t* const bytes, const size_t byteSize)
 {
 	shaderByteCode.pShaderBytecode = bytes;

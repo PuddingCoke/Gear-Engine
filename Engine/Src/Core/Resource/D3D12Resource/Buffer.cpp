@@ -2,7 +2,7 @@
 
 Gear::Core::Resource::D3D12Resource::Buffer::Buffer(const uint64_t size, const bool stateTracking, const D3D12_RESOURCE_FLAGS resFlags, const uint32_t initialState) :
 	D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, CD3DX12_RESOURCE_DESC::Buffer(size, resFlags), stateTracking, static_cast<D3D12_RESOURCE_STATES>(initialState), nullptr),
-	globalState(std::make_shared<uint32_t>(initialState)),
+	globalState(makeShared<uint32_t>(initialState)),
 	internalState(initialState),
 	transitionState(D3D12_RESOURCE_STATE_UNKNOWN)
 {
@@ -10,7 +10,7 @@ Gear::Core::Resource::D3D12Resource::Buffer::Buffer(const uint64_t size, const b
 
 Gear::Core::Resource::D3D12Resource::Buffer::Buffer(const ComPtr<ID3D12Resource>& buffer, const bool stateTracking, const uint32_t initialState) :
 	D3D12ResourceBase(buffer, stateTracking),
-	globalState(std::make_shared<uint32_t>(initialState)),
+	globalState(makeShared<uint32_t>(initialState)),
 	internalState(initialState),
 	transitionState(D3D12_RESOURCE_STATE_UNKNOWN)
 {

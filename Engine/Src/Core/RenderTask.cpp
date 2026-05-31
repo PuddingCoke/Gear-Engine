@@ -60,7 +60,7 @@ void Gear::Core::RenderTask::imGUICall()
 
 }
 
-void Gear::Core::RenderTask::blit(Resource::TextureRenderView* const texture) const
+void Gear::Core::RenderTask::blit(Resource::TextureRenderView& texture) const
 {
 	GlobalEffect::BackBufferBlitEffect::process(context, texture);
 }

@@ -13,7 +13,7 @@ namespace Gear
 		{
 			namespace HDRClampEffect
 			{
-				void process(GraphicsContext* const context, Resource::TextureRenderView* const inOutTexture);
+				void process(GraphicsContext* const context, Resource::TextureRenderView& inOutTexture);
 			}
 		}
 	}

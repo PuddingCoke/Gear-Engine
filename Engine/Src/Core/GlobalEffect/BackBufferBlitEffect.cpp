@@ -10,13 +10,13 @@ namespace
 {
 	struct BackBufferBlitEffectPrivate
 	{
-		Gear::Core::D3D12Core::PipelineState* backBufferBlitState;
+		UniquePtr<Gear::Core::D3D12Core::PipelineState> backBufferBlitState;
 	}pvt;
 }
 
-void Gear::Core::GlobalEffect::BackBufferBlitEffect::process(GraphicsContext* const context, Resource::TextureRenderView* const inputTexture)
+void Gear::Core::GlobalEffect::BackBufferBlitEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
 {
-	context->setPipelineState(pvt.backBufferBlitState);
+	context->setPipelineState(*pvt.backBufferBlitState);
 
 	context->setDefRenderTarget();
 
@@ -24,7 +24,7 @@ void Gear::Core::GlobalEffect::BackBufferBlitEffect::process(GraphicsContext* co
 
 	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-	context->setPSConstants({ inputTexture->getAllSRVIndex() }, 0);
+	context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
 
 	context->draw(3, 1, 0, 0);
 }
@@ -42,8 +42,5 @@ void Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal::initialize()
 
 void Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal::release()
 {
-	if (pvt.backBufferBlitState)
-	{
-		delete pvt.backBufferBlitState;
-	}
+	pvt.backBufferBlitState.reset();
 }

@@ -18,19 +18,19 @@ public:
 		renderParamBuffer(ResourceManager::createDynamicCBuffer(sizeof(RenderParam))),
 		spectrumParamBuffer{ ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true),ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true),ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true) },
 		cascade{ new WaveCascade(textureResolution,context),new WaveCascade(textureResolution,context),new WaveCascade(textureResolution,context) },
-		textureCubePS(new Shader(Utils::File::getRootFolder() + L"TextureCubePS.cso")),
-		gridDebugVS(new Shader(Utils::File::getRootFolder() + L"GridDebugVS.cso")),
-		gridDebugPS(new Shader(Utils::File::getRootFolder() + L"GridDebugPS.cso")),
-		oceanVS(new Shader(Utils::File::getRootFolder() + L"OceanVS.cso")),
-		oceanHS(new Shader(Utils::File::getRootFolder() + L"OceanHS.cso")),
-		oceanDS(new Shader(Utils::File::getRootFolder() + L"OceanDS.cso")),
-		oceanPS(new Shader(Utils::File::getRootFolder() + L"OceanPS.cso")),
-		spectrumCS(new Shader(Utils::File::getRootFolder() + L"SpectrumCS.cso")),
-		conjugateCS(new Shader(Utils::File::getRootFolder() + L"ConjugateCS.cso")),
-		displacementSpectrumCS(new Shader(Utils::File::getRootFolder() + L"DisplacementSpectrumCS.cso")),
-		ifftCS(new Shader(Utils::File::getRootFolder() + L"IFFTCS.cso")),
-		permutationCS(new Shader(Utils::File::getRootFolder() + L"PermutationCS.cso")),
-		waveMergeCS(new Shader(Utils::File::getRootFolder() + L"WaveMergeCS.cso"))
+		textureCubePS(Shader::create(Utils::File::getRootFolder() + L"TextureCubePS.cso")),
+		gridDebugVS(Shader::create(Utils::File::getRootFolder() + L"GridDebugVS.cso")),
+		gridDebugPS(Shader::create(Utils::File::getRootFolder() + L"GridDebugPS.cso")),
+		oceanVS(Shader::create(Utils::File::getRootFolder() + L"OceanVS.cso")),
+		oceanHS(Shader::create(Utils::File::getRootFolder() + L"OceanHS.cso")),
+		oceanDS(Shader::create(Utils::File::getRootFolder() + L"OceanDS.cso")),
+		oceanPS(Shader::create(Utils::File::getRootFolder() + L"OceanPS.cso")),
+		spectrumCS(Shader::create(Utils::File::getRootFolder() + L"SpectrumCS.cso")),
+		conjugateCS(Shader::create(Utils::File::getRootFolder() + L"ConjugateCS.cso")),
+		displacementSpectrumCS(Shader::create(Utils::File::getRootFolder() + L"DisplacementSpectrumCS.cso")),
+		ifftCS(Shader::create(Utils::File::getRootFolder() + L"IFFTCS.cso")),
+		permutationCS(Shader::create(Utils::File::getRootFolder() + L"PermutationCS.cso")),
+		waveMergeCS(Shader::create(Utils::File::getRootFolder() + L"WaveMergeCS.cso"))
 	{
 		spectrumParam[0].mapLength = lengthScale0;
 

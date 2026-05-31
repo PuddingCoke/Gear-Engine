@@ -10,21 +10,21 @@ namespace
 {
 	struct GammaCorrectEffectPrivate
 	{
-		Gear::Core::D3D12Core::Shader* gammaCorrectCS;
+		UniquePtr<Gear::Core::D3D12Core::Shader> gammaCorrectCS;
 
-		Gear::Core::D3D12Core::PipelineState* gammaCorrectState;
+		UniquePtr<Gear::Core::D3D12Core::PipelineState> gammaCorrectState;
 
-		Gear::Core::Resource::TextureRenderView* outputTexture;
+		UniquePtr<Gear::Core::Resource::TextureRenderView> outputTexture;
 	} pvt;
 
 	constexpr DXGI_FORMAT outputTextureFormat = Gear::Core::FMT::RGBA16UN;
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::GammaCorrectEffect::process(GraphicsContext* const context, Resource::TextureRenderView* const inputTexture)
+Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::GammaCorrectEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
 {
-	context->setPipelineState(pvt.gammaCorrectState);
+	context->setPipelineState(*pvt.gammaCorrectState);
 
-	context->setCSConstants({ inputTexture->getSRVMipIndex(0),pvt.outputTexture->getUAVMipIndex(0) }, 0);
+	context->setCSConstants({ inputTexture.getSRVMipIndex(0),pvt.outputTexture->getUAVMipIndex(0) }, 0);
 
 	const float gamma = Graphics::getGamma();
 
@@ -34,14 +34,14 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::GammaCorrectE
 
 	context->uavBarrier({ pvt.outputTexture->getTexture() });
 
-	return pvt.outputTexture;
+	return pvt.outputTexture.get();
 }
 
 void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::initialize()
 {
-	pvt.gammaCorrectCS = new D3D12Core::Shader(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes));
+	pvt.gammaCorrectCS = D3D12Core::Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes));
 
-	pvt.gammaCorrectState = PipelineStateBuilder::build(pvt.gammaCorrectCS);
+	pvt.gammaCorrectState = PipelineStateBuilder::build(*pvt.gammaCorrectCS);
 
 	pvt.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
 		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
@@ -53,18 +53,9 @@ void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::initialize()
 
 void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::release()
 {
-	if (pvt.outputTexture)
-	{
-		delete pvt.outputTexture;
-	}
+	pvt.gammaCorrectCS.reset();
 
-	if (pvt.gammaCorrectState)
-	{
-		delete pvt.gammaCorrectState;
-	}
+	pvt.gammaCorrectState.reset();
 
-	if (pvt.gammaCorrectCS)
-	{
-		delete pvt.gammaCorrectCS;
-	}
+	pvt.outputTexture.reset();
 }

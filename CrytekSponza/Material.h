@@ -24,9 +24,6 @@ public:
 
 	~Material()
 	{
-		delete diffuse;
-		delete roughnessMetallic;
-		delete normal;
 	}
 
 	//use first 3 slots of pixel constants
@@ -37,10 +34,10 @@ public:
 
 private:
 
-	TextureRenderView* diffuse;
+	UniquePtr<TextureRenderView> diffuse;
 
-	TextureRenderView* roughnessMetallic;
+	UniquePtr<TextureRenderView> roughnessMetallic;
 
-	TextureRenderView* normal;
+	UniquePtr<TextureRenderView> normal;
 
 };

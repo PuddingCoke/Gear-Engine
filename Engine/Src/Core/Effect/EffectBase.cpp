@@ -18,5 +18,4 @@ Gear::Core::Effect::EffectBase::EffectBase(GraphicsContext* const context, const
 
 Gear::Core::Effect::EffectBase::~EffectBase()
 {
-	delete outputTexture;
 }

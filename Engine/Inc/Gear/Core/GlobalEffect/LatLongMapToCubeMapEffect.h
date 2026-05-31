@@ -13,7 +13,7 @@ namespace Gear
 		{
 			namespace LatLongMapToCubeMapEffect
 			{
-				void process(GraphicsContext* const context, Resource::TextureRenderView* const inputTexture, Resource::TextureRenderView* const outputTexture);
+				void process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture, Resource::TextureRenderView& outputTexture);
 			}
 		}
 	}

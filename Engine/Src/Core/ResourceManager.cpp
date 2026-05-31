@@ -292,7 +292,7 @@ Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::ResourceManager::creat
 	return texture;
 }
 
-Gear::Core::Resource::ImmutableCBuffer* Gear::Core::ResourceManager::createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent)
+UniquePtr<Gear::Core::Resource::ImmutableCBuffer> Gear::Core::ResourceManager::createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent)
 {
 	Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
@@ -302,26 +302,26 @@ Gear::Core::Resource::ImmutableCBuffer* Gear::Core::ResourceManager::createImmut
 
 	buffer->setStateTracking(false);
 
-	return new Resource::ImmutableCBuffer(buffer, size, persistent);
+	return makeUnique<Resource::ImmutableCBuffer>(buffer, size, persistent);
 }
 
-Gear::Core::Resource::StaticCBuffer* Gear::Core::ResourceManager::createStaticCBuffer(const uint32_t size, const void* const data, const bool persistent)
+UniquePtr<Gear::Core::Resource::StaticCBuffer> Gear::Core::ResourceManager::createStaticCBuffer(const uint32_t size, const void* const data, const bool persistent)
 {
 	Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
-	return new Resource::StaticCBuffer(buffer, size, persistent);
+	return makeUnique<Resource::StaticCBuffer>(buffer, size, persistent);
 }
 
-Gear::Core::Resource::StaticCBuffer* Gear::Core::ResourceManager::createStaticCBuffer(const uint32_t size, const bool persistent)
+UniquePtr<Gear::Core::Resource::StaticCBuffer> Gear::Core::ResourceManager::createStaticCBuffer(const uint32_t size, const bool persistent)
 {
 	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
 
-	return new Resource::StaticCBuffer(buffer, size, persistent);
+	return makeUnique<Resource::StaticCBuffer>(buffer, size, persistent);
 }
 
-Gear::Core::Resource::DynamicCBuffer* Gear::Core::ResourceManager::createDynamicCBuffer(const uint32_t size, const void* const data)
+UniquePtr<Gear::Core::Resource::DynamicCBuffer> Gear::Core::ResourceManager::createDynamicCBuffer(const uint32_t size, const void* const data)
 {
-	Resource::DynamicCBuffer* const buffer = new Resource::DynamicCBuffer(size);
+	UniquePtr<Resource::DynamicCBuffer> buffer = makeUnique<Resource::DynamicCBuffer>(size);
 
 	if (data)
 	{
@@ -331,7 +331,7 @@ Gear::Core::Resource::DynamicCBuffer* Gear::Core::ResourceManager::createDynamic
 	return buffer;
 }
 
-Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent, const void* const data)
+UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent, const void* const data)
 {
 	if (createVBV && createIBV)
 	{
@@ -373,10 +373,10 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createTypedBuffer
 		buffer->setStateTracking(false);
 	}
 
-	return new Resource::BufferView(buffer, 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
+	return makeUnique<Resource::BufferView>(buffer, 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
 }
 
-Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent)
+UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent)
 {
 	if (createVBV && createIBV)
 	{
@@ -392,10 +392,10 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createTypedBuffer
 
 	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
 
-	return new Resource::BufferView(buffer, 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
+	return makeUnique<Resource::BufferView>(buffer, 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
 }
 
-Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent, const void* const data)
+UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent, const void* const data)
 {
 	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -427,10 +427,10 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createStructuredB
 		buffer->setStateTracking(false);
 	}
 
-	return new Resource::BufferView(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
+	return makeUnique<Resource::BufferView>(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 }
 
-Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent)
+UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent)
 {
 	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -441,10 +441,10 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createStructuredB
 
 	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
 
-	return new Resource::BufferView(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
+	return makeUnique<Resource::BufferView>(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 }
 
-Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data)
+UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data)
 {
 	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -471,10 +471,10 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createByteAddress
 		buffer->setStateTracking(false);
 	}
 
-	return new Resource::BufferView(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
+	return makeUnique<Resource::BufferView>(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
 }
 
-Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent)
+UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent)
 {
 	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -485,10 +485,10 @@ Gear::Core::Resource::BufferView* Gear::Core::ResourceManager::createByteAddress
 
 	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
 
-	return new Resource::BufferView(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
+	return makeUnique<Resource::BufferView>(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
 }
 
-Gear::Core::Resource::TextureDepthView* Gear::Core::ResourceManager::createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)
+UniquePtr<Gear::Core::Resource::TextureDepthView> Gear::Core::ResourceManager::createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)
 {
 	DXGI_FORMAT clearValueFormat = FMT::UNKNOWN;
 
@@ -522,10 +522,10 @@ Gear::Core::Resource::TextureDepthView* Gear::Core::ResourceManager::createTextu
 
 	Resource::D3D12Resource::Texture* texture = new Resource::D3D12Resource::Texture(width, height, resFormat, arraySize, mipLevels, true, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &clearValue);
 
-	return new Resource::TextureDepthView(texture, isTextureCube, persistent);
+	return makeUnique<Resource::TextureDepthView>(texture, isTextureCube, persistent);
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createTextureRenderView(const std::wstring& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
+UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureRenderView(const std::wstring& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
 {
 	bool stateTracking = true;
 
@@ -563,17 +563,17 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 
 	if (stateTracking)
 	{
-		return new Resource::TextureRenderView(texture, isTextureCube, persistent, texture->getFormat(),
+		return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, texture->getFormat(),
 			hasUAV ? texture->getFormat() : FMT::UNKNOWN, hasRTV ? texture->getFormat() : FMT::UNKNOWN);
 	}
 	else
 	{
-		return new Resource::TextureRenderView(texture, isTextureCube, persistent, texture->getFormat(),
+		return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, texture->getFormat(),
 			FMT::UNKNOWN, FMT::UNKNOWN);
 	}
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
+UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 {
 	const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
 
@@ -613,15 +613,15 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 
 	if (srvFormat == FMT::UNKNOWN)
 	{
-		return new Resource::TextureRenderView(texture, false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+		return makeUnique<Resource::TextureRenderView>(texture, false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 	}
 	else
 	{
-		return new Resource::TextureRenderView(texture, false, persistent, srvFormat, uavFormat, rtvFormat);
+		return makeUnique<Resource::TextureRenderView>(texture, false, persistent, srvFormat, uavFormat, rtvFormat);
 	}
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color)
+UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color)
 {
 	const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
 
@@ -663,18 +663,20 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 		texture = new Resource::D3D12Resource::Texture(width, height, resFormat, arraySize, mipLevels, true, resFlags);
 	}
 
-	return new Resource::TextureRenderView(texture, isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
+	return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
+UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
 {
-	Resource::TextureRenderView* const equirectangularMap = createTextureRenderView(filePath, false, true, false);
+	UniquePtr<Resource::TextureRenderView> equirectangularMapRet = createTextureRenderView(filePath, false, true, false);
+
+	Resource::TextureRenderView* const equirectangularMap = equirectangularMapRet.release();
 
 	equirectangularMap->copyDescriptors();
 
 	deferredRelease(equirectangularMap);
 
-	GlobalEffect::HDRClampEffect::process(context, equirectangularMap);
+	GlobalEffect::HDRClampEffect::process(context, *equirectangularMap);
 
 	DXGI_FORMAT resFormat = FMT::UNKNOWN;
 
@@ -694,12 +696,14 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 		break;
 	}
 
-	Resource::TextureRenderView* const cubeMap = createTextureRenderView(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false,
+	UniquePtr<Resource::TextureRenderView> cubeMapRet = createTextureRenderView(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false,
 		resFormat, FMT::UNKNOWN, resFormat);
+
+	Resource::TextureRenderView* const cubeMap = cubeMapRet.release();
 
 	deferredRelease(cubeMap);
 
-	GlobalEffect::LatLongMapToCubeMapEffect::process(context, equirectangularMap, cubeMap);
+	GlobalEffect::LatLongMapToCubeMapEffect::process(context, *equirectangularMap, *cubeMap);
 
 	bool stateTracking = true;
 
@@ -746,17 +750,17 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 
 	if (stateTracking)
 	{
-		return new Resource::TextureRenderView(dstTexture, true, persistent, dstTexture->getFormat(),
+		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(),
 			hasUAV ? dstTexture->getFormat() : FMT::UNKNOWN, hasRTV ? dstTexture->getFormat() : FMT::UNKNOWN);
 	}
 	else
 	{
-		return new Resource::TextureRenderView(dstTexture, true, persistent, dstTexture->getFormat(),
+		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(),
 			FMT::UNKNOWN, FMT::UNKNOWN);
 	}
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
+UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 {
 	Resource::D3D12Resource::Texture* srcTextures[6] = {};
 
@@ -820,10 +824,10 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::ResourceManager::createText
 
 	if (srvFormat == FMT::UNKNOWN)
 	{
-		return new Resource::TextureRenderView(dstTexture, true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 	}
 	else
 	{
-		return new Resource::TextureRenderView(dstTexture, true, persistent, srvFormat, uavFormat, rtvFormat);
+		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, srvFormat, uavFormat, rtvFormat);
 	}
 }

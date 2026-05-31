@@ -34,10 +34,6 @@ public:
 			{
 				material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath);
 				diffusePath = assetPath + texturePath.C_Str();
-
-				diffusePath[diffusePath.length() - 3] = 'd';
-				diffusePath[diffusePath.length() - 2] = 'd';
-				diffusePath[diffusePath.length() - 1] = 's';
 			}
 			else
 			{
@@ -48,10 +44,6 @@ public:
 			{
 				material->GetTexture(aiTextureType_METALNESS, 0, &texturePath);
 				roughnessMetallicPathPath = assetPath + texturePath.C_Str();
-
-				roughnessMetallicPathPath[roughnessMetallicPathPath.length() - 3] = 'd';
-				roughnessMetallicPathPath[roughnessMetallicPathPath.length() - 2] = 'd';
-				roughnessMetallicPathPath[roughnessMetallicPathPath.length() - 1] = 's';
 			}
 			else
 			{
@@ -62,10 +54,6 @@ public:
 			{
 				material->GetTexture(aiTextureType_NORMALS, 0, &texturePath);
 				normalPath = assetPath + texturePath.C_Str();
-
-				normalPath[normalPath.length() - 3] = 'd';
-				normalPath[normalPath.length() - 2] = 'd';
-				normalPath[normalPath.length() - 1] = 's';
 			}
 			else
 			{
@@ -174,10 +162,6 @@ public:
 
 	~Scene()
 	{
-		delete modelBuffer;
-
-		delete indexBuffer;
-
 		for (UINT i = 0; i < materials.size(); i++)
 		{
 			delete materials[i];
@@ -222,8 +206,8 @@ private:
 
 	std::vector<Model*> models;
 
-	BufferView* modelBuffer;
+	UniquePtr<BufferView> modelBuffer;
 
-	BufferView* indexBuffer;
+	UniquePtr<BufferView> indexBuffer;
 
 };

@@ -84,9 +84,9 @@ namespace Gear
 
 					ComPtr<ID3D12Resource> resource;
 
-					std::shared_ptr<bool> stateTracking;
+					SharedPtr<bool> stateTracking;
 
-					std::shared_ptr<bool> sharedResource;
+					SharedPtr<bool> sharedResource;
 
 					bool inReferredList;
 

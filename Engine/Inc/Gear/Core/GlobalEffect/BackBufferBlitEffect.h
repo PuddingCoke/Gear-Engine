@@ -13,7 +13,7 @@ namespace Gear
 		{
 			namespace BackBufferBlitEffect
 			{
-				void process(GraphicsContext* const context, Resource::TextureRenderView* const inputTexture);
+				void process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture);
 			}
 		}
 	}

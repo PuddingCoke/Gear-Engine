@@ -13,60 +13,60 @@ namespace
 	struct LatLongMapToCubeMapEffectPrivate
 	{
 
-		Gear::Core::D3D12Core::Shader* equirectangularVS;
+		UniquePtr<Gear::Core::D3D12Core::Shader> equirectangularVS;
 
-		Gear::Core::D3D12Core::Shader* equirectangularPS;
+		UniquePtr<Gear::Core::D3D12Core::Shader> equirectangularPS;
 
-		Gear::Core::D3D12Core::PipelineState* equirectangularR8State;
+		UniquePtr<Gear::Core::D3D12Core::PipelineState> equirectangularR8State;
 
-		Gear::Core::D3D12Core::PipelineState* equirectangularR16State;
+		UniquePtr<Gear::Core::D3D12Core::PipelineState> equirectangularR16State;
 
-		Gear::Core::D3D12Core::PipelineState* equirectangularR32State;
+		UniquePtr<Gear::Core::D3D12Core::PipelineState> equirectangularR32State;
 
-		Gear::Core::Resource::ImmutableCBuffer* matricesBuffer;
+		UniquePtr<Gear::Core::Resource::ImmutableCBuffer> matricesBuffer;
 
 	}pvt;
 }
 
-void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContext* const context, Resource::TextureRenderView* const inputTexture, Resource::TextureRenderView* const outputTexture)
+void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture, Resource::TextureRenderView& outputTexture)
 {
-	switch (outputTexture->getTexture()->getFormat())
+	switch (outputTexture.getTexture()->getFormat())
 	{
 	case FMT::RGBA8UN:
-		context->setPipelineState(pvt.equirectangularR8State);
+		context->setPipelineState(*pvt.equirectangularR8State);
 		break;
 	case FMT::RGBA16F:
-		context->setPipelineState(pvt.equirectangularR16State);
+		context->setPipelineState(*pvt.equirectangularR16State);
 		break;
 	case FMT::RGBA32F:
-		context->setPipelineState(pvt.equirectangularR32State);
+		context->setPipelineState(*pvt.equirectangularR32State);
 		break;
 	}
 
-	context->setViewportSimple(outputTexture->getTexture()->getWidth(), outputTexture->getTexture()->getHeight());
+	context->setViewportSimple(outputTexture.getTexture()->getWidth(), outputTexture.getTexture()->getHeight());
 
 	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-	context->setRenderTargets({ outputTexture->getRTVMipHandle(0) }, {});
+	context->setRenderTargets({ outputTexture.getRTVMipHandle(0) }, {});
 
-	context->setVSConstantBuffer(pvt.matricesBuffer);
+	context->setVSConstantBuffer(*pvt.matricesBuffer);
 
-	context->setPSConstants({ inputTexture->getAllSRVIndex() }, 0);
+	context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
 
 	context->draw(36, 6, 0, 0);
 }
 
 void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::initialize(ResourceManager* const resManager)
 {
-	pvt.equirectangularVS = new D3D12Core::Shader(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes));
+	pvt.equirectangularVS = D3D12Core::Shader::create(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes));
 
-	pvt.equirectangularPS = new D3D12Core::Shader(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes));
+	pvt.equirectangularPS = D3D12Core::Shader::create(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes));
 
 	{
 		auto getBuilder = [] {
 			return PipelineStateBuilder()
-				.setVS(pvt.equirectangularVS)
-				.setPS(pvt.equirectangularPS)
+				.setVS(*pvt.equirectangularVS)
+				.setPS(*pvt.equirectangularPS)
 				.setRasterizerState(PipelineStateHelper::rasterCullNone)
 				.setBlendState(PipelineStateHelper::blendReplace)
 				.setDepthStencilState(PipelineStateHelper::depthCompareNone)
@@ -129,34 +129,16 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::initialize(R
 
 void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::release()
 {
-	if (pvt.equirectangularVS)
-	{
-		delete pvt.equirectangularVS;
-	}
+	pvt.equirectangularVS.reset();
 
-	if (pvt.equirectangularPS)
-	{
-		delete pvt.equirectangularPS;
-	}
+	pvt.equirectangularPS.reset();
 
-	if (pvt.equirectangularR8State)
-	{
-		delete pvt.equirectangularR8State;
-	}
+	pvt.equirectangularR8State.reset();
 
-	if (pvt.equirectangularR16State)
-	{
-		delete pvt.equirectangularR16State;
-	}
+	pvt.equirectangularR16State.reset();
 
-	if (pvt.equirectangularR32State)
-	{
-		delete pvt.equirectangularR32State;
-	}
+	pvt.equirectangularR32State.reset();
 
-	if (pvt.matricesBuffer)
-	{
-		delete pvt.matricesBuffer;
-	}
+	pvt.matricesBuffer.reset();
 }
 

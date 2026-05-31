@@ -7,7 +7,7 @@ Gear::Core::Resource::D3D12Resource::Texture::Texture(const uint32_t width, cons
 	arraySize(arraySize),
 	mipLevels(mipLevels),
 	format(format),
-	globalState(std::make_shared<States>(D3D12_RESOURCE_STATE_COPY_DEST, mipLevels)),
+	globalState(makeShared<States>(D3D12_RESOURCE_STATE_COPY_DEST, mipLevels)),
 	internalState(new States(D3D12_RESOURCE_STATE_COPY_DEST, mipLevels)),
 	transitionState(new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
 {
@@ -24,7 +24,7 @@ Gear::Core::Resource::D3D12Resource::Texture::Texture(const ComPtr<ID3D12Resourc
 	mipLevels = desc.MipLevels;
 	format = desc.Format;
 
-	globalState = std::make_shared<States>(initialState, mipLevels);
+	globalState = makeShared<States>(initialState, mipLevels);
 	internalState = new States(initialState, mipLevels);
 	transitionState = new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels);
 }

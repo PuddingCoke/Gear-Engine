@@ -62,7 +62,7 @@ namespace Gear
 
 				private:
 
-					std::shared_ptr<uint32_t> globalState;
+					SharedPtr<uint32_t> globalState;
 
 					uint32_t internalState;
 

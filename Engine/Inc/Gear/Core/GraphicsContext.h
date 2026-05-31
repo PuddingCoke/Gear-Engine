@@ -29,11 +29,11 @@ namespace Gear
 
 			~GraphicsContext();
 
-			void updateBuffer(Resource::BufferView* const bufferView, const void* const data, const uint32_t size) const;
+			void updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const;
 
-			void updateBuffer(Resource::StaticCBuffer* const staticCBuffer, const void* const data, const uint32_t size) const;
+			void updateBuffer(Resource::StaticCBuffer& staticCBuffer, const void* const data, const uint32_t size) const;
 
-			void setGlobalConstantBuffer(const Resource::ImmutableCBuffer* const immutableCBuffer);
+			void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
 			template<size_t N>
 			void setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
@@ -65,19 +65,19 @@ namespace Gear
 
 			void setCSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
 
-			void setVSConstantBuffer(const Resource::ImmutableCBuffer* const immutableCBuffer);
+			void setVSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
-			void setHSConstantBuffer(const Resource::ImmutableCBuffer* const immutableCBuffer);
+			void setHSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
-			void setDSConstantBuffer(const Resource::ImmutableCBuffer* const immutableCBuffer);
+			void setDSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
-			void setGSConstantBuffer(const Resource::ImmutableCBuffer* const immutableCBuffer);
+			void setGSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
-			void setPSConstantBuffer(const Resource::ImmutableCBuffer* const immutableCBuffer);
+			void setPSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
-			void setCSConstantBuffer(const Resource::ImmutableCBuffer* const immutableCBuffer);
+			void setCSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
-			void setPipelineState(const D3D12Core::PipelineState* const pipelineState);
+			void setPipelineState(const D3D12Core::PipelineState& pipelineState);
 
 			template<size_t N>
 			void setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil = {});

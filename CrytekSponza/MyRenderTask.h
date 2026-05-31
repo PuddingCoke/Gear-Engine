@@ -41,17 +41,17 @@ public:
 			FMT::R32F, FMT::UNKNOWN, FMT::R32F, distanceCubeClearColor)),
 		depthCube(ResourceManager::createTextureDepthView(probeCaptureResolution, probeCaptureResolution, FMT::D32F, 6, 1, true, true)),
 		irradianceVolumeBuffer(ResourceManager::createStaticCBuffer(sizeof(IrradianceVolume), true)),
-		shadowVS(new Shader(Utils::File::getRootFolder() + L"ShadowVS.cso")),
-		deferredVShader(new Shader(Utils::File::getRootFolder() + L"DeferredVShader.cso")),
-		deferredPShader(new Shader(Utils::File::getRootFolder() + L"DeferredPShader.cso")),
-		deferredFinal(new Shader(Utils::File::getRootFolder() + L"DeferredFinal.cso")),
-		cubeRenderVS(new Shader(Utils::File::getRootFolder() + L"CubeRenderVS.cso")),
-		cubeRenderPS(new Shader(Utils::File::getRootFolder() + L"CubeRenderPS.cso")),
-		cubeRenderBouncePS(new Shader(Utils::File::getRootFolder() + L"CubeRenderBouncePS.cso")),
-		irradianceOctahedralEncode(new Shader(Utils::File::getRootFolder() + L"IrradianceOctahedralEncode.cso")),
-		depthOctahedralEncode(new Shader(Utils::File::getRootFolder() + L"DepthOctahedralEncode.cso")),
-		skyboxPShader(new Shader(Utils::File::getRootFolder() + L"SkybosPShader.cso")),
-		ssrCombinePS(new Shader(Utils::File::getRootFolder() + L"SSRCombinePS.cso")),
+		shadowVS(Shader::create(Utils::File::getRootFolder() + L"ShadowVS.cso")),
+		deferredVShader(Shader::create(Utils::File::getRootFolder() + L"DeferredVShader.cso")),
+		deferredPShader(Shader::create(Utils::File::getRootFolder() + L"DeferredPShader.cso")),
+		deferredFinal(Shader::create(Utils::File::getRootFolder() + L"DeferredFinal.cso")),
+		cubeRenderVS(Shader::create(Utils::File::getRootFolder() + L"CubeRenderVS.cso")),
+		cubeRenderPS(Shader::create(Utils::File::getRootFolder() + L"CubeRenderPS.cso")),
+		cubeRenderBouncePS(Shader::create(Utils::File::getRootFolder() + L"CubeRenderBouncePS.cso")),
+		irradianceOctahedralEncode(Shader::create(Utils::File::getRootFolder() + L"IrradianceOctahedralEncode.cso")),
+		depthOctahedralEncode(Shader::create(Utils::File::getRootFolder() + L"DepthOctahedralEncode.cso")),
+		skyboxPShader(Shader::create(Utils::File::getRootFolder() + L"SkybosPShader.cso")),
+		ssrCombinePS(Shader::create(Utils::File::getRootFolder() + L"SSRCombinePS.cso")),
 		sunAngle(Utils::Math::halfPi - 0.01f)
 	{
 		shadowTexture->getTexture()->setName(L"Shadow Texture");
@@ -72,7 +72,7 @@ public:
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats()
 			.setDSVFormat(FMT::D32F)
-			.setVS(shadowVS)
+			.setVS(*shadowVS)
 			.build();
 
 		deferredPipelineState = PipelineStateBuilder()
@@ -83,14 +83,14 @@ public:
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats({ FMT::RGBA32F,FMT::RGBA32F,FMT::RGBA8UN })
 			.setDSVFormat(FMT::D32F)
-			.setVS(deferredVShader)
-			.setPS(deferredPShader)
+			.setVS(*deferredVShader)
+			.setPS(*deferredPShader)
 			.build();
 
 		deferredFinalPipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
 			.setRTVFormats({ FMT::RGBA16F })
-			.setPS(deferredFinal)
+			.setPS(*deferredFinal)
 			.build();
 
 		probeCapturePipelineState = PipelineStateBuilder()
@@ -101,8 +101,8 @@ public:
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats({ FMT::RGBA16F,FMT::R32F })
 			.setDSVFormat(FMT::D32F)
-			.setVS(cubeRenderVS)
-			.setPS(cubeRenderPS)
+			.setVS(*cubeRenderVS)
+			.setPS(*cubeRenderPS)
 			.build();
 
 		probeCaptureBouncePipelineState = PipelineStateBuilder()
@@ -113,8 +113,8 @@ public:
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
-			.setVS(cubeRenderVS)
-			.setPS(cubeRenderBouncePS)
+			.setVS(*cubeRenderVS)
+			.setPS(*cubeRenderBouncePS)
 			.build();
 
 		skyboxState = PipelineStateBuilder()
@@ -125,7 +125,7 @@ public:
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
 			.setVS(GlobalShader::getTextureCubeVS())
-			.setPS(skyboxPShader)
+			.setPS(*skyboxPShader)
 			.build();
 
 		ssrCombineState = PipelineStateBuilder()
@@ -135,12 +135,12 @@ public:
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setVS(GlobalShader::getFullScreenVS())
-			.setPS(ssrCombinePS)
+			.setPS(*ssrCombinePS)
 			.build();
 
-		irradianceOctahedralEncodeState = PipelineStateBuilder::build(irradianceOctahedralEncode);
+		irradianceOctahedralEncodeState = PipelineStateBuilder::build(*irradianceOctahedralEncode);
 
-		depthOctahedralEncodeState = PipelineStateBuilder::build(depthOctahedralEncode);
+		depthOctahedralEncodeState = PipelineStateBuilder::build(*depthOctahedralEncode);
 
 		skybox = resManager->createTextureCube(L"E:/Assets/Sponza/sky/kloppenheim_05_4k.hdr", 1024, true);
 
@@ -199,17 +199,17 @@ public:
 			}
 		}
 
-		hbaoPlusEffect = new HBAOPlusEffect(context, Graphics::getWidth(), Graphics::getHeight());
+		hbaoPlusEffect = HBAOPlusEffect::create(context, Graphics::getWidth(), Graphics::getHeight());
 
-		bloomEffect = new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
+		bloomEffect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
 
 		bloomEffect->setIntensity(0.5f);
 
-		fxaaEffect = new FXAAEffect(context, Graphics::getWidth(), Graphics::getHeight());
+		fxaaEffect = FXAAEffect::create(context, Graphics::getWidth(), Graphics::getHeight());
 
-		ssrEffect = new SSREffect(context, Graphics::getWidth(), Graphics::getHeight());
+		ssrEffect = SSREffect::create(context, Graphics::getWidth(), Graphics::getHeight());
 
-		scene = new Scene(assetPath + "Sponza.gltf", resManager);
+		scene = makeUnique<Scene>(assetPath + "Sponza.gltf", resManager);
 
 		Graphics::setExposure(0.6f);
 
@@ -256,65 +256,6 @@ public:
 
 	~MyRenderTask()
 	{
-		delete scene;
-
-		delete irradianceVolumeBuffer;
-
-		for (UINT i = 0; i < 17 * 9 * 12; i++)
-		{
-			delete cubeRenderParamBuffer[i];
-		}
-
-		delete gPositionMetallic;
-		delete gNormalRoughness;
-		delete gBaseColor;
-		delete depthTexture;
-		delete shadowTexture;
-		delete originTexture;
-		delete ssrCombinedTexture;
-
-		delete radianceCube;
-		delete distanceCube;
-		delete depthCube;
-
-		delete irradianceOctahedralMap;
-		delete irradianceBounceOctahedralMap;
-		delete depthOctahedralMap;
-
-		delete skybox;
-
-		delete shadowVS;
-		delete deferredVShader;
-		delete deferredPShader;
-		delete deferredFinal;
-		delete cubeRenderVS;
-		delete cubeRenderPS;
-		delete cubeRenderBouncePS;
-		delete skyboxPShader;
-		delete ssrCombinePS;
-
-		delete hbaoPlusEffect;
-		delete bloomEffect;
-		delete fxaaEffect;
-		delete ssrEffect;
-
-		delete shadowPipelineState;
-
-		delete deferredPipelineState;
-
-		delete deferredFinalPipelineState;
-
-		delete probeCapturePipelineState;
-
-		delete probeCaptureBouncePipelineState;
-
-		delete irradianceOctahedralEncodeState;
-
-		delete depthOctahedralEncodeState;
-
-		delete skyboxState;
-
-		delete ssrCombineState;
 	}
 
 	void imGUICall() override
@@ -373,9 +314,9 @@ protected:
 
 		irradianceVolume.lightViewProj = lightMat;
 
-		context->updateBuffer(irradianceVolumeBuffer, &irradianceVolume, sizeof(IrradianceVolume));
+		context->updateBuffer(*irradianceVolumeBuffer, &irradianceVolume, sizeof(IrradianceVolume));
 
-		context->setPipelineState(shadowPipelineState);
+		context->setPipelineState(*shadowPipelineState);
 
 		const D3D12Resource::DepthStencilDesc dsDesc = shadowTexture->getDSVMipHandle(0);
 
@@ -385,7 +326,7 @@ protected:
 
 		context->setScissorRect(0, 0, shadowTextureResolution, shadowTextureResolution);
 
-		context->setVSConstantBuffer(irradianceVolumeBuffer);
+		context->setVSConstantBuffer(*irradianceVolumeBuffer);
 
 		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0);
 
@@ -396,18 +337,18 @@ protected:
 	{
 		for (UINT i = 0; i < probeCount; i++)
 		{
-			renderCubeAt(cubeRenderParamBuffer[i]);
+			renderCubeAt(*cubeRenderParamBuffer[i]);
 		}
 
 		for (UINT i = 0; i < probeCount; i++)
 		{
-			renderCubeBounceAt(cubeRenderParamBuffer[i]);
+			renderCubeBounceAt(*cubeRenderParamBuffer[i]);
 		}
 	}
 
-	void renderCubeAt(const ImmutableCBuffer* const cubeRenderBuffer)
+	void renderCubeAt(const ImmutableCBuffer& cubeRenderBuffer)
 	{
-		context->setPipelineState(probeCapturePipelineState);
+		context->setPipelineState(*probeCapturePipelineState);
 
 		context->setViewport(probeCaptureResolution, probeCaptureResolution);
 
@@ -434,7 +375,7 @@ protected:
 
 		scene->renderCube(context);
 
-		context->setPipelineState(irradianceOctahedralEncodeState);
+		context->setPipelineState(*irradianceOctahedralEncodeState);
 
 		context->setCSConstants({
 			irradianceOctahedralMap->getUAVMipIndex(0),
@@ -447,7 +388,7 @@ protected:
 
 		context->uavBarrier({ irradianceOctahedralMap->getTexture() });
 
-		context->setPipelineState(depthOctahedralEncodeState);
+		context->setPipelineState(*depthOctahedralEncodeState);
 
 		context->setCSConstants({
 			depthOctahedralMap->getUAVMipIndex(0),
@@ -461,9 +402,9 @@ protected:
 		context->uavBarrier({ depthOctahedralMap->getTexture() });
 	}
 
-	void renderCubeBounceAt(const ImmutableCBuffer* const cubeRenderBuffer)
+	void renderCubeBounceAt(const ImmutableCBuffer& cubeRenderBuffer)
 	{
-		context->setPipelineState(probeCaptureBouncePipelineState);
+		context->setPipelineState(*probeCaptureBouncePipelineState);
 
 		context->setViewport(probeCaptureResolution, probeCaptureResolution);
 
@@ -490,7 +431,7 @@ protected:
 
 		scene->renderCube(context);
 
-		context->setPipelineState(irradianceOctahedralEncodeState);
+		context->setPipelineState(*irradianceOctahedralEncodeState);
 
 		context->setCSConstants({
 			irradianceBounceOctahedralMap->getUAVMipIndex(0),
@@ -506,7 +447,7 @@ protected:
 
 	void recordCommand() override
 	{
-		context->setPipelineState(deferredPipelineState);
+		context->setPipelineState(*deferredPipelineState);
 
 		context->setViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -532,9 +473,9 @@ protected:
 
 		scene->render(context);
 
-		TextureRenderView* const aoTexture = hbaoPlusEffect->process(depthTexture, gNormalRoughness);
+		TextureRenderView* const aoTexture = hbaoPlusEffect->process(*depthTexture, *gNormalRoughness);
 
-		context->setPipelineState(deferredFinalPipelineState);
+		context->setPipelineState(*deferredFinalPipelineState);
 
 		context->setViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -554,13 +495,13 @@ protected:
 			aoTexture->getAllSRVIndex()
 			}, 0);
 
-		context->setPSConstantBuffer(irradianceVolumeBuffer);
+		context->setPSConstantBuffer(*irradianceVolumeBuffer);
 
 		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 
 		context->draw(3, 1, 0, 0);
 
-		context->setPipelineState(skyboxState);
+		context->setPipelineState(*skyboxState);
 
 		context->setViewport(Graphics::getWidth(), Graphics::getHeight());
 
@@ -574,9 +515,9 @@ protected:
 
 		context->draw(36, 1, 0, 0);
 
-		TextureRenderView* const ssrUVVisibilityTexture = ssrEffect->process(depthTexture, gPositionMetallic, gNormalRoughness);
+		TextureRenderView* const ssrUVVisibilityTexture = ssrEffect->process(*depthTexture, *gPositionMetallic, *gNormalRoughness);
 
-		context->setPipelineState(ssrCombineState);
+		context->setPipelineState(*ssrCombineState);
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
@@ -592,15 +533,15 @@ protected:
 
 		context->draw(3, 1, 0, 0);
 
-		TextureRenderView* const bloomTexture = bloomEffect->process(ssrCombinedTexture);
+		TextureRenderView* const bloomTexture = bloomEffect->process(*ssrCombinedTexture);
 
-		TextureRenderView* const toneMappedTexture = ToneMapEffect::process(context, bloomTexture);
+		TextureRenderView* const toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
 
-		TextureRenderView* const fxaaTexture = fxaaEffect->process(toneMappedTexture);
+		TextureRenderView* const fxaaTexture = fxaaEffect->process(*toneMappedTexture);
 
-		TextureRenderView* const gammaCorrectedTexture = GammaCorrectEffect::process(context, fxaaTexture);
+		TextureRenderView* const gammaCorrectedTexture = GammaCorrectEffect::process(context, *fxaaTexture);
 
-		blit(gammaCorrectedTexture);
+		blit(*gammaCorrectedTexture);
 	}
 
 	UINT ProbeGridPosToIndex(const DirectX::XMUINT3& probeGridPos)
@@ -617,7 +558,7 @@ protected:
 		};
 	}
 
-	Scene* scene;
+	UniquePtr<Scene> scene;
 
 	static constexpr UINT probeCountX = 17;
 
@@ -654,86 +595,86 @@ protected:
 		float clipExponent = 0.3f;
 	}clipParameters;
 
-	StaticCBuffer* irradianceVolumeBuffer;
+	UniquePtr<StaticCBuffer> irradianceVolumeBuffer;
 
-	ImmutableCBuffer* cubeRenderParamBuffer[probeCount];
+	UniquePtr<ImmutableCBuffer> cubeRenderParamBuffer[probeCount];
 
 	float sunAngle;
 
-	TextureRenderView* gPositionMetallic;
+	UniquePtr<TextureRenderView> gPositionMetallic;
 
-	TextureRenderView* gNormalRoughness;
+	UniquePtr<TextureRenderView> gNormalRoughness;
 
-	TextureRenderView* gBaseColor;
+	UniquePtr<TextureRenderView> gBaseColor;
 
-	TextureDepthView* depthTexture;
+	UniquePtr<TextureDepthView> depthTexture;
 
-	TextureDepthView* shadowTexture;
+	UniquePtr<TextureDepthView> shadowTexture;
 
-	TextureRenderView* originTexture;
+	UniquePtr<TextureRenderView> originTexture;
 
-	TextureRenderView* ssrCombinedTexture;
+	UniquePtr<TextureRenderView> ssrCombinedTexture;
 
-	TextureRenderView* radianceCube;
+	UniquePtr<TextureRenderView> radianceCube;
 
-	TextureRenderView* distanceCube;
+	UniquePtr<TextureRenderView> distanceCube;
 
-	TextureDepthView* depthCube;
+	UniquePtr<TextureDepthView> depthCube;
 
-	TextureRenderView* irradianceOctahedralMap;
+	UniquePtr<TextureRenderView> irradianceOctahedralMap;
 
-	TextureRenderView* irradianceBounceOctahedralMap;
+	UniquePtr<TextureRenderView> irradianceBounceOctahedralMap;
 
-	TextureRenderView* depthOctahedralMap;
+	UniquePtr<TextureRenderView> depthOctahedralMap;
 
-	TextureRenderView* skybox;
+	UniquePtr<TextureRenderView> skybox;
 
-	PipelineState* shadowPipelineState;
+	UniquePtr<PipelineState> shadowPipelineState;
 
-	PipelineState* deferredPipelineState;
+	UniquePtr<PipelineState> deferredPipelineState;
 
-	PipelineState* deferredFinalPipelineState;
+	UniquePtr<PipelineState> deferredFinalPipelineState;
 
-	PipelineState* probeCapturePipelineState;
+	UniquePtr<PipelineState> probeCapturePipelineState;
 
-	PipelineState* probeCaptureBouncePipelineState;
+	UniquePtr<PipelineState> probeCaptureBouncePipelineState;
 
-	PipelineState* irradianceOctahedralEncodeState;
+	UniquePtr<PipelineState> irradianceOctahedralEncodeState;
 
-	PipelineState* depthOctahedralEncodeState;
+	UniquePtr<PipelineState> depthOctahedralEncodeState;
 
-	PipelineState* skyboxState;
+	UniquePtr<PipelineState> skyboxState;
 
-	PipelineState* ssrCombineState;
+	UniquePtr<PipelineState> ssrCombineState;
 
-	Shader* shadowVS;
+	UniquePtr<Shader> shadowVS;
 
-	Shader* deferredVShader;
+	UniquePtr<Shader> deferredVShader;
 
-	Shader* deferredPShader;
+	UniquePtr<Shader> deferredPShader;
 
-	Shader* deferredFinal;
+	UniquePtr<Shader> deferredFinal;
 
-	Shader* cubeRenderVS;
+	UniquePtr<Shader> cubeRenderVS;
 
-	Shader* cubeRenderPS;
+	UniquePtr<Shader> cubeRenderPS;
 
-	Shader* cubeRenderBouncePS;
+	UniquePtr<Shader> cubeRenderBouncePS;
 
-	Shader* irradianceOctahedralEncode;
+	UniquePtr<Shader> irradianceOctahedralEncode;
 
-	Shader* depthOctahedralEncode;
+	UniquePtr<Shader> depthOctahedralEncode;
 
-	Shader* skyboxPShader;
+	UniquePtr<Shader> skyboxPShader;
 
-	Shader* ssrCombinePS;
+	UniquePtr<Shader> ssrCombinePS;
 
-	HBAOPlusEffect* hbaoPlusEffect;
+	UniquePtr<HBAOPlusEffect> hbaoPlusEffect;
 
-	BloomEffect* bloomEffect;
+	UniquePtr<BloomEffect> bloomEffect;
 
-	FXAAEffect* fxaaEffect;
+	UniquePtr<FXAAEffect> fxaaEffect;
 
-	SSREffect* ssrEffect;
+	UniquePtr<SSREffect> ssrEffect;
 
 };

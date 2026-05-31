@@ -12,10 +12,10 @@ public:
 		renderTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(),
 			FMT::RGBA8UN, 1, 1, false, true, FMT::RGBA8UN, FMT::UNKNOWN, FMT::RGBA8UN, DirectX::Colors::White)),
 		arrowTexture(resManager->createTextureRenderView(L"arrow.png", true)),
-		stepCS(new Shader(Utils::File::getRootFolder() + L"StepCS.cso")),
-		vehicleVS(new Shader(Utils::File::getRootFolder() + L"VehicleVS.cso")),
-		vehicleGS(new Shader(Utils::File::getRootFolder() + L"VehicleGS.cso")),
-		vehiclePS(new Shader(Utils::File::getRootFolder() + L"VehiclePS.cso")),
+		stepCS(Shader::create(Utils::File::getRootFolder() + L"StepCS.cso")),
+		vehicleVS(Shader::create(Utils::File::getRootFolder() + L"VehicleVS.cso")),
+		vehicleGS(Shader::create(Utils::File::getRootFolder() + L"VehicleGS.cso")),
+		vehiclePS(Shader::create(Utils::File::getRootFolder() + L"VehiclePS.cso")),
 		simulationParam{}
 	{
 		{

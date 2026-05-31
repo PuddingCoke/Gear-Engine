@@ -4,6 +4,11 @@
 
 #include<Gear/Core/RenderEngine.h>
 
+UniquePtr<Gear::Core::Effect::HBAOPlusEffect> Gear::Core::Effect::HBAOPlusEffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height)
+{
+	return makeUnique<HBAOPlusEffect>(context, width, height);
+}
+
 Gear::Core::Effect::HBAOPlusEffect::HBAOPlusEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height) :
 	EffectBase(context, width, height, FMT::R32F), aoParameters{}
 {
@@ -66,7 +71,7 @@ void Gear::Core::Effect::HBAOPlusEffect::imGUICall()
 	ImGui::End();
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::HBAOPlusEffect::process(Resource::TextureDepthView* const depthTexture, Resource::TextureRenderView* const gNormal)
+Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::HBAOPlusEffect::process(Resource::TextureDepthView& depthTexture, Resource::TextureRenderView& gNormal)
 {
 	GFSDK_SSAO_InputData_D3D12 inputData = {};
 
@@ -75,15 +80,15 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::HBAOPlusEffect::pro
 	const DirectX::XMMATRIX viewMatrix = MainCamera::getView();
 
 	inputData.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
-	inputData.DepthData.FullResDepthTextureSRV.pResource = depthTexture->getTexture()->getResource();
-	inputData.DepthData.FullResDepthTextureSRV.GpuHandle = depthTexture->getDepthMipGPUHandle(0).ptr;
+	inputData.DepthData.FullResDepthTextureSRV.pResource = depthTexture.getTexture()->getResource();
+	inputData.DepthData.FullResDepthTextureSRV.GpuHandle = depthTexture.getDepthMipGPUHandle(0).ptr;
 	inputData.DepthData.ProjectionMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&projMatrix);
 	inputData.DepthData.ProjectionMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
 	inputData.DepthData.MetersToViewSpaceUnits = 1.f;
 
 	inputData.NormalData.Enable = true;
-	inputData.NormalData.FullResNormalTextureSRV.pResource = gNormal->getTexture()->getResource();
-	inputData.NormalData.FullResNormalTextureSRV.GpuHandle = gNormal->getSRVMipGPUHandle(0).ptr;
+	inputData.NormalData.FullResNormalTextureSRV.pResource = gNormal.getTexture()->getResource();
+	inputData.NormalData.FullResNormalTextureSRV.GpuHandle = gNormal.getSRVMipGPUHandle(0).ptr;
 	inputData.NormalData.WorldToViewMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&viewMatrix);
 	inputData.NormalData.WorldToViewMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
 
@@ -111,9 +116,9 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::HBAOPlusEffect::pro
 
 	D3D12Core::CommandList* const commandList = context->getCommandList();
 
-	commandList->trackAndSetResourceState(depthTexture->getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	commandList->trackAndSetResourceState(depthTexture.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-	commandList->trackAndSetResourceState(gNormal->getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	commandList->trackAndSetResourceState(gNormal.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 	commandList->trackAndSetResourceState(outputTexture->getTexture(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
@@ -133,5 +138,5 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::Effect::HBAOPlusEffect::pro
 	
 	context->resetTrackedGraphicsStates();
 
-	return outputTexture;
+	return outputTexture.get();
 }

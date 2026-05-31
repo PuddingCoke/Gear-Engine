@@ -19,9 +19,9 @@ namespace Gear
 
 				SwapTexture() = delete;
 
-				SwapTexture(const std::function<TextureRenderView* (void)>& readTextureFunc, const std::function<TextureRenderView* (void)>& writeTextureFunc);
+				SwapTexture(const std::function<UniquePtr<TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<TextureRenderView>(void)>& writeTextureFunc);
 
-				SwapTexture(const std::function<TextureRenderView* (void)>& textureFunc);
+				SwapTexture(const std::function<UniquePtr<TextureRenderView>(void)>& textureFunc);
 
 				~SwapTexture();
 

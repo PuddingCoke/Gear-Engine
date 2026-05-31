@@ -9,45 +9,39 @@ namespace
 	struct HDRClampEffectPrivate
 	{
 
-		Gear::Core::D3D12Core::Shader* hdrClampShader;
+		UniquePtr<Gear::Core::D3D12Core::Shader> hdrClampShader;
 
-		Gear::Core::D3D12Core::PipelineState* hdrClampState;
+		UniquePtr<Gear::Core::D3D12Core::PipelineState> hdrClampState;
 
 	}pvt;
 }
 
-void Gear::Core::GlobalEffect::HDRClampEffect::process(GraphicsContext* const context, Resource::TextureRenderView* const inOutTexture)
+void Gear::Core::GlobalEffect::HDRClampEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inOutTexture)
 {
-	if (inOutTexture->getTexture()->getFormat() == FMT::RGBA16F)
+	if (inOutTexture.getTexture()->getFormat() == FMT::RGBA16F)
 	{
-		context->setPipelineState(pvt.hdrClampState);
+		context->setPipelineState(*pvt.hdrClampState);
 
-		context->setCSConstants({ inOutTexture->getUAVMipIndex(0) }, 0);
+		context->setCSConstants({ inOutTexture.getUAVMipIndex(0) }, 0);
 
-		context->dispatch(inOutTexture->getTexture()->getWidth() / 16 + 1, inOutTexture->getTexture()->getHeight() / 16 + 1, 1);
+		context->dispatch(inOutTexture.getTexture()->getWidth() / 16 + 1, inOutTexture.getTexture()->getHeight() / 16 + 1, 1);
 
-		context->uavBarrier({ inOutTexture->getTexture() });
+		context->uavBarrier({ inOutTexture.getTexture() });
 	}
 }
 
 void Gear::Core::GlobalEffect::HDRClampEffect::Internal::initialize()
 {
-	pvt.hdrClampShader = new D3D12Core::Shader(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes));
+	pvt.hdrClampShader = D3D12Core::Shader::create(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes));
 
-	pvt.hdrClampState = PipelineStateBuilder::build(pvt.hdrClampShader);
+	pvt.hdrClampState = PipelineStateBuilder::build(*pvt.hdrClampShader);
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"HDRClampEffect", LogColor::defaultColor, L"succeeded");
 }
 
 void Gear::Core::GlobalEffect::HDRClampEffect::Internal::release()
 {
-	if (pvt.hdrClampShader)
-	{
-		delete pvt.hdrClampShader;
-	}
+	pvt.hdrClampShader.reset();
 
-	if (pvt.hdrClampState)
-	{
-		delete pvt.hdrClampState;
-	}
+	pvt.hdrClampState.reset();
 }

@@ -10,21 +10,21 @@ namespace
 {
 	struct ToneMapEffectPrivate
 	{
-		Gear::Core::D3D12Core::Shader* toneMapCS;
+		UniquePtr<Gear::Core::D3D12Core::Shader> toneMapCS;
 
-		Gear::Core::D3D12Core::PipelineState* toneMapState;
+		UniquePtr<Gear::Core::D3D12Core::PipelineState> toneMapState;
 
-		Gear::Core::Resource::TextureRenderView* outputTexture;
+		UniquePtr<Gear::Core::Resource::TextureRenderView> outputTexture;
 	} pvt;
 
 	constexpr DXGI_FORMAT outputTextureFormat = Gear::Core::FMT::RGBA16UN;
 }
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::ToneMapEffect::process(GraphicsContext* const context, Resource::TextureRenderView* const inputTexture)
+Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::ToneMapEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
 {
-	context->setPipelineState(pvt.toneMapState);
+	context->setPipelineState(*pvt.toneMapState);
 
-	context->setCSConstants({ inputTexture->getSRVMipIndex(0),pvt.outputTexture->getUAVMipIndex(0) }, 0);
+	context->setCSConstants({ inputTexture.getSRVMipIndex(0),pvt.outputTexture->getUAVMipIndex(0) }, 0);
 
 	const float exposure = Graphics::getExposure();
 
@@ -34,14 +34,14 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::ToneMapEffect
 
 	context->uavBarrier({ pvt.outputTexture->getTexture() });
 
-	return pvt.outputTexture;
+	return pvt.outputTexture.get();
 }
 
 void Gear::Core::GlobalEffect::ToneMapEffect::Internal::initialize()
 {
-	pvt.toneMapCS = new D3D12Core::Shader(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes));
+	pvt.toneMapCS = D3D12Core::Shader::create(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes));
 
-	pvt.toneMapState = PipelineStateBuilder::build(pvt.toneMapCS);
+	pvt.toneMapState = PipelineStateBuilder::build(*pvt.toneMapCS);
 
 	pvt.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
 		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
@@ -53,18 +53,9 @@ void Gear::Core::GlobalEffect::ToneMapEffect::Internal::initialize()
 
 void Gear::Core::GlobalEffect::ToneMapEffect::Internal::release()
 {
-	if (pvt.outputTexture)
-	{
-		delete pvt.outputTexture;
-	}
+	pvt.outputTexture.reset();
 
-	if (pvt.toneMapState)
-	{
-		delete pvt.toneMapState;
-	}
+	pvt.toneMapState.reset();
 
-	if (pvt.toneMapCS)
-	{
-		delete pvt.toneMapCS;
-	}
+	pvt.toneMapCS.reset();
 }

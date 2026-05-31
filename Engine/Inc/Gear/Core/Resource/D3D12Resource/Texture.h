@@ -120,7 +120,7 @@ namespace Gear
 						uint32_t* mipLevelStates;
 					};
 
-					std::shared_ptr<States> globalState;
+					SharedPtr<States> globalState;
 
 					States* internalState;
 

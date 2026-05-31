@@ -34,12 +34,13 @@ namespace Gear
 		protected:
 
 			//把纹理绘制到后备缓冲上
-			void blit(Resource::TextureRenderView* const texture) const;
+			void blit(Resource::TextureRenderView& texture) const;
 
 			virtual void recordCommand() = 0;
 
 			ResourceManager* const resManager;
 
+			//引用
 			GraphicsContext* const context;
 
 		private:

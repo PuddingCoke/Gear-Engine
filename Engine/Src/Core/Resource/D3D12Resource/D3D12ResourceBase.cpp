@@ -10,14 +10,14 @@ Gear::Core::Resource::D3D12Resource::D3D12ResourceBase::~D3D12ResourceBase()
 }
 
 Gear::Core::Resource::D3D12Resource::D3D12ResourceBase::D3D12ResourceBase(const ComPtr<ID3D12Resource>& resource, const bool stateTracking) :
-	resource(resource), stateTracking(std::make_shared<bool>(stateTracking)), sharedResource(std::make_shared<bool>(false)),
+	resource(resource), stateTracking(makeShared<bool>(stateTracking)), sharedResource(makeShared<bool>(false)),
 	inReferredList(false), inTrackingList(false)
 {
 }
 
 Gear::Core::Resource::D3D12Resource::D3D12ResourceBase::D3D12ResourceBase(const D3D12_HEAP_PROPERTIES properties, const D3D12_HEAP_FLAGS flags, const D3D12_RESOURCE_DESC desc,
 	const bool stateTracking, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValues) :
-	stateTracking(std::make_shared<bool>(stateTracking)), sharedResource(std::make_shared<bool>(false)),
+	stateTracking(makeShared<bool>(stateTracking)), sharedResource(makeShared<bool>(false)),
 	inReferredList(false), inTrackingList(false)
 {
 	Gear::Core::GraphicsDevice::get()->CreateCommittedResource(&properties, flags, &desc, initialState, clearValues, IID_PPV_ARGS(&resource));

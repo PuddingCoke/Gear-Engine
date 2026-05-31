@@ -10,9 +10,9 @@ public:
 
 	MyRenderTask() :
 		timer(1.f / 60.f),
-		whiteNoiseCS(new Shader(Utils::File::getRootFolder() + L"WhiteNoiseCS.cso")),
-		evolveCS(new Shader(Utils::File::getRootFolder() + L"EvolveCS.cso")),
-		visualizeCS(new Shader(Utils::File::getRootFolder() + L"VisualizeCS.cso")),
+		whiteNoiseCS(Shader::create(Utils::File::getRootFolder() + L"WhiteNoiseCS.cso")),
+		evolveCS(Shader::create(Utils::File::getRootFolder() + L"EvolveCS.cso")),
+		visualizeCS(Shader::create(Utils::File::getRootFolder() + L"VisualizeCS.cso")),
 		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true,
 			FMT::RGBA8UN, FMT::RGBA8UN, FMT::UNKNOWN))
 	{
