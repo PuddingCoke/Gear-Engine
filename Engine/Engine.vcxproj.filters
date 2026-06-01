@@ -429,9 +429,6 @@
     <ClInclude Include="Inc\Gear\Core\Internal\GlobalRootSignatureInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Internal\MainCameraInternal.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Gear\Core\Internal\GlobalShaderInternal.h">
       <Filter>Header</Filter>
     </ClInclude>

@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 18.5.11723.231
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{077076E7-F2C7-4458-9A85-B9C412CDDC3B} = {077076E7-F2C7-4458-9A85-B9C412CDDC3B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleProject", "SampleProject\SampleProject.vcxproj", "{A13675B6-58B4-444D-877F-46BD07D9FC93}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -70,6 +73,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SteeringBehavior", "Steerin
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommonShaderParse", "CommonShaderParse\CommonShaderParse.vcxproj", "{077076E7-F2C7-4458-9A85-B9C412CDDC3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -132,6 +137,10 @@ Global
 		{09DB6183-84B7-416F-852A-5FB04C0BB9FB}.Debug|x64.Build.0 = Debug|x64
 		{09DB6183-84B7-416F-852A-5FB04C0BB9FB}.Release|x64.ActiveCfg = Release|x64
 		{09DB6183-84B7-416F-852A-5FB04C0BB9FB}.Release|x64.Build.0 = Release|x64
+		{077076E7-F2C7-4458-9A85-B9C412CDDC3B}.Debug|x64.ActiveCfg = Debug|x64
+		{077076E7-F2C7-4458-9A85-B9C412CDDC3B}.Debug|x64.Build.0 = Debug|x64
+		{077076E7-F2C7-4458-9A85-B9C412CDDC3B}.Release|x64.ActiveCfg = Release|x64
+		{077076E7-F2C7-4458-9A85-B9C412CDDC3B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

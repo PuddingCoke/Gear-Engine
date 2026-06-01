@@ -12,6 +12,8 @@
 
 #include<Gear/Utils/Random.h>
 
+#include<Gear/Core/D3D12Core/CommonShaderLayout.h>
+
 #include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
 
 #include<Gear/Core/Internal/GraphicsInternal.h>
@@ -23,8 +25,6 @@
 #include<Gear/Core/Internal/GlobalRootSignatureInternal.h>
 
 #include<Gear/Core/Internal/GlobalShaderInternal.h>
-
-#include<Gear/Core/Internal/MainCameraInternal.h>
 
 #include<Gear/Core/Internal/DynamicCBufferManagerInternal.h>
 
@@ -144,17 +144,7 @@ namespace
 
 		Gear::Core::ResourceManager* resManager;
 
-		struct PerframeResource
-		{
-			float deltaTime;
-			float timeElapsed;
-			uint32_t uintSeed;
-			float floatSeed;
-			Gear::Core::MainCamera::Internal::Matrices matrices;
-			DirectX::XMFLOAT2 screenSize;
-			DirectX::XMFLOAT2 screenTexelSize;
-			DirectX::XMFLOAT4 padding[9];
-		}perframeResource;
+		Gear::Core::D3D12Core::PerframeResource perframeResource;
 
 	}*pvt = nullptr;
 }
@@ -255,7 +245,7 @@ RenderEnginePrivate::RenderEnginePrivate(const uint32_t width, const uint32_t he
 
 	prepareCommandList = new Gear::Core::D3D12Core::CommandList(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-	engineDefinedGlobalCBuffer = Gear::Core::ResourceManager::createDynamicCBuffer(sizeof(PerframeResource)).release();
+	engineDefinedGlobalCBuffer = Gear::Core::ResourceManager::createDynamicCBuffer(sizeof(perframeResource)).release();
 
 	Gear::Core::Graphics::Internal::setEngineDefinedGlobalCBuffer(engineDefinedGlobalCBuffer);
 
@@ -499,16 +489,47 @@ void RenderEnginePrivate::end()
 
 		updateConstantBuffer();
 
-		perframeResource =
+		//一些比较基础的信息的设置
 		{
-		Gear::Core::Graphics::getDeltaTime(),
-		Gear::Core::Graphics::getTimeElapsed(),
-		Gear::Utils::Random::genUint(),
-		Gear::Utils::Random::genFloat(),
-		Gear::Core::MainCamera::Internal::getMatrices(),
-		DirectX::XMFLOAT2(static_cast<float>(Gear::Core::Graphics::getWidth()), static_cast<float>(Gear::Core::Graphics::getHeight())),
-		DirectX::XMFLOAT2(1.f / Gear::Core::Graphics::getWidth(), 1.f / Gear::Core::Graphics::getHeight())
-		};
+			perframeResource.deltaTime = Gear::Core::Graphics::getDeltaTime();
+
+			perframeResource.timeElapsed = Gear::Core::Graphics::getTimeElapsed();
+
+			perframeResource.uintSeed = Gear::Utils::Random::genUint();
+
+			perframeResource.floatSeed = Gear::Utils::Random::genFloat();
+
+			perframeResource.screenSize = DirectX::XMFLOAT2(
+				static_cast<float>(Gear::Core::Graphics::getWidth()),
+				static_cast<float>(Gear::Core::Graphics::getHeight()));
+
+			perframeResource.screenTexelSize = DirectX::XMFLOAT2(
+				1.f / perframeResource.screenSize.x,
+				1.f / perframeResource.screenSize.y);
+		}
+
+		//主相机相关信息的设置
+		{
+			perframeResource.prevViewProj = perframeResource.viewProj;
+
+			perframeResource.proj = DirectX::XMMatrixTranspose(Gear::Core::MainCamera::getProj());
+
+			perframeResource.view = DirectX::XMMatrixTranspose(Gear::Core::MainCamera::getView());
+
+			perframeResource.viewProj = DirectX::XMMatrixTranspose(Gear::Core::MainCamera::getView() * Gear::Core::MainCamera::getProj());
+
+			//逆的转置的转置等于没有转置
+			perframeResource.normalMatrix = DirectX::XMMatrixInverse(nullptr, Gear::Core::MainCamera::getView());
+
+			DirectX::XMStoreFloat4(&perframeResource.eyePos, Gear::Core::MainCamera::getEyePos());
+		}
+		//关于为什么要转置我找到了一篇有关的文章
+		//https://www.douduck08.com/zh-tw/why-dx11-need-matrix-transpose-before-cbuffer-mapping/
+		//这里简要说一下，其实和矩阵如何被解释有关，矩阵实际上是以一维数组的形式被存储的
+		//DirectXMath默认其为Row Major，而HLSL默认其为Column Major
+		//在DirectXMath中我们一般使用DirectX::XMVector4Transform，它背后的数学运算是 vec*matrix
+		//如果数据原封不动上传到显存上，那么这个矩阵会被HLSL用另一种方式来解释，我们因此需要的数学运算是 matrix*vec，即mul(matrix,vec)
+		//然而，mul(vec,matrix)是有一些性能优势的，为了利用这个性能优势，矩阵在上传前要被转置
 
 		engineDefinedGlobalCBuffer->updateData(&perframeResource);
 	}
