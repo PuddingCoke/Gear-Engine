@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer TextureIndex : register(b2)
+cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
 {
     uint envCubeIndex;
 }

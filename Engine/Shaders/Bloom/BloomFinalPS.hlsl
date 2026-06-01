@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer BloomParam : register(b2)
+cbuffer BloomParam : register(DRAWCALLCONSTANTS)
 {
     uint hdrTextureIdx;
     uint bloomTextureIdx;

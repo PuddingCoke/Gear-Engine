@@ -1,7 +1,7 @@
 ﻿//编译测试utf-8
 #include"Common.hlsli"
 
-cbuffer SimulationParam : register(b2)
+cbuffer SimulationParam : register(DRAWCALLCONSTANTS)
 {
     uint positionBufferIndex;
     float dissipativeFactor;

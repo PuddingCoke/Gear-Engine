@@ -1,4 +1,6 @@
-﻿cbuffer TextureIdx : register(b2)
+﻿#include"Common.hlsli"
+
+cbuffer TextureIdx : register(DRAWCALLCONSTANTS)
 {
     uint rgbaTexIdx;
     uint lumaTexIdx;

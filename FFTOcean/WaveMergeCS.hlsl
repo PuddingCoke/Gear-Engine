@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer TextureIndices : register(b2)
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint displacementTextureIndex;
     uint derivativeTextureIndex;

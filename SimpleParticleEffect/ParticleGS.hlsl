@@ -12,7 +12,7 @@ struct GeometryOutput
     float4 position : SV_POSITION;
 };
 
-cbuffer SimulationParam : register(b2)
+cbuffer SimulationParam : register(DRAWCALLCONSTANTS)
 {
     float dissipativeFactor;
     int simulationSteps;

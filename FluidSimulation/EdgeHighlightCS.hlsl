@@ -1,4 +1,6 @@
-﻿cbuffer SimulationParam : register(b1)
+﻿#include"Common.hlsli"
+
+cbuffer SimulationParam : register(USERGLOBALCBUFFER)
 {
     float2 pos;
     float2 posDelta;
@@ -17,7 +19,7 @@
     float edgeMagnitudeScale;
 }
 
-cbuffer TextureIndices : register(b2)
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint colorTexIndex;
     uint edgeHighlightTexIndex;

@@ -1,4 +1,6 @@
-﻿cbuffer ProjMatrices : register(b3)
+﻿#include"Common.hlsli"
+
+cbuffer ProjMatrices : register(DRAWCALLCBUFFER)
 {
     matrix viewProj[6];
 }

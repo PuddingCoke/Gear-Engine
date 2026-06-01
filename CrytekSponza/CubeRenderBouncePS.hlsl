@@ -13,7 +13,7 @@ struct PixelInput
     float3 binormal : BINORMAL;
 };
 
-cbuffer TextureIndex : register(b2)
+cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
 {
     uint diffuseTexIndex;
     uint roughnessMetallicTexIndex;
@@ -24,7 +24,7 @@ cbuffer TextureIndex : register(b2)
     uint depthOctahedralMapTexIndex;
 }
 
-cbuffer ProjMatrices : register(b3)
+cbuffer ProjMatrices : register(DRAWCALLCBUFFER)
 {
     matrix viewProj[6];
     float3 probeLocation;

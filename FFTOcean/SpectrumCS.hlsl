@@ -1,13 +1,15 @@
 ﻿#define M_PI 3.1415926535897932384626433832795
 
-cbuffer TextureIndices : register(b2)
+#include"Common.hlsli"
+
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint tildeh0TextureIndex;
     uint waveDataTextureIndex;
     uint randomGaussTextureIndex;
 }
 
-cbuffer SpectrumParam : register(b3)
+cbuffer SpectrumParam : register(DRAWCALLCBUFFER)
 {
     uint mapResolution;
     float mapLength;

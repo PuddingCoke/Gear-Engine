@@ -7,7 +7,7 @@ struct PixelInput
     float3 viewDir : VIEWDIR;
 };
 
-cbuffer TextureIndices : register(b2)
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint displacement0TextureIndex;
     uint derivative0TextureIndex;
@@ -21,7 +21,7 @@ cbuffer TextureIndices : register(b2)
     uint enviromentCubeIndex;
 }
 
-cbuffer RenderParam : register(b3)
+cbuffer RenderParam : register(DRAWCALLCBUFFER)
 {
     float lodScale;
     float lengthScale0;

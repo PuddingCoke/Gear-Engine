@@ -1,12 +1,12 @@
 ﻿#include"Common.hlsli"
 
-cbuffer TextureIndices : register(b2)
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint sourceTextureIdx;
     uint destTextureIdx;
 }
 
-cbuffer BlurParam : register(b3)
+cbuffer BlurParam : register(DRAWCALLCBUFFER)
 {
     float4 weights[2];
     float4 offsets[2];

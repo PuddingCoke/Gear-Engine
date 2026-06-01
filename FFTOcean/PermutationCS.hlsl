@@ -1,4 +1,6 @@
-﻿cbuffer TextureIndices : register(b2)
+﻿#include"Common.hlsli"
+
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint outputTextureIndex;
 }

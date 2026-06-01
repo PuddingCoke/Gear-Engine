@@ -2,9 +2,11 @@
 
 #include"Predefine.hlsli"
 
+#include"Common.hlsli"
+
 #define TWO_PI 6.283185307179586476925286766559
 
-cbuffer TextureIndices : register(b2)
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint outputTextureIndex;
     uint inputTextureIndex;

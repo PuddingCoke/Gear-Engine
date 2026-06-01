@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer SimulationParam : register(b1)
+cbuffer SimulationParam : register(USERGLOBALCBUFFER)
 {
     float2 pos;
     float2 posDelta;
@@ -15,7 +15,7 @@ cbuffer SimulationParam : register(b1)
     float splatRadius;
 }
 
-cbuffer TextureIndices : register(b2)
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint velocityReadTexIndex;
     uint velocityWriteTexIndex;

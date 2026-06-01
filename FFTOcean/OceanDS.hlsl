@@ -19,14 +19,14 @@ struct HS_CONSTANT_DATA_OUTPUT
     float InsideTessFactor : SV_InsideTessFactor;
 };
 
-cbuffer TextureIndices : register(b2)
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint displacement0TextureIndex;
     uint displacement1TextureIndex;
     uint displacement2TextureIndex;
 }
 
-cbuffer RenderParam : register(b3)
+cbuffer RenderParam : register(DRAWCALLCBUFFER)
 {
     float lodScale;
     float lengthScale0;

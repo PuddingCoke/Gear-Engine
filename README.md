@@ -64,7 +64,7 @@ Gear 的搭建围绕几个核心原则：
 它的设计来自微软发布的[Shader Model 6.6的文档](https://microsoft.github.io/DirectX-Specs/d3d/HLSL_ShaderModel6_6.html)和[WickedEngine](https://wickedengine.net/2021/04/06/bindless-descriptors/)相关的实践。这么做会让引擎的资源绑定框架较为容易编写，此外也解放了着色器，大幅提高了它的灵活度，可以像下方的样例代码那样轻松地访问或修改资源。
 
 ```hlsl
-cbuffer TextureIndices : register(b2)
+cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
 {
     uint colorReadTexIndex;
     uint colorWriteTexIndex;

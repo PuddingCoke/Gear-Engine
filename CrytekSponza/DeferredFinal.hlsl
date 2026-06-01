@@ -4,7 +4,7 @@
 
 #include"Utility.hlsli"
 
-cbuffer TextureIndex : register(b2)
+cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
 {
     uint gPositionMetallicTexIndex;
     uint gNormalRoughnessTexIndex;
@@ -15,7 +15,7 @@ cbuffer TextureIndex : register(b2)
     uint aoTexIndex;
 }
 
-ConstantBuffer<IrradianceVolume> volume : register(b3);
+ConstantBuffer<IrradianceVolume> volume : register(DRAWCALLCBUFFER);
 
 static Texture2D gPositionMetallic = ResourceDescriptorHeap[gPositionMetallicTexIndex];
 

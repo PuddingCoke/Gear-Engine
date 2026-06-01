@@ -1,4 +1,9 @@
-﻿struct PerframeResource
+﻿#define ENGINEGLOBALCBUFFER b0
+#define USERGLOBALCBUFFER b1
+#define DRAWCALLCONSTANTS b2
+#define DRAWCALLCBUFFER b3
+
+struct PerframeResource
 {
     float deltaTime;
     float timeElapsed;
@@ -14,7 +19,7 @@
     float2 screenTexelSize;
 };
 
-ConstantBuffer<PerframeResource> perframeResource : register(b0);
+ConstantBuffer<PerframeResource> perframeResource : register(ENGINEGLOBALCBUFFER);
 
 SamplerState pointClampSampler : register(s0);
 SamplerState pointWrapSampler : register(s1);

@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer StepParameters : register(b2)
+cbuffer StepParameters : register(DRAWCALLCONSTANTS)
 {
     uint positionVelocityWriteIndex;
     
