@@ -7,7 +7,7 @@
 
 #include"Common.hlsli"
 
-cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
+cbuffer TextureIndex : register(PER_INVOKE_CONSTANTS)
 {
     uint originTextureIndex;
     float fxaaQualityRcpFrame; // unused

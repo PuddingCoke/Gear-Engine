@@ -12,7 +12,7 @@ struct GeometryOutput
     float4 pos : SV_Position;
 };
 
-cbuffer LineParam : register(DRAWCALLCONSTANTS)
+cbuffer LineParam : register(PER_INVOKE_CONSTANTS)
 {
     float lineWidth;
 };

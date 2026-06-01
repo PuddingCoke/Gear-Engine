@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer BloomParam : register(DRAWCALLCONSTANTS)
+cbuffer BloomParam : register(PER_INVOKE_CONSTANTS)
 {
     uint originTextureIdx;
     float exposure;

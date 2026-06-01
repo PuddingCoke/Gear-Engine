@@ -2,14 +2,14 @@
 
 #include"Common.hlsli"
 
-cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
+cbuffer TextureIndices : register(PER_INVOKE_CONSTANTS)
 {
     uint tildeh0TextureIndex;
     uint waveDataTextureIndex;
     uint randomGaussTextureIndex;
 }
 
-cbuffer SpectrumParam : register(DRAWCALLCBUFFER)
+cbuffer SpectrumParam : register(PER_INVOKE_CBUFFER)
 {
     uint mapResolution;
     float mapLength;

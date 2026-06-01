@@ -7,7 +7,7 @@ struct VertexInput
     float3 pos : POSITION;
 };
 
-ConstantBuffer<IrradianceVolume> volume : register(DRAWCALLCBUFFER);
+ConstantBuffer<IrradianceVolume> volume : register(PER_INVOKE_CBUFFER);
 
 float4 main(VertexInput input) : SV_POSITION
 {

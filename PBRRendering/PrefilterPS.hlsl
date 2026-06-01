@@ -2,7 +2,7 @@
 
 #define PI 3.14159265358979323846
 
-cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
+cbuffer TextureIndex : register(PER_INVOKE_CONSTANTS)
 {
     uint textureIndex;
     float roughness;

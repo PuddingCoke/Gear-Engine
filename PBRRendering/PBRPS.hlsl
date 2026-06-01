@@ -8,7 +8,7 @@ struct PixelInput
     float3 normal : NORMAL;
 };
 
-cbuffer SceneInfo : register(DRAWCALLCONSTANTS)
+cbuffer SceneInfo : register(PER_INVOKE_CONSTANTS)
 {
     float4 lightPos;
     float4 lightColor;
@@ -21,7 +21,7 @@ cbuffer SceneInfo : register(DRAWCALLCONSTANTS)
     uint irradianceTextureIndex;
 }
 
-cbuffer Material : register(DRAWCALLCBUFFER)
+cbuffer Material : register(PER_INVOKE_CBUFFER)
 {
     float4 ambientColor;
     float4 diffuseColor;

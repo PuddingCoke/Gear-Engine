@@ -18,7 +18,7 @@ struct PixelOutput
     float4 baseColor : SV_Target2;
 };
 
-cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
+cbuffer TextureIndex : register(PER_INVOKE_CONSTANTS)
 {
     uint diffuseTexIndex;
     uint roughnessMetallicTexIndex;

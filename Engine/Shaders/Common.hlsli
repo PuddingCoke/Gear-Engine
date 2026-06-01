@@ -1,7 +1,7 @@
-﻿#define ENGINEGLOBALCBUFFER b0
-#define USERGLOBALCBUFFER b1
-#define DRAWCALLCONSTANTS b2
-#define DRAWCALLCBUFFER b3
+﻿#define ENGINE_GLOBAL_CBUFFER b0
+#define USER_GLOBAL_CBUFFER b1
+#define PER_INVOKE_CONSTANTS b2
+#define PER_INVOKE_CBUFFER b3
 
 struct PerframeResource
 {
@@ -19,7 +19,7 @@ struct PerframeResource
     float2 screenTexelSize;
 };
 
-ConstantBuffer<PerframeResource> perframeResource : register(ENGINEGLOBALCBUFFER);
+ConstantBuffer<PerframeResource> perframeResource : register(ENGINE_GLOBAL_CBUFFER);
 
 SamplerState pointClampSampler : register(s0);
 SamplerState pointWrapSampler : register(s1);

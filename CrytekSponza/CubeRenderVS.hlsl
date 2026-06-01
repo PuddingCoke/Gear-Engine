@@ -20,7 +20,7 @@ struct VertexOutput
     uint renderTargetIndex : SV_RenderTargetArrayIndex;
 };
 
-cbuffer ProjMatrices : register(DRAWCALLCBUFFER)
+cbuffer ProjMatrices : register(PER_INVOKE_CBUFFER)
 {
     matrix viewProj[6];
     float3 probeLocation;

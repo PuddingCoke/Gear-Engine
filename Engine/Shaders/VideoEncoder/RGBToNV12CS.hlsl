@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer TextureIdx : register(DRAWCALLCONSTANTS)
+cbuffer TextureIdx : register(PER_INVOKE_CONSTANTS)
 {
     uint rgbaTexIdx;
     uint lumaTexIdx;

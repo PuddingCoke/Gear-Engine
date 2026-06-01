@@ -5,6 +5,8 @@
 
 #include<Gear/Core/GraphicsDevice.h>
 
+#include"ShaderRegisterLayout.h"
+
 namespace Gear
 {
 	namespace Core
@@ -76,29 +78,10 @@ namespace Gear
 					TYPECOUNT
 				};
 
-				static constexpr struct ShaderGlobalParameterIndices
-				{
+				//V H G D P C，与ShaderType中枚举表示的整数值一一对应
+				ShaderRegisterLayout::ShaderLocalParameterIndices localParameterIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];
 
-					uint32_t engineDefinedGlobalConstantBufferParameterIndex;
-					
-					uint32_t userDefinedGlobalConstantBufferParameterIndex;
-
-				} globalParameterIndices{ 0,1 };//这里的数值禁止改变
-
-				struct ShaderLocalParameterIndices
-				{
-
-					ShaderLocalParameterIndices();
-
-					//着色器每个Draw Call可用的常量被赋予的Root Parameter索引
-					uint32_t constantsParameterIndex;
-
-					//着色器每个Draw Call可用的常量缓冲被赋予的Root Parameter索引
-					uint32_t constantBufferParameterIndex;
-
-				} localParameterIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];//V H G D P C，与ShaderType中枚举表示的整数值一一对应
-
-				ShaderLocalParameterIndices getLocalParameterIndices(const ShaderType shaderType) const;
+				ShaderRegisterLayout::ShaderLocalParameterIndices getLocalParameterIndices(const ShaderType shaderType) const;
 
 				uint32_t getLocalConstantsParameterIndex(const ShaderType shaderType) const;
 

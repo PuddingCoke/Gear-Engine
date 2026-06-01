@@ -62,7 +62,7 @@ public:
 		context->setPipelineState(*pipelineState);
 
 		/*
-		cbuffer SceneInfo : register(DRAWCALLCONSTANTS)
+		cbuffer SceneInfo : register(PER_INVOKE_CONSTANTS)
 		{
 			float4 lightPos;
 			float4 lightColor;

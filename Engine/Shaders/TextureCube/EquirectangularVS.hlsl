@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer ProjMatrices : register(DRAWCALLCBUFFER)
+cbuffer ProjMatrices : register(PER_INVOKE_CBUFFER)
 {
     matrix viewProj[6];
 }

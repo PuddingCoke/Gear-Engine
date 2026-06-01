@@ -19,7 +19,7 @@ struct PixelOutput
     float dist : SV_Target1;
 };
 
-cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
+cbuffer TextureIndex : register(PER_INVOKE_CONSTANTS)
 {
     uint diffuseTexIndex;
     uint roughnessMetallicTexIndex;
@@ -28,7 +28,7 @@ cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
     uint irradianceVolumeBufIndex;
 };
 
-cbuffer ProjMatrices : register(DRAWCALLCBUFFER)
+cbuffer ProjMatrices : register(PER_INVOKE_CBUFFER)
 {
     matrix viewProj[6];
     float3 probeLocation;

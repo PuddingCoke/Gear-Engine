@@ -1,6 +1,6 @@
 ﻿#include"Common.hlsli"
 
-cbuffer StepParameters : register(DRAWCALLCONSTANTS)
+cbuffer StepParameters : register(PER_INVOKE_CONSTANTS)
 {
     uint positionVelocityWriteIndex;
     

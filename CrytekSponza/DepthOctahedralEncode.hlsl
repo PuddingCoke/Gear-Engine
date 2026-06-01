@@ -2,13 +2,13 @@
 
 #include"Utility.hlsli"
 
-cbuffer TextureIndex : register(DRAWCALLCONSTANTS)
+cbuffer TextureIndex : register(PER_INVOKE_CONSTANTS)
 {
     uint depthOctahedralMapTexIndex;
     uint depthCubeTexIndex;
 }
 
-cbuffer ProjMatrices : register(DRAWCALLCBUFFER)
+cbuffer ProjMatrices : register(PER_INVOKE_CBUFFER)
 {
     matrix viewProj[6];
     float3 probeLocation;

@@ -6,7 +6,7 @@
 
 #define TWO_PI 6.283185307179586476925286766559
 
-cbuffer TextureIndices : register(DRAWCALLCONSTANTS)
+cbuffer TextureIndices : register(PER_INVOKE_CONSTANTS)
 {
     uint outputTextureIndex;
     uint inputTextureIndex;

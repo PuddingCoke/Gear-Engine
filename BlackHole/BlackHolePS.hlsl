@@ -6,7 +6,7 @@
 
 #define ITERATIONS 256
 
-cbuffer RenderParameters : register(DRAWCALLCONSTANTS)
+cbuffer RenderParameters : register(PER_INVOKE_CONSTANTS)
 {
     uint noiseTextureIndex;
     uint diskTextureIndex;

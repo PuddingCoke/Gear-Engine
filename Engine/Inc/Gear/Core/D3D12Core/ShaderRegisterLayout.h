@@ -1,4 +1,4 @@
-﻿// 由 ParseShaderRegisterLayout.ps1 自动生成，请勿编辑
+﻿//由 ParseCommonHeaderLayout.ps1 自动生成，请勿编辑
 
 #pragma once
 
@@ -12,10 +12,23 @@ namespace Gear
         {
             namespace ShaderRegisterLayout
             {
-                constexpr uint32_t EngineGlobalCBRegister              = 0;
-                constexpr uint32_t UserGlobalCBRegister                = 1;
-                constexpr uint32_t DrawCallConstantsRegister           = 2;
-                constexpr uint32_t DrawCallConstantBufferRegister      = 3;
+                constexpr struct ShaderGlobalParameterIndices
+                {
+                    uint32_t engineGlobalCBufferParameterIndex = 0;
+                    uint32_t userGlobalCBufferParameterIndex = 1;
+                }globalParameterIndices;
+
+                struct ShaderLocalParameterIndices
+                {
+                    uint32_t perInvokeConstantsParameterIndex = 0;
+                    uint32_t perInvokeCBufferParameterIndex = 0;
+                };
+
+                constexpr uint32_t engineGlobalCBufferRegister = 0;
+                constexpr uint32_t userGlobalCBufferRegister = 1;
+                constexpr uint32_t perInvokeConstantsRegister = 2;
+                constexpr uint32_t perInvokeCBufferRegister = 3;
+
             }
         }
     }
