@@ -1,4 +1,4 @@
-﻿//由 ParseCommonHeaderLayout.ps1 自动生成，请勿编辑
+﻿//由 ParseShaderRegisterLayout.ps1 自动生成，请勿编辑
 
 #pragma once
 

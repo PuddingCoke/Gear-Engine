@@ -57,7 +57,7 @@ foreach ($name in $macros.Keys) {
 # ---------------------------------------------------------------
 $lines = [System.Collections.ArrayList]::new()
 
-[void]$lines.Add('//由 ParseCommonHeaderLayout.ps1 自动生成，请勿编辑')
+[void]$lines.Add('//由 ParseShaderRegisterLayout.ps1 自动生成，请勿编辑')
 [void]$lines.Add('')
 [void]$lines.Add('#pragma once')
 [void]$lines.Add('')
