@@ -5,66 +5,60 @@
 
 #include<functional>
 
-namespace Gear
+namespace Gear::Core::Resource
 {
-	namespace Core
+	template<typename T>
+	class SwappableBase
 	{
-		namespace Resource
-		{
-			template<typename T>
-			class SwappableBase
-			{
-			public:
+	public:
 
-				SwappableBase() = delete;
+		SwappableBase() = delete;
 
-				SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc);
+		SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc);
 
-				~SwappableBase();
+		~SwappableBase();
 
-				T* read() const;
+		T* read() const;
 
-				T* write() const;
+		T* write() const;
 
-				void swap();
+		void swap();
 
-			private:
+	private:
 
-				UniquePtr<T> readObject;
+		UniquePtr<T> readObject;
 
-				UniquePtr<T> writeObject;
+		UniquePtr<T> writeObject;
 
-			};
+	};
 
-			template<typename T>
-			inline SwappableBase<T>::SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc) :
-				readObject(readObjectFunc()), writeObject(writeObjectFunc())
-			{
-			}
+	template<typename T>
+	inline SwappableBase<T>::SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc) :
+		readObject(readObjectFunc()), writeObject(writeObjectFunc())
+	{
+	}
 
-			template<typename T>
-			inline SwappableBase<T>::~SwappableBase()
-			{
-			}
+	template<typename T>
+	inline SwappableBase<T>::~SwappableBase()
+	{
+	}
 
-			template<typename T>
-			inline T* SwappableBase<T>::read() const
-			{
-				return readObject.get();
-			}
+	template<typename T>
+	inline T* SwappableBase<T>::read() const
+	{
+		return readObject.get();
+	}
 
-			template<typename T>
-			inline T* SwappableBase<T>::write() const
-			{
-				return writeObject.get();
-			}
+	template<typename T>
+	inline T* SwappableBase<T>::write() const
+	{
+		return writeObject.get();
+	}
 
-			template<typename T>
-			inline void SwappableBase<T>::swap()
-			{
-				readObject.swap(writeObject);
-			}
-		}
+	template<typename T>
+	inline void SwappableBase<T>::swap()
+	{
+		readObject.swap(writeObject);
 	}
 }
 

@@ -5,25 +5,18 @@
 
 #include<cstdint>
 
-namespace Gear
+namespace Gear::Utils::Random
 {
-	namespace Utils
-	{
-		namespace Random
-		{
-			//均值 0 标准差 1
-			float genGauss();
+	//均值 0 标准差 1
+	float genGauss();
 
-			float genFloat();
+	float genFloat();
 
-			double genDouble();
+	double genDouble();
 
-			int32_t genInt();
+	int32_t genInt();
 
-			uint32_t genUint();
-
-		}
-	}
+	uint32_t genUint();
 }
 
 #endif // !_GEAR_UTILS_RANDOM_H_

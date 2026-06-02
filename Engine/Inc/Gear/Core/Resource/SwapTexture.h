@@ -7,29 +7,23 @@
 
 #include"SwappableBase.h"
 
-namespace Gear
+namespace Gear::Core::Resource
 {
-	namespace Core
+	class SwapTexture :public SwappableBase<TextureRenderView>
 	{
-		namespace Resource
-		{
-			class SwapTexture :public SwappableBase<TextureRenderView>
-			{
-			public:
+	public:
 
-				SwapTexture() = delete;
+		SwapTexture() = delete;
 
-				SwapTexture(const std::function<UniquePtr<TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<TextureRenderView>(void)>& writeTextureFunc);
+		SwapTexture(const std::function<UniquePtr<TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<TextureRenderView>(void)>& writeTextureFunc);
 
-				~SwapTexture();
+		~SwapTexture();
 
-				const uint32_t width;
+		const uint32_t width;
 
-				const uint32_t height;
+		const uint32_t height;
 
-			};
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_RESOURCE_SWAPTEXTURE_H_

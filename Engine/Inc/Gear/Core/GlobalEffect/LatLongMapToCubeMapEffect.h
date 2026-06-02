@@ -5,18 +5,9 @@
 
 #include"GlobalEffectHeader.h"
 
-namespace Gear
+namespace Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect
 {
-	namespace Core
-	{
-		namespace GlobalEffect
-		{
-			namespace LatLongMapToCubeMapEffect
-			{
-				void process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture, Resource::TextureRenderView& outputTexture);
-			}
-		}
-	}
+	void process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture, Resource::TextureRenderView& outputTexture);
 }
 
 #endif // !_GEAR_CORE_GLOBALEFFECT_LATLONGMAPTOCUBEMAPEFFECT_H_

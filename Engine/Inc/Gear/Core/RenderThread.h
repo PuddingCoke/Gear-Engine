@@ -7,53 +7,50 @@
 
 #include<mutex>
 
-namespace Gear
+namespace Gear::Core
 {
-	namespace Core
+	class RenderThread
 	{
-		class RenderThread
-		{
-		public:
+	public:
 
-			RenderThread(const std::function<void(RenderTask** renderTask)>& createFunc);
+		RenderThread(const std::function<void(RenderTask** renderTask)>& createFunc);
 
-			~RenderThread();
+		~RenderThread();
 
-			bool waitInitialized();
+		bool waitInitialized();
 
-		private:
+	private:
 
-			void workerLoop();
+		void workerLoop();
 
-			bool initialized;
+		bool initialized;
 
-			bool errorOccured;
+		bool errorOccured;
 
-			std::mutex taskMutex;
+		std::mutex taskMutex;
 
-			std::condition_variable taskCondition;
+		std::condition_variable taskCondition;
 
-			std::function<void(RenderTask** renderTask)> createFunc;
+		std::function<void(RenderTask** renderTask)> createFunc;
 
-			//引用
-			RenderTask* renderTask;
+		//引用
+		RenderTask* renderTask;
 
-			std::thread renderThread;
+		std::thread renderThread;
 
-		};
+	};
 
-		template <typename First, typename... Rest>
-		RenderThread* createRenderTaskAsync(const First& first, const Rest&... args)
-		{
-			using RenderTaskType = std::remove_pointer_t<std::remove_pointer_t<First>>;
+	template <typename First, typename... Rest>
+	RenderThread* createRenderTaskAsync(const First& first, const Rest&... args)
+	{
+		using RenderTaskType = std::remove_pointer_t<std::remove_pointer_t<First>>;
 
-			auto createFunc = [&](RenderTask** renderTask)
-				{
-					*renderTask = *first = new RenderTaskType(args...);
-				};
+		auto createFunc = [&](RenderTask** renderTask)
+			{
+				*renderTask = *first = new RenderTaskType(args...);
+			};
 
-			return new RenderThread(createFunc);
-		}
+		return new RenderThread(createFunc);
 	}
 }
 

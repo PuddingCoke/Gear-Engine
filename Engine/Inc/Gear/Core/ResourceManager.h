@@ -21,115 +21,112 @@
 
 #include<Gear/Core/Resource/TextureDepthView.h>
 
-namespace Gear
+namespace Gear::Core
 {
-	namespace Core
+	enum class RandomDataType
 	{
-		enum class RandomDataType
-		{
-			NOISE,
-			GAUSS
-		};
+		NOISE,
+		GAUSS
+	};
 
-		//用于创建低级资源和高级资源
-		//使用数据创建资源会需要CommandList，因此会需要一个ResourceManager实例
-		class ResourceManager
-		{
-		public:
+	//用于创建低级资源和高级资源
+	//使用数据创建资源会需要CommandList，因此会需要一个ResourceManager实例
+	class ResourceManager
+	{
+	public:
 
-			ResourceManager(const ResourceManager&) = delete;
+		ResourceManager(const ResourceManager&) = delete;
 
-			void operator=(const ResourceManager&) = delete;
+		void operator=(const ResourceManager&) = delete;
 
-			ResourceManager();
+		ResourceManager();
 
-			~ResourceManager();
+		~ResourceManager();
 
-			//延迟释放低级资源
-			void deferredRelease(Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource);
+		//延迟释放低级资源
+		void deferredRelease(Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource);
 
-			//延迟释放高级资源
-			void deferredRelease(Resource::ResourceBase* const resource);
+		//延迟释放高级资源
+		void deferredRelease(Resource::ResourceBase* const resource);
 
-			void cleanTransientResources();
+		void cleanTransientResources();
 
-			GraphicsContext* getGraphicsContext() const;
+		GraphicsContext* getGraphicsContext() const;
 
-			D3D12Core::CommandList* getCommandList() const;
+		D3D12Core::CommandList* getCommandList() const;
 
-			//以下的方法用于创建并使用数据来初始化低级资源
+		//以下的方法用于创建并使用数据来初始化低级资源
 
-			//从数据创建缓冲
-			Resource::D3D12Resource::Buffer* createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags);
+		//从数据创建缓冲
+		Resource::D3D12Resource::Buffer* createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags);
 
-			//从文件创建纹理
-			Resource::D3D12Resource::Texture* createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube);
+		//从文件创建纹理
+		Resource::D3D12Resource::Texture* createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube);
 
-			//从随机数据创建纹理
-			Resource::D3D12Resource::Texture* createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags);
+		//从随机数据创建纹理
+		Resource::D3D12Resource::Texture* createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags);
 
-			//以下的方法用于创建高级资源
+		//以下的方法用于创建高级资源
 
-			UniquePtr<Resource::ImmutableCBuffer> createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent);
+		UniquePtr<Resource::ImmutableCBuffer> createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent);
 
-			UniquePtr<Resource::StaticCBuffer> createStaticCBuffer(const uint32_t size, const void* const data, const bool persistent);
+		UniquePtr<Resource::StaticCBuffer> createStaticCBuffer(const uint32_t size, const void* const data, const bool persistent);
 
-			static UniquePtr<Resource::StaticCBuffer> createStaticCBuffer(const uint32_t size, const bool persistent);
+		static UniquePtr<Resource::StaticCBuffer> createStaticCBuffer(const uint32_t size, const bool persistent);
 
-			static UniquePtr<Resource::DynamicCBuffer> createDynamicCBuffer(const uint32_t size, const void* const data = nullptr);
+		static UniquePtr<Resource::DynamicCBuffer> createDynamicCBuffer(const uint32_t size, const void* const data = nullptr);
 
-			UniquePtr<Resource::BufferView> createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent, const void* const data);
+		UniquePtr<Resource::BufferView> createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent, const void* const data);
 
-			static UniquePtr<Resource::BufferView> createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent);
+		static UniquePtr<Resource::BufferView> createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent);
 
-			UniquePtr<Resource::BufferView> createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent, const void* const data);
+		UniquePtr<Resource::BufferView> createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent, const void* const data);
 
-			static UniquePtr<Resource::BufferView> createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent);
+		static UniquePtr<Resource::BufferView> createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent);
 
-			UniquePtr<Resource::BufferView> createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data);
+		UniquePtr<Resource::BufferView> createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data);
 
-			static UniquePtr<Resource::BufferView> createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent);
+		static UniquePtr<Resource::BufferView> createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent);
 
-			static UniquePtr<Resource::TextureDepthView> createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent);
+		static UniquePtr<Resource::TextureDepthView> createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent);
 
-			UniquePtr<Resource::TextureRenderView> createTextureRenderView(const std::wstring& filePath, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
+		UniquePtr<Resource::TextureRenderView> createTextureRenderView(const std::wstring& filePath, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
 
-			UniquePtr<Resource::TextureRenderView> createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent,
-				const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
+		UniquePtr<Resource::TextureRenderView> createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent,
+			const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
 
-			static UniquePtr<Resource::TextureRenderView> createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent,
-				const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color = nullptr);
+		static UniquePtr<Resource::TextureRenderView> createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent,
+			const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color = nullptr);
 
-			UniquePtr<Resource::TextureRenderView> createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
+		UniquePtr<Resource::TextureRenderView> createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
 
-			UniquePtr<Resource::TextureRenderView> createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent,
-				const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
+		UniquePtr<Resource::TextureRenderView> createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent,
+			const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
 
-			static UniquePtr<Resource::SwapBuffer> createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& readBufferFunc, const std::function<UniquePtr<Resource::BufferView>(void)>& writeBufferFunc);
+		static UniquePtr<Resource::SwapBuffer> createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& readBufferFunc, const std::function<UniquePtr<Resource::BufferView>(void)>& writeBufferFunc);
 
-			static UniquePtr<Resource::SwapBuffer> createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& bufferFunc);
+		static UniquePtr<Resource::SwapBuffer> createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& bufferFunc);
 
-			static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::TextureRenderView>(void)>& writeTextureFunc);
+		static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::TextureRenderView>(void)>& writeTextureFunc);
 
-			static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& textureFunc);
+		static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& textureFunc);
 
-		protected:
+	protected:
 
-			//处理高级任务，比如从等距柱状图创建立方体贴图
-			GraphicsContext* const context;
+		//处理高级任务，比如从等距柱状图创建立方体贴图
+		GraphicsContext* const context;
 
-			//处理低级任务，比如用数据初始化纹理
-			//注意：这个指针只是引用
-			D3D12Core::CommandList* const commandList;
+		//处理低级任务，比如用数据初始化纹理
+		//注意：这个指针只是引用
+		D3D12Core::CommandList* const commandList;
 
-		private:
+	private:
 
-			std::vector<Resource::D3D12Resource::D3D12ResourceBase*>* d3d12Resources;
+		std::vector<Resource::D3D12Resource::D3D12ResourceBase*>* d3d12Resources;
 
-			std::vector<Resource::ResourceBase*>* resources;
+		std::vector<Resource::ResourceBase*>* resources;
 
-		};
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_RESOURCEMANAGER_H_

@@ -30,15 +30,9 @@ using LogColor = Gear::Utils::Logger::LogColor;
 /// 
 /// 在LogColor这个类中有很多可用的颜色
 /// </summary>
-namespace Gear
+namespace Gear::Utils::Logger
 {
-	namespace Utils
-	{
-		namespace Logger
-		{
-			void submitLogMessage(const LogMessage& msg);
-		}
-	}
+	void submitLogMessage(const LogMessage& msg);
 }
 
 #define LOGSUCCESS(...) Gear::Utils::Logger::submitLogMessage(Gear::Utils::Logger::LogContext::createLogMessage(__FUNCTIONW__,Gear::Utils::Logger::LogType::LOG_SUCCESS,__VA_ARGS__))

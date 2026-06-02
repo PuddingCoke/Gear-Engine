@@ -3,23 +3,11 @@
 #ifndef _GEAR_CORE_GLOBALEFFECT_BACKBUFFERBLITEFFECT_INTERNAL_H_
 #define _GEAR_CORE_GLOBALEFFECT_BACKBUFFERBLITEFFECT_INTERNAL_H_
 
-namespace Gear
+namespace Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal
 {
-	namespace Core
-	{
-		namespace GlobalEffect
-		{
-			namespace BackBufferBlitEffect
-			{
-				namespace Internal
-				{
-					void initialize();
+	void initialize();
 
-					void release();
-				}
-			}
-		}
-	}
+	void release();
 }
 
 #endif // !_GEAR_CORE_GLOBALEFFECT_BACKBUFFERBLITEFFECT_INTERNAL_H_

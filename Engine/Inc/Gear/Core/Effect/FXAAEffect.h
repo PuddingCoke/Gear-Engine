@@ -5,55 +5,49 @@
 
 #include"EffectBase.h"
 
-namespace Gear
+namespace Gear::Core::Effect
 {
-	namespace Core
+	class FXAAEffect :public EffectBase
 	{
-		namespace Effect
+	public:
+
+		static UniquePtr<FXAAEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+
+		FXAAEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+
+		~FXAAEffect();
+
+		Resource::TextureRenderView* process(Resource::TextureRenderView& inputTexture) const;
+
+		void imGUICall() override;
+
+		void setFXAAQualitySubpix(const float fxaaQualitySubpix);
+
+		void setFXAAQualityEdgeThreshold(const float fxaaQualityEdgeThreshold);
+
+		void setFXAAQualityEdgeThresholdMin(const float fxaaQualityEdgeThresholdMin);
+
+	private:
+
+		UniquePtr<Resource::TextureRenderView> colorLumaTexture;
+
+		struct FXAAParam
 		{
-			class FXAAEffect :public EffectBase
-			{
-			public:
+			float fxaaQualityRcpFrame; // unused
+			float fxaaQualitySubpix;
+			float fxaaQualityEdgeThreshold;
+			float fxaaQualityEdgeThresholdMin;
+		} fxaaParam;
 
-				static UniquePtr<FXAAEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+		UniquePtr<D3D12Core::Shader> colorToColorLumaPS;
 
-				FXAAEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+		UniquePtr<D3D12Core::PipelineState> colorToColorLumaState;
 
-				~FXAAEffect();
+		UniquePtr<D3D12Core::Shader> fxaaPS;
 
-				Resource::TextureRenderView* process(Resource::TextureRenderView& inputTexture) const;
+		UniquePtr<D3D12Core::PipelineState> fxaaState;
 
-				void imGUICall() override;
-
-				void setFXAAQualitySubpix(const float fxaaQualitySubpix);
-
-				void setFXAAQualityEdgeThreshold(const float fxaaQualityEdgeThreshold);
-
-				void setFXAAQualityEdgeThresholdMin(const float fxaaQualityEdgeThresholdMin);
-
-			private:
-
-				UniquePtr<Resource::TextureRenderView> colorLumaTexture;
-
-				struct FXAAParam
-				{
-					float fxaaQualityRcpFrame; // unused
-					float fxaaQualitySubpix;
-					float fxaaQualityEdgeThreshold;
-					float fxaaQualityEdgeThresholdMin;
-				} fxaaParam;
-
-				UniquePtr<D3D12Core::Shader> colorToColorLumaPS;
-
-				UniquePtr<D3D12Core::PipelineState> colorToColorLumaState;
-
-				UniquePtr<D3D12Core::Shader> fxaaPS;
-
-				UniquePtr<D3D12Core::PipelineState> fxaaState;
-
-			};
-		}
-	}
+	};
 }
 
 #endif // !_FXAAEFFECT_H_

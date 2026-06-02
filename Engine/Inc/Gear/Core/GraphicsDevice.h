@@ -55,15 +55,9 @@ LOGERROR(L"Failed with",IntegerMode::HEX,static_cast<uint32_t>(hr),L"Failed reas
 
 #undef DOMAIN
 
-namespace Gear
+namespace Gear::Core::GraphicsDevice
 {
-	namespace Core
-	{
-		namespace GraphicsDevice
-		{
-			ID3D12Device9* get();
-		};
-	}
+	ID3D12Device9* get();
 }
 
 #endif // !_GEAR_CORE_GRAPHICSDEVICE_H_

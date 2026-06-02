@@ -9,160 +9,154 @@
 
 #include<condition_variable>
 
-namespace Gear
+namespace Gear::Utils::Logger
 {
-	namespace Utils
+	enum class LogType
 	{
-		namespace Logger
+		LOG_SUCCESS,
+		LOG_ERROR,
+		LOG_ENGINE,
+		LOG_USER
+	};
+
+	struct BufferSlot
+	{
+		BufferSlot();
+
+		std::wstring str;
+
+		bool inUse;
+	};
+
+	struct LogMessage
+	{
+		BufferSlot& slot;
+
+		std::mutex& inUseMutex;
+
+		std::condition_variable& inUseCV;
+
+		const LogType type;
+	};
+
+	class LogContext
+	{
+	public:
+
+		enum class IntegerMode
 		{
-			enum class LogType
-			{
-				LOG_SUCCESS,
-				LOG_ERROR,
-				LOG_ENGINE,
-				LOG_USER
-			};
+			DEC, HEX
+		};
 
-			struct BufferSlot
-			{
-				BufferSlot();
+		struct FloatPrecision
+		{
+			FloatPrecision(const int32_t precision = 5);
 
-				std::wstring str;
+			int32_t precision;
+		};
 
-				bool inUse;
-			};
+		LogContext(const LogContext&) = delete;
 
-			struct LogMessage
-			{
-				BufferSlot& slot;
+		void operator=(const LogContext&) = delete;
 
-				std::mutex& inUseMutex;
+		LogContext();
 
-				std::condition_variable& inUseCV;
+		~LogContext();
 
-				const LogType type;
-			};
+		template<typename... Args>
+		static LogMessage createLogMessage(const wchar_t* const functionName, const LogType& type, const Args&... args);
 
-			class LogContext
-			{
-			public:
+	private:
 
-				enum class IntegerMode
-				{
-					DEC, HEX
-				};
+		template<typename... Args>
+		LogMessage getLogMessage(const wchar_t* const functionName, const LogType& type, const Args&... args);
 
-				struct FloatPrecision
-				{
-					FloatPrecision(const int32_t precision = 5);
+		template<typename T>
+		struct isNativeString :std::false_type {};
 
-					int32_t precision;
-				};
+		template<size_t N>
+		struct isNativeString<const char[N]> : std::true_type {};
 
-				LogContext(const LogContext&) = delete;
+		template<size_t N>
+		struct isNativeString<char[N]> : std::true_type {};
 
-				void operator=(const LogContext&) = delete;
+		template<>
+		struct isNativeString<const char*> : std::true_type {};
 
-				LogContext();
+		template<>
+		struct isNativeString<char*> : std::true_type {};
 
-				~LogContext();
+		template<typename First, typename... Rest>
+		void packRestArgument(const First& first, const Rest&... rest);
 
-				template<typename... Args>
-				static LogMessage createLogMessage(const wchar_t* const functionName, const LogType& type, const Args&... args);
+		void packRestArgument();
 
-			private:
+		//匹配模板函数是禁止的，在这种情况下会抛出编译错误
+		template<typename Arg>
+		void packArgument(const Arg& arg);
 
-				template<typename... Args>
-				LogMessage getLogMessage(const wchar_t* const functionName, const LogType& type, const Args&... args);
+		//wstring
+		void packArgument(const std::wstring& arg);
 
-				template<typename T>
-				struct isNativeString :std::false_type {};
+		//const wchar*
+		void packArgument(const wchar_t* arg);
 
-				template<size_t N>
-				struct isNativeString<const char[N]> : std::true_type {};
+		//singed 32bit integer
+		void packArgument(const int32_t& arg);
 
-				template<size_t N>
-				struct isNativeString<char[N]> : std::true_type {};
+		//signed 64bit integer
+		void packArgument(const int64_t& arg);
 
-				template<>
-				struct isNativeString<const char*> : std::true_type {};
+		//unsigned 32bit integer
+		void packArgument(const uint32_t& arg);
 
-				template<>
-				struct isNativeString<char*> : std::true_type {};
+		//unsigned 64bit integer
+		void packArgument(const uint64_t& arg);
 
-				template<typename First, typename... Rest>
-				void packRestArgument(const First& first, const Rest&... rest);
+		template<typename Arg>
+		void packFloatPoint(const Arg& arg);
 
-				void packRestArgument();
+		//float
+		void packArgument(const float_t& arg);
 
-				//匹配模板函数是禁止的，在这种情况下会抛出编译错误
-				template<typename Arg>
-				void packArgument(const Arg& arg);
+		//double
+		void packArgument(const double_t& arg);
 
-				//wstring
-				void packArgument(const std::wstring& arg);
+		//改变整数模式
+		void packArgument(const IntegerMode& mode);
 
-				//const wchar*
-				void packArgument(const wchar_t* arg);
+		//改变浮点精度
+		void packArgument(const FloatPrecision& precision);
 
-				//singed 32bit integer
-				void packArgument(const int32_t& arg);
+		//改变正文颜色
+		void packArgument(const LogColor& arg);
 
-				//signed 64bit integer
-				void packArgument(const int64_t& arg);
+		//改变显示颜色
+		void setDisplayColor(const LogColor& color);
 
-				//unsigned 32bit integer
-				void packArgument(const uint32_t& arg);
+		void resetState();
 
-				//unsigned 64bit integer
-				void packArgument(const uint64_t& arg);
+		IntegerMode integerMode;
 
-				template<typename Arg>
-				void packFloatPoint(const Arg& arg);
+		FloatPrecision floatPrecision;
 
-				//float
-				void packArgument(const float_t& arg);
+		LogColor textColor;
 
-				//double
-				void packArgument(const double_t& arg);
+		LogColor displayColor;
 
-				//改变整数模式
-				void packArgument(const IntegerMode& mode);
+		static constexpr size_t slotNum = 128;
 
-				//改变浮点精度
-				void packArgument(const FloatPrecision& precision);
+		BufferSlot* const slots;
 
-				//改变正文颜色
-				void packArgument(const LogColor& arg);
+		uint32_t writeIndex;
 
-				//改变显示颜色
-				void setDisplayColor(const LogColor& color);
+		std::wstring* messageStr;
 
-				void resetState();
+		std::mutex inUseMutex;
 
-				IntegerMode integerMode;
+		std::condition_variable inUseCV;
 
-				FloatPrecision floatPrecision;
-
-				LogColor textColor;
-
-				LogColor displayColor;
-
-				static constexpr size_t slotNum = 128;
-
-				BufferSlot* const slots;
-
-				uint32_t writeIndex;
-
-				std::wstring* messageStr;
-
-				std::mutex inUseMutex;
-
-				std::condition_variable inUseCV;
-
-			};
-		}
-	}
+	};
 }
 
 template<typename ...Args>

@@ -9,35 +9,27 @@
 
 #include<DirectXPackedVector.h>
 
-namespace Gear
+namespace Gear::Utils::Math
 {
-	namespace Utils
-	{
-		namespace Math
-		{
+	constexpr float halfPi = DirectX::XM_PIDIV2;
 
-			constexpr float halfPi = DirectX::XM_PIDIV2;
+	constexpr float pi = DirectX::XM_PI;
 
-			constexpr float pi = DirectX::XM_PI;
+	constexpr float twoPi = DirectX::XM_2PI;
 
-			constexpr float twoPi = DirectX::XM_2PI;
+	constexpr float radToDeg = 180.f / Math::pi;
 
-			constexpr float radToDeg = 180.f / Math::pi;
+	constexpr float degToRad = 1.f / radToDeg;
 
-			constexpr float degToRad = 1.f / radToDeg;
+	float lerp(const float x, const float y, const float s);
 
-			float lerp(const float x, const float y, const float s);
+	float clamp(const float value, const float min, const float max);
 
-			float clamp(const float value, const float min, const float max);
+	float saturate(const float value);
 
-			float saturate(const float value);
+	float gauss(const float sigma, const float x);
 
-			float gauss(const float sigma, const float x);
-
-			uint32_t log2(const uint32_t x);
-
-		}
-	}
+	uint32_t log2(const uint32_t x);
 }
 
 #endif // !_GEAR_UTILS_MATH_H_

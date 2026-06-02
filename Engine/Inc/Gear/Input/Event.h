@@ -11,32 +11,29 @@
 
 #include<mutex>
 
-namespace Gear
+namespace Gear::Input
 {
-	namespace Input
+	class Event
 	{
-		class Event
-		{
-		public:
+	public:
 
-			Event();
+		Event();
 
-			void operator-=(const uint64_t id);
+		void operator-=(const uint64_t id);
 
-			uint64_t operator+=(const std::function<void(void)>& func);
+		uint64_t operator+=(const std::function<void(void)>& func);
 
-			void operator()();
+		void operator()();
 
-		private:
+	private:
 
-			uint64_t idx;
+		uint64_t idx;
 
-			std::map<uint64_t, std::function<void(void)>> functions;
+		std::map<uint64_t, std::function<void(void)>> functions;
 
-			std::mutex containerMutex;
+		std::mutex containerMutex;
 
-		};
-	}
+	};
 }
 
 #endif // !_GEAR_INPUT_EVENT_H_

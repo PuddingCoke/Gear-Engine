@@ -5,44 +5,38 @@
 
 #include"RootSignature.h"
 
-namespace Gear
+namespace Gear::Core::D3D12Core
 {
-	namespace Core
+	class PipelineState
 	{
-		namespace D3D12Core
+	public:
+
+		enum class PipelineStateType
 		{
-			class PipelineState
-			{
-			public:
+			GRAPHICS,
+			COMPUTE
+		};
 
-				enum class PipelineStateType
-				{
-					GRAPHICS,
-					COMPUTE
-				};
+		PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType);
 
-				PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType);
+		~PipelineState();
 
-				~PipelineState();
+		const RootSignature* getRootSignature() const;
 
-				const RootSignature* getRootSignature() const;
+		ID3D12PipelineState* get() const;
 
-				ID3D12PipelineState* get() const;
+		PipelineStateType getPipelineStateType() const;
 
-				PipelineStateType getPipelineStateType() const;
+	private:
 
-			private:
+		ComPtr<ID3D12PipelineState> pipelineState;
 
-				ComPtr<ID3D12PipelineState> pipelineState;
+		//引用
+		const RootSignature* const rootSignature;
 
-				//引用
-				const RootSignature* const rootSignature;
+		const PipelineStateType pipelineStateType;
 
-				const PipelineStateType pipelineStateType;
-
-			};
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_D3D12CORE_PIPELINESTATE_H_

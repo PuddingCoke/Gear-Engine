@@ -7,48 +7,42 @@
 
 #include<Gear/Core/D3D12Core/DXCCompiler.h>
 
-namespace Gear
+namespace Gear::Core::D3D12Core
 {
-	namespace Core
+	class Shader
 	{
-		namespace D3D12Core
-		{
-			class Shader
-			{
-			public:
+	public:
 
-				Shader() = delete;
+		Shader() = delete;
 
-				Shader(const Shader&) = delete;
+		Shader(const Shader&) = delete;
 
-				void operator=(const Shader&) = delete;
+		void operator=(const Shader&) = delete;
 
-				D3D12_SHADER_BYTECODE getByteCode() const;
+		D3D12_SHADER_BYTECODE getByteCode() const;
 
-				static UniquePtr<Shader> create(const uint8_t* const bytes, const size_t byteSize);
+		static UniquePtr<Shader> create(const uint8_t* const bytes, const size_t byteSize);
 
-				static UniquePtr<Shader> create(const std::wstring& filePath);
+		static UniquePtr<Shader> create(const std::wstring& filePath);
 
-				static UniquePtr<Shader> create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
+		static UniquePtr<Shader> create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
 
-				//byte code
-				Shader(const uint8_t* const bytes, const size_t byteSize);
+		//byte code
+		Shader(const uint8_t* const bytes, const size_t byteSize);
 
-				//cso
-				Shader(const std::wstring& filePath);
+		//cso
+		Shader(const std::wstring& filePath);
 
-				//hlsl
-				Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
+		//hlsl
+		Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
 
-			private:
+	private:
 
-				D3D12_SHADER_BYTECODE shaderByteCode;
+		D3D12_SHADER_BYTECODE shaderByteCode;
 
-				ComPtr<IDxcBlob> shaderBlob;
+		ComPtr<IDxcBlob> shaderBlob;
 
-			};
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_D3D12CORE_SHADER_H_

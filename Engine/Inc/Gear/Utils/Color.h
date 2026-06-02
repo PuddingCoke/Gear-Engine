@@ -7,35 +7,32 @@
 
 #include<DirectXColors.h>
 
-namespace Gear
+namespace Gear::Utils
 {
-	namespace Utils
+	struct Color
 	{
-		struct Color
-		{
 
-			float r;
+		float r;
 
-			float g;
+		float g;
 
-			float b;
+		float b;
 
-			float a;
+		float a;
 
-			uint32_t toUint() const;
+		uint32_t toUint() const;
 
-			bool operator==(const Color& color) const;
+		bool operator==(const Color& color) const;
 
-			bool operator!=(const Color& color) const;
+		bool operator!=(const Color& color) const;
 
-			operator const float* () const;
+		operator const float* () const;
 
-			static Color random();
+		static Color random();
 
-			static Color hsvToRgb(const Color& c);
+		static Color hsvToRgb(const Color& c);
 
-		};
-	}
+	};
 }
 
 #endif // !_GEAR_UTILS_COLOR_H_

@@ -7,45 +7,39 @@
 
 #include"ResourceBase.h"
 
-namespace Gear
+namespace Gear::Core::Resource
 {
-	namespace Core
+	class ImmutableCBuffer :public ResourceBase
 	{
-		namespace Resource
-		{
-			class ImmutableCBuffer :public ResourceBase
-			{
-			public:
+	public:
 
-				ImmutableCBuffer() = delete;
+		ImmutableCBuffer() = delete;
 
-				ImmutableCBuffer(const ImmutableCBuffer&) = delete;
+		ImmutableCBuffer(const ImmutableCBuffer&) = delete;
 
-				void operator=(const ImmutableCBuffer&) = delete;
+		void operator=(const ImmutableCBuffer&) = delete;
 
-				ImmutableCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent);
+		ImmutableCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent);
 
-				~ImmutableCBuffer();
+		~ImmutableCBuffer();
 
-				D3D12Resource::ShaderResourceDesc getBufferIndex() const;
+		D3D12Resource::ShaderResourceDesc getBufferIndex() const;
 
-				D3D12_GPU_VIRTUAL_ADDRESS getGPUAddress() const;
+		D3D12_GPU_VIRTUAL_ADDRESS getGPUAddress() const;
 
-				D3D12Resource::Buffer* getBuffer() const;
+		D3D12Resource::Buffer* getBuffer() const;
 
-				void copyDescriptors() override;
+		void copyDescriptors() override;
 
-			protected:
+	protected:
 
-				D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
+		D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
 
-				uint32_t bufferIndex;
+		uint32_t bufferIndex;
 
-				D3D12Resource::Buffer* buffer;
+		D3D12Resource::Buffer* buffer;
 
-			};
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_RESOURCE_IMMUTABLECBUFFER_H_

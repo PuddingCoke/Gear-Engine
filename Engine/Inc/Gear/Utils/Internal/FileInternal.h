@@ -5,18 +5,9 @@
 
 #include<string>
 
-namespace Gear
+namespace Gear::Utils::File::Internal
 {
-	namespace Utils
-	{
-		namespace File
-		{
-			namespace Internal
-			{
-				void setRootFolder(const std::wstring& rootFolder);
-			}
-		}
-	}
+	void setRootFolder(const std::wstring& rootFolder);
 }
 
 #endif // !_GEAR_UTILS_FILE_INTERNAL_H_

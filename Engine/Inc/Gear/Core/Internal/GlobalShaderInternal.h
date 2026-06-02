@@ -3,20 +3,11 @@
 #ifndef _GEAR_CORE_GLOBALSHADER_INTERNAL_H_
 #define _GEAR_CORE_GLOBALSHADER_INTERNAL_H_
 
-namespace Gear
+namespace Gear::Core::GlobalShader::Internal
 {
-	namespace Core
-	{
-		namespace GlobalShader
-		{
-			namespace Internal
-			{
-				void initialize();
+	void initialize();
 
-				void release();
-			}
-		}
-	}
+	void release();
 }
 
 #endif // !_GEAR_CORE_GLOBALSHADER_INTERNAL_H_

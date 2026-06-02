@@ -5,22 +5,13 @@
 
 #include<D3D12Headers/d3dx12.h>
 
-namespace Gear
+namespace Gear::Core::GraphicsDevice::Internal
 {
-	namespace Core
-	{
-		namespace GraphicsDevice
-		{
-			namespace Internal
-			{
-				void initialize(IUnknown* const adapter);
+	void initialize(IUnknown* const adapter);
 
-				void release();
+	void release();
 
-				void checkFeatureSupport();
-			}
-		}
-	}
+	void checkFeatureSupport();
 }
 
 #endif // !_GEAR_CORE_GRAPHICSDEVICE_INTERNAL_H_

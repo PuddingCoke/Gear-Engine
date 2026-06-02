@@ -9,19 +9,11 @@
 
 #include<Windows.h>
 
-namespace Gear
+namespace Gear::Utils::WallpaperHelper
 {
-	namespace Utils
-	{
-		namespace WallpaperHelper
-		{
+	void getSystemResolution(uint32_t& width, uint32_t& height);
 
-			void getSystemResolution(uint32_t& width, uint32_t& height);
-
-			HWND getWallpaperHWND();
-
-		}
-	}
+	HWND getWallpaperHWND();
 }
 
 #endif // !_GEAR_UTILS_WALLPAPERHELPER_H_

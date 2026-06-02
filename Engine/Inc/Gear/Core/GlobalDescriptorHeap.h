@@ -5,19 +5,11 @@
 
 #include<Gear/Core/D3D12Core/DescriptorHeap.h>
 
-namespace Gear
+namespace Gear::Core::GlobalDescriptorHeap
 {
-	namespace Core
-	{
-		namespace GlobalDescriptorHeap
-		{
+	D3D12Core::DescriptorHeap* getResourceHeap();
 
-			D3D12Core::DescriptorHeap* getResourceHeap();
-
-			D3D12Core::DescriptorHeap* getSamplerHeap();
-
-		}
-	}
+	D3D12Core::DescriptorHeap* getSamplerHeap();
 }
 
 #endif // !_GEAR_CORE_GLOBALDESCRIPTORHEAP_H_

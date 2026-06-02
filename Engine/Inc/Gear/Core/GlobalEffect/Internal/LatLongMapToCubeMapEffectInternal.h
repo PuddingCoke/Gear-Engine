@@ -5,23 +5,11 @@
 
 #include<Gear/Core/ResourceManager.h>
 
-namespace Gear
+namespace Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal
 {
-	namespace Core
-	{
-		namespace GlobalEffect
-		{
-			namespace LatLongMapToCubeMapEffect
-			{
-				namespace Internal
-				{
-					void initialize(ResourceManager* const resManager);
+	void initialize(ResourceManager* const resManager);
 
-					void release();
-				}
-			}
-		}
-	}
+	void release();
 }
 
 #endif // !_GEAR_CORE_GLOBALEFFECT_LATLONGMAPTOCUBEMAPEFFECT_INTERNAL_H_

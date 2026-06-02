@@ -7,46 +7,40 @@
 
 #include"ResourceBase.h"
 
-namespace Gear
+namespace Gear::Core::Resource
 {
-	namespace Core
+	class CounterBufferView :public ResourceBase
 	{
-		namespace Resource
-		{
-			class CounterBufferView :public ResourceBase
-			{
-			public:
+	public:
 
-				CounterBufferView() = delete;
+		CounterBufferView() = delete;
 
-				CounterBufferView(const bool persistent);
+		CounterBufferView(const bool persistent);
 
-				~CounterBufferView();
+		~CounterBufferView();
 
-				D3D12Resource::ShaderResourceDesc getSRVIndex() const;
+		D3D12Resource::ShaderResourceDesc getSRVIndex() const;
 
-				D3D12Resource::ShaderResourceDesc getUAVIndex() const;
+		D3D12Resource::ShaderResourceDesc getUAVIndex() const;
 
-				D3D12Resource::ClearUAVDesc getClearUAVDesc() const;
+		D3D12Resource::ClearUAVDesc getClearUAVDesc() const;
 
-				void copyDescriptors() override;
+		void copyDescriptors() override;
 
-				D3D12Resource::Buffer* getBuffer() const;
+		D3D12Resource::Buffer* getBuffer() const;
 
-			private:
+	private:
 
-				uint32_t srvIndex;
+		uint32_t srvIndex;
 
-				uint32_t uavIndex;
+		uint32_t uavIndex;
 
-				D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
+		D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
 
-				D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
+		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
 
-				D3D12Resource::Buffer* buffer;
-			};
-		}
-	}
+		D3D12Resource::Buffer* buffer;
+	};
 }
 
 #endif // !_GEAR_CORE_RESOURCE_COUNTERBUFFERVIEW_H_

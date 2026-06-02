@@ -5,61 +5,53 @@
 
 #include"Event.h"
 
-namespace Gear
+namespace Gear::Input::Mouse
 {
-	namespace Input
-	{
-		namespace Mouse
-		{
+	float getX();
 
-			float getX();
+	float getY();
 
-			float getY();
+	float getDX();
 
-			float getDX();
+	float getDY();
 
-			float getDY();
+	float getWheelDelta();
 
-			float getWheelDelta();
+	bool getLeftDown();
 
-			bool getLeftDown();
+	bool getRightDown();
 
-			bool getRightDown();
+	bool onMove();
 
-			bool onMove();
+	bool onLeftDown();
 
-			bool onLeftDown();
+	bool onRightDown();
 
-			bool onRightDown();
+	bool onScroll();
 
-			bool onScroll();
+	uint64_t addMoveEvent(const std::function<void(void)>& func);
 
-			uint64_t addMoveEvent(const std::function<void(void)>& func);
+	uint64_t addLeftDownEvent(const std::function<void(void)>& func);
 
-			uint64_t addLeftDownEvent(const std::function<void(void)>& func);
+	uint64_t addRightDownEvent(const std::function<void(void)>& func);
 
-			uint64_t addRightDownEvent(const std::function<void(void)>& func);
+	uint64_t addLeftUpEvent(const std::function<void(void)>& func);
 
-			uint64_t addLeftUpEvent(const std::function<void(void)>& func);
+	uint64_t addRightUpEvent(const std::function<void(void)>& func);
 
-			uint64_t addRightUpEvent(const std::function<void(void)>& func);
+	uint64_t addScrollEvent(const std::function<void(void)>& func);
 
-			uint64_t addScrollEvent(const std::function<void(void)>& func);
+	void removeMoveEvent(const uint64_t id);
 
-			void removeMoveEvent(const uint64_t id);
+	void removeLeftDownEvent(const uint64_t id);
 
-			void removeLeftDownEvent(const uint64_t id);
+	void removeRightDownEvent(const uint64_t id);
 
-			void removeRightDownEvent(const uint64_t id);
+	void removeLeftUpEvent(const uint64_t id);
 
-			void removeLeftUpEvent(const uint64_t id);
+	void removeRightUpEvent(const uint64_t id);
 
-			void removeRightUpEvent(const uint64_t id);
-
-			void removeScrollEvent(const uint64_t id);
-
-		};
-	}
+	void removeScrollEvent(const uint64_t id);
 }
 
 #endif // !_GEAR_INPUT_MOUSE_H_

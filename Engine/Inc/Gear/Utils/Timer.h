@@ -3,34 +3,31 @@
 #ifndef _GEAR_UTILS_TIMER_H_
 #define _GEAR_UTILS_TIMER_H_
 
-namespace Gear
+namespace Gear::Utils
 {
-	namespace Utils
+	class Timer
 	{
-		class Timer
-		{
-		public:
+	public:
 
-			Timer();
+		Timer();
 
-			Timer(const float timeLimit);
+		Timer(const float timeLimit);
 
-			bool update(const float dt);
+		bool update(const float dt);
 
-			void restart();
+		void restart();
 
-			void setTimeLimit(const float timeLimit);
+		void setTimeLimit(const float timeLimit);
 
-			float getTimeLimit() const;
+		float getTimeLimit() const;
 
-		private:
+	private:
 
-			float timeLimit;
+		float timeLimit;
 
-			float curTime;
+		float curTime;
 
-		};
-	}
+	};
 }
 
 #endif // !_GEAR_UTILS_TIMER_H_

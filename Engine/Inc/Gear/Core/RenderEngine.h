@@ -5,32 +5,27 @@
 
 #include<Gear/Core/D3D12Core/CommandList.h>
 
-namespace Gear
+namespace Gear::Core
 {
-	namespace Core
+	enum class GPUVendor
 	{
-		enum class GPUVendor
-		{
-			NVIDIA,
-			AMD,
-			INTEL,
-			UNKNOWN
-		};
+		NVIDIA,
+		AMD,
+		INTEL,
+		UNKNOWN
+	};
 
-		namespace RenderEngine
-		{
+	namespace RenderEngine
+	{
+		void submitCommandList(D3D12Core::CommandList* const commandList);
 
-			void submitCommandList(D3D12Core::CommandList* const commandList);
+		GPUVendor getVendor();
 
-			GPUVendor getVendor();
+		Resource::D3D12Resource::Texture* getRenderTexture();
 
-			Resource::D3D12Resource::Texture* getRenderTexture();
+		ID3D12CommandQueue* getCommandQueue();
 
-			ID3D12CommandQueue* getCommandQueue();
-
-			bool getDisplayImGuiSurface();
-
-		}
+		bool getDisplayImGuiSurface();
 	}
 }
 

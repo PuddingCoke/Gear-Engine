@@ -7,15 +7,9 @@
 
 #include"SwappableBase.h"
 
-namespace Gear
+namespace Gear::Core::Resource
 {
-	namespace Core
-	{
-		namespace Resource
-		{
-			using SwapBuffer = SwappableBase<BufferView>;
-		}
-	}
+	using SwapBuffer = SwappableBase<BufferView>;
 }
 
 #endif // !_GEAR_CORE_RESOURCE_SWAPBUFFER_H_

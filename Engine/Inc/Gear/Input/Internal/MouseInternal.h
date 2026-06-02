@@ -3,32 +3,21 @@
 #ifndef _GEAR_INPUT_MOUSE_INTERNAL_H_
 #define _GEAR_INPUT_MOUSE_INTERNAL_H_
 
-namespace Gear
+namespace Gear::Input::Mouse::Internal
 {
-	namespace Input
-	{
-		namespace Mouse
-		{
-			namespace Internal
-			{
+	void resetDeltaValue();
 
-				void resetDeltaValue();
+	void pressLeft();
 
-				void pressLeft();
+	void pressRight();
 
-				void pressRight();
+	void releaseLeft();
 
-				void releaseLeft();
+	void releaseRight();
 
-				void releaseRight();
+	void scroll(const float delta);
 
-				void scroll(const float delta);
-
-				void move(const float curX, const float curY);
-
-			}
-		}
-	}
+	void move(const float curX, const float curY);
 }
 
 #endif // !_GEAR_INPUT_MOUSE_INTERNAL_H_

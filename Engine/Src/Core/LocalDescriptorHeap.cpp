@@ -4,16 +4,16 @@
 
 /// <summary>
 /// 之前写多线程日志系统的时候学习了下thread_local
-/// 然后突发奇想，想到每个线程其实可以有独享的暂存资源堆、渲染目标堆、深度模板堆
-/// 但是这要求执行RenderTask的构造方法的线程和执行其workerLoop的线程必须是同一线程
+/// 然后突发奇想，想到每个渲染线程其实可以有独享的暂存资源堆、渲染目标堆、深度模板堆
+/// 但是这要求执行RenderTask的构造方法的线程和执行workerLoop的线程必须是同一线程
 /// </summary>
-namespace
+namespace Gear::Core::LocalDescriptorHeap::Internal
 {
-	thread_local UniquePtr<Gear::Core::D3D12Core::DescriptorHeap> perThreadStagingResourceHeap;
+	thread_local UniquePtr<D3D12Core::DescriptorHeap> perThreadStagingResourceHeap;
 
-	thread_local UniquePtr<Gear::Core::D3D12Core::DescriptorHeap> perThreadRenderTargetHeap;
+	thread_local UniquePtr<D3D12Core::DescriptorHeap> perThreadRenderTargetHeap;
 
-	thread_local UniquePtr<Gear::Core::D3D12Core::DescriptorHeap> perThreadDepthStencilHeap;
+	thread_local UniquePtr<D3D12Core::DescriptorHeap> perThreadDepthStencilHeap;
 }
 
 void Gear::Core::LocalDescriptorHeap::Internal::initialize()
@@ -39,35 +39,35 @@ void Gear::Core::LocalDescriptorHeap::Internal::release()
 Gear::Core::D3D12Core::DescriptorHeap* Gear::Core::LocalDescriptorHeap::getStagingResourceHeap()
 {
 #ifdef _DEBUG
-	if (!perThreadStagingResourceHeap.get())
+	if (!Internal::perThreadStagingResourceHeap.get())
 	{
 		LOGERROR(L"你还没有分配线程独享的描述符堆!");
 	}
 #endif // _DEBUG
 
-	return perThreadStagingResourceHeap.get();
+	return Internal::perThreadStagingResourceHeap.get();
 }
 
 Gear::Core::D3D12Core::DescriptorHeap* Gear::Core::LocalDescriptorHeap::getRenderTargetHeap()
 {
 #ifdef _DEBUG
-	if (!perThreadRenderTargetHeap.get())
+	if (!Internal::perThreadRenderTargetHeap.get())
 	{
 		LOGERROR(L"你还没有分配线程独享的描述符堆!");
 	}
 #endif // _DEBUG
 
-	return perThreadRenderTargetHeap.get();
+	return Internal::perThreadRenderTargetHeap.get();
 }
 
 Gear::Core::D3D12Core::DescriptorHeap* Gear::Core::LocalDescriptorHeap::getDepthStencilHeap()
 {
 #ifdef _DEBUG
-	if (!perThreadDepthStencilHeap.get())
+	if (!Internal::perThreadDepthStencilHeap.get())
 	{
 		LOGERROR(L"你还没有分配线程独享的描述符堆!");
 	}
 #endif // _DEBUG
 
-	return perThreadDepthStencilHeap.get();
+	return Internal::perThreadDepthStencilHeap.get();
 }

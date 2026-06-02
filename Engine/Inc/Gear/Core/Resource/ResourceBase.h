@@ -9,53 +9,47 @@
 
 #include"D3D12Resource/PipelineResourceDesc.h"
 
-namespace Gear
+namespace Gear::Core::Resource
 {
-	namespace Core
+	class ResourceBase
 	{
-		namespace Resource
-		{
-			class ResourceBase
-			{
-			public:
+	public:
 
-				ResourceBase() = delete;
+		ResourceBase() = delete;
 
-				ResourceBase(const bool persistent);
+		ResourceBase(const bool persistent);
 
-				virtual ~ResourceBase();
+		virtual ~ResourceBase();
 
-				virtual void copyDescriptors() = 0;
+		virtual void copyDescriptors() = 0;
 
-				bool getPersistent() const;
+		bool getPersistent() const;
 
-				uint32_t getNumCBVSRVUAVDescriptors() const;
+		uint32_t getNumCBVSRVUAVDescriptors() const;
 
-				void setNumCBVSRVUAVDescriptors(const uint32_t numDescriptors);
+		void setNumCBVSRVUAVDescriptors(const uint32_t numDescriptors);
 
-			protected:
+	protected:
 
-				//从描述器堆申请可用的描述符并返回DescriptorHandle
-				//在调用前要设置numCBVSRVUAVDescriptors！
-				D3D12Core::DescriptorHandle allocCBVSRVUAVDescriptors();
+		//从描述器堆申请可用的描述符并返回DescriptorHandle
+		//在调用前要设置numCBVSRVUAVDescriptors！
+		D3D12Core::DescriptorHandle allocCBVSRVUAVDescriptors();
 
-				//把非持久性资源的描述符拷贝到资源描述符堆上，并返回DescriptorHandle
-				//仅用于非持久性资源！
-				D3D12Core::DescriptorHandle copyToResourceHeap() const;
+		//把非持久性资源的描述符拷贝到资源描述符堆上，并返回DescriptorHandle
+		//仅用于非持久性资源！
+		D3D12Core::DescriptorHandle copyToResourceHeap() const;
 
-				const bool persistent;
+		const bool persistent;
 
-			private:
+	private:
 
-				//资源需要的CBV、SRV、UAV描述符的数量
-				uint32_t numCBVSRVUAVDescriptors;
+		//资源需要的CBV、SRV、UAV描述符的数量
+		uint32_t numCBVSRVUAVDescriptors;
 
-				//对于非持久性资源的拷贝开始位置
-				D3D12Core::DescriptorHandle copySrcDescriptorHandle;
+		//对于非持久性资源的拷贝开始位置
+		D3D12Core::DescriptorHandle copySrcDescriptorHandle;
 
-			};
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_RESOURCE_RESOURCEBASE_H_

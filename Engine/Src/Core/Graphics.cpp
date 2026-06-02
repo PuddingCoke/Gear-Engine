@@ -4,10 +4,6 @@
 
 #include<ImGUI/imgui.h>
 
-#include<ImGUI/imgui_impl_win32.h>
-
-#include<ImGUI/imgui_impl_dx12.h>
-
 namespace
 {
 	struct GraphicsImpl
@@ -33,9 +29,9 @@ namespace
 
 		float timeElapsed = 0.f;
 
-		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle;
+		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
 
-		Gear::Core::Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer;
+		Gear::Core::Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer = nullptr;
 
 	}impl;
 }

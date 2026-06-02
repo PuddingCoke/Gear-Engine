@@ -5,18 +5,9 @@
 
 #include"GlobalEffectHeader.h"
 
-namespace Gear
+namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 {
-	namespace Core
-	{
-		namespace GlobalEffect
-		{
-			namespace BackBufferBlitEffect
-			{
-				void process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture);
-			}
-		}
-	}
+	void process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture);
 }
 
 #endif // !_GEAR_CORE_GLOBALEFFECT_BACKBUFFERBLITEFFECT_H_

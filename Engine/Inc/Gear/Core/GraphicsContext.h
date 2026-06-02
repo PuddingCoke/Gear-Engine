@@ -13,377 +13,373 @@
 
 #include<Gear/Core/Resource/StaticCBuffer.h>
 
-namespace Gear
+namespace Gear::Core
 {
-	namespace Core
+	class GraphicsContext
 	{
-		class GraphicsContext
+	public:
+
+		GraphicsContext(const GraphicsContext&) = delete;
+
+		void operator=(const GraphicsContext&) = delete;
+
+		GraphicsContext();
+
+		~GraphicsContext();
+
+		void updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const;
+
+		void updateBuffer(Resource::StaticCBuffer& staticCBuffer, const void* const data, const uint32_t size) const;
+
+		void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+
+		template<size_t N>
+		void setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+
+		template<size_t N>
+		void setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+
+		template<size_t N>
+		void setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+
+		template<size_t N>
+		void setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+
+		template<size_t N>
+		void setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+
+		template<size_t N>
+		void setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+
+		void setVSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+
+		void setHSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+
+		void setDSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+
+		void setGSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+
+		void setPSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+
+		void setCSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+
+		void setVSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+
+		void setHSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+
+		void setDSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+
+		void setGSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+
+		void setPSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+
+		void setCSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+
+		void setPipelineState(const D3D12Core::PipelineState& pipelineState);
+
+		template<size_t N>
+		void setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil = {});
+
+		void setRenderTargets(const Resource::D3D12Resource::DepthStencilDesc& depthStencil);
+
+		void setDefRenderTarget() const;
+
+		void clearDefRenderTarget(const float clearValue[4]) const;
+
+		//推迟到draw call进行清理
+		void clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
+
+		//推迟到draw call进行清理
+		void clearDepthStencil(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
+
+		//立刻进行清理
+		void clearRenderTargetInstant(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
+
+		//立刻进行清理
+		void clearDepthStencilInstant(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
+
+		template<size_t N>
+		void setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N]);
+
+		void setIndexBuffer(const Resource::D3D12Resource::IndexBufferDesc& indexBuffers);
+
+		void setPrimitiveTopology(const D3D12_PRIMITIVE_TOPOLOGY topology);
+
+		void setViewport(const float width, const float height);
+
+		void setViewport(const uint32_t width, const uint32_t height);
+
+		void setScissorRect(const uint32_t left, const uint32_t top, const uint32_t right, const uint32_t bottom);
+
+		void setScissorRect(const float left, const float top, const float right, const float bottom);
+
+		void setViewportSimple(const float width, const float height);
+
+		void setViewportSimple(const uint32_t width, const uint32_t height);
+
+		void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const float values[4]);
+
+		void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const uint32_t values[4]);
+
+		void draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation);
+
+		void drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation);
+
+		void dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ);
+
+		template<size_t N>
+		void uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N]);
+
+		void begin();
+
+		//重置内部追踪的状态
+		void resetTrackedStates();
+
+		void resetPipelineState();
+
+		void resetTrackedGraphicsStates();
+
+		void resetTrackedComputeStates();
+		/////////////////
+
+		D3D12Core::CommandList* getCommandList() const;
+
+	private:
+
+		struct RootConstantBufferDesc
 		{
-		public:
+			const uint32_t rootParameterIndex;
 
-			GraphicsContext(const GraphicsContext&) = delete;
-
-			void operator=(const GraphicsContext&) = delete;
-
-			GraphicsContext();
-
-			~GraphicsContext();
-
-			void updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const;
-
-			void updateBuffer(Resource::StaticCBuffer& staticCBuffer, const void* const data, const uint32_t size) const;
-
-			void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-			template<size_t N>
-			void setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
-
-			template<size_t N>
-			void setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
-
-			template<size_t N>
-			void setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
-
-			template<size_t N>
-			void setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
-
-			template<size_t N>
-			void setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
-
-			template<size_t N>
-			void setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
-
-			void setVSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
-
-			void setHSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
-
-			void setDSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
-
-			void setGSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
-
-			void setPSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
-
-			void setCSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
-
-			void setVSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-			void setHSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-			void setDSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-			void setGSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-			void setPSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-			void setCSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-			void setPipelineState(const D3D12Core::PipelineState& pipelineState);
-
-			template<size_t N>
-			void setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil = {});
-
-			void setRenderTargets(const Resource::D3D12Resource::DepthStencilDesc& depthStencil);
-
-			void setDefRenderTarget() const;
-
-			void clearDefRenderTarget(const float clearValue[4]) const;
-
-			//推迟到draw call进行清理
-			void clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
-
-			//推迟到draw call进行清理
-			void clearDepthStencil(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
-
-			//立刻进行清理
-			void clearRenderTargetInstant(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
-
-			//立刻进行清理
-			void clearDepthStencilInstant(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
-
-			template<size_t N>
-			void setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N]);
-
-			void setIndexBuffer(const Resource::D3D12Resource::IndexBufferDesc& indexBuffers);
-
-			void setPrimitiveTopology(const D3D12_PRIMITIVE_TOPOLOGY topology);
-
-			void setViewport(const float width, const float height);
-
-			void setViewport(const uint32_t width, const uint32_t height);
-
-			void setScissorRect(const uint32_t left, const uint32_t top, const uint32_t right, const uint32_t bottom);
-
-			void setScissorRect(const float left, const float top, const float right, const float bottom);
-
-			void setViewportSimple(const float width, const float height);
-
-			void setViewportSimple(const uint32_t width, const uint32_t height);
-
-			void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const float values[4]);
-
-			void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const uint32_t values[4]);
-
-			void draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation);
-
-			void drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation);
-
-			void dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ);
-
-			template<size_t N>
-			void uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N]);
-
-			void begin();
-
-			//重置内部追踪的状态
-			void resetTrackedStates();
-
-			void resetPipelineState();
-
-			void resetTrackedGraphicsStates();
-
-			void resetTrackedComputeStates();
-			/////////////////
-
-			D3D12Core::CommandList* getCommandList() const;
-
-		private:
-
-			struct RootConstantBufferDesc
-			{
-				const uint32_t rootParameterIndex;
-
-				const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
-			};
-
-			struct RenderTargetClearDesc
-			{
-				const D3D12_CPU_DESCRIPTOR_HANDLE handle;
-
-				const float clearValue[4];
-			};
-
-			struct DepthStencilClearDesc
-			{
-				const D3D12_CPU_DESCRIPTOR_HANDLE handle;
-
-				const D3D12_CLEAR_FLAGS flags;
-
-				const float depth;
-
-				const uint8_t stencil;
-			};
-
-			void transitionResources();
-
-			template<size_t N>
-			void setShaderResources(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState);
-
-			//从提供的ShaderResourceDesc提取索引
-			template<size_t N>
-			void getResourceIndicesFromDescs(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N]);
-
-			void pushRootConstantBufferDesc(const RootConstantBufferDesc& desc);
-
-			void flushRootConstantBufferDescs(const bool isGraphicsRootSignature);
-
-			void flushRenderTargetClearDescs();
-
-			void flushDepthStencilClearDescs();
-
-			void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
-
-			void setComputeRootSignature(const D3D12Core::RootSignature* const rootSignature);
-
-			//根据Desc设置对应资源的转变状态
-			void setResourceState(const Resource::D3D12Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState);
-
-			void setResourceState(const Resource::D3D12Resource::RenderTargetDesc& desc);
-
-			void setResourceState(const Resource::D3D12Resource::DepthStencilDesc& desc);
-
-			void setResourceState(const Resource::D3D12Resource::VertexBufferDesc& desc);
-
-			void setResourceState(const Resource::D3D12Resource::IndexBufferDesc& desc);
-
-			Resource::D3D12Resource::D3D12ResourceBase* setResourceState(const Resource::D3D12Resource::ClearUAVDesc& desc);
-			////////////////////////////
-
-			//重置内部追踪的状态
-			void resetGraphicsRootSignature();
-
-			void resetPrimitiveTopology();
-
-			void resetComputeRootSignature();
-
-			void resetUserDefinedGlobalConstantBuffer();
-			/////////////////
-
-			D3D12_VIEWPORT vp;
-
-			D3D12_RECT rt;
-
-			D3D12Core::CommandList* const commandList;
-
-			uint32_t resourceIndices[32];
-
-			std::vector<RootConstantBufferDesc> rootConstantBufferDescs;
-
-			std::vector<RenderTargetClearDesc> renderTargetClearDescs;
-
-			std::vector<DepthStencilClearDesc> depthStencilClearDescs;
-
-			//这些是内部追踪的状态，用于减少图形API的调用
-			const D3D12Core::PipelineState* currentPipelineState;
-
-			const Resource::ImmutableCBuffer* userDefinedGlobalConstantBuffer;
-
-			D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
-
-			const D3D12Core::RootSignature* graphicsRootSignature;
-
-			const D3D12Core::RootSignature* computeRootSignature;
-			////////////////////////////////////////
-
-			std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> transientRTVHandles;
-
-			std::vector<D3D12_VERTEX_BUFFER_VIEW> transientVBViews;
-
-			std::vector<D3D12_RESOURCE_BARRIER> transientUAVBarriers;
-
+			const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
 		};
 
-		template<size_t N>
-		inline void GraphicsContext::setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+		struct RenderTargetClearDesc
 		{
-			getResourceIndicesFromDescs(descs);
+			const D3D12_CPU_DESCRIPTOR_HANDLE handle;
 
-			setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+			const float clearValue[4];
+		};
 
-			setVSConstants(N, resourceIndices, offset);
-		}
-
-		template<size_t N>
-		inline void GraphicsContext::setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+		struct DepthStencilClearDesc
 		{
-			getResourceIndicesFromDescs(descs);
+			const D3D12_CPU_DESCRIPTOR_HANDLE handle;
 
-			setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+			const D3D12_CLEAR_FLAGS flags;
 
-			setHSConstants(N, resourceIndices, offset);
-		}
+			const float depth;
 
-		template<size_t N>
-		inline void GraphicsContext::setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
-		{
-			getResourceIndicesFromDescs(descs);
+			const uint8_t stencil;
+		};
 
-			setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-
-			setDSConstants(N, resourceIndices, offset);
-		}
+		void transitionResources();
 
 		template<size_t N>
-		inline void GraphicsContext::setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
-		{
-			getResourceIndicesFromDescs(descs);
+		void setShaderResources(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState);
 
-			setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-
-			setGSConstants(N, resourceIndices, offset);
-		}
-
+		//从提供的ShaderResourceDesc提取索引
 		template<size_t N>
-		inline void GraphicsContext::setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+		void getResourceIndicesFromDescs(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N]);
+
+		void pushRootConstantBufferDesc(const RootConstantBufferDesc& desc);
+
+		void flushRootConstantBufferDescs(const bool isGraphicsRootSignature);
+
+		void flushRenderTargetClearDescs();
+
+		void flushDepthStencilClearDescs();
+
+		void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
+
+		void setComputeRootSignature(const D3D12Core::RootSignature* const rootSignature);
+
+		//根据Desc设置对应资源的转变状态
+		void setResourceState(const Resource::D3D12Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState);
+
+		void setResourceState(const Resource::D3D12Resource::RenderTargetDesc& desc);
+
+		void setResourceState(const Resource::D3D12Resource::DepthStencilDesc& desc);
+
+		void setResourceState(const Resource::D3D12Resource::VertexBufferDesc& desc);
+
+		void setResourceState(const Resource::D3D12Resource::IndexBufferDesc& desc);
+
+		Resource::D3D12Resource::D3D12ResourceBase* setResourceState(const Resource::D3D12Resource::ClearUAVDesc& desc);
+		////////////////////////////
+
+		//重置内部追踪的状态
+		void resetGraphicsRootSignature();
+
+		void resetPrimitiveTopology();
+
+		void resetComputeRootSignature();
+
+		void resetUserDefinedGlobalConstantBuffer();
+		/////////////////
+
+		D3D12_VIEWPORT vp;
+
+		D3D12_RECT rt;
+
+		D3D12Core::CommandList* const commandList;
+
+		uint32_t resourceIndices[32];
+
+		std::vector<RootConstantBufferDesc> rootConstantBufferDescs;
+
+		std::vector<RenderTargetClearDesc> renderTargetClearDescs;
+
+		std::vector<DepthStencilClearDesc> depthStencilClearDescs;
+
+		//这些是内部追踪的状态，用于减少图形API的调用
+		const D3D12Core::PipelineState* currentPipelineState;
+
+		const Resource::ImmutableCBuffer* userDefinedGlobalConstantBuffer;
+
+		D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
+
+		const D3D12Core::RootSignature* graphicsRootSignature;
+
+		const D3D12Core::RootSignature* computeRootSignature;
+		////////////////////////////////////////
+
+		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> transientRTVHandles;
+
+		std::vector<D3D12_VERTEX_BUFFER_VIEW> transientVBViews;
+
+		std::vector<D3D12_RESOURCE_BARRIER> transientUAVBarriers;
+
+	};
+
+	template<size_t N>
+	inline void GraphicsContext::setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	{
+		getResourceIndicesFromDescs(descs);
+
+		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+
+		setVSConstants(N, resourceIndices, offset);
+	}
+
+	template<size_t N>
+	inline void GraphicsContext::setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	{
+		getResourceIndicesFromDescs(descs);
+
+		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+
+		setHSConstants(N, resourceIndices, offset);
+	}
+
+	template<size_t N>
+	inline void GraphicsContext::setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	{
+		getResourceIndicesFromDescs(descs);
+
+		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+
+		setDSConstants(N, resourceIndices, offset);
+	}
+
+	template<size_t N>
+	inline void GraphicsContext::setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	{
+		getResourceIndicesFromDescs(descs);
+
+		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+
+		setGSConstants(N, resourceIndices, offset);
+	}
+
+	template<size_t N>
+	inline void GraphicsContext::setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	{
+		getResourceIndicesFromDescs(descs);
+
+		setShaderResources(descs, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+		setPSConstants(N, resourceIndices, offset);
+	}
+
+	template<size_t N>
+	inline void GraphicsContext::setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	{
+		getResourceIndicesFromDescs(descs);
+
+		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+
+		setCSConstants(N, resourceIndices, offset);
+	}
+
+	template<size_t N>
+	inline void GraphicsContext::getResourceIndicesFromDescs(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N])
+	{
+		for (uint32_t i = 0; i < N; i++)
 		{
-			getResourceIndicesFromDescs(descs);
+			resourceIndices[i] = descs[i].resourceIndex;
+		}
+	}
 
-			setShaderResources(descs, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	template<size_t N>
+	inline void GraphicsContext::setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
+	{
+		transientRTVHandles.clear();
 
-			setPSConstants(N, resourceIndices, offset);
+		for (const Resource::D3D12Resource::RenderTargetDesc& desc : renderTargets)
+		{
+			transientRTVHandles.emplace_back(desc.rtvHandle);
+
+			setResourceState(desc);
 		}
 
-		template<size_t N>
-		inline void GraphicsContext::setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+		if (depthStencil.texture)
 		{
-			getResourceIndicesFromDescs(descs);
+			setResourceState(depthStencil);
 
-			setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+			commandList->setRenderTargets(static_cast<uint32_t>(transientRTVHandles.size()), transientRTVHandles.data(), FALSE, &(depthStencil.dsvHandle));
+		}
+		else
+		{
+			commandList->setRenderTargets(static_cast<uint32_t>(transientRTVHandles.size()), transientRTVHandles.data(), FALSE, nullptr);
+		}
+	}
 
-			setCSConstants(N, resourceIndices, offset);
+	template<size_t N>
+	inline void GraphicsContext::setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N])
+	{
+		transientVBViews.clear();
+
+		for (const Resource::D3D12Resource::VertexBufferDesc& desc : vertexBuffers)
+		{
+			transientVBViews.emplace_back(desc.vbv);
+
+			setResourceState(desc);
 		}
 
-		template<size_t N>
-		inline void GraphicsContext::getResourceIndicesFromDescs(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N])
+		commandList->setVertexBuffers(startSlot, static_cast<uint32_t>(transientVBViews.size()), transientVBViews.data());
+	}
+
+	template<size_t N>
+	inline void GraphicsContext::uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N])
+	{
+		transientUAVBarriers.clear();
+
+		for (const Resource::D3D12Resource::D3D12ResourceBase* const resource : resources)
 		{
-			for (uint32_t i = 0; i < N; i++)
-			{
-				resourceIndices[i] = descs[i].resourceIndex;
-			}
+			const CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource());
+
+			transientUAVBarriers.emplace_back(barrier);
 		}
 
-		template<size_t N>
-		inline void GraphicsContext::setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
+		commandList->resourceBarrier(static_cast<uint32_t>(transientUAVBarriers.size()), transientUAVBarriers.data());
+	}
+
+	template<size_t N>
+	inline void GraphicsContext::setShaderResources(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState)
+	{
+		for (const Resource::D3D12Resource::ShaderResourceDesc& desc : descs)
 		{
-			transientRTVHandles.clear();
-
-			for (const Resource::D3D12Resource::RenderTargetDesc& desc : renderTargets)
-			{
-				transientRTVHandles.emplace_back(desc.rtvHandle);
-
-				setResourceState(desc);
-			}
-
-			if (depthStencil.texture)
-			{
-				setResourceState(depthStencil);
-
-				commandList->setRenderTargets(static_cast<uint32_t>(transientRTVHandles.size()), transientRTVHandles.data(), FALSE, &(depthStencil.dsvHandle));
-			}
-			else
-			{
-				commandList->setRenderTargets(static_cast<uint32_t>(transientRTVHandles.size()), transientRTVHandles.data(), FALSE, nullptr);
-			}
+			setResourceState(desc, targetSRVState);
 		}
-
-		template<size_t N>
-		inline void GraphicsContext::setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N])
-		{
-			transientVBViews.clear();
-
-			for (const Resource::D3D12Resource::VertexBufferDesc& desc : vertexBuffers)
-			{
-				transientVBViews.emplace_back(desc.vbv);
-
-				setResourceState(desc);
-			}
-
-			commandList->setVertexBuffers(startSlot, static_cast<uint32_t>(transientVBViews.size()), transientVBViews.data());
-		}
-
-		template<size_t N>
-		inline void GraphicsContext::uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N])
-		{
-			transientUAVBarriers.clear();
-
-			for (const Resource::D3D12Resource::D3D12ResourceBase* const resource : resources)
-			{
-				const CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource());
-
-				transientUAVBarriers.emplace_back(barrier);
-			}
-
-			commandList->resourceBarrier(static_cast<uint32_t>(transientUAVBarriers.size()), transientUAVBarriers.data());
-		}
-
-		template<size_t N>
-		inline void GraphicsContext::setShaderResources(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState)
-		{
-			for (const Resource::D3D12Resource::ShaderResourceDesc& desc : descs)
-			{
-				setResourceState(desc, targetSRVState);
-			}
-		}
-
 	}
 }
 

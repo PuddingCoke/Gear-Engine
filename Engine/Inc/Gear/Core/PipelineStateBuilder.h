@@ -7,80 +7,77 @@
 
 #include<Gear/Core/D3D12Core/Shader.h>
 
-namespace Gear
+namespace Gear::Core
 {
-	namespace Core
+	class PipelineStateBuilder
 	{
-		class PipelineStateBuilder
-		{
-		public:
+	public:
 
-			PipelineStateBuilder();
+		PipelineStateBuilder();
 
-			~PipelineStateBuilder();
+		~PipelineStateBuilder();
 
-			PipelineStateBuilder& setVS(const D3D12Core::Shader& vs);
+		PipelineStateBuilder& setVS(const D3D12Core::Shader& vs);
 
-			PipelineStateBuilder& setHS(const D3D12Core::Shader& hs);
+		PipelineStateBuilder& setHS(const D3D12Core::Shader& hs);
 
-			PipelineStateBuilder& setDS(const D3D12Core::Shader& ds);
+		PipelineStateBuilder& setDS(const D3D12Core::Shader& ds);
 
-			PipelineStateBuilder& setGS(const D3D12Core::Shader& gs);
+		PipelineStateBuilder& setGS(const D3D12Core::Shader& gs);
 
-			PipelineStateBuilder& setPS(const D3D12Core::Shader& ps);
-
-			template<size_t N>
-			PipelineStateBuilder& setRTVFormats(const DXGI_FORMAT(&rtvFormats)[N]);
-
-			PipelineStateBuilder& setRTVFormats();
-
-			PipelineStateBuilder& setDSVFormat(const DXGI_FORMAT format);
-
-			template<size_t N>
-			PipelineStateBuilder& setInputElements(const D3D12_INPUT_ELEMENT_DESC(&descs)[N]);
-
-			PipelineStateBuilder& setPrimitiveTopologyType(const D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopologyType);
-
-			PipelineStateBuilder& setBlendState(const D3D12_BLEND_DESC& desc);
-
-			PipelineStateBuilder& setRasterizerState(const D3D12_RASTERIZER_DESC& desc);
-
-			PipelineStateBuilder& setDepthStencilState(const D3D12_DEPTH_STENCIL_DESC& desc);
-
-			PipelineStateBuilder& setDefaultFullScreenState();
-
-			UniquePtr<D3D12Core::PipelineState> build();
-
-			//用于计算管线状态
-			static UniquePtr<D3D12Core::PipelineState> build(const D3D12Core::Shader& cs);
-
-		private:
-
-			std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements;
-
-			D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsDesc;
-
-		};
+		PipelineStateBuilder& setPS(const D3D12Core::Shader& ps);
 
 		template<size_t N>
-		inline PipelineStateBuilder& PipelineStateBuilder::setRTVFormats(const DXGI_FORMAT(&rtvFormats)[N])
-		{
-			memcpy(graphicsDesc.RTVFormats, rtvFormats, sizeof(DXGI_FORMAT) * N);
+		PipelineStateBuilder& setRTVFormats(const DXGI_FORMAT(&rtvFormats)[N]);
 
-			graphicsDesc.NumRenderTargets = N;
+		PipelineStateBuilder& setRTVFormats();
 
-			return *this;
-		}
+		PipelineStateBuilder& setDSVFormat(const DXGI_FORMAT format);
 
 		template<size_t N>
-		inline PipelineStateBuilder& PipelineStateBuilder::setInputElements(const D3D12_INPUT_ELEMENT_DESC(&descs)[N])
-		{
-			inputElements = std::vector<D3D12_INPUT_ELEMENT_DESC>(descs, descs + N);
+		PipelineStateBuilder& setInputElements(const D3D12_INPUT_ELEMENT_DESC(&descs)[N]);
 
-			graphicsDesc.InputLayout = { inputElements.data(),static_cast<uint32_t>(inputElements.size()) };
+		PipelineStateBuilder& setPrimitiveTopologyType(const D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopologyType);
 
-			return *this;
-		}
+		PipelineStateBuilder& setBlendState(const D3D12_BLEND_DESC& desc);
+
+		PipelineStateBuilder& setRasterizerState(const D3D12_RASTERIZER_DESC& desc);
+
+		PipelineStateBuilder& setDepthStencilState(const D3D12_DEPTH_STENCIL_DESC& desc);
+
+		PipelineStateBuilder& setDefaultFullScreenState();
+
+		UniquePtr<D3D12Core::PipelineState> build();
+
+		//用于计算管线状态
+		static UniquePtr<D3D12Core::PipelineState> build(const D3D12Core::Shader& cs);
+
+	private:
+
+		std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements;
+
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsDesc;
+
+	};
+
+	template<size_t N>
+	inline PipelineStateBuilder& PipelineStateBuilder::setRTVFormats(const DXGI_FORMAT(&rtvFormats)[N])
+	{
+		memcpy(graphicsDesc.RTVFormats, rtvFormats, sizeof(DXGI_FORMAT) * N);
+
+		graphicsDesc.NumRenderTargets = N;
+
+		return *this;
+	}
+
+	template<size_t N>
+	inline PipelineStateBuilder& PipelineStateBuilder::setInputElements(const D3D12_INPUT_ELEMENT_DESC(&descs)[N])
+	{
+		inputElements = std::vector<D3D12_INPUT_ELEMENT_DESC>(descs, descs + N);
+
+		graphicsDesc.InputLayout = { inputElements.data(),static_cast<uint32_t>(inputElements.size()) };
+
+		return *this;
 	}
 }
 

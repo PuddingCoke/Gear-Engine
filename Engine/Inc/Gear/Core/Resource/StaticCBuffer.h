@@ -7,37 +7,31 @@
 
 #include"ImmutableCBuffer.h"
 
-namespace Gear
+namespace Gear::Core::Resource
 {
-	namespace Core
+	class StaticCBuffer :public ImmutableCBuffer
 	{
-		namespace Resource
+	public:
+
+		StaticCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent);
+
+		~StaticCBuffer();
+
+		struct UpdateStruct
 		{
-			class StaticCBuffer :public ImmutableCBuffer
-			{
-			public:
+			D3D12Resource::Buffer* const buffer;
+			D3D12Resource::UploadHeap* const uploadHeap;
+		};
 
-				StaticCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent);
+		UpdateStruct getUpdateStruct(const void* const data, const uint64_t size);
 
-				~StaticCBuffer();
+	private:
 
-				struct UpdateStruct
-				{
-					D3D12Resource::Buffer* const buffer;
-					D3D12Resource::UploadHeap* const uploadHeap;
-				};
-				
-				UpdateStruct getUpdateStruct(const void* const data, const uint64_t size);
+		D3D12Resource::UploadHeap** uploadHeaps;
 
-			private:
+		void** dataPtrs;
 
-				D3D12Resource::UploadHeap** uploadHeaps;
-
-				void** dataPtrs;
-
-			};
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_RESOURCE_STATICCBUFFER_H_

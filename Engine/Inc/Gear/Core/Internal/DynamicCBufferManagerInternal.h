@@ -5,22 +5,13 @@
 
 #include<Gear/Core/D3D12Core/CommandList.h>
 
-namespace Gear
+namespace Gear::Core::DynamicCBufferManager::Internal
 {
-	namespace Core
-	{
-		namespace DynamicCBufferManager
-		{
-			namespace Internal
-			{
-				void initialize();
+	void initialize();
 
-				void release();
+	void release();
 
-				void recordCommands(D3D12Core::CommandList* const commandList);
-			}
-		}
-	}
+	void recordCommands(D3D12Core::CommandList* const commandList);
 }
 
 #endif // !_GEAR_CORE_DYNAMICCBUFFERMANAGER_INTERNAL_H_

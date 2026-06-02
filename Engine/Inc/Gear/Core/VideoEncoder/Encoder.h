@@ -13,68 +13,62 @@
 
 #include<chrono>
 
-namespace Gear
+namespace Gear::Core::VideoEncoder
 {
-	namespace Core
+	class Encoder
 	{
-		namespace VideoEncoder
+	public:
+
+		enum class OutputVideoFormat
 		{
-			class Encoder
-			{
-			public:
+			H264, HEVC, AV1
+		};
 
-				enum class OutputVideoFormat
-				{
-					H264, HEVC, AV1
-				};
+		Encoder() = delete;
 
-				Encoder() = delete;
+		Encoder(const Encoder&) = delete;
 
-				Encoder(const Encoder&) = delete;
+		void operator=(const Encoder&) = delete;
 
-				void operator=(const Encoder&) = delete;
+		Encoder(const uint32_t frameToEncode, const OutputVideoFormat format);
 
-				Encoder(const uint32_t frameToEncode, const OutputVideoFormat format);
+		virtual ~Encoder();
 
-				virtual ~Encoder();
+		virtual bool encode(Resource::D3D12Resource::Texture* const inputTexture) = 0;
 
-				virtual bool encode(Resource::D3D12Resource::Texture* const inputTexture) = 0;
+		static constexpr uint32_t frameRate = 60;
 
-				static constexpr uint32_t frameRate = 60;
+	protected:
 
-			protected:
+		//封装比特流
+		bool writeFrame(const void* const bitstreamPtr, const uint32_t bitstreamSize, const bool cleanPoint);
 
-				//封装比特流
-				bool writeFrame(const void* const bitstreamPtr, const uint32_t bitstreamSize, const bool cleanPoint);
+	private:
 
-			private:
+		void displayProgress() const;
 
-				void displayProgress() const;
+		//不要修改这个值
+		static constexpr uint32_t progressBarWidth = 32;
 
-				//不要修改这个值
-				static constexpr uint32_t progressBarWidth = 32;
+		uint32_t frameEncoded;
 
-				uint32_t frameEncoded;
+		const uint32_t frameToEncode;
 
-				const uint32_t frameToEncode;
+		std::chrono::steady_clock::time_point startPoint;
 
-				std::chrono::steady_clock::time_point startPoint;
+		std::chrono::steady_clock::time_point endPoint;
 
-				std::chrono::steady_clock::time_point endPoint;
+		float encodeTime;
 
-				float encodeTime;
+		ComPtr<IMFSinkWriter> sinkWriter;
 
-				ComPtr<IMFSinkWriter> sinkWriter;
+		DWORD streamIndex;
 
-				DWORD streamIndex;
+		const LONGLONG sampleDuration;
 
-				const LONGLONG sampleDuration;
+		LONGLONG sampleTime;
 
-				LONGLONG sampleTime;
-
-			};
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_VIDEOENCODER_ENCODER_H_

@@ -5,18 +5,9 @@
 
 #include"GlobalEffectHeader.h"
 
-namespace Gear
+namespace Gear::Core::GlobalEffect::HDRClampEffect
 {
-	namespace Core
-	{
-		namespace GlobalEffect
-		{
-			namespace HDRClampEffect
-			{
-				void process(GraphicsContext* const context, Resource::TextureRenderView& inOutTexture);
-			}
-		}
-	}
+	void process(GraphicsContext* const context, Resource::TextureRenderView& inOutTexture);
 }
 
 #endif // !_GEAR_CORE_GLOBALCEFFECT_HDRCLAMPEFFECT_H_

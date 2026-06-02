@@ -4,12 +4,12 @@
 
 #include<Gear/Utils/File.h>
 
-namespace
+namespace Gear::Core::D3D12Core::DXCCompiler::Internal
 {
 	class DXCCompilerImpl
 	{
 	public:
-		
+
 		DXCCompilerImpl(const DXCCompilerImpl&) = delete;
 
 		void operator=(const DXCCompilerImpl&) = delete;
@@ -19,7 +19,7 @@ namespace
 		~DXCCompilerImpl();
 
 		//hlsl
-		ComPtr<IDxcBlob> compile(const std::wstring& filePath, const Gear::Core::D3D12Core::DXCCompiler::ShaderProfile profile) const;
+		ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderProfile profile) const;
 
 		//cso
 		ComPtr<IDxcBlob> read(const std::wstring& filePath) const;
@@ -34,94 +34,99 @@ namespace
 
 		ComPtr<IDxcIncludeHandler> dxcIncludeHanlder;
 
-	}*impl = nullptr;
-}
+	};
 
-DXCCompilerImpl::DXCCompilerImpl()
-{
-	CHECKERROR(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
-
-	CHECKERROR(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils)));
-
-	CHECKERROR(dxcUtils->CreateDefaultIncludeHandler(&dxcIncludeHanlder));
-}
-
-DXCCompilerImpl::~DXCCompilerImpl()
-{
-
-}
-
-ComPtr<IDxcBlob> DXCCompilerImpl::compile(const std::wstring& filePath, const Gear::Core::D3D12Core::DXCCompiler::ShaderProfile profile) const
-{
-	const std::vector<uint8_t> bytes = Gear::Utils::File::readAllBinary(filePath);
-
-	ComPtr<IDxcBlobEncoding> textBlob;
-
-	CHECKERROR(dxcUtils->CreateBlobFromPinned(bytes.data(), static_cast<uint32_t>(bytes.size()), codePage, &textBlob));
-
-	DxcBuffer source = {};
-	source.Ptr = textBlob->GetBufferPointer();
-	source.Size = textBlob->GetBufferSize();
-	source.Encoding = codePage;
-
-	ComPtr<IDxcCompilerArgs> args;
-
-	switch (profile)
+	DXCCompilerImpl::DXCCompilerImpl()
 	{
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::VERTEX:
-		dxcUtils->BuildArguments(filePath.c_str(), L"main", L"vs_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::HULL:
-		dxcUtils->BuildArguments(filePath.c_str(), L"main", L"hs_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::DOMAIN:
-		dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ds_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::GEOMETRY:
-		dxcUtils->BuildArguments(filePath.c_str(), L"main", L"gs_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::PIXEL:
-		dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ps_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::AMPLIFICATION:
-		dxcUtils->BuildArguments(filePath.c_str(), L"main", L"as_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::MESH:
-		dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ms_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::COMPUTE:
-		dxcUtils->BuildArguments(filePath.c_str(), L"main", L"cs_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	case Gear::Core::D3D12Core::DXCCompiler::ShaderProfile::LIBRARY:
-		dxcUtils->BuildArguments(filePath.c_str(), L"", L"lib_6_6", nullptr, 0, nullptr, 0, &args);
-		break;
-	default:
-		LOGERROR(L"not supported shader profile");
-		break;
+		CHECKERROR(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
+
+		CHECKERROR(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils)));
+
+		CHECKERROR(dxcUtils->CreateDefaultIncludeHandler(&dxcIncludeHanlder));
 	}
 
-	ComPtr<IDxcOperationResult> result;
+	DXCCompilerImpl::~DXCCompilerImpl()
+	{
 
-	CHECKERROR(dxcCompiler->Compile(&source, args->GetArguments(), args->GetCount(), dxcIncludeHanlder.Get(), IID_PPV_ARGS(&result)));
+	}
 
-	ComPtr<IDxcBlob> shaderBlob;
+	ComPtr<IDxcBlob> DXCCompilerImpl::compile(const std::wstring& filePath, const ShaderProfile profile) const
+	{
+		const std::vector<uint8_t> bytes = Gear::Utils::File::readAllBinary(filePath);
 
-	CHECKERROR(result->GetResult(&shaderBlob));
+		ComPtr<IDxcBlobEncoding> textBlob;
 
-	return shaderBlob;
+		CHECKERROR(dxcUtils->CreateBlobFromPinned(bytes.data(), static_cast<uint32_t>(bytes.size()), codePage, &textBlob));
+
+		DxcBuffer source = {};
+		source.Ptr = textBlob->GetBufferPointer();
+		source.Size = textBlob->GetBufferSize();
+		source.Encoding = codePage;
+
+		ComPtr<IDxcCompilerArgs> args;
+
+		switch (profile)
+		{
+		case ShaderProfile::VERTEX:
+			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"vs_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		case ShaderProfile::HULL:
+			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"hs_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		case ShaderProfile::DOMAIN:
+			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ds_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		case ShaderProfile::GEOMETRY:
+			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"gs_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		case ShaderProfile::PIXEL:
+			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ps_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		case ShaderProfile::AMPLIFICATION:
+			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"as_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		case ShaderProfile::MESH:
+			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ms_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		case ShaderProfile::COMPUTE:
+			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"cs_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		case ShaderProfile::LIBRARY:
+			dxcUtils->BuildArguments(filePath.c_str(), L"", L"lib_6_6", nullptr, 0, nullptr, 0, &args);
+			break;
+		default:
+			LOGERROR(L"not supported shader profile");
+			break;
+		}
+
+		ComPtr<IDxcOperationResult> result;
+
+		CHECKERROR(dxcCompiler->Compile(&source, args->GetArguments(), args->GetCount(), dxcIncludeHanlder.Get(), IID_PPV_ARGS(&result)));
+
+		ComPtr<IDxcBlob> shaderBlob;
+
+		CHECKERROR(result->GetResult(&shaderBlob));
+
+		return shaderBlob;
+	}
+
+	ComPtr<IDxcBlob> DXCCompilerImpl::read(const std::wstring& filePath) const
+	{
+		const std::vector<uint8_t> bytes = Gear::Utils::File::readAllBinary(filePath);
+
+		ComPtr<IDxcBlobEncoding> textBlob;
+
+		CHECKERROR(dxcUtils->CreateBlob(bytes.data(), static_cast<uint32_t>(bytes.size()), CP_NONE, &textBlob));
+
+		ComPtr<IDxcBlob> shaderBlob = textBlob;
+
+		return shaderBlob;
+	}
 }
 
-ComPtr<IDxcBlob> DXCCompilerImpl::read(const std::wstring& filePath) const
+namespace
 {
-	const std::vector<uint8_t> bytes = Gear::Utils::File::readAllBinary(filePath);
-
-	ComPtr<IDxcBlobEncoding> textBlob;
-
-	CHECKERROR(dxcUtils->CreateBlob(bytes.data(), static_cast<uint32_t>(bytes.size()), CP_NONE, &textBlob));
-
-	ComPtr<IDxcBlob> shaderBlob = textBlob;
-
-	return shaderBlob;
+	UniquePtr<Gear::Core::D3D12Core::DXCCompiler::Internal::DXCCompilerImpl> impl;
 }
 
 ComPtr<IDxcBlob> Gear::Core::D3D12Core::DXCCompiler::compile(const std::wstring& filePath, const ShaderProfile profile)
@@ -136,13 +141,10 @@ ComPtr<IDxcBlob> Gear::Core::D3D12Core::DXCCompiler::read(const std::wstring& fi
 
 void Gear::Core::D3D12Core::DXCCompiler::Internal::initialize()
 {
-	impl = new DXCCompilerImpl();
+	impl = makeUnique<DXCCompilerImpl>();
 }
 
 void Gear::Core::D3D12Core::DXCCompiler::Internal::release()
 {
-	if (impl)
-	{
-		delete impl;
-	}
+	impl.reset();
 }

@@ -15,45 +15,39 @@
 
 #include<ImGUI/imgui.h>
 
-namespace Gear
+namespace Gear::Core::Effect
 {
-	namespace Core
+	class EffectBase
 	{
-		namespace Effect
-		{
-			class EffectBase
-			{
-			public:
+	public:
 
-				EffectBase() = delete;
+		EffectBase() = delete;
 
-				EffectBase(const EffectBase&) = delete;
+		EffectBase(const EffectBase&) = delete;
 
-				void operator=(const EffectBase&) = delete;
+		void operator=(const EffectBase&) = delete;
 
-				EffectBase(GraphicsContext* const context, const uint32_t width, const uint32_t height, const DXGI_FORMAT format);
+		EffectBase(GraphicsContext* const context, const uint32_t width, const uint32_t height, const DXGI_FORMAT format);
 
-				EffectBase(GraphicsContext* const context, const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube,
-					const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
+		EffectBase(GraphicsContext* const context, const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube,
+			const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
 
-				virtual ~EffectBase();
+		virtual ~EffectBase();
 
-				virtual void imGUICall() = 0;
+		virtual void imGUICall() = 0;
 
-			protected:
+	protected:
 
-				UniquePtr<Resource::TextureRenderView> outputTexture;
+		UniquePtr<Resource::TextureRenderView> outputTexture;
 
-				//引用
-				GraphicsContext* const context;
+		//引用
+		GraphicsContext* const context;
 
-				const uint32_t width;
+		const uint32_t width;
 
-				const uint32_t height;
+		const uint32_t height;
 
-			};
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_EFFECT_EFFECTBASE_H_

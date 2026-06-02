@@ -7,62 +7,59 @@
 
 #include<Gear/Core/ResourceManager.h>
 
-namespace Gear
+namespace Gear::Core
 {
-	namespace Core
+	class RenderTask
 	{
-		class RenderTask
-		{
-		public:
+	public:
 
-			RenderTask(const RenderTask&) = delete;
+		RenderTask(const RenderTask&) = delete;
 
-			void operator=(const RenderTask&) = delete;
+		void operator=(const RenderTask&) = delete;
 
-			RenderTask();
+		RenderTask();
 
-			virtual ~RenderTask();
+		virtual ~RenderTask();
 
-			void beginTask();
+		void beginTask();
 
-			bool waitTask();
+		bool waitTask();
 
-			D3D12Core::CommandList* getCommandList() const;
+		D3D12Core::CommandList* getCommandList() const;
 
-			virtual void imGUICall();
+		virtual void imGUICall();
 
-		protected:
+	protected:
 
-			//把纹理绘制到后备缓冲上
-			void blit(Resource::TextureRenderView& texture) const;
+		//把纹理绘制到后备缓冲上
+		void blit(Resource::TextureRenderView& texture) const;
 
-			virtual void recordCommand() = 0;
+		virtual void recordCommand() = 0;
 
-			ResourceManager* const resManager;
+		ResourceManager* const resManager;
 
-			//引用
-			GraphicsContext* const context;
+		//引用
+		GraphicsContext* const context;
 
-		private:
+	private:
 
-			friend class RenderThread;
+		friend class RenderThread;
 
-			void workerLoop();
+		void workerLoop();
 
-			bool taskCompleted;
+		bool taskCompleted;
 
-			bool errorOccur;
+		bool errorOccur;
 
-			bool isRunning;
+		bool isRunning;
 
-			std::mutex taskMutex;
+		std::mutex taskMutex;
 
-			std::condition_variable taskCondition;
+		std::condition_variable taskCondition;
 
-			RenderThread* renderThread;
+		RenderThread* renderThread;
 
-		};
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_RENDERTASK_H_

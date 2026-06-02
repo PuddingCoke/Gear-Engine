@@ -7,37 +7,28 @@
 
 #include<dxccompiler/dxcapi.h>
 
-namespace Gear
+namespace Gear::Core::D3D12Core::DXCCompiler
 {
-	namespace Core
+
+	enum class ShaderProfile
 	{
-		namespace D3D12Core
-		{
-			namespace DXCCompiler
-			{
+		VERTEX,
+		HULL,
+		DOMAIN,
+		GEOMETRY,
+		PIXEL,
+		AMPLIFICATION,
+		MESH,
+		COMPUTE,
+		LIBRARY
+	};
 
-				enum class ShaderProfile
-				{
-					VERTEX,
-					HULL,
-					DOMAIN,
-					GEOMETRY,
-					PIXEL,
-					AMPLIFICATION,
-					MESH,
-					COMPUTE,
-					LIBRARY
-				};
+	//hlsl
+	ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderProfile profile);
 
-				//hlsl
-				ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderProfile profile);
+	//cso
+	ComPtr<IDxcBlob> read(const std::wstring& filePath);
 
-				//cso
-				ComPtr<IDxcBlob> read(const std::wstring& filePath);
-
-			}
-		}
-	}
 }
 
 #endif // !_GEAR_CORE_D3D12CORE_DXCCOMPILER_H_
