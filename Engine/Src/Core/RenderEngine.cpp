@@ -190,7 +190,6 @@ namespace Gear::Core::RenderEngine::Internal
 		//初始化图形设备后创建命令队列
 		{
 			D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-			queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 			queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 			queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT;
 
