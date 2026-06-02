@@ -32,17 +32,17 @@
 
 namespace
 {
-	class GearPrivate
+	class GearImpl
 	{
 	public:
 
-		GearPrivate(const GearPrivate&) = delete;
+		GearImpl(const GearImpl&) = delete;
 
-		void operator=(const GearPrivate&) = delete;
+		void operator=(const GearImpl&) = delete;
 
-		GearPrivate();
+		GearImpl();
 
-		~GearPrivate();
+		~GearImpl();
 
 		int32_t iniEngine(const Gear::InitializationParam& param, const int32_t argc, const wchar_t* argv[]);
 
@@ -74,16 +74,16 @@ namespace
 
 		static constexpr Gear::Input::Keyboard::Key screenGrabKey = Gear::Input::Keyboard::F11;
 
-	}*pvt = nullptr;
+	}*impl = nullptr;
 }
 
-GearPrivate::GearPrivate() :
+GearImpl::GearImpl() :
 	game(nullptr), backBufferHeap(nullptr)
 {
 
 }
 
-GearPrivate::~GearPrivate()
+GearImpl::~GearImpl()
 {
 	LOGENGINE(L"destroy resources");
 
@@ -114,7 +114,7 @@ GearPrivate::~GearPrivate()
 #endif // _DEBUG
 }
 
-int32_t GearPrivate::iniEngine(const Gear::InitializationParam& param, const int32_t argc, const wchar_t* argv[])
+int32_t GearImpl::iniEngine(const Gear::InitializationParam& param, const int32_t argc, const wchar_t* argv[])
 {
 	Gear::Utils::Logger::Internal::initialize();
 
@@ -188,7 +188,7 @@ int32_t GearPrivate::iniEngine(const Gear::InitializationParam& param, const int
 	return 0;
 }
 
-void GearPrivate::iniGame(Gear::Game* const gamePtr)
+void GearImpl::iniGame(Gear::Game* const gamePtr)
 {
 	game = gamePtr;
 
@@ -213,7 +213,7 @@ void GearPrivate::iniGame(Gear::Game* const gamePtr)
 	}
 }
 
-void GearPrivate::runRealTimeRender()
+void GearImpl::runRealTimeRender()
 {
 	Gear::Utils::DeltaTimeEstimator dtEstimator;
 
@@ -289,7 +289,7 @@ void GearPrivate::runRealTimeRender()
 	}
 }
 
-void GearPrivate::runVideoRender()
+void GearImpl::runVideoRender()
 {
 	const Gear::Core::GPUVendor vendor = Gear::Core::RenderEngine::getVendor();
 
@@ -381,7 +381,7 @@ void GearPrivate::runVideoRender()
 	}
 }
 
-void GearPrivate::runWallpaper()
+void GearImpl::runWallpaper()
 {
 	Gear::Utils::DeltaTimeEstimator dtEstimator;
 
@@ -415,7 +415,7 @@ void GearPrivate::runWallpaper()
 	}
 }
 
-void GearPrivate::reportLiveObjects() const
+void GearImpl::reportLiveObjects() const
 {
 	ComPtr<IDXGIDebug1> dxgiDebug;
 
@@ -431,24 +431,24 @@ void GearPrivate::reportLiveObjects() const
 
 int32_t Gear::iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
 {
-	return pvt->iniEngine(param, argc, argv);
+	return impl->iniEngine(param, argc, argv);
 }
 
 void Gear::iniGame(Game* const gamePtr)
 {
-	pvt->iniGame(gamePtr);
+	impl->iniGame(gamePtr);
 }
 
 void Gear::initialize()
 {
-	pvt = new GearPrivate();
+	impl = new GearImpl();
 }
 
 void Gear::release()
 {
-	if (pvt)
+	if (impl)
 	{
-		delete pvt;
+		delete impl;
 	}
 }
 

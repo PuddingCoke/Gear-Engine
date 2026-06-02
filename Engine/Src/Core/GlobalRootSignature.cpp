@@ -4,7 +4,7 @@
 
 namespace
 {
-	struct GlobalRootSignaturePrivate
+	struct GlobalRootSignatureImpl
 	{
 
 		//用于使用顶点和像素着色器的时候
@@ -22,32 +22,32 @@ namespace
 		//用于使用计算着色器的时候
 		Gear::Core::D3D12Core::RootSignature* computeShaderRootSignature = nullptr;
 
-	}pvt;
+	}impl;
 }
 
 const Gear::Core::D3D12Core::RootSignature* Gear::Core::GlobalRootSignature::getBasicShaderRootSignature()
 {
-	return pvt.basicShaderRootSignature;
+	return impl.basicShaderRootSignature;
 }
 
 const Gear::Core::D3D12Core::RootSignature* Gear::Core::GlobalRootSignature::getTessellationRootSignature()
 {
-	return pvt.tessellationRootSignature;
+	return impl.tessellationRootSignature;
 }
 
 const Gear::Core::D3D12Core::RootSignature* Gear::Core::GlobalRootSignature::getGeometryShaderRootSignature()
 {
-	return pvt.geometryShaderRootSignature;
+	return impl.geometryShaderRootSignature;
 }
 
 const Gear::Core::D3D12Core::RootSignature* Gear::Core::GlobalRootSignature::getAllGraphicsShaderRootSignature()
 {
-	return pvt.allGraphicsShaderRootSignature;
+	return impl.allGraphicsShaderRootSignature;
 }
 
 const Gear::Core::D3D12Core::RootSignature* Gear::Core::GlobalRootSignature::getComputeShaderRootSignature()
 {
-	return pvt.computeShaderRootSignature;
+	return impl.computeShaderRootSignature;
 }
 
 void Gear::Core::GlobalRootSignature::Internal::initialize()
@@ -135,7 +135,7 @@ void Gear::Core::GlobalRootSignature::Internal::initialize()
 	}
 
 	//总计 48 DWORDS
-	pvt.basicShaderRootSignature = new D3D12Core::RootSignature(8u, 0u, 0u, 0u, 32u, 0u, samplerDesc, _countof(samplerDesc),
+	impl.basicShaderRootSignature = new D3D12Core::RootSignature(8u, 0u, 0u, 0u, 32u, 0u, samplerDesc, _countof(samplerDesc),
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
@@ -145,12 +145,12 @@ void Gear::Core::GlobalRootSignature::Internal::initialize()
 		D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
 		D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
-	pvt.basicShaderRootSignature->get()->SetName(L"Basic Shader Root Signature");
+	impl.basicShaderRootSignature->get()->SetName(L"Basic Shader Root Signature");
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"basic shader root signature", LogColor::defaultColor, L"succeeded");
 
 	//总计 56 DWORDS
-	pvt.tessellationRootSignature = new D3D12Core::RootSignature(4u, 4u, 12u, 0u, 24u, 0u, samplerDesc, _countof(samplerDesc),
+	impl.tessellationRootSignature = new D3D12Core::RootSignature(4u, 4u, 12u, 0u, 24u, 0u, samplerDesc, _countof(samplerDesc),
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
@@ -158,12 +158,12 @@ void Gear::Core::GlobalRootSignature::Internal::initialize()
 		D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
 		D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
-	pvt.tessellationRootSignature->get()->SetName(L"Tessellation Root Signature");
+	impl.tessellationRootSignature->get()->SetName(L"Tessellation Root Signature");
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"tessellation root signature", LogColor::defaultColor, L"succeeded");
 
 	//总计 54 DWORDS
-	pvt.geometryShaderRootSignature = new D3D12Core::RootSignature(8u, 0u, 0u, 8u, 28u, 0u, samplerDesc, _countof(samplerDesc),
+	impl.geometryShaderRootSignature = new D3D12Core::RootSignature(8u, 0u, 0u, 8u, 28u, 0u, samplerDesc, _countof(samplerDesc),
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
@@ -172,56 +172,56 @@ void Gear::Core::GlobalRootSignature::Internal::initialize()
 		D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
 		D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
-	pvt.geometryShaderRootSignature->get()->SetName(L"Geometry Shader Root Signature");
+	impl.geometryShaderRootSignature->get()->SetName(L"Geometry Shader Root Signature");
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"geometry shader root signature", LogColor::defaultColor, L"succeeded");
 
 	//总计 58 DWORDS
-	pvt.allGraphicsShaderRootSignature = new D3D12Core::RootSignature(4u, 4u, 8u, 4u, 24u, 0u, samplerDesc, _countof(samplerDesc),
+	impl.allGraphicsShaderRootSignature = new D3D12Core::RootSignature(4u, 4u, 8u, 4u, 24u, 0u, samplerDesc, _countof(samplerDesc),
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
 		D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
-	pvt.allGraphicsShaderRootSignature->get()->SetName(L"All Graphics Shader Root Signature");
+	impl.allGraphicsShaderRootSignature->get()->SetName(L"All Graphics Shader Root Signature");
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"all shader root signature", LogColor::defaultColor, L"succeeded");
 
 	//总计 38 DWORDS
-	pvt.computeShaderRootSignature = new D3D12Core::RootSignature(0u, 0u, 0u, 0u, 0u, 32u, samplerDesc, _countof(samplerDesc),
+	impl.computeShaderRootSignature = new D3D12Core::RootSignature(0u, 0u, 0u, 0u, 0u, 32u, samplerDesc, _countof(samplerDesc),
 		D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
 		D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
-	pvt.computeShaderRootSignature->get()->SetName(L"Compute Shader Root Signature");
+	impl.computeShaderRootSignature->get()->SetName(L"Compute Shader Root Signature");
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"compute shader root signature", LogColor::defaultColor, L"succeeded");
 }
 
 void Gear::Core::GlobalRootSignature::Internal::release()
 {
-	if (pvt.basicShaderRootSignature)
+	if (impl.basicShaderRootSignature)
 	{
-		delete pvt.basicShaderRootSignature;
+		delete impl.basicShaderRootSignature;
 	}
 
-	if (pvt.tessellationRootSignature)
+	if (impl.tessellationRootSignature)
 	{
-		delete pvt.tessellationRootSignature;
+		delete impl.tessellationRootSignature;
 	}
 
-	if (pvt.geometryShaderRootSignature)
+	if (impl.geometryShaderRootSignature)
 	{
-		delete pvt.geometryShaderRootSignature;
+		delete impl.geometryShaderRootSignature;
 	}
 
-	if (pvt.allGraphicsShaderRootSignature)
+	if (impl.allGraphicsShaderRootSignature)
 	{
-		delete pvt.allGraphicsShaderRootSignature;
+		delete impl.allGraphicsShaderRootSignature;
 	}
 
-	if (pvt.computeShaderRootSignature)
+	if (impl.computeShaderRootSignature)
 	{
-		delete pvt.computeShaderRootSignature;
+		delete impl.computeShaderRootSignature;
 	}
 }

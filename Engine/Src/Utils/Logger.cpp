@@ -14,15 +14,15 @@
 
 namespace
 {
-	class LoggerPrivate
+	class LoggerImpl
 	{
 	public:
 
-		LoggerPrivate(const LoggerPrivate&) = delete;
+		LoggerImpl(const LoggerImpl&) = delete;
 
-		void operator=(const LoggerPrivate&) = delete;
+		void operator=(const LoggerImpl&) = delete;
 
-		LoggerPrivate() :
+		LoggerImpl() :
 			isRunning(true)
 		{
 			//为了支持多语言
@@ -34,10 +34,10 @@ namespace
 
 			file = std::wofstream(L"log.txt", std::ios_base::out | std::ios_base::trunc);
 
-			worker = std::thread(&LoggerPrivate::workerLoop, this);
+			worker = std::thread(&LoggerImpl::workerLoop, this);
 		}
 
-		~LoggerPrivate()
+		~LoggerImpl()
 		{
 			shutdown();
 
@@ -167,24 +167,24 @@ namespace
 			}
 		}
 
-	}*pvt = nullptr;
+	}*impl = nullptr;
 
 }
 
 void Gear::Utils::Logger::submitLogMessage(const LogMessage& msg)
 {
-	pvt->submitLogMessage(msg);
+	impl->submitLogMessage(msg);
 }
 
 void Gear::Utils::Logger::Internal::initialize()
 {
-	pvt = new LoggerPrivate();
+	impl = new LoggerImpl();
 }
 
 void Gear::Utils::Logger::Internal::release()
 {
-	if (pvt)
+	if (impl)
 	{
-		delete pvt;
+		delete impl;
 	}
 }

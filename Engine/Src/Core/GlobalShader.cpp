@@ -10,7 +10,7 @@
 
 namespace
 {
-	struct GlobalShaderPrivate
+	struct GlobalShaderImpl
 	{
 
 		UniquePtr<Gear::Core::D3D12Core::Shader> fullScreenVS;
@@ -19,38 +19,38 @@ namespace
 
 		UniquePtr<Gear::Core::D3D12Core::Shader> textureCubeVS;
 
-	}pvt;
+	}impl;
 }
 
 const Gear::Core::D3D12Core::Shader& Gear::Core::GlobalShader::getFullScreenVS()
 {
-	return *pvt.fullScreenVS;
+	return *impl.fullScreenVS;
 }
 
 const Gear::Core::D3D12Core::Shader& Gear::Core::GlobalShader::getFullScreenPS()
 {
-	return *pvt.fullScreenPS;
+	return *impl.fullScreenPS;
 }
 
 const Gear::Core::D3D12Core::Shader& Gear::Core::GlobalShader::getTextureCubeVS()
 {
-	return *pvt.textureCubeVS;
+	return *impl.textureCubeVS;
 }
 
 void Gear::Core::GlobalShader::Internal::initialize()
 {
-	pvt.fullScreenVS = D3D12Core::Shader::create(g_FullScreenVSBytes, sizeof(g_FullScreenVSBytes));
+	impl.fullScreenVS = D3D12Core::Shader::create(g_FullScreenVSBytes, sizeof(g_FullScreenVSBytes));
 
-	pvt.fullScreenPS = D3D12Core::Shader::create(g_FullScreenPSBytes, sizeof(g_FullScreenPSBytes));
+	impl.fullScreenPS = D3D12Core::Shader::create(g_FullScreenPSBytes, sizeof(g_FullScreenPSBytes));
 
-	pvt.textureCubeVS = D3D12Core::Shader::create(g_TextureCubeVSBytes, sizeof(g_TextureCubeVSBytes));
+	impl.textureCubeVS = D3D12Core::Shader::create(g_TextureCubeVSBytes, sizeof(g_TextureCubeVSBytes));
 }
 
 void Gear::Core::GlobalShader::Internal::release()
 {
-	pvt.fullScreenVS.reset();
+	impl.fullScreenVS.reset();
 
-	pvt.fullScreenPS.reset();
+	impl.fullScreenPS.reset();
 
-	pvt.textureCubeVS.reset();
+	impl.textureCubeVS.reset();
 }

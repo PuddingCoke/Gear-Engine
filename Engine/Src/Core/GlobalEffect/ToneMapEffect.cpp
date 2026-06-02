@@ -8,23 +8,23 @@
 
 namespace
 {
-	struct ToneMapEffectPrivate
+	struct ToneMapEffectImpl
 	{
 		UniquePtr<Gear::Core::D3D12Core::Shader> toneMapCS;
 
 		UniquePtr<Gear::Core::D3D12Core::PipelineState> toneMapState;
 
 		UniquePtr<Gear::Core::Resource::TextureRenderView> outputTexture;
-	} pvt;
+	} impl;
 
 	constexpr DXGI_FORMAT outputTextureFormat = Gear::Core::FMT::RGBA16UN;
 }
 
 Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::ToneMapEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
 {
-	context->setPipelineState(*pvt.toneMapState);
+	context->setPipelineState(*impl.toneMapState);
 
-	context->setCSConstants({ inputTexture.getSRVMipIndex(0),pvt.outputTexture->getUAVMipIndex(0) }, 0);
+	context->setCSConstants({ inputTexture.getSRVMipIndex(0),impl.outputTexture->getUAVMipIndex(0) }, 0);
 
 	const float exposure = Graphics::getExposure();
 
@@ -32,30 +32,30 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::ToneMapEffect
 
 	context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
 
-	context->uavBarrier({ pvt.outputTexture->getTexture() });
+	context->uavBarrier({ impl.outputTexture->getTexture() });
 
-	return pvt.outputTexture.get();
+	return impl.outputTexture.get();
 }
 
 void Gear::Core::GlobalEffect::ToneMapEffect::Internal::initialize()
 {
-	pvt.toneMapCS = D3D12Core::Shader::create(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes));
+	impl.toneMapCS = D3D12Core::Shader::create(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes));
 
-	pvt.toneMapState = PipelineStateBuilder::build(*pvt.toneMapCS);
+	impl.toneMapState = PipelineStateBuilder::build(*impl.toneMapCS);
 
-	pvt.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
+	impl.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
 		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
 
-	pvt.outputTexture->getTexture()->setName(L"Tone Mapped Texture");
+	impl.outputTexture->getTexture()->setName(L"Tone Mapped Texture");
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"ToneMapEffect", LogColor::defaultColor, L"succeeded");
 }
 
 void Gear::Core::GlobalEffect::ToneMapEffect::Internal::release()
 {
-	pvt.outputTexture.reset();
+	impl.outputTexture.reset();
 
-	pvt.toneMapState.reset();
+	impl.toneMapState.reset();
 
-	pvt.toneMapCS.reset();
+	impl.toneMapCS.reset();
 }

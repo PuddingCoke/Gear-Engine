@@ -6,17 +6,17 @@
 
 namespace
 {
-	class DXCCompilerPrivate
+	class DXCCompilerImpl
 	{
 	public:
 		
-		DXCCompilerPrivate(const DXCCompilerPrivate&) = delete;
+		DXCCompilerImpl(const DXCCompilerImpl&) = delete;
 
-		void operator=(const DXCCompilerPrivate&) = delete;
+		void operator=(const DXCCompilerImpl&) = delete;
 
-		DXCCompilerPrivate();
+		DXCCompilerImpl();
 
-		~DXCCompilerPrivate();
+		~DXCCompilerImpl();
 
 		//hlsl
 		ComPtr<IDxcBlob> compile(const std::wstring& filePath, const Gear::Core::D3D12Core::DXCCompiler::ShaderProfile profile) const;
@@ -34,10 +34,10 @@ namespace
 
 		ComPtr<IDxcIncludeHandler> dxcIncludeHanlder;
 
-	}*pvt = nullptr;
+	}*impl = nullptr;
 }
 
-DXCCompilerPrivate::DXCCompilerPrivate()
+DXCCompilerImpl::DXCCompilerImpl()
 {
 	CHECKERROR(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
 
@@ -46,12 +46,12 @@ DXCCompilerPrivate::DXCCompilerPrivate()
 	CHECKERROR(dxcUtils->CreateDefaultIncludeHandler(&dxcIncludeHanlder));
 }
 
-DXCCompilerPrivate::~DXCCompilerPrivate()
+DXCCompilerImpl::~DXCCompilerImpl()
 {
 
 }
 
-ComPtr<IDxcBlob> DXCCompilerPrivate::compile(const std::wstring& filePath, const Gear::Core::D3D12Core::DXCCompiler::ShaderProfile profile) const
+ComPtr<IDxcBlob> DXCCompilerImpl::compile(const std::wstring& filePath, const Gear::Core::D3D12Core::DXCCompiler::ShaderProfile profile) const
 {
 	const std::vector<uint8_t> bytes = Gear::Utils::File::readAllBinary(filePath);
 
@@ -111,7 +111,7 @@ ComPtr<IDxcBlob> DXCCompilerPrivate::compile(const std::wstring& filePath, const
 	return shaderBlob;
 }
 
-ComPtr<IDxcBlob> DXCCompilerPrivate::read(const std::wstring& filePath) const
+ComPtr<IDxcBlob> DXCCompilerImpl::read(const std::wstring& filePath) const
 {
 	const std::vector<uint8_t> bytes = Gear::Utils::File::readAllBinary(filePath);
 
@@ -126,23 +126,23 @@ ComPtr<IDxcBlob> DXCCompilerPrivate::read(const std::wstring& filePath) const
 
 ComPtr<IDxcBlob> Gear::Core::D3D12Core::DXCCompiler::compile(const std::wstring& filePath, const ShaderProfile profile)
 {
-	return pvt->compile(filePath, profile);
+	return impl->compile(filePath, profile);
 }
 
 ComPtr<IDxcBlob> Gear::Core::D3D12Core::DXCCompiler::read(const std::wstring& filePath)
 {
-	return pvt->read(filePath);
+	return impl->read(filePath);
 }
 
 void Gear::Core::D3D12Core::DXCCompiler::Internal::initialize()
 {
-	pvt = new DXCCompilerPrivate();
+	impl = new DXCCompilerImpl();
 }
 
 void Gear::Core::D3D12Core::DXCCompiler::Internal::release()
 {
-	if (pvt)
+	if (impl)
 	{
-		delete pvt;
+		delete impl;
 	}
 }

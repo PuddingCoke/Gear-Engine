@@ -10,7 +10,7 @@
 
 namespace
 {
-	struct LatLongMapToCubeMapEffectPrivate
+	struct LatLongMapToCubeMapEffectImpl
 	{
 
 		UniquePtr<Gear::Core::D3D12Core::Shader> equirectangularVS;
@@ -25,7 +25,7 @@ namespace
 
 		UniquePtr<Gear::Core::Resource::ImmutableCBuffer> matricesBuffer;
 
-	}pvt;
+	}impl;
 }
 
 void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture, Resource::TextureRenderView& outputTexture)
@@ -33,13 +33,13 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContex
 	switch (outputTexture.getTexture()->getFormat())
 	{
 	case FMT::RGBA8UN:
-		context->setPipelineState(*pvt.equirectangularR8State);
+		context->setPipelineState(*impl.equirectangularR8State);
 		break;
 	case FMT::RGBA16F:
-		context->setPipelineState(*pvt.equirectangularR16State);
+		context->setPipelineState(*impl.equirectangularR16State);
 		break;
 	case FMT::RGBA32F:
-		context->setPipelineState(*pvt.equirectangularR32State);
+		context->setPipelineState(*impl.equirectangularR32State);
 		break;
 	}
 
@@ -49,7 +49,7 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContex
 
 	context->setRenderTargets({ outputTexture.getRTVMipHandle(0) }, {});
 
-	context->setVSConstantBuffer(*pvt.matricesBuffer);
+	context->setVSConstantBuffer(*impl.matricesBuffer);
 
 	context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
 
@@ -58,26 +58,26 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::process(GraphicsContex
 
 void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::initialize(ResourceManager* const resManager)
 {
-	pvt.equirectangularVS = D3D12Core::Shader::create(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes));
+	impl.equirectangularVS = D3D12Core::Shader::create(g_EquirectangularVSBytes, sizeof(g_EquirectangularVSBytes));
 
-	pvt.equirectangularPS = D3D12Core::Shader::create(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes));
+	impl.equirectangularPS = D3D12Core::Shader::create(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes));
 
 	{
 		auto getBuilder = [] {
 			return PipelineStateBuilder()
-				.setVS(*pvt.equirectangularVS)
-				.setPS(*pvt.equirectangularPS)
+				.setVS(*impl.equirectangularVS)
+				.setPS(*impl.equirectangularPS)
 				.setRasterizerState(PipelineStateHelper::rasterCullNone)
 				.setBlendState(PipelineStateHelper::blendReplace)
 				.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 				.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE);
 			};
 
-		pvt.equirectangularR8State = getBuilder().setRTVFormats({ FMT::RGBA8UN }).build();
+		impl.equirectangularR8State = getBuilder().setRTVFormats({ FMT::RGBA8UN }).build();
 
-		pvt.equirectangularR16State = getBuilder().setRTVFormats({ FMT::RGBA16F }).build();
+		impl.equirectangularR16State = getBuilder().setRTVFormats({ FMT::RGBA16F }).build();
 
-		pvt.equirectangularR32State = getBuilder().setRTVFormats({ FMT::RGBA32F }).build();
+		impl.equirectangularR32State = getBuilder().setRTVFormats({ FMT::RGBA32F }).build();
 
 	}
 
@@ -119,9 +119,9 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::initialize(R
 			}
 		}
 
-		pvt.matricesBuffer = resManager->createImmutableCBuffer(sizeof(Matrices), &matrices, false);
+		impl.matricesBuffer = resManager->createImmutableCBuffer(sizeof(Matrices), &matrices, false);
 
-		pvt.matricesBuffer->getBuffer()->setName(L"LatLongMap To Cubemap Matrices");
+		impl.matricesBuffer->getBuffer()->setName(L"LatLongMap To Cubemap Matrices");
 	}
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"LatLongMapToCubeMapEffect", LogColor::defaultColor, L"succeeded");
@@ -129,16 +129,16 @@ void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::initialize(R
 
 void Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect::Internal::release()
 {
-	pvt.equirectangularVS.reset();
+	impl.equirectangularVS.reset();
 
-	pvt.equirectangularPS.reset();
+	impl.equirectangularPS.reset();
 
-	pvt.equirectangularR8State.reset();
+	impl.equirectangularR8State.reset();
 
-	pvt.equirectangularR16State.reset();
+	impl.equirectangularR16State.reset();
 
-	pvt.equirectangularR32State.reset();
+	impl.equirectangularR32State.reset();
 
-	pvt.matricesBuffer.reset();
+	impl.matricesBuffer.reset();
 }
 

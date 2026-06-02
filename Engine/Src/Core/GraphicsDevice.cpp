@@ -4,20 +4,20 @@
 
 namespace
 {
-	struct GraphicsDevicePrivate
+	struct GraphicsDeviceImpl
 	{
 		ComPtr<ID3D12Device9> device;
-	}pvt;
+	}impl;
 }
 
 ID3D12Device9* Gear::Core::GraphicsDevice::get()
 {
-	return pvt.device.Get();
+	return impl.device.Get();
 }
 
 void Gear::Core::GraphicsDevice::Internal::initialize(IUnknown* const adapter)
 {
-	if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&pvt.device))))
+	if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&impl.device))))
 	{
 		LOGSUCCESS(L"create d3d12 device with feature level", LogColor::brightMagenta, L"D3D_FEATURE_LEVEL_12_0", LogColor::defaultColor, L"succeeded");
 	}
@@ -29,7 +29,7 @@ void Gear::Core::GraphicsDevice::Internal::initialize(IUnknown* const adapter)
 
 void Gear::Core::GraphicsDevice::Internal::release()
 {
-	pvt.device = nullptr;
+	impl.device = nullptr;
 }
 
 void Gear::Core::GraphicsDevice::Internal::checkFeatureSupport()
@@ -38,7 +38,7 @@ void Gear::Core::GraphicsDevice::Internal::checkFeatureSupport()
 
 	CD3DX12FeatureSupport features;
 
-	features.Init(pvt.device.Get());
+	features.Init(impl.device.Get());
 
 	{
 		const D3D12_RESOURCE_BINDING_TIER resourceBindingTier = features.ResourceBindingTier();

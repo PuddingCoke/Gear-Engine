@@ -4,7 +4,7 @@
 
 namespace
 {
-	struct KeyboardPrivate
+	struct KeyboardImpl
 	{
 
 		static constexpr size_t maxKey = 512;
@@ -19,68 +19,68 @@ namespace
 
 		std::vector<uint32_t> onKeyDownClearList = std::vector<uint32_t>();
 
-	} pvt;
+	} impl;
 }
 
 bool Gear::Input::Keyboard::getKeyDown(const Key key)
 {
-	return pvt.keyDownStates[key];
+	return impl.keyDownStates[key];
 }
 
 bool Gear::Input::Keyboard::onKeyDown(const Key key)
 {
-	return pvt.onKeyDownStates[key];
+	return impl.onKeyDownStates[key];
 }
 
 uint64_t Gear::Input::Keyboard::addKeyDownEvent(const Key key, const std::function<void(void)>& func)
 {
-	return pvt.keyDownEvents[key] += func;
+	return impl.keyDownEvents[key] += func;
 }
 
 uint64_t Gear::Input::Keyboard::addKeyUpEvent(const Key key, const std::function<void(void)>& func)
 {
-	return pvt.keyUpEvents[key] += func;
+	return impl.keyUpEvents[key] += func;
 }
 
 void Gear::Input::Keyboard::removeKeyDownEvent(const Key key, const uint64_t id)
 {
-	pvt.keyDownEvents[key] -= id;
+	impl.keyDownEvents[key] -= id;
 }
 
 void Gear::Input::Keyboard::removeKeyUpEvent(const Key key, const uint64_t id)
 {
-	pvt.keyUpEvents[key] -= id;
+	impl.keyUpEvents[key] -= id;
 }
 
 void Gear::Input::Keyboard::Internal::resetDeltaValue()
 {
-	if (pvt.onKeyDownClearList.size())
+	if (impl.onKeyDownClearList.size())
 	{
-		for (uint32_t i = 0; i < pvt.onKeyDownClearList.size(); i++)
+		for (uint32_t i = 0; i < impl.onKeyDownClearList.size(); i++)
 		{
-			const uint32_t idx = pvt.onKeyDownClearList[i];
+			const uint32_t idx = impl.onKeyDownClearList[i];
 
-			pvt.onKeyDownStates[idx] = false;
+			impl.onKeyDownStates[idx] = false;
 		}
 
-		pvt.onKeyDownClearList.clear();
+		impl.onKeyDownClearList.clear();
 	}
 }
 
 void Gear::Input::Keyboard::Internal::pressKey(const Key key)
 {
-	pvt.keyDownStates[key] = true;
+	impl.keyDownStates[key] = true;
 
-	pvt.onKeyDownStates[key] = true;
+	impl.onKeyDownStates[key] = true;
 
-	pvt.onKeyDownClearList.emplace_back(key);
+	impl.onKeyDownClearList.emplace_back(key);
 
-	pvt.keyDownEvents[key]();
+	impl.keyDownEvents[key]();
 }
 
 void Gear::Input::Keyboard::Internal::releaseKey(const Key key)
 {
-	pvt.keyDownStates[key] = false;
+	impl.keyDownStates[key] = false;
 
-	pvt.keyUpEvents[key]();
+	impl.keyUpEvents[key]();
 }

@@ -8,15 +8,15 @@
 
 namespace
 {
-	struct BackBufferBlitEffectPrivate
+	struct BackBufferBlitEffectImpl
 	{
 		UniquePtr<Gear::Core::D3D12Core::PipelineState> backBufferBlitState;
-	}pvt;
+	}impl;
 }
 
 void Gear::Core::GlobalEffect::BackBufferBlitEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
 {
-	context->setPipelineState(*pvt.backBufferBlitState);
+	context->setPipelineState(*impl.backBufferBlitState);
 
 	context->setDefRenderTarget();
 
@@ -31,7 +31,7 @@ void Gear::Core::GlobalEffect::BackBufferBlitEffect::process(GraphicsContext* co
 
 void Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal::initialize()
 {
-	pvt.backBufferBlitState = PipelineStateBuilder()
+	impl.backBufferBlitState = PipelineStateBuilder()
 		.setDefaultFullScreenState()
 		.setPS(GlobalShader::getFullScreenPS())
 		.setRTVFormats({ Graphics::backBufferFormat })
@@ -42,5 +42,5 @@ void Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal::initialize()
 
 void Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal::release()
 {
-	pvt.backBufferBlitState.reset();
+	impl.backBufferBlitState.reset();
 }

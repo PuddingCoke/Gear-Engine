@@ -10,7 +10,7 @@
 
 namespace
 {
-	struct GraphicsPrivate
+	struct GraphicsImpl
 	{
 
 		float exposure = 1.f;
@@ -37,124 +37,124 @@ namespace
 
 		Gear::Core::Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer;
 
-	}pvt;
+	}impl;
 }
 
 float Gear::Core::Graphics::getExposure()
 {
-	return pvt.exposure;
+	return impl.exposure;
 }
 
 void Gear::Core::Graphics::setExposure(const float exposure)
 {
-	pvt.exposure = exposure;
+	impl.exposure = exposure;
 }
 
 float Gear::Core::Graphics::getGamma()
 {
-	return pvt.gamma;
+	return impl.gamma;
 }
 
 void Gear::Core::Graphics::setGamma(const float gamma)
 {
-	pvt.gamma = gamma;
+	impl.gamma = gamma;
 }
 
 uint32_t Gear::Core::Graphics::getFrameBufferCount()
 {
-	return pvt.frameBufferCount;
+	return impl.frameBufferCount;
 }
 
 uint32_t Gear::Core::Graphics::getFrameIndex()
 {
-	return pvt.frameIndex;
+	return impl.frameIndex;
 }
 
 float Gear::Core::Graphics::getDeltaTime()
 {
-	return pvt.deltaTime;
+	return impl.deltaTime;
 }
 
 float Gear::Core::Graphics::getTimeElapsed()
 {
-	return pvt.timeElapsed;
+	return impl.timeElapsed;
 }
 
 uint32_t Gear::Core::Graphics::getWidth()
 {
-	return pvt.width;
+	return impl.width;
 }
 
 uint32_t Gear::Core::Graphics::getHeight()
 {
-	return pvt.height;
+	return impl.height;
 }
 
 float Gear::Core::Graphics::getAspectRatio()
 {
-	return pvt.aspectRatio;
+	return impl.aspectRatio;
 }
 
 uint64_t Gear::Core::Graphics::getRenderedFrameCount()
 {
-	return pvt.renderedFrameCount;
+	return impl.renderedFrameCount;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE Gear::Core::Graphics::getBackBufferHandle()
 {
-	return pvt.backBufferHandle;
+	return impl.backBufferHandle;
 }
 
 Gear::Core::Resource::ImmutableCBuffer* Gear::Core::Graphics::getEngineDefinedGlobalCBuffer()
 {
-	return pvt.engineDefinedGlobalCBuffer;
+	return impl.engineDefinedGlobalCBuffer;
 }
 
 void Gear::Core::Graphics::Internal::initialize(const uint32_t frameBufferCount, const uint32_t width, const uint32_t height)
 {
-	pvt.frameBufferCount = frameBufferCount;
+	impl.frameBufferCount = frameBufferCount;
 
-	pvt.width = width;
+	impl.width = width;
 
-	pvt.height = height;
+	impl.height = height;
 
-	pvt.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+	impl.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }
 
 void Gear::Core::Graphics::Internal::renderedFrameCountInc()
 {
-	pvt.renderedFrameCount++;
+	impl.renderedFrameCount++;
 }
 
 void Gear::Core::Graphics::Internal::setFrameIndex(const uint32_t frameIndex)
 {
-	pvt.frameIndex = frameIndex;
+	impl.frameIndex = frameIndex;
 }
 
 void Gear::Core::Graphics::Internal::setDeltaTime(const float deltaTime)
 {
-	pvt.deltaTime = deltaTime;
+	impl.deltaTime = deltaTime;
 }
 
 void Gear::Core::Graphics::Internal::updateTimeElapsed()
 {
-	pvt.timeElapsed += pvt.deltaTime;
+	impl.timeElapsed += impl.deltaTime;
 }
 
 void Gear::Core::Graphics::Internal::setBackBufferHandle(const D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle)
 {
-	pvt.backBufferHandle = backBufferHandle;
+	impl.backBufferHandle = backBufferHandle;
 }
 
 void Gear::Core::Graphics::Internal::setEngineDefinedGlobalCBuffer(Resource::ImmutableCBuffer* const engineDefinedGlobalCBuffer)
 {
-	pvt.engineDefinedGlobalCBuffer = engineDefinedGlobalCBuffer;
+	impl.engineDefinedGlobalCBuffer = engineDefinedGlobalCBuffer;
 }
 
 void Gear::Core::Graphics::Internal::imGUICall()
 {
 	ImGui::Begin("Graphcis Settings");
-	ImGui::SliderFloat("Exposure", &pvt.exposure, 0.f, 10.f);
-	ImGui::SliderFloat("Gamma", &pvt.gamma, 0.f, 10.f);
+	ImGui::SliderFloat("Exposure", &impl.exposure, 0.f, 10.f);
+	ImGui::SliderFloat("Gamma", &impl.gamma, 0.f, 10.f);
 	ImGui::End();
 }

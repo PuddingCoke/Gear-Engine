@@ -16,15 +16,15 @@
 
 namespace
 {
-    struct FilePrivate
+    struct FileImpl
     {
         std::wstring rootFolder;
-    }pvt;
+    }impl;
 }
 
 std::wstring Gear::Utils::File::getRootFolder()
 {
-    return pvt.rootFolder;
+    return impl.rootFolder;
 }
 
 std::wstring Gear::Utils::File::backslashToSlash(const std::wstring& filePath)
@@ -110,5 +110,5 @@ bool Gear::Utils::File::exist(const std::wstring& filePath)
 
 void Gear::Utils::File::Internal::setRootFolder(const std::wstring& rootFolder)
 {
-    pvt.rootFolder = rootFolder;
+    impl.rootFolder = rootFolder;
 }

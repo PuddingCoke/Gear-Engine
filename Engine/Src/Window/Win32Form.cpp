@@ -22,20 +22,20 @@
 
 namespace
 {
-	class Win32FormPrivate
+	class Win32FormImpl
 	{
 	public:
 
-		Win32FormPrivate() = delete;
+		Win32FormImpl() = delete;
 
-		Win32FormPrivate(const Win32FormPrivate&) = delete;
+		Win32FormImpl(const Win32FormImpl&) = delete;
 
-		void operator=(const Win32FormPrivate&) = delete;
+		void operator=(const Win32FormImpl&) = delete;
 
-		Win32FormPrivate(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle,
+		Win32FormImpl(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle,
 			LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam));
 
-		~Win32FormPrivate();
+		~Win32FormImpl();
 
 		bool pollEvents();
 
@@ -57,10 +57,10 @@ namespace
 
 		NOTIFYICONDATA nid;
 
-	}*pvt = nullptr;
+	}*impl = nullptr;
 }
 
-Win32FormPrivate::Win32FormPrivate(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam)) :
+Win32FormImpl::Win32FormImpl(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam)) :
 	hWnd(nullptr), iniTrayIcon(windowCallback == Gear::Window::Win32Form::wallpaperCallBack), hMenu(nullptr), nid{}
 {
 	SetProcessDPIAware();
@@ -112,7 +112,7 @@ Win32FormPrivate::Win32FormPrivate(const std::wstring& title, const uint32_t sta
 	}
 }
 
-Win32FormPrivate::~Win32FormPrivate()
+Win32FormImpl::~Win32FormImpl()
 {
 	if (iniTrayIcon)
 	{
@@ -124,7 +124,7 @@ Win32FormPrivate::~Win32FormPrivate()
 	DestroyWindow(hWnd);
 }
 
-bool Win32FormPrivate::pollEvents()
+bool Win32FormImpl::pollEvents()
 {
 	Gear::Input::Mouse::Internal::resetDeltaValue();
 
@@ -142,14 +142,14 @@ bool Win32FormPrivate::pollEvents()
 	return msg.message != WM_QUIT;
 }
 
-HWND Win32FormPrivate::getHandle() const
+HWND Win32FormImpl::getHandle() const
 {
 	return hWnd;
 }
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam);
 
-LRESULT Win32FormPrivate::windowProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
+LRESULT Win32FormImpl::windowProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
 {
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 		return true;
@@ -212,7 +212,7 @@ LRESULT Win32FormPrivate::windowProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LP
 	return 0;
 }
 
-LRESULT Win32FormPrivate::encodeProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
+LRESULT Win32FormImpl::encodeProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
 {
 	switch (uMsg)
 	{
@@ -237,7 +237,7 @@ LRESULT Win32FormPrivate::encodeProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LP
 	return 0;
 }
 
-LRESULT Win32FormPrivate::wallpaperProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
+LRESULT Win32FormImpl::wallpaperProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
 {
 	switch (uMsg)
 	{
@@ -282,38 +282,38 @@ LRESULT Win32FormPrivate::wallpaperProc(HWND hWnd, uint32_t uMsg, WPARAM wParam,
 
 LRESULT Gear::Window::Win32Form::windowCallback(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
 {
-	return pvt->windowProc(hWnd, uMsg, wParam, lParam);
+	return impl->windowProc(hWnd, uMsg, wParam, lParam);
 }
 
 LRESULT Gear::Window::Win32Form::encodeCallback(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
 {
-	return pvt->encodeProc(hWnd, uMsg, wParam, lParam);
+	return impl->encodeProc(hWnd, uMsg, wParam, lParam);
 }
 
 LRESULT Gear::Window::Win32Form::wallpaperCallBack(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
 {
-	return pvt->wallpaperProc(hWnd, uMsg, wParam, lParam);
+	return impl->wallpaperProc(hWnd, uMsg, wParam, lParam);
 }
 
 void Gear::Window::Win32Form::initialize(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
 {
-	pvt = new Win32FormPrivate(title, startX, startY, width, height, windowStyle, windowCallback);
+	impl = new Win32FormImpl(title, startX, startY, width, height, windowStyle, windowCallback);
 }
 
 void Gear::Window::Win32Form::release()
 {
-	if (pvt)
+	if (impl)
 	{
-		delete pvt;
+		delete impl;
 	}
 }
 
 bool Gear::Window::Win32Form::pollEvents()
 {
-	return pvt->pollEvents();
+	return impl->pollEvents();
 }
 
 HWND Gear::Window::Win32Form::getHandle()
 {
-	return pvt->getHandle();
+	return impl->getHandle();
 }

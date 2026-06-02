@@ -8,23 +8,23 @@
 
 namespace
 {
-	struct GammaCorrectEffectPrivate
+	struct GammaCorrectEffectImpl
 	{
 		UniquePtr<Gear::Core::D3D12Core::Shader> gammaCorrectCS;
 
 		UniquePtr<Gear::Core::D3D12Core::PipelineState> gammaCorrectState;
 
 		UniquePtr<Gear::Core::Resource::TextureRenderView> outputTexture;
-	} pvt;
+	} impl;
 
 	constexpr DXGI_FORMAT outputTextureFormat = Gear::Core::FMT::RGBA16UN;
 }
 
 Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::GammaCorrectEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
 {
-	context->setPipelineState(*pvt.gammaCorrectState);
+	context->setPipelineState(*impl.gammaCorrectState);
 
-	context->setCSConstants({ inputTexture.getSRVMipIndex(0),pvt.outputTexture->getUAVMipIndex(0) }, 0);
+	context->setCSConstants({ inputTexture.getSRVMipIndex(0),impl.outputTexture->getUAVMipIndex(0) }, 0);
 
 	const float gamma = Graphics::getGamma();
 
@@ -32,30 +32,30 @@ Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::GammaCorrectE
 
 	context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
 
-	context->uavBarrier({ pvt.outputTexture->getTexture() });
+	context->uavBarrier({ impl.outputTexture->getTexture() });
 
-	return pvt.outputTexture.get();
+	return impl.outputTexture.get();
 }
 
 void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::initialize()
 {
-	pvt.gammaCorrectCS = D3D12Core::Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes));
+	impl.gammaCorrectCS = D3D12Core::Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes));
 
-	pvt.gammaCorrectState = PipelineStateBuilder::build(*pvt.gammaCorrectCS);
+	impl.gammaCorrectState = PipelineStateBuilder::build(*impl.gammaCorrectCS);
 
-	pvt.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
+	impl.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
 		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
 
-	pvt.outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
+	impl.outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
 
 	LOGSUCCESS(L"create", LogColor::brightMagenta, L"GammaCorrectEffect", LogColor::defaultColor, L"succeeded");
 }
 
 void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::release()
 {
-	pvt.gammaCorrectCS.reset();
+	impl.gammaCorrectCS.reset();
 
-	pvt.gammaCorrectState.reset();
+	impl.gammaCorrectState.reset();
 
-	pvt.outputTexture.reset();
+	impl.outputTexture.reset();
 }

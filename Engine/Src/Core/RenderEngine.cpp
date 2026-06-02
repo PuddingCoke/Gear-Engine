@@ -46,19 +46,19 @@
 
 namespace
 {
-	class RenderEnginePrivate
+	class RenderEngineImpl
 	{
 	public:
 
-		RenderEnginePrivate() = delete;
+		RenderEngineImpl() = delete;
 
-		RenderEnginePrivate(const RenderEnginePrivate&) = delete;
+		RenderEngineImpl(const RenderEngineImpl&) = delete;
 
-		void operator=(const RenderEnginePrivate&) = delete;
+		void operator=(const RenderEngineImpl&) = delete;
 
-		RenderEnginePrivate(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface);
+		RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface);
 
-		~RenderEnginePrivate();
+		~RenderEngineImpl();
 
 		void submitCommandList(Gear::Core::D3D12Core::CommandList* const commandList);
 
@@ -146,10 +146,10 @@ namespace
 
 		Gear::Core::D3D12Core::PerframeResource perframeResource;
 
-	}*pvt = nullptr;
+	}*impl = nullptr;
 }
 
-RenderEnginePrivate::RenderEnginePrivate(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface) :
+RenderEngineImpl::RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface) :
 	backBufferTextures(nullptr),
 	backBufferHandles(nullptr),
 	fenceEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)),
@@ -211,6 +211,9 @@ RenderEnginePrivate::RenderEnginePrivate(const uint32_t width, const uint32_t he
 
 	//设置默认的2D投影矩阵
 	Gear::Core::MainCamera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, static_cast<float>(Gear::Core::Graphics::getWidth()), 0, static_cast<float>(Gear::Core::Graphics::getHeight()), -1.f, 1.f));
+
+	//设置默认的视图矩阵
+	Gear::Core::MainCamera::setView(DirectX::XMMatrixIdentity());
 
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -307,7 +310,7 @@ RenderEnginePrivate::RenderEnginePrivate(const uint32_t width, const uint32_t he
 	submitCommandList(resManager->getCommandList());
 }
 
-RenderEnginePrivate::~RenderEnginePrivate()
+RenderEngineImpl::~RenderEngineImpl()
 {
 	releaseStaticResources();
 
@@ -381,7 +384,7 @@ RenderEnginePrivate::~RenderEnginePrivate()
 	}
 }
 
-void RenderEnginePrivate::submitCommandList(Gear::Core::D3D12Core::CommandList* const commandList)
+void RenderEngineImpl::submitCommandList(Gear::Core::D3D12Core::CommandList* const commandList)
 {
 	std::lock_guard<std::mutex> lockGuard(submitCommandListLock);
 
@@ -407,27 +410,27 @@ void RenderEnginePrivate::submitCommandList(Gear::Core::D3D12Core::CommandList* 
 	commandList->updateReferredSharedResourceStates();
 }
 
-Gear::Core::GPUVendor RenderEnginePrivate::getVendor() const
+Gear::Core::GPUVendor RenderEngineImpl::getVendor() const
 {
 	return vendor;
 }
 
-Gear::Core::Resource::D3D12Resource::Texture* RenderEnginePrivate::getRenderTexture() const
+Gear::Core::Resource::D3D12Resource::Texture* RenderEngineImpl::getRenderTexture() const
 {
 	return renderTexture;
 }
 
-ID3D12CommandQueue* RenderEnginePrivate::getCommandQueue() const
+ID3D12CommandQueue* RenderEngineImpl::getCommandQueue() const
 {
 	return commandQueue.Get();
 }
 
-bool RenderEnginePrivate::getDisplayImGuiSurface() const
+bool RenderEngineImpl::getDisplayImGuiSurface() const
 {
 	return displayImGUISurface;
 }
 
-void RenderEnginePrivate::waitForCurrentFrame()
+void RenderEngineImpl::waitForCurrentFrame()
 {
 	commandQueue->Signal(fence.Get(), fenceValues[Gear::Core::Graphics::getFrameIndex()]);
 
@@ -438,7 +441,7 @@ void RenderEnginePrivate::waitForCurrentFrame()
 	fenceValues[Gear::Core::Graphics::getFrameIndex()]++;
 }
 
-void RenderEnginePrivate::waitForNextFrame()
+void RenderEngineImpl::waitForNextFrame()
 {
 	const uint64_t currentFenceValue = fenceValues[Gear::Core::Graphics::getFrameIndex()];
 
@@ -456,7 +459,7 @@ void RenderEnginePrivate::waitForNextFrame()
 	fenceValues[Gear::Core::Graphics::getFrameIndex()] = currentFenceValue + 1;
 }
 
-void RenderEnginePrivate::begin()
+void RenderEngineImpl::begin()
 {
 	beginImGuiFrame();
 
@@ -469,7 +472,7 @@ void RenderEnginePrivate::begin()
 	engineDefinedGlobalCBuffer->acquireDataPtr();
 }
 
-void RenderEnginePrivate::end()
+void RenderEngineImpl::end()
 {
 	if (displayImGUISurface)
 	{
@@ -550,27 +553,27 @@ void RenderEnginePrivate::end()
 	processCommandLists();
 }
 
-void RenderEnginePrivate::present() const
+void RenderEngineImpl::present() const
 {
 	swapChain->Present(static_cast<uint32_t>(syncInterval), 0);
 }
 
-void RenderEnginePrivate::setDeltaTime(const float deltaTime) const
+void RenderEngineImpl::setDeltaTime(const float deltaTime) const
 {
 	Gear::Core::Graphics::Internal::setDeltaTime(deltaTime);
 }
 
-void RenderEnginePrivate::updateTimeElapsed() const
+void RenderEngineImpl::updateTimeElapsed() const
 {
 	Gear::Core::Graphics::Internal::updateTimeElapsed();
 }
 
-void RenderEnginePrivate::setDefRenderTexture()
+void RenderEngineImpl::setDefRenderTexture()
 {
 	setRenderTexture(backBufferTextures[Gear::Core::Graphics::getFrameIndex()], backBufferHandles[Gear::Core::Graphics::getFrameIndex()]);
 }
 
-void RenderEnginePrivate::setRenderTexture(Gear::Core::Resource::D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
+void RenderEngineImpl::setRenderTexture(Gear::Core::Resource::D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
 	//状态转变
 	this->renderTexture = renderTexture;
@@ -579,7 +582,7 @@ void RenderEnginePrivate::setRenderTexture(Gear::Core::Resource::D3D12Resource::
 	Gear::Core::Graphics::Internal::setBackBufferHandle(handle);
 }
 
-void RenderEnginePrivate::initializeResources()
+void RenderEngineImpl::initializeResources()
 {
 	//如果有需要，那么开启ImGui
 	toggleImGuiSurface();
@@ -596,7 +599,7 @@ void RenderEnginePrivate::initializeResources()
 	resManager->cleanTransientResources();
 }
 
-void RenderEnginePrivate::saveBackBuffer(Gear::Core::Resource::D3D12Resource::ReadbackHeap* const readbackHeap)
+void RenderEngineImpl::saveBackBuffer(Gear::Core::Resource::D3D12Resource::ReadbackHeap* const readbackHeap)
 {
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT bufferFootprint = {};
 
@@ -633,7 +636,7 @@ void RenderEnginePrivate::saveBackBuffer(Gear::Core::Resource::D3D12Resource::Re
 	lastCommandList->ResourceBarrier(1, &barrier);
 }
 
-ComPtr<IDXGIAdapter4> RenderEnginePrivate::getBestAdapterAndVendor(IDXGIFactory7* const factory)
+ComPtr<IDXGIAdapter4> RenderEngineImpl::getBestAdapterAndVendor(IDXGIFactory7* const factory)
 {
 	ComPtr<IDXGIAdapter4> adapter;
 
@@ -698,7 +701,7 @@ ComPtr<IDXGIAdapter4> RenderEnginePrivate::getBestAdapterAndVendor(IDXGIFactory7
 	return adapter;
 }
 
-void RenderEnginePrivate::processCommandLists()
+void RenderEngineImpl::processCommandLists()
 {
 	recordCommandLists.front()->close();
 
@@ -716,12 +719,12 @@ void RenderEnginePrivate::processCommandLists()
 	commandQueue->ExecuteCommandLists(static_cast<uint32_t>(commandLists.size()), commandLists.data());
 }
 
-void RenderEnginePrivate::updateConstantBuffer() const
+void RenderEngineImpl::updateConstantBuffer() const
 {
 	Gear::Core::DynamicCBufferManager::Internal::recordCommands(prepareCommandList);
 }
 
-void RenderEnginePrivate::toggleImGuiSurface()
+void RenderEngineImpl::toggleImGuiSurface()
 {
 	if (initializeImGuiSurface)
 	{
@@ -729,7 +732,7 @@ void RenderEnginePrivate::toggleImGuiSurface()
 	}
 }
 
-void RenderEnginePrivate::beginImGuiFrame() const
+void RenderEngineImpl::beginImGuiFrame() const
 {
 	if (displayImGUISurface)
 	{
@@ -739,7 +742,7 @@ void RenderEnginePrivate::beginImGuiFrame() const
 	}
 }
 
-void RenderEnginePrivate::drawImGuiFrame(Gear::Core::D3D12Core::CommandList* const targetCommandList)
+void RenderEngineImpl::drawImGuiFrame(Gear::Core::D3D12Core::CommandList* const targetCommandList)
 {
 	if (displayImGUISurface)
 	{
@@ -753,7 +756,7 @@ void RenderEnginePrivate::drawImGuiFrame(Gear::Core::D3D12Core::CommandList* con
 	}
 }
 
-void RenderEnginePrivate::createStaticResources()
+void RenderEngineImpl::createStaticResources()
 {
 	Gear::Core::GraphicsContext* const context = resManager->getGraphicsContext();
 
@@ -770,7 +773,7 @@ void RenderEnginePrivate::createStaticResources()
 	Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::initialize();
 }
 
-void RenderEnginePrivate::releaseStaticResources()
+void RenderEngineImpl::releaseStaticResources()
 {
 	Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal::release();
 
@@ -785,93 +788,93 @@ void RenderEnginePrivate::releaseStaticResources()
 
 void Gear::Core::RenderEngine::submitCommandList(Gear::Core::D3D12Core::CommandList* const commandList)
 {
-	pvt->submitCommandList(commandList);
+	impl->submitCommandList(commandList);
 }
 
 Gear::Core::GPUVendor Gear::Core::RenderEngine::getVendor()
 {
-	return pvt->getVendor();
+	return impl->getVendor();
 }
 
 Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::RenderEngine::getRenderTexture()
 {
-	return pvt->getRenderTexture();
+	return impl->getRenderTexture();
 }
 
 ID3D12CommandQueue* Gear::Core::RenderEngine::getCommandQueue()
 {
-	return pvt->getCommandQueue();
+	return impl->getCommandQueue();
 }
 
 bool Gear::Core::RenderEngine::getDisplayImGuiSurface()
 {
-	return pvt->getDisplayImGuiSurface();
+	return impl->getDisplayImGuiSurface();
 }
 
 void Gear::Core::RenderEngine::Internal::initialize(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface)
 {
-	pvt = new RenderEnginePrivate(width, height, hwnd, useSwapChainBuffer, initializeImGuiSurface);
+	impl = new RenderEngineImpl(width, height, hwnd, useSwapChainBuffer, initializeImGuiSurface);
 }
 
 void Gear::Core::RenderEngine::Internal::release()
 {
-	if (pvt)
+	if (impl)
 	{
-		delete pvt;
+		delete impl;
 	}
 }
 
 void Gear::Core::RenderEngine::Internal::waitForCurrentFrame()
 {
-	pvt->waitForCurrentFrame();
+	impl->waitForCurrentFrame();
 }
 
 void Gear::Core::RenderEngine::Internal::waitForNextFrame()
 {
-	pvt->waitForNextFrame();
+	impl->waitForNextFrame();
 }
 
 void Gear::Core::RenderEngine::Internal::begin()
 {
-	pvt->begin();
+	impl->begin();
 }
 
 void Gear::Core::RenderEngine::Internal::end()
 {
-	pvt->end();
+	impl->end();
 }
 
 void Gear::Core::RenderEngine::Internal::present()
 {
-	pvt->present();
+	impl->present();
 }
 
 void Gear::Core::RenderEngine::Internal::setDeltaTime(const float deltaTime)
 {
-	pvt->setDeltaTime(deltaTime);
+	impl->setDeltaTime(deltaTime);
 }
 
 void Gear::Core::RenderEngine::Internal::updateTimeElapsed()
 {
-	pvt->updateTimeElapsed();
+	impl->updateTimeElapsed();
 }
 
 void Gear::Core::RenderEngine::Internal::saveBackBuffer(Resource::D3D12Resource::ReadbackHeap* const readbackHeap)
 {
-	pvt->saveBackBuffer(readbackHeap);
+	impl->saveBackBuffer(readbackHeap);
 }
 
 void Gear::Core::RenderEngine::Internal::setDefRenderTexture()
 {
-	pvt->setDefRenderTexture();
+	impl->setDefRenderTexture();
 }
 
 void Gear::Core::RenderEngine::Internal::setRenderTexture(Resource::D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
-	pvt->setRenderTexture(renderTexture, handle);
+	impl->setRenderTexture(renderTexture, handle);
 }
 
 void Gear::Core::RenderEngine::Internal::initializeResources()
 {
-	pvt->initializeResources();
+	impl->initializeResources();
 }

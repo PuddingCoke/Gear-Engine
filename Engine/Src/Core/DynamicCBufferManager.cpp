@@ -46,13 +46,13 @@ namespace
 
 	};
 
-	class DynamicCBufferManagerPrivate
+	class DynamicCBufferManagerImpl
 	{
 	public:
 
-		DynamicCBufferManagerPrivate();
+		DynamicCBufferManagerImpl();
 
-		~DynamicCBufferManagerPrivate();
+		~DynamicCBufferManagerImpl();
 
 		Gear::Core::DynamicCBufferManager::AvailableLocation requestLocation(const uint32_t regionIndex);
 
@@ -78,7 +78,7 @@ namespace
 		//descriptorIndex = baseDescriptorIndices[regionIndex] + subregionIndex 
 		uint32_t baseDescriptorIndices[numRegion];
 
-	}*pvt = nullptr;
+	}*impl = nullptr;
 }
 
 DynamicCBufferRegion::DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t subRegionNum) :
@@ -140,7 +140,7 @@ Gear::Core::Resource::D3D12Resource::UploadHeap* DynamicCBufferRegion::getUpload
 	return uploadHeap[Gear::Core::Graphics::getFrameIndex()];
 }
 
-DynamicCBufferManagerPrivate::DynamicCBufferManagerPrivate()
+DynamicCBufferManagerImpl::DynamicCBufferManagerImpl()
 {
 	//创建一个大缓冲作为常量缓冲
 	{
@@ -205,7 +205,7 @@ DynamicCBufferManagerPrivate::DynamicCBufferManagerPrivate()
 	}
 }
 
-DynamicCBufferManagerPrivate::~DynamicCBufferManagerPrivate()
+DynamicCBufferManagerImpl::~DynamicCBufferManagerImpl()
 {
 	if (buffer)
 	{
@@ -226,14 +226,14 @@ DynamicCBufferManagerPrivate::~DynamicCBufferManagerPrivate()
 	}
 }
 
-Gear::Core::DynamicCBufferManager::AvailableLocation DynamicCBufferManagerPrivate::requestLocation(const uint32_t regionIndex)
+Gear::Core::DynamicCBufferManager::AvailableLocation DynamicCBufferManagerImpl::requestLocation(const uint32_t regionIndex)
 {
 	const DynamicCBufferRegion::Location location = bufferRegions[regionIndex]->acquireLocation();
 
 	return { location.dataPtr,baseAddressOffsets[regionIndex] + (256u << regionIndex) * location.subregionIndex,baseDescriptorIndices[regionIndex] + location.subregionIndex };
 }
 
-void DynamicCBufferManagerPrivate::recordCommands(Gear::Core::D3D12Core::CommandList* const commandList)
+void DynamicCBufferManagerImpl::recordCommands(Gear::Core::D3D12Core::CommandList* const commandList)
 {
 	//把大常量缓冲转变到STATE_COPY_DEST状态，用于内容更新
 	commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_COPY_DEST);
@@ -260,28 +260,28 @@ void DynamicCBufferManagerPrivate::recordCommands(Gear::Core::D3D12Core::Command
 
 uint32_t Gear::Core::DynamicCBufferManager::getNumRegion()
 {
-	return DynamicCBufferManagerPrivate::numRegion;
+	return DynamicCBufferManagerImpl::numRegion;
 }
 
 Gear::Core::DynamicCBufferManager::AvailableLocation Gear::Core::DynamicCBufferManager::requestLocation(const uint32_t regionIndex)
 {
-	return pvt->requestLocation(regionIndex);
+	return impl->requestLocation(regionIndex);
 }
 
 void Gear::Core::DynamicCBufferManager::Internal::initialize()
 {
-	pvt = new DynamicCBufferManagerPrivate();
+	impl = new DynamicCBufferManagerImpl();
 }
 
 void Gear::Core::DynamicCBufferManager::Internal::release()
 {
-	if (pvt)
+	if (impl)
 	{
-		delete pvt;
+		delete impl;
 	}
 }
 
 void Gear::Core::DynamicCBufferManager::Internal::recordCommands(Gear::Core::D3D12Core::CommandList* const commandList)
 {
-	pvt->recordCommands(commandList);
+	impl->recordCommands(commandList);
 }
