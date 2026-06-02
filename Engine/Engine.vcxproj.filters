@@ -504,6 +504,9 @@
     <ClInclude Include="Inc\Gear\Core\Resource\SwapBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\Internal\RenderInfrastructure.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -735,6 +738,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\Effect\HBAOPlusEffect.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\RenderInfrastructure.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

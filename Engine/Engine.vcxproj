@@ -150,6 +150,7 @@
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\ToneMapEffectInternal.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\ToneMapEffect.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalShader.h" />
+    <ClInclude Include="Inc\Gear\Core\Internal\RenderInfrastructure.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\DynamicCBufferManagerInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\GlobalDescriptorHeapInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\GlobalRootSignatureInternal.h" />
@@ -245,6 +246,7 @@
     <ClCompile Include="Src\Core\Effect\SSREffect.cpp" />
     <ClCompile Include="Src\Core\GlobalEffect\GammaCorrectEffect.cpp" />
     <ClCompile Include="Src\Core\GlobalEffect\ToneMapEffect.cpp" />
+    <ClCompile Include="Src\Core\RenderInfrastructure.cpp" />
     <ClCompile Include="Src\Core\RenderThread.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\ResourceStateTracker.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\DescriptorHandle.cpp" />
