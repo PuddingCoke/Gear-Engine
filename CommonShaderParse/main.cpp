@@ -4,11 +4,7 @@
 
 #include<wrl/client.h>
 
-#include<cstdint>
-
 #include<vector>
-
-#include<iostream>
 
 #include"HeaderWriter.h"
 
@@ -119,156 +115,114 @@ int wmain(int argc, const wchar_t* argv[])
 		std::cin.get();
 	}
 
-	D3D12_SHADER_BUFFER_DESC shaderBufferDesc{};
-
-	ID3D12ShaderReflectionConstantBuffer* constantBuffer = shaderReflection->GetConstantBufferByIndex(0);
-
-	ID3D12ShaderReflectionVariable* reflectionVariable = constantBuffer->GetVariableByIndex(0);
-
-	ID3D12ShaderReflectionType* structType = reflectionVariable->GetType();
-
-	D3D12_SHADER_TYPE_DESC typeDesc;
-
-	structType->GetDesc(&typeDesc);
-
 	HeaderWriter writer(rootFolder);
 
-	writer.beginDesc(NAMESPACE, L"Gear");
-
-	writer.beginDesc(NAMESPACE, L"Core");
-
-	writer.beginDesc(NAMESPACE, L"D3D12Core");
-
-	writer.beginDesc(STRUCT, L"PerframeResource");
-
-	uint32_t currentWriteSize = 0u;
-
-	for (uint32_t i = 0; i < typeDesc.Members; i++)
 	{
-		const char* name = structType->GetMemberTypeName(i);
+		ID3D12ShaderReflectionConstantBuffer* constantBuffer = shaderReflection->GetConstantBufferByIndex(0);
 
-		ID3D12ShaderReflectionType* const memberType = structType->GetMemberTypeByIndex(i);
+		ID3D12ShaderReflectionVariable* reflectionVariable = constantBuffer->GetVariableByIndex(0);
 
-		D3D12_SHADER_TYPE_DESC memberDesc;
+		ID3D12ShaderReflectionType* structType = reflectionVariable->GetType();
 
-		memberType->GetDesc(&memberDesc);
+		D3D12_SHADER_TYPE_DESC typeDesc;
 
-		//std::cout << memberDesc.Class << " " << memberDesc.Type << " " << memberDesc.Columns * memberDesc.Rows * 4 << " " << name << "\n";
+		structType->GetDesc(&typeDesc);
 
-		if (memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_SCALAR)
+		writer.beginDesc(DescType::NAMESPACE, L"Gear");
+
+		writer.beginDesc(DescType::NAMESPACE, L"Core");
+
+		writer.beginDesc(DescType::NAMESPACE, L"D3D12Core");
+
+		writer.beginDesc(DescType::STRUCT, L"PerframeResource");
+
+		uint32_t currentWriteSize = 0u;
+
+		for (uint32_t i = 0; i < typeDesc.Members; i++)
 		{
-			currentWriteSize += 4u;
+			const char* name = structType->GetMemberTypeName(i);
 
-			switch (memberDesc.Type)
+			ID3D12ShaderReflectionType* const memberType = structType->GetMemberTypeByIndex(i);
+
+			D3D12_SHADER_TYPE_DESC memberDesc;
+
+			memberType->GetDesc(&memberDesc);
+
+			//根据vectorSize和memberDesc.type推导类型
+			if (memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_SCALAR || memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_VECTOR)
 			{
-			case D3D_SVT_UINT:
-				writer.writeLine() << L"uint32_t";
-				break;
-			case D3D_SVT_FLOAT:
-				writer.writeLine() << L"float";
-				break;
-			default:
-				break;
+				const uint32_t vectorSize = memberDesc.Columns * memberDesc.Rows * 4;
+
+				currentWriteSize += vectorSize;
+
+				uint32_t writeType;
+
+				switch (memberDesc.Type)
+				{
+				case D3D_SVT_UINT:
+					writeType = static_cast<uint32_t>(VarType::UINT);
+					break;
+				case D3D_SVT_FLOAT:
+					writeType = static_cast<uint32_t>(VarType::FLOAT);
+					break;
+				default:
+					break;
+				}
+
+				writeType += vectorSize / 4u - 1u;
+
+				writer.writeVar(static_cast<VarType>(writeType), name);
+			}
+			//目前好像只用MATRIX，这里先不管了
+			else if (memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_MATRIX_COLUMNS)
+			{
+				currentWriteSize += 64;
+
+				writer.writeVar(VarType::MATRIX, name);
 			}
 		}
-		else if (memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_VECTOR)
+
+		if (currentWriteSize != 512 && currentWriteSize != 1024)
 		{
-			const uint32_t vectorSize = memberDesc.Columns * memberDesc.Rows * 4;
+			uint32_t targetSize = 0u;
 
-			currentWriteSize += vectorSize;
-
-			writer.writeLine() << L"DirectX::XM";
-
-			switch (memberDesc.Type)
+			if (currentWriteSize < 512)
 			{
-			case D3D_SVT_UINT:
-				writer.write() << L"UINT";
-				break;
-			case D3D_SVT_FLOAT:
-				writer.write() << L"FLOAT";
-				break;
-			default:
-				break;
+				targetSize = 512u;
+			}
+			else if (currentWriteSize < 1024)
+			{
+				//1024字节足够满足引擎每帧需要提供的数据量
+				targetSize = 1024u;
+			}
+			else
+			{
+				//报错
 			}
 
-			if (vectorSize == 8ull)
+			//离对齐有距离
+			if (currentWriteSize % 16u)
 			{
-				writer.write() << L"2";
+				const uint32_t gap = 16u - currentWriteSize % 16u;
+
+				const uint32_t writeType = static_cast<uint32_t>(VarType::UINT) + gap / 4u - 1u;
+
+				writer.writeVar(static_cast<VarType>(writeType), "padding0");
+
+				currentWriteSize += gap;
 			}
-			else if (vectorSize == 12ull)
+
+			//对齐后可能正好满足，所以要进行检测
+			if (targetSize - currentWriteSize)
 			{
-				writer.write() << L"3";
+				const uint32_t num = (targetSize - currentWriteSize) / 16u;
+
+				writer.writeVar(VarType::UINT4, "padding1", num);
 			}
-			else if (vectorSize == 16ull)
-			{
-				writer.write() << L"4";
-			}
-		}
-		else if (memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_MATRIX_COLUMNS)
-		{
-			currentWriteSize += 64;
-
-			writer.writeLine() << "DirectX::XMMATRIX";
-		}
-
-		writer.write() << L" " << name << L";";
-	}
-
-	if (currentWriteSize != 512 && currentWriteSize != 1024)
-	{
-		uint32_t targetSize = 0u;
-
-		if (currentWriteSize < 512)
-		{
-			targetSize = 512u;
-		}
-		else if (currentWriteSize < 1024)
-		{
-			//1024字节足够满足引擎每帧需要提供的数据量
-			targetSize = 1024u;
-		}
-		else
-		{
-			//报错
-		}
-
-		const uint32_t gap = 16u - currentWriteSize % 16u;
-
-		if (gap == 4u)
-		{
-			writer.writeLine() << "uint32_t padding0;";
-
-			currentWriteSize += gap;
-		}
-		else if (gap == 8u)
-		{
-			writer.writeLine() << L"DirectX::XMUINT2 padding0;";
-
-			currentWriteSize += gap;
-		}
-		else if (gap == 12u)
-		{
-			writer.writeLine() << L"DirectX::XMUINT3 padding0;";
-
-			currentWriteSize += gap;
-		}
-
-		if (targetSize - currentWriteSize)
-		{
-			const uint32_t num = (targetSize - currentWriteSize) / 16u;
-
-			writer.writeLine() << "DirectX::XMUINT4 padding1[" << std::to_wstring(num) << "];";
 		}
 	}
 
-
-	writer.endDesc();
-
-	writer.endDesc();
-
-	writer.endDesc();
-
-	writer.endDesc();
+	writer.endDesc(L"");
 
 	writer.close();
 

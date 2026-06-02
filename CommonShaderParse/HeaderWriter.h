@@ -6,13 +6,13 @@
 
 #include<stack>
 
-enum DescType
-{
-	ENUM,
-	UNION,
-	STRUCT,
-	NAMESPACE
-};
+#include<cstdint>
+
+#include<iostream>
+
+enum class DescType;
+
+enum class VarType;
 
 std::wstring getParentFolder(const std::wstring& filePath)
 {
@@ -47,6 +47,11 @@ public:
 
 	void beginDesc(const DescType type, const wchar_t* name);
 
+	void writeVar(const VarType type, const char* const name, const uint32_t numElement = 1u);
+
+	//快速退出并跳转到
+	void endDesc(const std::wstring& name);
+
 	void endDesc();
 
 	std::wostream& writeLine();
@@ -57,18 +62,27 @@ public:
 
 private:
 
+	struct Desc
+	{
+		//记录描述类型，因为struct等需要在花括号后放置';'
+		const DescType descType;
+
+		//记录名称用来快速退出
+		const std::wstring name;
+	};
+
 	size_t currentCount;
 
-	const std::wstring solutionDirectory;
+	const std::wstring outDirectory;
 
-	std::stack<DescType> descStack;
+	std::stack<Desc> descStack;
 
 };
 
 inline HeaderWriter::HeaderWriter(const std::wstring& rootFolder) :
-	currentCount(0), solutionDirectory(getParentFolder(getParentFolder(getParentFolder(rootFolder))))
+	currentCount(0), outDirectory(getParentFolder(getParentFolder(getParentFolder(rootFolder))) + L"\\Engine\\Inc\\Gear\\Core\\D3D12Core\\CommonShaderLayout.h")
 {
-	outStream = std::wofstream(solutionDirectory + L"\\Engine\\Inc\\Gear\\Core\\D3D12Core\\CommonShaderLayout.h");
+	outStream = std::wofstream(outDirectory);
 
 	writeLine() << L"//由 CommonShaderParse.exe 自动生成，请勿修改";
 
@@ -89,11 +103,15 @@ inline HeaderWriter::HeaderWriter(const std::wstring& rootFolder) :
 
 HeaderWriter::~HeaderWriter()
 {
+	if (outStream.is_open())
+	{
+		outStream.close();
+	}
 }
 
 inline void HeaderWriter::close()
 {
-	std::wcout << L"write file to " << solutionDirectory + L"\\Engine\\Inc\\Gear\\Core\\D3D12Core\\CommonShaderLayout.h\n";
+	std::wcout << L"write file to " << outDirectory << L"\n";
 
 	outStream.close();
 }
@@ -105,12 +123,27 @@ inline void HeaderWriter::foward()
 
 inline void HeaderWriter::backward()
 {
+	if (currentCount == 0ull)
+	{
+		std::wcout << L"不能再后退了！\n";
+
+		return;
+	}
+
 	currentCount--;
 }
 
+enum class DescType
+{
+	ENUM,
+	UNION,
+	STRUCT,
+	NAMESPACE
+};
+
 inline void HeaderWriter::beginDesc(const DescType type, const wchar_t* name)
 {
-	descStack.push(type);
+	descStack.push({ type,std::wstring(name) });
 
 	switch (type)
 	{
@@ -137,13 +170,81 @@ inline void HeaderWriter::beginDesc(const DescType type, const wchar_t* name)
 	foward();
 }
 
+enum class VarType
+{
+	FLOAT,//float
+	FLOAT2,//float2
+	FLOAT3,//float3
+	FLOAT4,//float4
+	UINT,//uint
+	UINT2,//uint2
+	UINT3,//uint3
+	UINT4,//uint4
+	MATRIX//matrix
+};
+
+inline void HeaderWriter::writeVar(const VarType type, const char* const name, const uint32_t numElement)
+{
+	switch (type)
+	{
+	case VarType::FLOAT:
+		writeLine() << L"float";
+		break;
+	case VarType::FLOAT2:
+		writeLine() << L"DirectX::XMFLOAT2";
+		break;
+	case VarType::FLOAT3:
+		writeLine() << L"DirectX::XMFLOAT3";
+		break;
+	case VarType::FLOAT4:
+		writeLine() << L"DirectX::XMFLOAT4";
+		break;
+	case VarType::UINT:
+		writeLine() << L"uint32_t";
+		break;
+	case VarType::UINT2:
+		writeLine() << L"DirectX::XMUINT2";
+		break;
+	case VarType::UINT3:
+		writeLine() << L"DirectX::XMUINT3";
+		break;
+	case VarType::UINT4:
+		writeLine() << L"DirectX::XMUINT4";
+		break;
+	case VarType::MATRIX:
+		writeLine() << L"DirectX::XMMATRIX";
+		break;
+	default:
+		break;
+	}
+
+	write() << L" " << name;
+
+	if (numElement > 1)
+	{
+		write() << L"[" << numElement << L"]";
+	}
+
+	write() << L";";
+}
+
+inline void HeaderWriter::endDesc(const std::wstring& name)
+{
+	while (!descStack.empty() && descStack.top().name != name)
+	{
+		endDesc();
+	}
+}
+
 inline void HeaderWriter::endDesc()
 {
 	backward();
 
 	writeLine() << L"}";
 
-	if (descStack.top() == STRUCT || descStack.top() == UNION || descStack.top() == ENUM)
+	const DescType type = descStack.top().descType;
+
+	if (type == DescType::STRUCT || type == DescType::UNION || type == DescType::ENUM)
 	{
 		write() << L";";
 	}
