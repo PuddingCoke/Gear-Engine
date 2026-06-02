@@ -5,6 +5,8 @@
 
 #include<Gear/Core/GlobalDescriptorHeap.h>
 
+#include<Gear/Core/LocalDescriptorHeap.h>
+
 #include"D3D12Resource/PipelineResourceDesc.h"
 
 namespace Gear

@@ -39,7 +39,7 @@ Gear::Core::Resource::CounterBufferView::CounterBufferView(const bool persistent
 		{
 			viewGPUHandle = descriptorHandle.getCurrentGPUHandle();
 
-			const D3D12Core::DescriptorHandle nonShaderVisibleHandle = GlobalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(1);
+			const D3D12Core::DescriptorHandle nonShaderVisibleHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(1);
 
 			GraphicsDevice::get()->CreateUnorderedAccessView(buffer->getResource(), nullptr, &desc, nonShaderVisibleHandle.getCurrentCPUHandle());
 

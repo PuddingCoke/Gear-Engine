@@ -20,7 +20,7 @@ Gear::Core::Effect::HBAOPlusEffect::HBAOPlusEffect(GraphicsContext* const contex
 
 	D3D12Core::DescriptorHandle srvUAVCBVHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_CBV_SRV_UAV_HEAP_D3D12);
 
-	D3D12Core::DescriptorHandle rtvHandle = GlobalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_RTV_HEAP_D3D12);
+	D3D12Core::DescriptorHandle rtvHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_RTV_HEAP_D3D12);
 
 	GFSDK_SSAO_DescriptorHeaps_D3D12 descriptorHeaps;
 

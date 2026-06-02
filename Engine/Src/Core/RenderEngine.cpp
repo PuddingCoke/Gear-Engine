@@ -18,6 +18,8 @@
 
 #include<Gear/Core/Internal/GlobalDescriptorHeapInternal.h>
 
+#include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
+
 #include<Gear/Core/Internal/GlobalRootSignatureInternal.h>
 
 #include<Gear/Core/Internal/GlobalShaderInternal.h>
@@ -248,9 +250,9 @@ RenderEngineImpl::RenderEngineImpl(const uint32_t width, const uint32_t height, 
 
 	Gear::Core::GlobalShader::Internal::initialize();
 
-	Gear::Core::GlobalDescriptorHeap::Internal::initializeGlobalDescriptorHeaps();
+	Gear::Core::GlobalDescriptorHeap::Internal::initialize();
 
-	Gear::Core::GlobalDescriptorHeap::Internal::initializeLocalDescriptorHeaps();
+	Gear::Core::LocalDescriptorHeap::Internal::initialize();
 
 	Gear::Core::GlobalRootSignature::Internal::initialize();
 
@@ -270,7 +272,7 @@ RenderEngineImpl::RenderEngineImpl(const uint32_t width, const uint32_t height, 
 	//如果需要使用交换链的后备缓冲的话，那么需要为交换链的缓冲创建RTV
 	if (useSwapChainBuffer)
 	{
-		Gear::Core::D3D12Core::DescriptorHandle descriptorHandle = Gear::Core::GlobalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(Gear::Core::Graphics::getFrameBufferCount());
+		Gear::Core::D3D12Core::DescriptorHandle descriptorHandle = Gear::Core::LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(Gear::Core::Graphics::getFrameBufferCount());
 
 		backBufferHandles = makeUnique<D3D12_CPU_DESCRIPTOR_HANDLE[]>(Gear::Core::Graphics::getFrameBufferCount());
 
@@ -352,9 +354,9 @@ RenderEngineImpl::~RenderEngineImpl()
 
 	Gear::Core::GlobalRootSignature::Internal::release();
 
-	Gear::Core::GlobalDescriptorHeap::Internal::releaseLocalDescriptorHeaps();
+	Gear::Core::GlobalDescriptorHeap::Internal::release();
 
-	Gear::Core::GlobalDescriptorHeap::Internal::releaseGlobalDescriptorHeaps();
+	Gear::Core::LocalDescriptorHeap::Internal::release();
 
 	Gear::Core::GlobalShader::Internal::release();
 

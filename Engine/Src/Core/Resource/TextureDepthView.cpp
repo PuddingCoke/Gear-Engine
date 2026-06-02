@@ -58,11 +58,11 @@ Gear::Core::Resource::TextureDepthView::TextureDepthView(D3D12Resource::Texture*
 
 		if (persistent)
 		{
-			descriptorHandle = GlobalDescriptorHeap::getDepthStencilHeap()->allocStaticDescriptor(mipLevels);
+			descriptorHandle = LocalDescriptorHeap::getDepthStencilHeap()->allocStaticDescriptor(mipLevels);
 		}
 		else
 		{
-			descriptorHandle = GlobalDescriptorHeap::getDepthStencilHeap()->allocDynamicDescriptor(mipLevels);
+			descriptorHandle = LocalDescriptorHeap::getDepthStencilHeap()->allocDynamicDescriptor(mipLevels);
 		}
 
 		dsvMipHandles.resize(mipLevels);

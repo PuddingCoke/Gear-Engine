@@ -319,7 +319,7 @@ void GearImpl::runVideoRender()
 		D3D12_CPU_DESCRIPTOR_HANDLE textureHandles[numTextures] = {};
 
 		{
-			Gear::Core::D3D12Core::DescriptorHandle descriptorHandle = Gear::Core::GlobalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(numTextures);
+			Gear::Core::D3D12Core::DescriptorHandle descriptorHandle = Gear::Core::LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(numTextures);
 
 			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;

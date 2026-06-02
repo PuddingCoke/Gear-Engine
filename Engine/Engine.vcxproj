@@ -150,6 +150,7 @@
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\ToneMapEffectInternal.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\ToneMapEffect.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalShader.h" />
+    <ClInclude Include="Inc\Gear\Core\Internal\LocalDescriptorHeapInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderInfrastructure.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\DynamicCBufferManagerInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\GlobalDescriptorHeapInternal.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Inc\Gear\Core\Internal\GraphicsDeviceInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\GraphicsInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderEngineInternal.h" />
+    <ClInclude Include="Inc\Gear\Core\LocalDescriptorHeap.h" />
     <ClInclude Include="Inc\Gear\Core\PipelineStateBuilder.h" />
     <ClInclude Include="Inc\Gear\Core\RenderTask.h" />
     <ClInclude Include="Inc\Gear\Core\RenderThread.h" />
@@ -273,6 +275,7 @@
     <ClCompile Include="Src\Core\Effect\FXAAEffect.cpp" />
     <ClCompile Include="Src\Core\RenderTask.cpp" />
     <ClCompile Include="Src\Core\GlobalEffect\HDRClampEffect.cpp" />
+    <ClCompile Include="Src\Core\LocalDescriptorHeap.cpp" />
     <ClCompile Include="Src\Utils\DeltaTimeEstimator.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\DescriptorHeap.cpp" />
     <ClCompile Include="Src\Core\Resource\D3D12Resource\ReadbackHeap.cpp" />

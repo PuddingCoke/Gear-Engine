@@ -2,7 +2,7 @@
 
 #include<Gear/Core/RenderEngine.h>
 
-#include<Gear/Core/Internal/GlobalDescriptorHeapInternal.h>
+#include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
 
 Gear::Core::RenderThread::RenderThread(const std::function<void(RenderTask**)>& createFunc) :
 	initialized(false), createFunc(createFunc), renderTask(nullptr), errorOccured(false)
@@ -29,8 +29,8 @@ bool Gear::Core::RenderThread::waitInitialized()
 
 void Gear::Core::RenderThread::workerLoop()
 {
-	//申请每个渲染线程的 staging resource heap render target heap depth stencil heap
-	GlobalDescriptorHeap::Internal::initializeLocalDescriptorHeaps();
+	//申请每个渲染线程独享的描述符堆
+	LocalDescriptorHeap::Internal::initialize();
 
 #ifdef _DEBUG
 	try
@@ -74,6 +74,6 @@ void Gear::Core::RenderThread::workerLoop()
 	//由主渲染线程来调度
 	renderTask->workerLoop();
 
-	//释放子渲染线程申请的资源
-	GlobalDescriptorHeap::Internal::releaseLocalDescriptorHeaps();
+	//释放申请的独享描述符堆
+	LocalDescriptorHeap::Internal::release();
 }

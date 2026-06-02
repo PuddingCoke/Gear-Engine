@@ -148,7 +148,7 @@ Gear::Core::Resource::TextureRenderView::TextureRenderView(D3D12Resource::Textur
 
 			if (persistent)
 			{
-				nonShaderVisibleHandle = GlobalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(texture->getMipLevels());
+				nonShaderVisibleHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(texture->getMipLevels());
 			}
 
 			uavMipIndices.resize(texture->getMipLevels());
@@ -210,11 +210,11 @@ Gear::Core::Resource::TextureRenderView::TextureRenderView(D3D12Resource::Textur
 
 		if (persistent)
 		{
-			descriptorHandle = GlobalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(texture->getMipLevels());
+			descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(texture->getMipLevels());
 		}
 		else
 		{
-			descriptorHandle = GlobalDescriptorHeap::getRenderTargetHeap()->allocDynamicDescriptor(texture->getMipLevels());
+			descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocDynamicDescriptor(texture->getMipLevels());
 		}
 
 		rtvMipHandles.resize(texture->getMipLevels());

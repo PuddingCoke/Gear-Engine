@@ -92,7 +92,7 @@ Gear::Core::Resource::BufferView::BufferView(D3D12Resource::Buffer* const buffer
 			{
 				viewGPUHandle = descriptorHandle.getCurrentGPUHandle();
 
-				const D3D12Core::DescriptorHandle nonShaderVisibleHandle = GlobalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(1);
+				const D3D12Core::DescriptorHandle nonShaderVisibleHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(1);
 
 				if (isStructuredBuffer)
 				{

@@ -43,7 +43,7 @@ Gear::Core::D3D12Core::DescriptorHandle Gear::Core::Resource::ResourceBase::allo
 	}
 	else
 	{
-		copySrcDescriptorHandle = GlobalDescriptorHeap::getStagingResourceHeap()->allocDynamicDescriptor(getNumCBVSRVUAVDescriptors());
+		copySrcDescriptorHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocDynamicDescriptor(getNumCBVSRVUAVDescriptors());
 	}
 
 	return copySrcDescriptorHandle;
