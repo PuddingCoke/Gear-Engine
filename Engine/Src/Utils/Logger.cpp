@@ -53,7 +53,7 @@ namespace Gear::Utils::Logger
 				}
 			}
 
-			void submitLogMessage(const Gear::Utils::Logger::LogMessage& msg)
+			void submitLogMessage(const LogMessage& msg)
 			{
 				{
 					std::lock_guard<std::mutex> lockGuard(queueLock);
@@ -68,7 +68,7 @@ namespace Gear::Utils::Logger
 
 			std::wofstream file;
 
-			std::queue<Gear::Utils::Logger::LogMessage> messages;
+			std::queue<LogMessage> messages;
 
 			bool isRunning;
 
@@ -97,7 +97,7 @@ namespace Gear::Utils::Logger
 
 				while (!messages.empty())
 				{
-					Gear::Utils::Logger::LogMessage message = std::move(messages.front());
+					LogMessage message = std::move(messages.front());
 
 					messages.pop();
 
@@ -135,7 +135,7 @@ namespace Gear::Utils::Logger
 
 					while (!messages.empty())
 					{
-						Gear::Utils::Logger::LogMessage message = std::move(messages.front());
+						LogMessage message = std::move(messages.front());
 
 						messages.pop();
 
@@ -157,7 +157,7 @@ namespace Gear::Utils::Logger
 
 						lock.lock();
 
-						if (message.type == Gear::Utils::Logger::LogType::LOG_ERROR)
+						if (message.type == LogType::LOG_ERROR)
 						{
 							isRunning = false;
 

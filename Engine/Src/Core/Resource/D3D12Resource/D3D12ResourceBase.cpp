@@ -22,7 +22,7 @@ namespace Gear::Core::Resource::D3D12Resource
 		stateTracking(makeShared<bool>(stateTracking)), sharedResource(makeShared<bool>(false)),
 		inReferredList(false), inTrackingList(false)
 	{
-		Gear::Core::GraphicsDevice::get()->CreateCommittedResource(&properties, flags, &desc, initialState, clearValues, IID_PPV_ARGS(&resource));
+		GraphicsDevice::get()->CreateCommittedResource(&properties, flags, &desc, initialState, clearValues, IID_PPV_ARGS(&resource));
 	}
 
 	D3D12ResourceBase::D3D12ResourceBase(D3D12ResourceBase& res) :

@@ -30,7 +30,7 @@ namespace Gear::Core::Resource
 		numCBVSRVUAVDescriptors = numDescriptors;
 	}
 
-	Gear::Core::D3D12Core::DescriptorHandle ResourceBase::allocCBVSRVUAVDescriptors()
+	D3D12Core::DescriptorHandle ResourceBase::allocCBVSRVUAVDescriptors()
 	{
 #ifdef _DEBUG
 		if (getNumCBVSRVUAVDescriptors() == 0u)
@@ -51,7 +51,7 @@ namespace Gear::Core::Resource
 		return copySrcDescriptorHandle;
 	}
 
-	Gear::Core::D3D12Core::DescriptorHandle ResourceBase::copyToResourceHeap() const
+	D3D12Core::DescriptorHandle ResourceBase::copyToResourceHeap() const
 	{
 #ifdef _DEBUG
 		if (persistent)

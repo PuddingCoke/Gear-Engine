@@ -157,135 +157,135 @@ namespace Gear::Utils::Logger
 		std::condition_variable inUseCV;
 
 	};
-}
 
-template<typename ...Args>
-inline Gear::Utils::Logger::LogMessage Gear::Utils::Logger::LogContext::createLogMessage(const wchar_t* const functionName, const LogType& type, const Args & ...args)
-{
-	thread_local LogContext context;
-
-	context.resetState();
-
-	return context.getLogMessage(functionName, type, args...);
-}
-
-template<typename ...Args>
-inline Gear::Utils::Logger::LogMessage Gear::Utils::Logger::LogContext::getLogMessage(const wchar_t* const functionName, const LogType& type, const Args & ...args)
-{
-	if (slots[writeIndex].inUse)
+	template<typename ...Args>
+	inline LogMessage LogContext::createLogMessage(const wchar_t* const functionName, const LogType& type, const Args & ...args)
 	{
-		std::unique_lock<std::mutex> inUseLock(inUseMutex);
+		thread_local LogContext context;
 
-		inUseCV.wait(inUseLock, [this]() {return !slots[writeIndex].inUse; });
+		context.resetState();
+
+		return context.getLogMessage(functionName, type, args...);
 	}
 
-	messageStr = &slots[writeIndex].str;
-
-	slots[writeIndex].inUse = true;
-
-	const LogMessage message = { slots[writeIndex],inUseMutex,inUseCV,type };
-
-	writeIndex = (writeIndex + 1u) % slotNum;
-
-	messageStr->clear();
-
+	template<typename ...Args>
+	inline LogMessage LogContext::getLogMessage(const wchar_t* const functionName, const LogType& type, const Args & ...args)
 	{
-		const time_t currentTime = time(nullptr);
+		if (slots[writeIndex].inUse)
+		{
+			std::unique_lock<std::mutex> inUseLock(inUseMutex);
 
-		tm localTime = {};
+			inUseCV.wait(inUseLock, [this]() {return !slots[writeIndex].inUse; });
+		}
 
-		localtime_s(&localTime, &currentTime);
+		messageStr = &slots[writeIndex].str;
 
-		//headerStrLen = 5+2+8+1+5+2+1+10+1+5+2+length(functionName)+1+1
-		//			   = 44+length(functionName)
-		const size_t headerStrLen = 256ull;
+		slots[writeIndex].inUse = true;
 
-		wchar_t headerStr[headerStrLen] = {};
+		const LogMessage message = { slots[writeIndex],inUseMutex,inUseCV,type };
 
-		const std::thread::id id = std::this_thread::get_id();
+		writeIndex = (writeIndex + 1u) % slotNum;
 
-		const uint32_t threadId = *(uint32_t*)&id;
+		messageStr->clear();
 
-		swprintf_s(headerStr, headerStrLen, L"%s[%d:%d:%d] %s{T%u} %s(%s) ", LogColor::timeStampColor.code, localTime.tm_hour, localTime.tm_min, localTime.tm_sec,
-			LogColor::threadIdColor.code, threadId, LogColor::functionNameColor.code, functionName);
+		{
+			const time_t currentTime = time(nullptr);
 
-		*messageStr += headerStr;
+			tm localTime = {};
+
+			localtime_s(&localTime, &currentTime);
+
+			//headerStrLen = 5+2+8+1+5+2+1+10+1+5+2+length(functionName)+1+1
+			//			   = 44+length(functionName)
+			const size_t headerStrLen = 256ull;
+
+			wchar_t headerStr[headerStrLen] = {};
+
+			const std::thread::id id = std::this_thread::get_id();
+
+			const uint32_t threadId = *(uint32_t*)&id;
+
+			swprintf_s(headerStr, headerStrLen, L"%s[%d:%d:%d] %s{T%u} %s(%s) ", LogColor::timeStampColor.code, localTime.tm_hour, localTime.tm_min, localTime.tm_sec,
+				LogColor::threadIdColor.code, threadId, LogColor::functionNameColor.code, functionName);
+
+			*messageStr += headerStr;
+		}
+
+		switch (type)
+		{
+		case LogType::LOG_SUCCESS:
+
+			packArgument(LogColor::successColor);
+
+			packArgument(L"<SUCCESS>");
+
+			break;
+		case LogType::LOG_ERROR:
+
+			packArgument(LogColor::errorColor);
+
+			packArgument(L"<ERROR>");
+
+			break;
+		case LogType::LOG_ENGINE:
+
+			packArgument(LogColor::engineColor);
+
+			packArgument(L"<ENGINE>");
+
+			break;
+		case LogType::LOG_USER:
+
+			packArgument(LogColor::userColor);
+
+			packArgument(L"<USER>");
+
+			break;
+		}
+
+		packArgument(LogColor::defaultColor);
+
+		packRestArgument(args...);
+
+		return message;
 	}
 
-	switch (type)
+	template<typename First, typename ...Rest>
+	inline void LogContext::packRestArgument(const First& first, const Rest& ...rest)
 	{
-	case LogType::LOG_SUCCESS:
+		static_assert(!std::is_same<std::string, First>::value, "error input type is std::string");
 
-		packArgument(LogColor::successColor);
+		static_assert(!isNativeString<First>::value, "error input type is native string");
 
-		packArgument(L"<SUCCESS>");
+		packArgument(first);
 
-		break;
-	case LogType::LOG_ERROR:
-
-		packArgument(LogColor::errorColor);
-
-		packArgument(L"<ERROR>");
-
-		break;
-	case LogType::LOG_ENGINE:
-
-		packArgument(LogColor::engineColor);
-
-		packArgument(L"<ENGINE>");
-
-		break;
-	case LogType::LOG_USER:
-
-		packArgument(LogColor::userColor);
-
-		packArgument(L"<USER>");
-
-		break;
+		packRestArgument(rest...);
 	}
 
-	packArgument(LogColor::defaultColor);
+	template<typename Arg>
+	inline void LogContext::packArgument(const Arg& arg)
+	{
+		static_assert(0, "not supported type");
 
-	packRestArgument(args...);
+		//用于测试
+		/*setDisplayColor(textColor);
 
-	return message;
-}
+		const std::string ty = typeid(Arg).name();
 
-template<typename First, typename ...Rest>
-inline void Gear::Utils::Logger::LogContext::packRestArgument(const First& first, const Rest& ...rest)
-{
-	static_assert(!std::is_same<std::string, First>::value, "error input type is std::string");
+		packArgument(std::wstring(ty.cbegin(), ty.cend()));*/
+	}
 
-	static_assert(!isNativeString<First>::value, "error input type is native string");
+	template<typename Arg>
+	inline void LogContext::packFloatPoint(const Arg& arg)
+	{
+		setDisplayColor(LogColor::numericColor);
 
-	packArgument(first);
+		wchar_t buff[_CVTBUFSIZE] = {};
 
-	packRestArgument(rest...);
-}
+		swprintf_s(buff, _CVTBUFSIZE, L"%.*f ", floatPrecision.precision, arg);
 
-template<typename Arg>
-inline void Gear::Utils::Logger::LogContext::packArgument(const Arg& arg)
-{
-	static_assert(0, "not supported type");
-
-	//用于测试
-	/*setDisplayColor(textColor);
-
-	const std::string ty = typeid(Arg).name();
-
-	packArgument(std::wstring(ty.cbegin(), ty.cend()));*/
-}
-
-template<typename Arg>
-inline void Gear::Utils::Logger::LogContext::packFloatPoint(const Arg& arg)
-{
-	setDisplayColor(LogColor::numericColor);
-
-	wchar_t buff[_CVTBUFSIZE] = {};
-
-	swprintf_s(buff, _CVTBUFSIZE, L"%.*f ", floatPrecision.precision, arg);
-
-	*messageStr += buff;
+		*messageStr += buff;
+	}
 }
 
 #endif // !_GEAR_UTILS_LOGGER_LOGCONTEXT_H_

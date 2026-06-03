@@ -484,9 +484,9 @@ namespace Gear::Core::RenderEngine
 
 					perframeResource.timeElapsed = Graphics::getTimeElapsed();
 
-					perframeResource.uintSeed = Gear::Utils::Random::genUint();
+					perframeResource.uintSeed = Utils::Random::genUint();
 
-					perframeResource.floatSeed = Gear::Utils::Random::genFloat();
+					perframeResource.floatSeed = Utils::Random::genFloat();
 
 					perframeResource.screenSize = DirectX::XMFLOAT2(
 						static_cast<float>(Graphics::getWidth()),

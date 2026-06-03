@@ -33,7 +33,7 @@ namespace Gear::Core::Graphics
 
 			D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
 
-			Gear::Core::Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer = nullptr;
+			Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer = nullptr;
 
 		}impl;
 

@@ -31,17 +31,17 @@ namespace Gear::Input::Mouse
 
 			bool onScrolled = false;
 
-			Gear::Input::Event moveEvent;
+			Event moveEvent;
 
-			Gear::Input::Event leftDownEvent;
+			Event leftDownEvent;
 
-			Gear::Input::Event rightDownEvent;
+			Event rightDownEvent;
 
-			Gear::Input::Event leftUpEvent;
+			Event leftUpEvent;
 
-			Gear::Input::Event rightUpEvent;
+			Event rightUpEvent;
 
-			Gear::Input::Event scrollEvent;
+			Event scrollEvent;
 
 		}impl;
 
