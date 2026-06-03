@@ -54,21 +54,35 @@ namespace Gear::Utils::File
 
 	std::wstring getParentFolder(const std::wstring& filePath)
 	{
-		size_t idx = filePath.find_last_of(L'\\');
+		if (filePath.empty())
+		{
+			return filePath;
+		}
+
+		std::wstring trueFilePath = filePath;
+
+		if (filePath[filePath.length() - 1] == L'\\' || filePath[filePath.length() - 1] == L'/')
+		{
+			trueFilePath = trueFilePath.substr(0, filePath.length() - 1ull);
+		}
+
+		size_t idx = trueFilePath.find_last_of(L'\\');
 
 		if (idx != std::wstring::npos)
 		{
-			return filePath.substr(0, idx) + L"\\";
+			return trueFilePath.substr(0, idx) + L"\\";
 		}
-
-		idx = filePath.find_last_of(L'/');
-
-		if (idx != std::wstring::npos)
+		else
 		{
-			return filePath.substr(0, idx) + L"/";
+			idx = trueFilePath.find_last_of(L'/');
+
+			if (idx != std::wstring::npos)
+			{
+				return trueFilePath.substr(0, idx) + L"/";
+			}
 		}
 
-		return filePath;
+		return L"";
 	}
 
 	std::wstring getExtension(const std::wstring& filePath)
