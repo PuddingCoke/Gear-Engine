@@ -16,6 +16,20 @@ namespace Gear::Window::Win32Form
 
 	void release();
 
+	struct InitializeToken
+	{
+		InitializeToken(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle,
+			LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
+		{
+			initialize(title, startX, startY, width, height, windowStyle, windowCallback);
+		}
+
+		~InitializeToken()
+		{
+			release();
+		}
+	};
+
 	bool pollEvents();
 
 	HWND getHandle();

@@ -8,6 +8,9 @@ namespace Gear::Core::GlobalEffect::ToneMapEffect::Internal
 	void initialize();
 
 	void release();
+
+	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+
 }
 
 #endif // !_GEAR_CORE_GLOBALEFFECT_TONEMAPEFFECT_INTERNAL_H_

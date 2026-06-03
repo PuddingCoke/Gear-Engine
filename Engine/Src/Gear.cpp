@@ -58,6 +58,12 @@ namespace Gear
 
 		void reportLiveObjects() const;
 
+		UniquePtr<Utils::Logger::Internal::InitializeToken> loggerToken;
+
+		UniquePtr<Window::Win32Form::InitializeToken> windowToken;
+
+		UniquePtr<Core::RenderEngine::Internal::InitializeToken> renderEngineToken;
+
 		UniquePtr<Game> game;
 
 		//用于截屏
@@ -86,19 +92,14 @@ namespace Gear
 
 		Core::RenderEngine::Internal::waitForCurrentFrame();
 
+#ifdef _DEBUG
+
+		//由于Debug模式下需要输出存活的对象，所以需要手动释放相关资源
 		backBufferHeap.reset();
 
 		game.reset();
 
-		Core::RenderEngine::Internal::release();
-
-		Window::Win32Form::release();
-
-		LOGSUCCESS(L"engine exit");
-
-		Utils::Logger::Internal::release();
-
-#ifdef _DEBUG
+		renderEngineToken.reset();
 
 		reportLiveObjects();
 
@@ -107,7 +108,7 @@ namespace Gear
 
 	int32_t GearImpl::iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
 	{
-		Utils::Logger::Internal::initialize();
+		loggerToken = makeUnique<Utils::Logger::Internal::InitializeToken>();
 
 		Utils::File::Internal::setRootFolder(Utils::File::backslashToSlash(Utils::File::getParentFolder(argv[0])));
 
@@ -125,10 +126,10 @@ namespace Gear
 
 			realTimeRender = param.realTimeRender;
 
-			Window::Win32Form::initialize(param.title, (systemResolution.x - realTimeRender.width) / 2, (systemResolution.y - realTimeRender.height) / 2,
+			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, (systemResolution.x - realTimeRender.width) / 2, (systemResolution.y - realTimeRender.height) / 2,
 				realTimeRender.width, realTimeRender.height, Window::Win32Form::normalWindowStyle, Window::Win32Form::windowCallback);
 
-			Core::RenderEngine::Internal::initialize(realTimeRender.width, realTimeRender.height, Window::Win32Form::getHandle(), true, realTimeRender.enableImGuiSurface);
+			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(realTimeRender.width, realTimeRender.height, Window::Win32Form::getHandle(), true, realTimeRender.enableImGuiSurface);
 
 			backBufferHeap = makeUnique<Core::Resource::D3D12Resource::ReadbackHeap>(Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
 
@@ -140,11 +141,11 @@ namespace Gear
 
 			videoRender = param.videoRender;
 
-			Window::Win32Form::initialize(param.title, 100, 100, 100, 100, Window::Win32Form::normalWindowStyle, Window::Win32Form::encodeCallback);
+			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, 100, 100, 100, 100, Window::Win32Form::normalWindowStyle, Window::Win32Form::encodeCallback);
 
 			ShowWindow(Window::Win32Form::getHandle(), SW_HIDE);
 
-			Core::RenderEngine::Internal::initialize(videoRender.width, videoRender.height, Window::Win32Form::getHandle(), false, false);
+			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(videoRender.width, videoRender.height, Window::Win32Form::getHandle(), false, false);
 
 			LOGENGINE(L"engine usage video render");
 
@@ -152,7 +153,7 @@ namespace Gear
 
 		case InitializationParam::EngineUsage::WALLPAPER:
 
-			Window::Win32Form::initialize(param.title, 0, 0, systemResolution.x, systemResolution.y, Window::Win32Form::wallpaperWindowStyle, Window::Win32Form::wallpaperCallBack);
+			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, 0, 0, systemResolution.x, systemResolution.y, Window::Win32Form::wallpaperWindowStyle, Window::Win32Form::wallpaperCallBack);
 
 			{
 				const HWND parentHWND = Utils::WallpaperHelper::getWallpaperHWND();
@@ -160,7 +161,7 @@ namespace Gear
 				SetParent(Window::Win32Form::getHandle(), parentHWND);
 			}
 
-			Core::RenderEngine::Internal::initialize(systemResolution.x, systemResolution.y, Window::Win32Form::getHandle(), true, false);
+			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(systemResolution.x, systemResolution.y, Window::Win32Form::getHandle(), true, false);
 
 			LOGENGINE(L"engine usage wallpaper");
 

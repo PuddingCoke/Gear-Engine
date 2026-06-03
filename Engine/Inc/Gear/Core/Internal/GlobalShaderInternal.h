@@ -8,6 +8,8 @@ namespace Gear::Core::GlobalShader::Internal
 	void initialize();
 
 	void release();
+
+	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
 }
 
 #endif // !_GEAR_CORE_GLOBALSHADER_INTERNAL_H_

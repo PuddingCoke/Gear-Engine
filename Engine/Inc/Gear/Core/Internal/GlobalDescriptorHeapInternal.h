@@ -11,6 +11,8 @@ namespace Gear::Core::GlobalDescriptorHeap::Internal
 
 	void release();
 
+	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+
 	constexpr uint32_t numResourceHeapDescriptors = 1000000u;
 
 	constexpr uint32_t numStaticCBVSRVUAVDescriptors = 200000u;

@@ -11,6 +11,8 @@ namespace Gear::Core::DynamicCBufferManager::Internal
 
 	void release();
 
+	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+
 	void recordCommands(D3D12Core::CommandList* const commandList);
 }
 

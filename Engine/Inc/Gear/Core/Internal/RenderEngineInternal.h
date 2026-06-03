@@ -11,6 +11,19 @@ namespace Gear::Core::RenderEngine::Internal
 
 	void release();
 
+	struct InitializeToken
+	{
+		InitializeToken(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface)
+		{
+			initialize(width, height, hwnd, useSwapChainBuffer, initializeImGuiSurface);
+		}
+
+		~InitializeToken()
+		{
+			release();
+		}
+	};
+
 	void waitForCurrentFrame();
 
 	void waitForNextFrame();

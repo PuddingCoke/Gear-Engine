@@ -8,6 +8,8 @@ namespace Gear::Utils::Logger::Internal
 	void initialize();
 
 	void release();
+
+	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
 }
 
 #endif // !_GEAR_UTILS_LOGGER_INTERNAL_H_

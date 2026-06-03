@@ -14,14 +14,12 @@ int wmain(int argc, const wchar_t* argv[])
 	try
 	{
 #endif // _DEBUG
-		Gear::initialize();
+		Gear::InitializeToken token;
 
 		if (!Gear::iniEngine(param, argc, argv))
 		{
 			Gear::iniGame(makeUnique<MyGame>());
 		}
-
-		Gear::release();
 #ifdef _DEBUG
 	}
 	catch (const std::exception&)

@@ -11,6 +11,8 @@ namespace Gear::Core::GraphicsDevice::Internal
 
 	void release();
 
+	struct InitializeToken { InitializeToken(IUnknown* const adapter) { initialize(adapter); } ~InitializeToken() { release(); } };
+
 	void checkFeatureSupport();
 }
 

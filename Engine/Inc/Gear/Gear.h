@@ -20,6 +20,8 @@ namespace Gear
 
 	void release();
 
+	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+
 	void failureExit();
 
 }

@@ -11,6 +11,8 @@ namespace Gear::Core::LocalDescriptorHeap::Internal
 
 	void release();
 
+	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+
 	constexpr uint32_t numStagingResourceDescriptors = 2000000u;
 
 	constexpr uint32_t numStaticSRVDescriptors = 100000u;
