@@ -16,102 +16,113 @@
 
 namespace Gear::Utils::File
 {
-    namespace Internal
-    {
-        struct FileImpl
-        {
-            std::wstring rootFolder;
-        }impl;
+	namespace Internal
+	{
+		struct FileImpl
+		{
+			std::wstring rootFolder;
+		}impl;
 
-        void setRootFolder(const std::wstring& rootFolder)
-        {
-            impl.rootFolder = rootFolder;
-        }
-    }
+		void setRootFolder(const std::wstring& rootFolder)
+		{
+			impl.rootFolder = rootFolder;
+		}
+	}
 
-    std::wstring getRootFolder()
-    {
-        return Internal::impl.rootFolder;
-    }
+	std::wstring getRootFolder()
+	{
+		return Internal::impl.rootFolder;
+	}
 
-    std::wstring backslashToSlash(const std::wstring& filePath)
-    {
-        std::wstring result = filePath;
+	std::wstring backslashToSlash(const std::wstring& filePath)
+	{
+		std::wstring result = filePath;
 
-        std::replace(result.begin(), result.end(), L'\\', L'/');
+		std::replace(result.begin(), result.end(), L'\\', L'/');
 
-        return result;
-    }
+		return result;
+	}
 
-    std::wstring getParentFolder(const std::wstring& filePath)
-    {
-        size_t idx = filePath.find_last_of(L'\\');
+	std::wstring slashToBackSlash(const std::wstring& filePath)
+	{
+		std::wstring result = filePath;
 
-        if (idx == std::wstring::npos)
-        {
-            idx = filePath.find_last_of(L'/');
+		std::replace(result.begin(), result.end(), L'/', L'\\');
 
-            if (idx == std::wstring::npos)
-            {
-                return L"";
-            }
-        }
+		return result;
+	}
 
-        return filePath.substr(0, idx + 1);
-    }
+	std::wstring getParentFolder(const std::wstring& filePath)
+	{
+		size_t idx = filePath.find_last_of(L'\\');
 
-    std::wstring getExtension(const std::wstring& filePath)
-    {
-        const size_t idx = filePath.find_last_of(L'.');
+		if (idx != std::wstring::npos)
+		{
+			return filePath.substr(0, idx) + L"\\";
+		}
 
-        if (idx == std::wstring::npos)
-        {
-            return L"";
-        }
+		idx = filePath.find_last_of(L'/');
 
-        return filePath.substr(idx + 1, filePath.size() - idx - 1);
-    }
+		if (idx != std::wstring::npos)
+		{
+			return filePath.substr(0, idx) + L"/";
+		}
 
-    std::wstring readAllText(const std::wstring& filePath)
-    {
-        std::wifstream file(filePath);
+		return filePath;
+	}
 
-        if (!file.is_open())
-        {
-            LOGERROR(L"open file", filePath, L"failed");
-        }
+	std::wstring getExtension(const std::wstring& filePath)
+	{
+		const size_t idx = filePath.find_last_of(L'.');
 
-        std::wstringstream stringStream;
+		if (idx == std::wstring::npos)
+		{
+			return L"";
+		}
 
-        stringStream << file.rdbuf();
+		return filePath.substr(idx + 1, filePath.size() - idx - 1);
+	}
 
-        return stringStream.str();
-    }
+	std::wstring readAllText(const std::wstring& filePath)
+	{
+		std::wifstream file(filePath);
 
-    std::vector<uint8_t> readAllBinary(const std::wstring& filePath)
-    {
-        std::ifstream file(filePath, std::ios::ate | std::ios::binary);
+		if (!file.is_open())
+		{
+			LOGERROR(L"open file", filePath, L"failed");
+		}
 
-        if (!file.is_open())
-        {
-            LOGERROR(L"open file", filePath, L"failed");
-        }
+		std::wstringstream stringStream;
 
-        const size_t fileSize = static_cast<size_t>(file.tellg());
+		stringStream << file.rdbuf();
 
-        std::vector<uint8_t> bytes = std::vector<uint8_t>(fileSize);
+		return stringStream.str();
+	}
 
-        file.seekg(0);
+	std::vector<uint8_t> readAllBinary(const std::wstring& filePath)
+	{
+		std::ifstream file(filePath, std::ios::ate | std::ios::binary);
 
-        file.read(reinterpret_cast<char*>(bytes.data()), fileSize);
+		if (!file.is_open())
+		{
+			LOGERROR(L"open file", filePath, L"failed");
+		}
 
-        file.close();
+		const size_t fileSize = static_cast<size_t>(file.tellg());
 
-        return bytes;
-    }
+		std::vector<uint8_t> bytes = std::vector<uint8_t>(fileSize);
 
-    bool exist(const std::wstring& filePath)
-    {
-        return GetFileAttributesW(filePath.c_str()) != INVALID_FILE_ATTRIBUTES;
-    }
+		file.seekg(0);
+
+		file.read(reinterpret_cast<char*>(bytes.data()), fileSize);
+
+		file.close();
+
+		return bytes;
+	}
+
+	bool exist(const std::wstring& filePath)
+	{
+		return GetFileAttributesW(filePath.c_str()) != INVALID_FILE_ATTRIBUTES;
+	}
 }

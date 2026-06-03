@@ -15,6 +15,8 @@ namespace Gear::Utils::File
 
 	std::wstring backslashToSlash(const std::wstring& filePath);
 
+	std::wstring slashToBackSlash(const std::wstring& filePath);
+
 	std::wstring getParentFolder(const std::wstring& filePath);
 
 	std::wstring getExtension(const std::wstring& filePath);
