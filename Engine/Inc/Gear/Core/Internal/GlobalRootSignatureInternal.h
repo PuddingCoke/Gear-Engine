@@ -5,9 +5,9 @@
 
 namespace Gear::Core::GlobalRootSignature::Internal
 {
-				void initialize();
+	void initialize();
 
-				void release();
+	void release();
 }
 
 #endif // !_GEAR_CORE_GLOBALROOTSIGNATURE_INTERNAL_H_

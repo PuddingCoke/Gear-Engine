@@ -265,7 +265,7 @@ namespace
 
 uint32_t Gear::Core::DynamicCBufferManager::getNumRegion()
 {
-	return Gear::Core::DynamicCBufferManager::Internal::DynamicCBufferManagerImpl::numRegion;
+	return impl->numRegion;
 }
 
 Gear::Core::DynamicCBufferManager::AvailableLocation Gear::Core::DynamicCBufferManager::requestLocation(const uint32_t regionIndex)

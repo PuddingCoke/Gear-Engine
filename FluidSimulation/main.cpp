@@ -18,7 +18,7 @@ int wmain(int argc, const wchar_t* argv[])
 
 		if (!Gear::iniEngine(param, argc, argv))
 		{
-			Gear::iniGame(new MyGame());
+			Gear::iniGame(makeUnique<MyGame>());
 		}
 
 		Gear::release();
