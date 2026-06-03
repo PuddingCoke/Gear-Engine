@@ -9,8 +9,7 @@ namespace Gear::Core
 	GraphicsContext::GraphicsContext() :
 		commandList(makeUnique<D3D12Core::CommandList>(D3D12_COMMAND_LIST_TYPE_DIRECT)),
 		vp{ 0.f,0.f,0.f,0.f,0.f,1.f },
-		rt{ 0,0,0,0 },
-		resourceIndices{}
+		rt{ 0,0,0,0 }
 	{
 		resetTrackedStates();
 	}
@@ -159,11 +158,9 @@ namespace Gear::Core
 		}
 #endif // _DEBUG
 
-		transientRTVHandles.clear();
-
 		setResourceState(depthStencil);
 
-		commandList->setRenderTargets(static_cast<uint32_t>(transientRTVHandles.size()), transientRTVHandles.data(), FALSE, &depthStencil.dsvHandle);
+		commandList->setRenderTargets(0, nullptr, FALSE, &depthStencil.dsvHandle);
 	}
 
 	void GraphicsContext::setDefRenderTarget() const

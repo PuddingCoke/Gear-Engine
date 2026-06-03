@@ -13,6 +13,8 @@
 
 #include<Gear/Core/Resource/StaticCBuffer.h>
 
+#include<array>
+
 namespace Gear::Core
 {
 	class GraphicsContext
@@ -204,7 +206,6 @@ namespace Gear::Core
 		void setResourceState(const Resource::D3D12Resource::IndexBufferDesc& desc);
 
 		Resource::D3D12Resource::D3D12ResourceBase* setResourceState(const Resource::D3D12Resource::ClearUAVDesc& desc);
-		////////////////////////////
 
 		//重置内部追踪的状态
 		void resetGraphicsRootSignature();
@@ -214,15 +215,12 @@ namespace Gear::Core
 		void resetComputeRootSignature();
 
 		void resetUserDefinedGlobalConstantBuffer();
-		/////////////////
 
 		D3D12_VIEWPORT vp;
 
 		D3D12_RECT rt;
 
 		UniquePtr<D3D12Core::CommandList> commandList;
-
-		uint32_t resourceIndices[32];
 
 		std::vector<RootConstantBufferDesc> rootConstantBufferDescs;
 
@@ -240,13 +238,14 @@ namespace Gear::Core
 		const D3D12Core::RootSignature* graphicsRootSignature;
 
 		const D3D12Core::RootSignature* computeRootSignature;
-		////////////////////////////////////////
 
-		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> transientRTVHandles;
+		std::array<uint32_t, 32> transientResourceIndices;
 
-		std::vector<D3D12_VERTEX_BUFFER_VIEW> transientVBViews;
+		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> transientRTVHandles;
 
-		std::vector<D3D12_RESOURCE_BARRIER> transientUAVBarriers;
+		std::array<D3D12_VERTEX_BUFFER_VIEW, D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT> transientVBViews;
+
+		std::array<D3D12_RESOURCE_BARRIER, 32> transientUAVBarriers;
 
 	};
 
@@ -257,7 +256,7 @@ namespace Gear::Core
 
 		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 
-		setVSConstants(N, resourceIndices, offset);
+		setVSConstants(N, transientResourceIndices.data(), offset);
 	}
 
 	template<size_t N>
@@ -267,7 +266,7 @@ namespace Gear::Core
 
 		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 
-		setHSConstants(N, resourceIndices, offset);
+		setHSConstants(N, transientResourceIndices.data(), offset);
 	}
 
 	template<size_t N>
@@ -277,7 +276,7 @@ namespace Gear::Core
 
 		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 
-		setDSConstants(N, resourceIndices, offset);
+		setDSConstants(N, transientResourceIndices.data(), offset);
 	}
 
 	template<size_t N>
@@ -287,7 +286,7 @@ namespace Gear::Core
 
 		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 
-		setGSConstants(N, resourceIndices, offset);
+		setGSConstants(N, transientResourceIndices.data(), offset);
 	}
 
 	template<size_t N>
@@ -297,7 +296,7 @@ namespace Gear::Core
 
 		setShaderResources(descs, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-		setPSConstants(N, resourceIndices, offset);
+		setPSConstants(N, transientResourceIndices.data(), offset);
 	}
 
 	template<size_t N>
@@ -307,7 +306,7 @@ namespace Gear::Core
 
 		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 
-		setCSConstants(N, resourceIndices, offset);
+		setCSConstants(N, transientResourceIndices.data(), offset);
 	}
 
 	template<size_t N>
@@ -315,62 +314,54 @@ namespace Gear::Core
 	{
 		for (uint32_t i = 0; i < N; i++)
 		{
-			resourceIndices[i] = descs[i].resourceIndex;
+			transientResourceIndices[i] = descs[i].resourceIndex;
 		}
 	}
 
 	template<size_t N>
 	inline void GraphicsContext::setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
 	{
-		transientRTVHandles.clear();
-
-		for (const Resource::D3D12Resource::RenderTargetDesc& desc : renderTargets)
+		for (uint32_t i = 0; i < N; i++)
 		{
-			transientRTVHandles.emplace_back(desc.rtvHandle);
+			transientRTVHandles[i] = renderTargets[i].rtvHandle;
 
-			setResourceState(desc);
+			setResourceState(renderTargets[i]);
 		}
 
 		if (depthStencil.texture)
 		{
 			setResourceState(depthStencil);
 
-			commandList->setRenderTargets(static_cast<uint32_t>(transientRTVHandles.size()), transientRTVHandles.data(), FALSE, &(depthStencil.dsvHandle));
+			commandList->setRenderTargets(static_cast<uint32_t>(N), transientRTVHandles.data(), FALSE, &(depthStencil.dsvHandle));
 		}
 		else
 		{
-			commandList->setRenderTargets(static_cast<uint32_t>(transientRTVHandles.size()), transientRTVHandles.data(), FALSE, nullptr);
+			commandList->setRenderTargets(static_cast<uint32_t>(N), transientRTVHandles.data(), FALSE, nullptr);
 		}
 	}
 
 	template<size_t N>
 	inline void GraphicsContext::setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N])
 	{
-		transientVBViews.clear();
-
-		for (const Resource::D3D12Resource::VertexBufferDesc& desc : vertexBuffers)
+		for (uint32_t i = 0; i < N; i++)
 		{
-			transientVBViews.emplace_back(desc.vbv);
+			transientVBViews[i] = vertexBuffers[i].vbv;
 
-			setResourceState(desc);
+			setResourceState(vertexBuffers[i]);
 		}
 
-		commandList->setVertexBuffers(startSlot, static_cast<uint32_t>(transientVBViews.size()), transientVBViews.data());
+		commandList->setVertexBuffers(startSlot, static_cast<uint32_t>(N), transientVBViews.data());
 	}
 
 	template<size_t N>
 	inline void GraphicsContext::uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N])
 	{
-		transientUAVBarriers.clear();
-
-		for (const Resource::D3D12Resource::D3D12ResourceBase* const resource : resources)
+		for (uint32_t i = 0; i < N; i++)
 		{
-			const CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource());
-
-			transientUAVBarriers.emplace_back(barrier);
+			transientUAVBarriers[i] = CD3DX12_RESOURCE_BARRIER::UAV(resources[i]->getResource());
 		}
 
-		commandList->resourceBarrier(static_cast<uint32_t>(transientUAVBarriers.size()), transientUAVBarriers.data());
+		commandList->resourceBarrier(static_cast<uint32_t>(N), transientUAVBarriers.data());
 	}
 
 	template<size_t N>
