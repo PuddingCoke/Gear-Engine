@@ -20,701 +20,626 @@
 
 #include<DirectXTex/DirectXTex.h>
 
-Gear::Core::ResourceManager::ResourceManager() :
-	context(new GraphicsContext()), commandList(context->getCommandList()),
-	d3d12Resources(new std::vector<Resource::D3D12Resource::D3D12ResourceBase*>[Graphics::getFrameBufferCount()]),
-	resources(new std::vector<Resource::ResourceBase*>[Graphics::getFrameBufferCount()])
+namespace Gear::Core
 {
-}
-
-Gear::Core::ResourceManager::~ResourceManager()
-{
-	for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
+	ResourceManager::ResourceManager() :
+		context(new GraphicsContext()), commandList(context->getCommandList()),
+		d3d12Resources(new std::vector<Resource::D3D12Resource::D3D12ResourceBase*>[Graphics::getFrameBufferCount()]),
+		resources(new std::vector<Resource::ResourceBase*>[Graphics::getFrameBufferCount()])
 	{
-		for (const Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource : d3d12Resources[i])
+	}
+
+	ResourceManager::~ResourceManager()
+	{
+		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
+		{
+			for (const Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource : d3d12Resources[i])
+			{
+				delete d3d12Resource;
+			}
+
+			d3d12Resources[i].clear();
+
+			for (const Resource::ResourceBase* const resource : resources[i])
+			{
+				delete resource;
+			}
+
+			resources[i].clear();
+		}
+
+		delete[] d3d12Resources;
+
+		delete[] resources;
+
+		delete context;
+	}
+
+	void ResourceManager::deferredRelease(Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource)
+	{
+		d3d12Resources[Graphics::getFrameIndex()].push_back(d3d12Resource);
+	}
+
+	void ResourceManager::deferredRelease(Resource::ResourceBase* const resource)
+	{
+		resources[Graphics::getFrameIndex()].push_back(resource);
+	}
+
+	void ResourceManager::cleanTransientResources()
+	{
+		for (const Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource : d3d12Resources[Graphics::getFrameIndex()])
 		{
 			delete d3d12Resource;
 		}
 
-		d3d12Resources[i].clear();
+		d3d12Resources[Graphics::getFrameIndex()].clear();
 
-		for (const Resource::ResourceBase* const resource : resources[i])
+		for (const Resource::ResourceBase* const resource : resources[Graphics::getFrameIndex()])
 		{
 			delete resource;
 		}
 
-		resources[i].clear();
+		resources[Graphics::getFrameIndex()].clear();
 	}
 
-	delete[] d3d12Resources;
-
-	delete[] resources;
-
-	delete context;
-}
-
-void Gear::Core::ResourceManager::deferredRelease(Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource)
-{
-	d3d12Resources[Graphics::getFrameIndex()].push_back(d3d12Resource);
-}
-
-void Gear::Core::ResourceManager::deferredRelease(Resource::ResourceBase* const resource)
-{
-	resources[Graphics::getFrameIndex()].push_back(resource);
-}
-
-void Gear::Core::ResourceManager::cleanTransientResources()
-{
-	for (const Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource : d3d12Resources[Graphics::getFrameIndex()])
+	GraphicsContext* ResourceManager::getGraphicsContext() const
 	{
-		delete d3d12Resource;
+		return context;
 	}
 
-	d3d12Resources[Graphics::getFrameIndex()].clear();
-
-	for (const Resource::ResourceBase* const resource : resources[Graphics::getFrameIndex()])
+	D3D12Core::CommandList* ResourceManager::getCommandList() const
 	{
-		delete resource;
+		return commandList;
 	}
 
-	resources[Graphics::getFrameIndex()].clear();
-}
-
-Gear::Core::GraphicsContext* Gear::Core::ResourceManager::getGraphicsContext() const
-{
-	return context;
-}
-
-Gear::Core::D3D12Core::CommandList* Gear::Core::ResourceManager::getCommandList() const
-{
-	return commandList;
-}
-
-Gear::Core::Resource::D3D12Resource::Buffer* Gear::Core::ResourceManager::createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags)
-{
-	Resource::D3D12Resource::Buffer* buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
-
-	Resource::D3D12Resource::UploadHeap* uploadHeap = new Resource::D3D12Resource::UploadHeap(size);
-
-	uploadHeap->update(data, size);
-
-	deferredRelease(uploadHeap);
-
-	commandList->copyBufferRegion(buffer, 0, uploadHeap, 0, size);
-
-	return buffer;
-}
-
-Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::ResourceManager::createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube)
-{
-	Resource::D3D12Resource::Texture* texture = nullptr;
-
-	const std::wstring fileExtension = Utils::File::getExtension(filePath);
-
-	if (isTextureCube)
+	Resource::D3D12Resource::Buffer* ResourceManager::createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags)
 	{
-		*isTextureCube = false;
-	}
+		Resource::D3D12Resource::Buffer* buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
 
-	//这里要小心点，因为D3D12资源是由第三方库创建的，所以要注意资源的初始状态
-	//我查看了下源码发现资源一开始其实是处于D3D12_RESOURCE_STATE_COMMON状态
-	//但是这里有一个叫Implicit State Transitions即隐式状态转变的东西要注意
-	//因为我很久以前在调试引擎的时候发现了一个奇怪的报错现象，搜索相关资料后找到了下面这个网站
-	//https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#implicit-state-transitions
-	//资源一开始虽然是处于COMMOM状态，但是UpdateSubresources中存在CopyBufferRegion
-	//这个操作执行完后，资源的状态实际上会从D3D12_RESOURCE_STATE_COMMON被提升到D3D12_RESOURCE_STATE_COPY_DEST
-	//这就是为什么引擎内部追踪的初始状态会被设置为D3D12_RESOURCE_STATE_COPY_DEST
-	if (fileExtension == L"bmp" || fileExtension == L"jpg" || fileExtension == L"jpeg" || fileExtension == L"png" || fileExtension == L"tiff")
-	{
-		std::unique_ptr<uint8_t[]> decodedData;
+		Resource::D3D12Resource::UploadHeap* uploadHeap = new Resource::D3D12Resource::UploadHeap(size);
 
-		D3D12_SUBRESOURCE_DATA subresource;
-
-		ComPtr<ID3D12Resource> tex;
-
-		CHECKERROR(DirectX::LoadWICTextureFromFileEx(GraphicsDevice::get(), filePath.c_str(), 0, resFlags, DirectX::WIC_LOADER_DEFAULT, &tex, decodedData, subresource));
-
-		texture = new Resource::D3D12Resource::Texture(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
-
-		const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
-
-		Resource::D3D12Resource::UploadHeap* const uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
+		uploadHeap->update(data, size);
 
 		deferredRelease(uploadHeap);
 
-		UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
+		commandList->copyBufferRegion(buffer, 0, uploadHeap, 0, size);
+
+		return buffer;
 	}
-	else if (fileExtension == L"dds")
+
+	Resource::D3D12Resource::Texture* ResourceManager::createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube)
 	{
-		std::unique_ptr<uint8_t[]> decodedData;
+		Resource::D3D12Resource::Texture* texture = nullptr;
 
-		std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+		const std::wstring fileExtension = Utils::File::getExtension(filePath);
 
-		ComPtr<ID3D12Resource> tex;
-
-		CHECKERROR(DirectX::LoadDDSTextureFromFileEx(GraphicsDevice::get(), filePath.c_str(), 0, resFlags, DirectX::DDS_LOADER_DEFAULT, &tex, decodedData, subresources, nullptr, isTextureCube));
-
-		texture = new Resource::D3D12Resource::Texture(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
-
-		const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, static_cast<uint32_t>(subresources.size()));
-
-		Resource::D3D12Resource::UploadHeap* const uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
-
-		deferredRelease(uploadHeap);
-
-		UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, static_cast<uint32_t>(subresources.size()), subresources.data());
-	}
-	else if (fileExtension == L"hdr" || fileExtension == L"tga" || fileExtension == L"exr")
-	{
-		DirectX::TexMetadata metadata;
-
-		DirectX::ScratchImage scratchImage;
-
-		if (fileExtension == L"hdr")
+		if (isTextureCube)
 		{
-			CHECKERROR(DirectX::LoadFromHDRFile(filePath.c_str(), &metadata, scratchImage));
+			*isTextureCube = false;
 		}
-		else if (fileExtension == L"tga")
+
+		//这里要小心点，因为D3D12资源是由第三方库创建的，所以要注意资源的初始状态
+		//我查看了下源码发现资源一开始其实是处于D3D12_RESOURCE_STATE_COMMON状态
+		//但是这里有一个叫Implicit State Transitions即隐式状态转变的东西要注意
+		//因为我很久以前在调试引擎的时候发现了一个奇怪的报错现象，搜索相关资料后找到了下面这个网站
+		//https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#implicit-state-transitions
+		//资源一开始虽然是处于COMMOM状态，但是UpdateSubresources中存在CopyBufferRegion
+		//这个操作执行完后，资源的状态实际上会从D3D12_RESOURCE_STATE_COMMON被提升到D3D12_RESOURCE_STATE_COPY_DEST
+		//这就是为什么引擎内部追踪的初始状态会被设置为D3D12_RESOURCE_STATE_COPY_DEST
+		if (fileExtension == L"bmp" || fileExtension == L"jpg" || fileExtension == L"jpeg" || fileExtension == L"png" || fileExtension == L"tiff")
 		{
-			CHECKERROR(DirectX::LoadFromTGAFile(filePath.c_str(), &metadata, scratchImage));
+			std::unique_ptr<uint8_t[]> decodedData;
+
+			D3D12_SUBRESOURCE_DATA subresource;
+
+			ComPtr<ID3D12Resource> tex;
+
+			CHECKERROR(DirectX::LoadWICTextureFromFileEx(GraphicsDevice::get(), filePath.c_str(), 0, resFlags, DirectX::WIC_LOADER_DEFAULT, &tex, decodedData, subresource));
+
+			texture = new Resource::D3D12Resource::Texture(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
+
+			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
+
+			Resource::D3D12Resource::UploadHeap* const uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
+
+			deferredRelease(uploadHeap);
+
+			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
+		}
+		else if (fileExtension == L"dds")
+		{
+			std::unique_ptr<uint8_t[]> decodedData;
+
+			std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+
+			ComPtr<ID3D12Resource> tex;
+
+			CHECKERROR(DirectX::LoadDDSTextureFromFileEx(GraphicsDevice::get(), filePath.c_str(), 0, resFlags, DirectX::DDS_LOADER_DEFAULT, &tex, decodedData, subresources, nullptr, isTextureCube));
+
+			texture = new Resource::D3D12Resource::Texture(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
+
+			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, static_cast<uint32_t>(subresources.size()));
+
+			Resource::D3D12Resource::UploadHeap* const uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
+
+			deferredRelease(uploadHeap);
+
+			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, static_cast<uint32_t>(subresources.size()), subresources.data());
+		}
+		else if (fileExtension == L"hdr" || fileExtension == L"tga" || fileExtension == L"exr")
+		{
+			DirectX::TexMetadata metadata;
+
+			DirectX::ScratchImage scratchImage;
+
+			if (fileExtension == L"hdr")
+			{
+				CHECKERROR(DirectX::LoadFromHDRFile(filePath.c_str(), &metadata, scratchImage));
+			}
+			else if (fileExtension == L"tga")
+			{
+				CHECKERROR(DirectX::LoadFromTGAFile(filePath.c_str(), &metadata, scratchImage));
+			}
+			else
+			{
+				CHECKERROR(DirectX::LoadFromEXRFile(filePath.c_str(), &metadata, scratchImage));
+			}
+
+			const DirectX::Image* image = scratchImage.GetImage(0, 0, 0);
+
+			D3D12_SUBRESOURCE_DATA subresource;
+			subresource.pData = image->pixels;
+			subresource.RowPitch = image->rowPitch;
+			subresource.SlicePitch = image->slicePitch;
+
+			ComPtr<ID3D12Resource> tex;
+
+			CHECKERROR(DirectX::CreateTextureEx(GraphicsDevice::get(), metadata, resFlags, DirectX::CREATETEX_DEFAULT, &tex));
+
+			texture = new Resource::D3D12Resource::Texture(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
+
+			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
+
+			Resource::D3D12Resource::UploadHeap* const uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
+
+			deferredRelease(uploadHeap);
+
+			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
 		}
 		else
 		{
-			CHECKERROR(DirectX::LoadFromEXRFile(filePath.c_str(), &metadata, scratchImage));
+			LOGERROR(fileExtension, L"is not supported");
 		}
 
-		const DirectX::Image* image = scratchImage.GetImage(0, 0, 0);
+		LOGSUCCESS(L"load texture from", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
 
-		D3D12_SUBRESOURCE_DATA subresource;
-		subresource.pData = image->pixels;
-		subresource.RowPitch = image->rowPitch;
-		subresource.SlicePitch = image->slicePitch;
-
-		ComPtr<ID3D12Resource> tex;
-
-		CHECKERROR(DirectX::CreateTextureEx(GraphicsDevice::get(), metadata, resFlags, DirectX::CREATETEX_DEFAULT, &tex));
-
-		texture = new Resource::D3D12Resource::Texture(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
-
-		const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
-
-		Resource::D3D12Resource::UploadHeap* const uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
-
-		deferredRelease(uploadHeap);
-
-		UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
-	}
-	else
-	{
-		LOGERROR(fileExtension, L"is not supported");
+		return texture;
 	}
 
-	LOGSUCCESS(L"load texture from", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
-
-	return texture;
-}
-
-Gear::Core::Resource::D3D12Resource::Texture* Gear::Core::ResourceManager::createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags)
-{
-	Resource::D3D12Resource::Texture* texture = nullptr;
-
-	if (type == RandomDataType::NOISE)
+	Resource::D3D12Resource::Texture* ResourceManager::createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags)
 	{
-		struct Col
-		{
-			uint8_t r, g, b, a;
-		};
+		Resource::D3D12Resource::Texture* texture = nullptr;
 
-		std::vector<Col> colors(width * height);
-
-		for (uint32_t i = 0; i < width * height; i++)
+		if (type == RandomDataType::NOISE)
 		{
-			colors[i] =
+			struct Col
 			{
-				static_cast<uint8_t>(Utils::Random::genUint() % 256u),
-				static_cast<uint8_t>(Utils::Random::genUint() % 256u),
-				static_cast<uint8_t>(Utils::Random::genUint() % 256u),
-				static_cast<uint8_t>(Utils::Random::genUint() % 256u)
+				uint8_t r, g, b, a;
 			};
-		}
 
-		texture = new Resource::D3D12Resource::Texture(width, height, FMT::RGBA8UN, 1, 1, true, resFlags);
+			std::vector<Col> colors(width * height);
 
-		const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
-
-		Resource::D3D12Resource::UploadHeap* uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
-
-		deferredRelease(uploadHeap);
-
-		D3D12_SUBRESOURCE_DATA subresourceData = {};
-		subresourceData.pData = colors.data();
-		subresourceData.RowPitch = width * 4u;
-		subresourceData.SlicePitch = subresourceData.RowPitch * height;
-
-		UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresourceData);
-	}
-	else
-	{
-		struct HaflColor
-		{
-			DirectX::PackedVector::HALF r, g, b, a;
-		};
-
-		std::vector<HaflColor> colors(width * height);
-
-		for (uint32_t i = 0; i < width * height; i++)
-		{
-			colors[i] =
+			for (uint32_t i = 0; i < width * height; i++)
 			{
-				DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
-				DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
-				DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
-				DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss())
+				colors[i] =
+				{
+					static_cast<uint8_t>(Utils::Random::genUint() % 256u),
+					static_cast<uint8_t>(Utils::Random::genUint() % 256u),
+					static_cast<uint8_t>(Utils::Random::genUint() % 256u),
+					static_cast<uint8_t>(Utils::Random::genUint() % 256u)
+				};
+			}
+
+			texture = new Resource::D3D12Resource::Texture(width, height, FMT::RGBA8UN, 1, 1, true, resFlags);
+
+			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
+
+			Resource::D3D12Resource::UploadHeap* uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
+
+			deferredRelease(uploadHeap);
+
+			D3D12_SUBRESOURCE_DATA subresourceData = {};
+			subresourceData.pData = colors.data();
+			subresourceData.RowPitch = width * 4u;
+			subresourceData.SlicePitch = subresourceData.RowPitch * height;
+
+			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresourceData);
+		}
+		else
+		{
+			struct HaflColor
+			{
+				DirectX::PackedVector::HALF r, g, b, a;
 			};
+
+			std::vector<HaflColor> colors(width * height);
+
+			for (uint32_t i = 0; i < width * height; i++)
+			{
+				colors[i] =
+				{
+					DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
+					DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
+					DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
+					DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss())
+				};
+			}
+
+			texture = new Resource::D3D12Resource::Texture(width, height, FMT::RGBA16F, 1, 1, true, resFlags);
+
+			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
+
+			Resource::D3D12Resource::UploadHeap* uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
+
+			deferredRelease(uploadHeap);
+
+			D3D12_SUBRESOURCE_DATA subresourceData = {};
+			subresourceData.pData = colors.data();
+			subresourceData.RowPitch = width * 8u;
+			subresourceData.SlicePitch = subresourceData.RowPitch * height;
+
+			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresourceData);
 		}
 
-		texture = new Resource::D3D12Resource::Texture(width, height, FMT::RGBA16F, 1, 1, true, resFlags);
-
-		const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
-
-		Resource::D3D12Resource::UploadHeap* uploadHeap = new Resource::D3D12Resource::UploadHeap(uploadHeapSize);
-
-		deferredRelease(uploadHeap);
-
-		D3D12_SUBRESOURCE_DATA subresourceData = {};
-		subresourceData.pData = colors.data();
-		subresourceData.RowPitch = width * 8u;
-		subresourceData.SlicePitch = subresourceData.RowPitch * height;
-
-		UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresourceData);
+		return texture;
 	}
 
-	return texture;
-}
-
-UniquePtr<Gear::Core::Resource::ImmutableCBuffer> Gear::Core::ResourceManager::createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent)
-{
-	Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
-
-	commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-
-	commandList->transitionResources();
-
-	buffer->setStateTracking(false);
-
-	return makeUnique<Resource::ImmutableCBuffer>(buffer, size, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::StaticCBuffer> Gear::Core::ResourceManager::createStaticCBuffer(const uint32_t size, const void* const data, const bool persistent)
-{
-	Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
-
-	return makeUnique<Resource::StaticCBuffer>(buffer, size, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::StaticCBuffer> Gear::Core::ResourceManager::createStaticCBuffer(const uint32_t size, const bool persistent)
-{
-	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
-
-	return makeUnique<Resource::StaticCBuffer>(buffer, size, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::DynamicCBuffer> Gear::Core::ResourceManager::createDynamicCBuffer(const uint32_t size, const void* const data)
-{
-	UniquePtr<Resource::DynamicCBuffer> buffer = makeUnique<Resource::DynamicCBuffer>(size);
-
-	if (data)
+	UniquePtr<Resource::ImmutableCBuffer> ResourceManager::createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent)
 	{
-		buffer->simpleUpdate(data);
-	}
+		Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
-	return buffer;
-}
-
-UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent, const void* const data)
-{
-	if (createVBV && createIBV)
-	{
-		LOGERROR(L"a buffer cannot be used as VBV and IBV at the same time");
-	}
-
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if (createUAV)
-	{
-		resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-	}
-
-	Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, resFlags);
-
-	if (!cpuWritable && !createUAV)
-	{
-		uint32_t finalState = 0;
-
-		if (createSRV)
-		{
-			finalState |= D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
-		}
-
-		if (createVBV)
-		{
-			finalState |= D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-		}
-
-		if (createIBV)
-		{
-			finalState |= D3D12_RESOURCE_STATE_INDEX_BUFFER;
-		}
-
-		commandList->trackAndSetResourceState(buffer, finalState);
+		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 		commandList->transitionResources();
 
 		buffer->setStateTracking(false);
+
+		return makeUnique<Resource::ImmutableCBuffer>(buffer, size, persistent);
 	}
 
-	return makeUnique<Resource::BufferView>(buffer, 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent)
-{
-	if (createVBV && createIBV)
+	UniquePtr<Resource::StaticCBuffer> ResourceManager::createStaticCBuffer(const uint32_t size, const void* const data, const bool persistent)
 	{
-		LOGERROR(L"a bufffer cannot be used as VBV and IBV at the same time");
+		Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
+
+		return makeUnique<Resource::StaticCBuffer>(buffer, size, persistent);
 	}
 
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if (createUAV)
+	UniquePtr<Resource::StaticCBuffer> ResourceManager::createStaticCBuffer(const uint32_t size, const bool persistent)
 	{
-		resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
+
+		return makeUnique<Resource::StaticCBuffer>(buffer, size, persistent);
 	}
 
-	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
-
-	return makeUnique<Resource::BufferView>(buffer, 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent, const void* const data)
-{
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if (createUAV)
+	UniquePtr<Resource::DynamicCBuffer> ResourceManager::createDynamicCBuffer(const uint32_t size, const void* const data)
 	{
-		resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-	}
+		UniquePtr<Resource::DynamicCBuffer> buffer = makeUnique<Resource::DynamicCBuffer>(size);
 
-	Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, resFlags);
-
-	if (!cpuWritable && !createUAV)
-	{
-		uint32_t finalState = 0;
-
-		if (createSRV)
+		if (data)
 		{
-			finalState |= D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
+			buffer->simpleUpdate(data);
 		}
 
-		if (createVBV)
+		return buffer;
+	}
+
+	UniquePtr<Resource::BufferView> ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent, const void* const data)
+	{
+		if (createVBV && createIBV)
 		{
-			finalState |= D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+			LOGERROR(L"a buffer cannot be used as VBV and IBV at the same time");
 		}
 
-		commandList->trackAndSetResourceState(buffer, finalState);
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
-		commandList->transitionResources();
-
-		buffer->setStateTracking(false);
-	}
-
-	return makeUnique<Resource::BufferView>(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent)
-{
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if (createUAV)
-	{
-		resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-	}
-
-	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
-
-	return makeUnique<Resource::BufferView>(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data)
-{
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if (createUAV)
-	{
-		resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-	}
-
-	Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, resFlags);
-
-	if (!cpuWritable && !createUAV)
-	{
-		uint32_t finalState = 0;
-
-		if (createSRV)
-		{
-			finalState |= D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
-		}
-
-		commandList->trackAndSetResourceState(buffer, finalState);
-
-		commandList->transitionResources();
-
-		buffer->setStateTracking(false);
-	}
-
-	return makeUnique<Resource::BufferView>(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::BufferView> Gear::Core::ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent)
-{
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if (createUAV)
-	{
-		resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-	}
-
-	Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
-
-	return makeUnique<Resource::BufferView>(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::TextureDepthView> Gear::Core::ResourceManager::createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)
-{
-	DXGI_FORMAT clearValueFormat = FMT::UNKNOWN;
-
-	switch (resFormat)
-	{
-	case FMT::D32F:
-	case FMT::R32TL:
-		clearValueFormat = FMT::D32F;
-		break;
-	case FMT::D16UN:
-	case FMT::R16TL:
-		clearValueFormat = FMT::D16UN;
-		break;
-	case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
-	case DXGI_FORMAT_R32G8X24_TYPELESS:
-		clearValueFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
-		break;
-	case DXGI_FORMAT_D24_UNORM_S8_UINT:
-	case DXGI_FORMAT_R24G8_TYPELESS:
-		clearValueFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		break;
-	default:
-		LOGERROR(L"not supported dsv format");
-		break;
-	}
-
-	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = clearValueFormat;
-	clearValue.DepthStencil.Depth = 1.f;
-	clearValue.DepthStencil.Stencil = 0;
-
-	Resource::D3D12Resource::Texture* texture = new Resource::D3D12Resource::Texture(width, height, resFormat, arraySize, mipLevels, true, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &clearValue);
-
-	return makeUnique<Resource::TextureDepthView>(texture, isTextureCube, persistent);
-}
-
-UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureRenderView(const std::wstring& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
-{
-	bool stateTracking = true;
-
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if ((!hasRTV) && (!hasUAV))
-	{
-		stateTracking = false;
-	}
-	else
-	{
-		if (hasRTV)
-		{
-			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-		}
-
-		if (hasUAV)
+		if (createUAV)
 		{
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
-	}
 
-	bool isTextureCube = false;
+		Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, resFlags);
 
-	Resource::D3D12Resource::Texture* const texture = createTexture(filePath, resFlags, &isTextureCube);
-
-	if (!stateTracking)
-	{
-		commandList->trackAndSetResourceState(texture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
-
-		commandList->transitionResources();
-
-		texture->setStateTracking(false);
-	}
-
-	if (stateTracking)
-	{
-		return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, texture->getFormat(),
-			hasUAV ? texture->getFormat() : FMT::UNKNOWN, hasRTV ? texture->getFormat() : FMT::UNKNOWN);
-	}
-	else
-	{
-		return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, texture->getFormat(),
-			FMT::UNKNOWN, FMT::UNKNOWN);
-	}
-}
-
-UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
-{
-	const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
-
-	const bool hasUAV = (uavFormat != FMT::UNKNOWN);
-
-	bool stateTracking = true;
-
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if ((!hasRTV) && (!hasUAV))
-	{
-		stateTracking = false;
-	}
-	else
-	{
-		if (hasRTV)
+		if (!cpuWritable && !createUAV)
 		{
-			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			uint32_t finalState = 0;
+
+			if (createSRV)
+			{
+				finalState |= D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
+			}
+
+			if (createVBV)
+			{
+				finalState |= D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+			}
+
+			if (createIBV)
+			{
+				finalState |= D3D12_RESOURCE_STATE_INDEX_BUFFER;
+			}
+
+			commandList->trackAndSetResourceState(buffer, finalState);
+
+			commandList->transitionResources();
+
+			buffer->setStateTracking(false);
 		}
 
-		if (hasUAV)
+		return makeUnique<Resource::BufferView>(buffer, 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
+	}
+
+	UniquePtr<Resource::BufferView> ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent)
+	{
+		if (createVBV && createIBV)
+		{
+			LOGERROR(L"a bufffer cannot be used as VBV and IBV at the same time");
+		}
+
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
+
+		if (createUAV)
 		{
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
+
+		Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
+
+		return makeUnique<Resource::BufferView>(buffer, 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
 	}
 
-	Resource::D3D12Resource::Texture* texture = createTexture(width, height, type, resFlags);
-
-	if (!stateTracking)
+	UniquePtr<Resource::BufferView> ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent, const void* const data)
 	{
-		commandList->trackAndSetResourceState(texture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
-		commandList->transitionResources();
+		if (createUAV)
+		{
+			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
 
-		texture->setStateTracking(false);
+		Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, resFlags);
+
+		if (!cpuWritable && !createUAV)
+		{
+			uint32_t finalState = 0;
+
+			if (createSRV)
+			{
+				finalState |= D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
+			}
+
+			if (createVBV)
+			{
+				finalState |= D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+			}
+
+			commandList->trackAndSetResourceState(buffer, finalState);
+
+			commandList->transitionResources();
+
+			buffer->setStateTracking(false);
+		}
+
+		return makeUnique<Resource::BufferView>(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 	}
 
-	if (srvFormat == FMT::UNKNOWN)
+	UniquePtr<Resource::BufferView> ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent)
 	{
-		return makeUnique<Resource::TextureRenderView>(texture, false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
-	}
-	else
-	{
-		return makeUnique<Resource::TextureRenderView>(texture, false, persistent, srvFormat, uavFormat, rtvFormat);
-	}
-}
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
-UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color)
-{
-	const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
+		if (createUAV)
+		{
+			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
 
-	const bool hasUAV = (uavFormat != FMT::UNKNOWN);
+		Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
 
-	if ((!hasRTV) && (!hasUAV))
-	{
-		LOGERROR(L"you must set UAV or RTV format for customized render texture view");
-	}
-	else if (srvFormat == FMT::UNKNOWN)
-	{
-		LOGERROR(L"customized render texture view must have a valid SRV format");
+		return makeUnique<Resource::BufferView>(buffer, structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 	}
 
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if (hasRTV)
+	UniquePtr<Resource::BufferView> ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data)
 	{
-		resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
+
+		if (createUAV)
+		{
+			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
+
+		Resource::D3D12Resource::Buffer* const buffer = createBuffer(data, size, resFlags);
+
+		if (!cpuWritable && !createUAV)
+		{
+			uint32_t finalState = 0;
+
+			if (createSRV)
+			{
+				finalState |= D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
+			}
+
+			commandList->trackAndSetResourceState(buffer, finalState);
+
+			commandList->transitionResources();
+
+			buffer->setStateTracking(false);
+		}
+
+		return makeUnique<Resource::BufferView>(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
 	}
 
-	if (hasUAV)
+	UniquePtr<Resource::BufferView> ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent)
 	{
-		resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
+
+		if (createUAV)
+		{
+			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
+
+		Resource::D3D12Resource::Buffer* const buffer = new Resource::D3D12Resource::Buffer(size, true, resFlags);
+
+		return makeUnique<Resource::BufferView>(buffer, 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
 	}
 
-	Resource::D3D12Resource::Texture* texture = nullptr;
-
-	if (color)
+	UniquePtr<Resource::TextureDepthView> ResourceManager::createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)
 	{
+		DXGI_FORMAT clearValueFormat = FMT::UNKNOWN;
+
+		switch (resFormat)
+		{
+		case FMT::D32F:
+		case FMT::R32TL:
+			clearValueFormat = FMT::D32F;
+			break;
+		case FMT::D16UN:
+		case FMT::R16TL:
+			clearValueFormat = FMT::D16UN;
+			break;
+		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
+		case DXGI_FORMAT_R32G8X24_TYPELESS:
+			clearValueFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+			break;
+		case DXGI_FORMAT_D24_UNORM_S8_UINT:
+		case DXGI_FORMAT_R24G8_TYPELESS:
+			clearValueFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			break;
+		default:
+			LOGERROR(L"not supported dsv format");
+			break;
+		}
+
 		D3D12_CLEAR_VALUE clearValue = {};
-		clearValue.Format = rtvFormat;
-		memcpy(clearValue.Color, color, sizeof(float) * 4);
+		clearValue.Format = clearValueFormat;
+		clearValue.DepthStencil.Depth = 1.f;
+		clearValue.DepthStencil.Stencil = 0;
 
-		texture = new Resource::D3D12Resource::Texture(width, height, resFormat, arraySize, mipLevels, true, resFlags, &clearValue);
-	}
-	else
-	{
-		texture = new Resource::D3D12Resource::Texture(width, height, resFormat, arraySize, mipLevels, true, resFlags);
-	}
+		Resource::D3D12Resource::Texture* texture = new Resource::D3D12Resource::Texture(width, height, resFormat, arraySize, mipLevels, true, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &clearValue);
 
-	return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
-}
-
-UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
-{
-	UniquePtr<Resource::TextureRenderView> equirectangularMapRet = createTextureRenderView(filePath, false, true, false);
-
-	Resource::TextureRenderView* const equirectangularMap = equirectangularMapRet.release();
-
-	equirectangularMap->copyDescriptors();
-
-	deferredRelease(equirectangularMap);
-
-	GlobalEffect::HDRClampEffect::process(context, *equirectangularMap);
-
-	DXGI_FORMAT resFormat = FMT::UNKNOWN;
-
-	switch (FMT::getByteSize(equirectangularMap->getTexture()->getFormat()))
-	{
-	case 4:
-		resFormat = FMT::RGBA8UN;
-		break;
-	case 8:
-		resFormat = FMT::RGBA16F;
-		break;
-	case 16:
-		resFormat = FMT::RGBA32F;
-		break;
-	default:
-		LOGERROR(L"not supported equirectangular texture format");
-		break;
+		return makeUnique<Resource::TextureDepthView>(texture, isTextureCube, persistent);
 	}
 
-	UniquePtr<Resource::TextureRenderView> cubeMapRet = createTextureRenderView(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false,
-		resFormat, FMT::UNKNOWN, resFormat);
-
-	Resource::TextureRenderView* const cubeMap = cubeMapRet.release();
-
-	deferredRelease(cubeMap);
-
-	GlobalEffect::LatLongMapToCubeMapEffect::process(context, *equirectangularMap, *cubeMap);
-
-	bool stateTracking = true;
-
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if ((!hasRTV) && (!hasUAV))
+	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureRenderView(const std::wstring& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
 	{
-		stateTracking = false;
+		bool stateTracking = true;
+
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
+
+		if ((!hasRTV) && (!hasUAV))
+		{
+			stateTracking = false;
+		}
+		else
+		{
+			if (hasRTV)
+			{
+				resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			}
+
+			if (hasUAV)
+			{
+				resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			}
+		}
+
+		bool isTextureCube = false;
+
+		Resource::D3D12Resource::Texture* const texture = createTexture(filePath, resFlags, &isTextureCube);
+
+		if (!stateTracking)
+		{
+			commandList->trackAndSetResourceState(texture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+
+			commandList->transitionResources();
+
+			texture->setStateTracking(false);
+		}
+
+		if (stateTracking)
+		{
+			return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, texture->getFormat(),
+				hasUAV ? texture->getFormat() : FMT::UNKNOWN, hasRTV ? texture->getFormat() : FMT::UNKNOWN);
+		}
+		else
+		{
+			return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, texture->getFormat(),
+				FMT::UNKNOWN, FMT::UNKNOWN);
+		}
 	}
-	else
+
+	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 	{
+		const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
+
+		const bool hasUAV = (uavFormat != FMT::UNKNOWN);
+
+		bool stateTracking = true;
+
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
+
+		if ((!hasRTV) && (!hasUAV))
+		{
+			stateTracking = false;
+		}
+		else
+		{
+			if (hasRTV)
+			{
+				resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			}
+
+			if (hasUAV)
+			{
+				resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			}
+		}
+
+		Resource::D3D12Resource::Texture* texture = createTexture(width, height, type, resFlags);
+
+		if (!stateTracking)
+		{
+			commandList->trackAndSetResourceState(texture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+
+			commandList->transitionResources();
+
+			texture->setStateTracking(false);
+		}
+
+		if (srvFormat == FMT::UNKNOWN)
+		{
+			return makeUnique<Resource::TextureRenderView>(texture, false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+		}
+		else
+		{
+			return makeUnique<Resource::TextureRenderView>(texture, false, persistent, srvFormat, uavFormat, rtvFormat);
+		}
+	}
+
+	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color)
+	{
+		const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
+
+		const bool hasUAV = (uavFormat != FMT::UNKNOWN);
+
+		if ((!hasRTV) && (!hasUAV))
+		{
+			LOGERROR(L"you must set UAV or RTV format for customized render texture view");
+		}
+		else if (srvFormat == FMT::UNKNOWN)
+		{
+			LOGERROR(L"customized render texture view must have a valid SRV format");
+		}
+
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
+
 		if (hasRTV)
 		{
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
@@ -724,130 +649,208 @@ UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::
 		{
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
-	}
 
-	Resource::D3D12Resource::Texture* dstTexture = new Resource::D3D12Resource::Texture(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, resFlags);
+		Resource::D3D12Resource::Texture* texture = nullptr;
 
-	Resource::D3D12Resource::Texture* srcTexture = cubeMap->getTexture();
-
-	for (uint32_t i = 0; i < 6; i++)
-	{
-		const uint32_t dstSubresource = D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
-
-		const uint32_t srcSubresource = D3D12CalcSubresource(0, i, 0, srcTexture->getMipLevels(), srcTexture->getArraySize());
-
-		commandList->copyTextureRegion(dstTexture, dstSubresource, srcTexture, srcSubresource);
-	}
-
-	if (!stateTracking)
-	{
-		commandList->trackAndSetResourceState(dstTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
-
-		commandList->transitionResources();
-
-		dstTexture->setStateTracking(false);
-	}
-
-	if (stateTracking)
-	{
-		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(),
-			hasUAV ? dstTexture->getFormat() : FMT::UNKNOWN, hasRTV ? dstTexture->getFormat() : FMT::UNKNOWN);
-	}
-	else
-	{
-		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(),
-			FMT::UNKNOWN, FMT::UNKNOWN);
-	}
-}
-
-UniquePtr<Gear::Core::Resource::TextureRenderView> Gear::Core::ResourceManager::createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
-{
-	Resource::D3D12Resource::Texture* srcTextures[6] = {};
-
-	{
-		uint32_t index = 0;
-
-		for (const std::wstring& filePath : texturesPath)
+		if (color)
 		{
-			srcTextures[index] = createTexture(filePath, D3D12_RESOURCE_FLAG_NONE, nullptr);
+			D3D12_CLEAR_VALUE clearValue = {};
+			clearValue.Format = rtvFormat;
+			memcpy(clearValue.Color, color, sizeof(float) * 4);
 
-			deferredRelease(srcTextures[index]);
+			texture = new Resource::D3D12Resource::Texture(width, height, resFormat, arraySize, mipLevels, true, resFlags, &clearValue);
+		}
+		else
+		{
+			texture = new Resource::D3D12Resource::Texture(width, height, resFormat, arraySize, mipLevels, true, resFlags);
+		}
 
-			index++;
+		return makeUnique<Resource::TextureRenderView>(texture, isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
+	}
+
+	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
+	{
+		UniquePtr<Resource::TextureRenderView> equirectangularMapRet = createTextureRenderView(filePath, false, true, false);
+
+		Resource::TextureRenderView* const equirectangularMap = equirectangularMapRet.release();
+
+		equirectangularMap->copyDescriptors();
+
+		deferredRelease(equirectangularMap);
+
+		GlobalEffect::HDRClampEffect::process(context, *equirectangularMap);
+
+		DXGI_FORMAT resFormat = FMT::UNKNOWN;
+
+		switch (FMT::getByteSize(equirectangularMap->getTexture()->getFormat()))
+		{
+		case 4:
+			resFormat = FMT::RGBA8UN;
+			break;
+		case 8:
+			resFormat = FMT::RGBA16F;
+			break;
+		case 16:
+			resFormat = FMT::RGBA32F;
+			break;
+		default:
+			LOGERROR(L"not supported equirectangular texture format");
+			break;
+		}
+
+		UniquePtr<Resource::TextureRenderView> cubeMapRet = createTextureRenderView(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false,
+			resFormat, FMT::UNKNOWN, resFormat);
+
+		Resource::TextureRenderView* const cubeMap = cubeMapRet.release();
+
+		deferredRelease(cubeMap);
+
+		GlobalEffect::LatLongMapToCubeMapEffect::process(context, *equirectangularMap, *cubeMap);
+
+		bool stateTracking = true;
+
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
+
+		if ((!hasRTV) && (!hasUAV))
+		{
+			stateTracking = false;
+		}
+		else
+		{
+			if (hasRTV)
+			{
+				resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			}
+
+			if (hasUAV)
+			{
+				resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			}
+		}
+
+		Resource::D3D12Resource::Texture* dstTexture = new Resource::D3D12Resource::Texture(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, resFlags);
+
+		Resource::D3D12Resource::Texture* srcTexture = cubeMap->getTexture();
+
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			const uint32_t dstSubresource = D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
+
+			const uint32_t srcSubresource = D3D12CalcSubresource(0, i, 0, srcTexture->getMipLevels(), srcTexture->getArraySize());
+
+			commandList->copyTextureRegion(dstTexture, dstSubresource, srcTexture, srcSubresource);
+		}
+
+		if (!stateTracking)
+		{
+			commandList->trackAndSetResourceState(dstTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+
+			commandList->transitionResources();
+
+			dstTexture->setStateTracking(false);
+		}
+
+		if (stateTracking)
+		{
+			return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(),
+				hasUAV ? dstTexture->getFormat() : FMT::UNKNOWN, hasRTV ? dstTexture->getFormat() : FMT::UNKNOWN);
+		}
+		else
+		{
+			return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(),
+				FMT::UNKNOWN, FMT::UNKNOWN);
 		}
 	}
 
-	const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
-
-	const bool hasUAV = (uavFormat != FMT::UNKNOWN);
-
-	bool stateTracking = true;
-
-	D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
-
-	if ((!hasRTV) && (!hasUAV))
+	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 	{
-		stateTracking = false;
-	}
-	else
-	{
-		if (hasRTV)
+		Resource::D3D12Resource::Texture* srcTextures[6] = {};
+
 		{
-			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			uint32_t index = 0;
+
+			for (const std::wstring& filePath : texturesPath)
+			{
+				srcTextures[index] = createTexture(filePath, D3D12_RESOURCE_FLAG_NONE, nullptr);
+
+				deferredRelease(srcTextures[index]);
+
+				index++;
+			}
 		}
 
-		if (hasUAV)
+		const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
+
+		const bool hasUAV = (uavFormat != FMT::UNKNOWN);
+
+		bool stateTracking = true;
+
+		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
+
+		if ((!hasRTV) && (!hasUAV))
 		{
-			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			stateTracking = false;
+		}
+		else
+		{
+			if (hasRTV)
+			{
+				resFlags |= D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			}
+
+			if (hasUAV)
+			{
+				resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			}
+		}
+
+		Resource::D3D12Resource::Texture* dstTexture = new Resource::D3D12Resource::Texture(srcTextures[0]->getWidth(), srcTextures[0]->getHeight(), srcTextures[0]->getFormat(), 6, 1, true, resFlags);
+
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			const uint32_t dstSubresource = D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
+
+			const uint32_t srcSubresource = D3D12CalcSubresource(0, 0, 0, srcTextures[i]->getMipLevels(), srcTextures[i]->getArraySize());
+
+			commandList->copyTextureRegion(dstTexture, dstSubresource, srcTextures[i], srcSubresource);
+		}
+
+		if (!stateTracking)
+		{
+			commandList->trackAndSetResourceState(dstTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+
+			commandList->transitionResources();
+
+			dstTexture->setStateTracking(false);
+		}
+
+		if (srvFormat == FMT::UNKNOWN)
+		{
+			return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+		}
+		else
+		{
+			return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, srvFormat, uavFormat, rtvFormat);
 		}
 	}
 
-	Resource::D3D12Resource::Texture* dstTexture = new Resource::D3D12Resource::Texture(srcTextures[0]->getWidth(), srcTextures[0]->getHeight(), srcTextures[0]->getFormat(), 6, 1, true, resFlags);
-
-	for (uint32_t i = 0; i < 6; i++)
+	UniquePtr<Resource::SwapBuffer> ResourceManager::createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& readBufferFunc, const std::function<UniquePtr<Resource::BufferView>(void)>& writeBufferFunc)
 	{
-		const uint32_t dstSubresource = D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
-
-		const uint32_t srcSubresource = D3D12CalcSubresource(0, 0, 0, srcTextures[i]->getMipLevels(), srcTextures[i]->getArraySize());
-
-		commandList->copyTextureRegion(dstTexture, dstSubresource, srcTextures[i], srcSubresource);
+		return makeUnique<Resource::SwapBuffer>(readBufferFunc, writeBufferFunc);
 	}
 
-	if (!stateTracking)
+	UniquePtr<Resource::SwapBuffer> ResourceManager::createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& bufferFunc)
 	{
-		commandList->trackAndSetResourceState(dstTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
-
-		commandList->transitionResources();
-
-		dstTexture->setStateTracking(false);
+		return makeUnique<Resource::SwapBuffer>(bufferFunc, bufferFunc);
 	}
 
-	if (srvFormat == FMT::UNKNOWN)
+	UniquePtr<Resource::SwapTexture> ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::TextureRenderView>(void)>& writeTextureFunc)
 	{
-		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+		return makeUnique<Resource::SwapTexture>(readTextureFunc, writeTextureFunc);
 	}
-	else
+
+	UniquePtr<Resource::SwapTexture> ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& textureFunc)
 	{
-		return makeUnique<Resource::TextureRenderView>(dstTexture, true, persistent, srvFormat, uavFormat, rtvFormat);
+		return makeUnique<Resource::SwapTexture>(textureFunc, textureFunc);
 	}
-}
-
-UniquePtr<Gear::Core::Resource::SwapBuffer> Gear::Core::ResourceManager::createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& readBufferFunc, const std::function<UniquePtr<Resource::BufferView>(void)>& writeBufferFunc)
-{
-	return makeUnique<Resource::SwapBuffer>(readBufferFunc, writeBufferFunc);
-}
-
-UniquePtr<Gear::Core::Resource::SwapBuffer> Gear::Core::ResourceManager::createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& bufferFunc)
-{
-	return makeUnique<Resource::SwapBuffer>(bufferFunc, bufferFunc);
-}
-
-UniquePtr<Gear::Core::Resource::SwapTexture> Gear::Core::ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::TextureRenderView>(void)>& writeTextureFunc)
-{
-	return makeUnique<Resource::SwapTexture>(readTextureFunc, writeTextureFunc);
-}
-
-UniquePtr<Gear::Core::Resource::SwapTexture> Gear::Core::ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& textureFunc)
-{
-	return makeUnique<Resource::SwapTexture>(textureFunc, textureFunc);
 }

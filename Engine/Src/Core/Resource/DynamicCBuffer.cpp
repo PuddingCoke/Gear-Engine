@@ -8,68 +8,71 @@
 
 #include<Gear/Utils/Math.h>
 
-Gear::Core::Resource::DynamicCBuffer::DynamicCBuffer(const uint32_t size) :
-	ImmutableCBuffer(nullptr, size, true), regionIndex(Utils::Math::log2(size / 256u)), dataPtr(nullptr), acquireFrameIndex(UINT64_MAX), updateFrameIndex(UINT64_MAX)
+namespace Gear::Core::Resource
 {
-	if (regionIndex >= DynamicCBufferManager::getNumRegion())
+	DynamicCBuffer::DynamicCBuffer(const uint32_t size) :
+		ImmutableCBuffer(nullptr, size, true), regionIndex(Utils::Math::log2(size / 256u)), dataPtr(nullptr), acquireFrameIndex(UINT64_MAX), updateFrameIndex(UINT64_MAX)
 	{
-		std::wstring errorString = L"dynamic constant buffer size should be one of";
-
-		uint32_t factor = 1u;
-
-		for (uint32_t i = 0; i < DynamicCBufferManager::getNumRegion(); i++)
+		if (regionIndex >= DynamicCBufferManager::getNumRegion())
 		{
-			errorString += L" " + std::to_wstring(256u * factor) + L"bytes";
+			std::wstring errorString = L"dynamic constant buffer size should be one of";
 
-			factor <<= 1u;
+			uint32_t factor = 1u;
+
+			for (uint32_t i = 0; i < DynamicCBufferManager::getNumRegion(); i++)
+			{
+				errorString += L" " + std::to_wstring(256u * factor) + L"bytes";
+
+				factor <<= 1u;
+			}
+
+			LOGERROR(errorString);
+		}
+	}
+
+	void DynamicCBuffer::acquireDataPtr()
+	{
+#ifdef _DEBUG
+		if (acquireFrameIndex == Graphics::getRenderedFrameCount())
+		{
+			LOGERROR(L"you can only acquire data pointer for cbuffer once per frame");
+		}
+#endif // _DEBUG
+
+		acquireFrameIndex = Graphics::getRenderedFrameCount();
+
+		const DynamicCBufferManager::AvailableLocation& location = DynamicCBufferManager::requestLocation(regionIndex);
+
+		dataPtr = location.dataPtr;
+
+		gpuAddress = location.gpuAddress;
+
+		bufferIndex = location.descriptorIndex;
+	}
+
+	void DynamicCBuffer::updateData(const void* const data)
+	{
+#ifdef _DEBUG
+		if (acquireFrameIndex != Graphics::getRenderedFrameCount())
+		{
+			LOGERROR(L"you haven't acquire data pointer for this dynamic cbuffer yet");
 		}
 
-		LOGERROR(errorString);
-	}
-}
-
-void Gear::Core::Resource::DynamicCBuffer::acquireDataPtr()
-{
-#ifdef _DEBUG
-	if (acquireFrameIndex == Graphics::getRenderedFrameCount())
-	{
-		LOGERROR(L"you can only acquire data pointer for cbuffer once per frame");
-	}
+		if (updateFrameIndex == Graphics::getRenderedFrameCount())
+		{
+			LOGERROR(L"you can only update cbuffer once per frame");
+		}
 #endif // _DEBUG
 
-	acquireFrameIndex = Graphics::getRenderedFrameCount();
+		updateFrameIndex = Graphics::getRenderedFrameCount();
 
-	const DynamicCBufferManager::AvailableLocation& location = DynamicCBufferManager::requestLocation(regionIndex);
-
-	dataPtr = location.dataPtr;
-
-	gpuAddress = location.gpuAddress;
-
-	bufferIndex = location.descriptorIndex;
-}
-
-void Gear::Core::Resource::DynamicCBuffer::updateData(const void* const data)
-{
-#ifdef _DEBUG
-	if (acquireFrameIndex != Graphics::getRenderedFrameCount())
-	{
-		LOGERROR(L"you haven't acquire data pointer for this dynamic cbuffer yet");
+		memcpy(dataPtr, data, 256ull << regionIndex);
 	}
 
-	if (updateFrameIndex == Graphics::getRenderedFrameCount())
+	void DynamicCBuffer::simpleUpdate(const void* const data)
 	{
-		LOGERROR(L"you can only update cbuffer once per frame");
+		acquireDataPtr();
+
+		updateData(data);
 	}
-#endif // _DEBUG
-
-	updateFrameIndex = Graphics::getRenderedFrameCount();
-
-	memcpy(dataPtr, data, 256ull << regionIndex);
-}
-
-void Gear::Core::Resource::DynamicCBuffer::simpleUpdate(const void* const data)
-{
-	acquireDataPtr();
-
-	updateData(data);
 }

@@ -2,45 +2,48 @@
 
 #include<algorithm>
 
-Gear::Utils::DeltaTimeEstimator::DeltaTimeEstimator() :
-	historyDeltatime{}, sortedDeltaTime{}, historyDeltaTimeIndex(0), populated(false)
+namespace Gear::Utils
 {
-}
-
-Gear::Utils::DeltaTimeEstimator::~DeltaTimeEstimator()
-{
-}
-
-float Gear::Utils::DeltaTimeEstimator::getDeltaTime(const float lastDeltaTime)
-{
-	historyDeltatime[historyDeltaTimeIndex] = lastDeltaTime;
-
-	if (historyDeltaTimeIndex == 10)
+	DeltaTimeEstimator::DeltaTimeEstimator() :
+		historyDeltatime{}, sortedDeltaTime{}, historyDeltaTimeIndex(0), populated(false)
 	{
-		populated = true;
 	}
 
-	historyDeltaTimeIndex = (historyDeltaTimeIndex + 1) % numRecord;
-
-	if (!populated)
+	DeltaTimeEstimator::~DeltaTimeEstimator()
 	{
-		return lastDeltaTime;
 	}
 
-	memcpy(sortedDeltaTime, historyDeltatime, sizeof(float) * numRecord);
-
-	std::sort(sortedDeltaTime, sortedDeltaTime + numRecord);
-
-	float averageDeltaTime = 0.f;
-
-	for (uint32_t i = numDiscard; i < numRecord - numDiscard; i++)
+	float DeltaTimeEstimator::getDeltaTime(const float lastDeltaTime)
 	{
-		averageDeltaTime += sortedDeltaTime[i];
+		historyDeltatime[historyDeltaTimeIndex] = lastDeltaTime;
+
+		if (historyDeltaTimeIndex == 10)
+		{
+			populated = true;
+		}
+
+		historyDeltaTimeIndex = (historyDeltaTimeIndex + 1) % numRecord;
+
+		if (!populated)
+		{
+			return lastDeltaTime;
+		}
+
+		memcpy(sortedDeltaTime, historyDeltatime, sizeof(float) * numRecord);
+
+		std::sort(sortedDeltaTime, sortedDeltaTime + numRecord);
+
+		float averageDeltaTime = 0.f;
+
+		for (uint32_t i = numDiscard; i < numRecord - numDiscard; i++)
+		{
+			averageDeltaTime += sortedDeltaTime[i];
+		}
+
+		averageDeltaTime /= static_cast<float>(numRecord - 2 * numDiscard);
+
+		const float lerpDeltaTime = averageDeltaTime * (1.f - lerpFactor) + lastDeltaTime * lerpFactor;
+
+		return lerpDeltaTime;
 	}
-
-	averageDeltaTime /= static_cast<float>(numRecord - 2 * numDiscard);
-
-	const float lerpDeltaTime = averageDeltaTime * (1.f - lerpFactor) + lastDeltaTime * lerpFactor;
-
-	return lerpDeltaTime;
 }

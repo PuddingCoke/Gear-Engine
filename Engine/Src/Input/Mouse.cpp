@@ -2,231 +2,234 @@
 
 #include<Gear/Input/Internal/MouseInternal.h>
 
-namespace
+namespace Gear::Input::Mouse
 {
-	struct MouseImpl
+	namespace Internal
 	{
+		struct MouseImpl
+		{
 
-		float x = 0.f;
+			float x = 0.f;
 
-		float y = 0.f;
+			float y = 0.f;
 
-		float dx = 0.f;
+			float dx = 0.f;
 
-		float dy = 0.f;
+			float dy = 0.f;
 
-		float wheelDelta = 0.f;
+			float wheelDelta = 0.f;
 
-		bool leftDown = false;
+			bool leftDown = false;
 
-		bool rightDown = false;
+			bool rightDown = false;
 
-		bool onMoved = false;
+			bool onMoved = false;
 
-		bool onLeftDowned = false;
+			bool onLeftDowned = false;
 
-		bool onRightDowned = false;
+			bool onRightDowned = false;
 
-		bool onScrolled = false;
+			bool onScrolled = false;
 
-		Gear::Input::Event moveEvent;
+			Gear::Input::Event moveEvent;
 
-		Gear::Input::Event leftDownEvent;
+			Gear::Input::Event leftDownEvent;
 
-		Gear::Input::Event rightDownEvent;
+			Gear::Input::Event rightDownEvent;
 
-		Gear::Input::Event leftUpEvent;
+			Gear::Input::Event leftUpEvent;
 
-		Gear::Input::Event rightUpEvent;
+			Gear::Input::Event rightUpEvent;
 
-		Gear::Input::Event scrollEvent;
+			Gear::Input::Event scrollEvent;
 
-	}impl;
-}
+		}impl;
 
-float Gear::Input::Mouse::getX()
-{
-	return impl.x;
-}
+		void resetDeltaValue()
+		{
+			Internal::impl.dx = 0;
 
-float Gear::Input::Mouse::getY()
-{
-	return impl.y;
-}
+			Internal::impl.dy = 0;
 
-float Gear::Input::Mouse::getDX()
-{
-	return impl.dx;
-}
+			Internal::impl.onMoved = false;
 
-float Gear::Input::Mouse::getDY()
-{
-	return impl.dy;
-}
+			Internal::impl.onLeftDowned = false;
 
-float Gear::Input::Mouse::getWheelDelta()
-{
-	return impl.wheelDelta;
-}
+			Internal::impl.onRightDowned = false;
 
-bool Gear::Input::Mouse::getLeftDown()
-{
-	return impl.leftDown;
-}
+			Internal::impl.onScrolled = false;
+		}
 
-bool Gear::Input::Mouse::getRightDown()
-{
-	return impl.rightDown;
-}
+		void pressLeft()
+		{
+			impl.leftDown = true;
 
-bool Gear::Input::Mouse::onMove()
-{
-	return impl.onMoved;
-}
+			impl.onLeftDowned = true;
 
-bool Gear::Input::Mouse::onLeftDown()
-{
-	return impl.onLeftDowned;
-}
+			impl.leftDownEvent();
+		}
 
-bool Gear::Input::Mouse::onRightDown()
-{
-	return impl.onRightDowned;
-}
+		void pressRight()
+		{
+			impl.rightDown = true;
 
-bool Gear::Input::Mouse::onScroll()
-{
-	return impl.onScrolled;
-}
+			impl.onRightDowned = true;
 
-uint64_t Gear::Input::Mouse::addMoveEvent(const std::function<void(void)>& func)
-{
-	return impl.moveEvent += func;
-}
+			impl.rightDownEvent();
+		}
 
-uint64_t Gear::Input::Mouse::addLeftDownEvent(const std::function<void(void)>& func)
-{
-	return impl.leftDownEvent += func;
-}
+		void releaseLeft()
+		{
+			impl.leftDown = false;
 
-uint64_t Gear::Input::Mouse::addRightDownEvent(const std::function<void(void)>& func)
-{
-	return impl.rightDownEvent += func;
-}
+			impl.leftUpEvent();
+		}
 
-uint64_t Gear::Input::Mouse::addLeftUpEvent(const std::function<void(void)>& func)
-{
-	return impl.leftUpEvent += func;
-}
+		void releaseRight()
+		{
+			impl.rightDown = false;
 
-uint64_t Gear::Input::Mouse::addRightUpEvent(const std::function<void(void)>& func)
-{
-	return impl.rightUpEvent += func;
-}
+			impl.rightUpEvent();
+		}
 
-uint64_t Gear::Input::Mouse::addScrollEvent(const std::function<void(void)>& func)
-{
-	return impl.scrollEvent += func;
-}
+		void scroll(const float delta)
+		{
+			impl.wheelDelta = delta;
 
-void Gear::Input::Mouse::removeMoveEvent(const uint64_t id)
-{
-	impl.moveEvent -= id;
-}
+			impl.onScrolled = true;
 
-void Gear::Input::Mouse::removeLeftDownEvent(const uint64_t id)
-{
-	impl.leftDownEvent -= id;
-}
+			impl.scrollEvent();
+		}
 
-void Gear::Input::Mouse::removeRightDownEvent(const uint64_t id)
-{
-	impl.rightDownEvent -= id;
-}
+		void move(const float curX, const float curY)
+		{
+			impl.dx = curX - impl.x;
 
-void Gear::Input::Mouse::removeLeftUpEvent(const uint64_t id)
-{
-	impl.leftUpEvent -= id;
-}
+			impl.dy = curY - impl.y;
 
-void Gear::Input::Mouse::removeRightUpEvent(const uint64_t id)
-{
-	impl.rightUpEvent -= id;
-}
-
-void Gear::Input::Mouse::removeScrollEvent(const uint64_t id)
-{
-	impl.scrollEvent -= id;
-}
-
-void Gear::Input::Mouse::Internal::resetDeltaValue()
-{
-	impl.dx = 0;
-
-	impl.dy = 0;
-
-	impl.onMoved = false;
-
-	impl.onLeftDowned = false;
-
-	impl.onRightDowned = false;
-
-	impl.onScrolled = false;
-}
-
-void Gear::Input::Mouse::Internal::pressLeft()
-{
-	impl.leftDown = true;
-
-	impl.onLeftDowned = true;
-
-	impl.leftDownEvent();
-}
-
-void Gear::Input::Mouse::Internal::pressRight()
-{
-	impl.rightDown = true;
-
-	impl.onRightDowned = true;
-
-	impl.rightDownEvent();
-}
-
-void Gear::Input::Mouse::Internal::releaseLeft()
-{
-	impl.leftDown = false;
-
-	impl.leftUpEvent();
-}
-
-void Gear::Input::Mouse::Internal::releaseRight()
-{
-	impl.rightDown = false;
-
-	impl.rightUpEvent();
-}
-
-void Gear::Input::Mouse::Internal::scroll(const float delta)
-{
-	impl.wheelDelta = delta;
-
-	impl.onScrolled = true;
-
-	impl.scrollEvent();
-}
-
-void Gear::Input::Mouse::Internal::move(const float curX, const float curY)
-{
-	impl.dx = curX - impl.x;
-
-	impl.dy = curY - impl.y;
-
-	impl.x = curX;
-
-	impl.y = curY;
-
-	impl.onMoved = true;
-
-	impl.moveEvent();
+			impl.x = curX;
+
+			impl.y = curY;
+
+			impl.onMoved = true;
+
+			impl.moveEvent();
+		}
+	}
+
+	float getX()
+	{
+		return Internal::impl.x;
+	}
+
+	float getY()
+	{
+		return Internal::impl.y;
+	}
+
+	float getDX()
+	{
+		return Internal::impl.dx;
+	}
+
+	float getDY()
+	{
+		return Internal::impl.dy;
+	}
+
+	float getWheelDelta()
+	{
+		return Internal::impl.wheelDelta;
+	}
+
+	bool getLeftDown()
+	{
+		return Internal::impl.leftDown;
+	}
+
+	bool getRightDown()
+	{
+		return Internal::impl.rightDown;
+	}
+
+	bool onMove()
+	{
+		return Internal::impl.onMoved;
+	}
+
+	bool onLeftDown()
+	{
+		return Internal::impl.onLeftDowned;
+	}
+
+	bool onRightDown()
+	{
+		return Internal::impl.onRightDowned;
+	}
+
+	bool onScroll()
+	{
+		return Internal::impl.onScrolled;
+	}
+
+	uint64_t addMoveEvent(const std::function<void(void)>& func)
+	{
+		return Internal::impl.moveEvent += func;
+	}
+
+	uint64_t addLeftDownEvent(const std::function<void(void)>& func)
+	{
+		return Internal::impl.leftDownEvent += func;
+	}
+
+	uint64_t addRightDownEvent(const std::function<void(void)>& func)
+	{
+		return Internal::impl.rightDownEvent += func;
+	}
+
+	uint64_t addLeftUpEvent(const std::function<void(void)>& func)
+	{
+		return Internal::impl.leftUpEvent += func;
+	}
+
+	uint64_t addRightUpEvent(const std::function<void(void)>& func)
+	{
+		return Internal::impl.rightUpEvent += func;
+	}
+
+	uint64_t addScrollEvent(const std::function<void(void)>& func)
+	{
+		return Internal::impl.scrollEvent += func;
+	}
+
+	void removeMoveEvent(const uint64_t id)
+	{
+		Internal::impl.moveEvent -= id;
+	}
+
+	void removeLeftDownEvent(const uint64_t id)
+	{
+		Internal::impl.leftDownEvent -= id;
+	}
+
+	void removeRightDownEvent(const uint64_t id)
+	{
+		Internal::impl.rightDownEvent -= id;
+	}
+
+	void removeLeftUpEvent(const uint64_t id)
+	{
+		Internal::impl.leftUpEvent -= id;
+	}
+
+	void removeRightUpEvent(const uint64_t id)
+	{
+		Internal::impl.rightUpEvent -= id;
+	}
+
+	void removeScrollEvent(const uint64_t id)
+	{
+		Internal::impl.scrollEvent -= id;
+	}
 }
 

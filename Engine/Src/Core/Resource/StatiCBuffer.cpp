@@ -2,49 +2,52 @@
 
 #include<Gear/Core/Graphics.h>
 
-Gear::Core::Resource::StaticCBuffer::StaticCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent) :
-	ImmutableCBuffer(buffer, size, persistent)
+namespace Gear::Core::Resource
 {
-	uploadHeaps = new D3D12Resource::UploadHeap * [Graphics::getFrameBufferCount()];
-
-	dataPtrs = new void* [Graphics::getFrameBufferCount()];
-
-	for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
+	StaticCBuffer::StaticCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent) :
+		ImmutableCBuffer(buffer, size, persistent)
 	{
-		uploadHeaps[i] = new D3D12Resource::UploadHeap(size);
+		uploadHeaps = new D3D12Resource::UploadHeap * [Graphics::getFrameBufferCount()];
 
-		dataPtrs[i] = uploadHeaps[i]->map();
-	}
-}
+		dataPtrs = new void* [Graphics::getFrameBufferCount()];
 
-Gear::Core::Resource::StaticCBuffer::~StaticCBuffer()
-{
-	if (uploadHeaps)
-	{
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
-			if (uploadHeaps[i])
-			{
-				uploadHeaps[i]->unmap();
+			uploadHeaps[i] = new D3D12Resource::UploadHeap(size);
 
-				delete uploadHeaps[i];
+			dataPtrs[i] = uploadHeaps[i]->map();
+		}
+	}
+
+	StaticCBuffer::~StaticCBuffer()
+	{
+		if (uploadHeaps)
+		{
+			for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
+			{
+				if (uploadHeaps[i])
+				{
+					uploadHeaps[i]->unmap();
+
+					delete uploadHeaps[i];
+				}
 			}
+
+			delete[] uploadHeaps;
 		}
 
-		delete[] uploadHeaps;
+		if (dataPtrs)
+		{
+			delete[] dataPtrs;
+		}
 	}
 
-	if (dataPtrs)
+	StaticCBuffer::UpdateStruct StaticCBuffer::getUpdateStruct(const void* const data, const uint64_t size)
 	{
-		delete[] dataPtrs;
+		memcpy(dataPtrs[Graphics::getFrameIndex()], data, size);
+
+		const UpdateStruct updateStruct = { buffer,uploadHeaps[Graphics::getFrameIndex()] };
+
+		return updateStruct;
 	}
-}
-
-Gear::Core::Resource::StaticCBuffer::UpdateStruct Gear::Core::Resource::StaticCBuffer::getUpdateStruct(const void* const data, const uint64_t size)
-{
-	memcpy(dataPtrs[Graphics::getFrameIndex()], data, size);
-
-	const UpdateStruct updateStruct = { buffer,uploadHeaps[Graphics::getFrameIndex()] };
-
-	return updateStruct;
 }

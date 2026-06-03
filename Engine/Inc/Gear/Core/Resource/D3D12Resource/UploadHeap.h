@@ -5,48 +5,39 @@
 
 #include"D3D12ResourceBase.h"
 
-namespace Gear
+namespace Gear::Core::Resource::D3D12Resource
 {
-	namespace Core
+	class UploadHeap :public D3D12ResourceBase
 	{
-		namespace Resource
-		{
-			namespace D3D12Resource
-			{
-				class UploadHeap :public D3D12ResourceBase
-				{
-				public:
+	public:
 
-					UploadHeap() = delete;
+		UploadHeap() = delete;
 
-					UploadHeap(const UploadHeap&) = delete;
+		UploadHeap(const UploadHeap&) = delete;
 
-					void operator=(const UploadHeap&) = delete;
+		void operator=(const UploadHeap&) = delete;
 
-					UploadHeap(const uint64_t size, const D3D12_HEAP_FLAGS flags = D3D12_HEAP_FLAG_NONE);
+		UploadHeap(const uint64_t size, const D3D12_HEAP_FLAGS flags = D3D12_HEAP_FLAG_NONE);
 
-					UploadHeap(UploadHeap&);
+		UploadHeap(UploadHeap&);
 
-					virtual ~UploadHeap();
+		virtual ~UploadHeap();
 
-					void* map() const;
+		void* map() const;
 
-					void unmap() const;
+		void unmap() const;
 
-					void update(const void* const data, const uint64_t size) const;
+		void update(const void* const data, const uint64_t size) const;
 
-					void updateGlobalStates() override;
+		void updateGlobalStates() override;
 
-					void resetInternalStates() override;
+		void resetInternalStates() override;
 
-				protected:
+	protected:
 
-					void resetTransitionStates() override;
+		void resetTransitionStates() override;
 
-				};
-			}
-		}
-	}
+	};
 }
 
 #endif // !_GEAR_CORE_RESOURCE_D3D12RESOURCE_UPLOADHEAP_H_

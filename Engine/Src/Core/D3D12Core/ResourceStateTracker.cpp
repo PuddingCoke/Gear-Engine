@@ -1,116 +1,119 @@
 ﻿#include<Gear/Core/D3D12Core/ResourceStateTracker.h>
 
-void Gear::Core::D3D12Core::ResourceStateTracker::trackAndSetResourceState(Resource::D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state)
+namespace Gear::Core::D3D12Core
 {
-	if (texture->getStateTracking())
+	void ResourceStateTracker::trackAndSetResourceState(Resource::D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state)
 	{
-		pushResourceToTrackList(texture);
+		if (texture->getStateTracking())
+		{
+			pushResourceToTrackList(texture);
 
-		if (mipslice == Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS)
-		{
-			texture->setAllState(state);
-		}
-		else
-		{
-			texture->setMipSliceState(mipslice, state);
+			if (mipslice == Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS)
+			{
+				texture->setAllState(state);
+			}
+			else
+			{
+				texture->setMipSliceState(mipslice, state);
+			}
 		}
 	}
-}
 
-void Gear::Core::D3D12Core::ResourceStateTracker::trackAndSetResourceState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state)
-{
-	if (buffer && buffer->getStateTracking())
+	void ResourceStateTracker::trackAndSetResourceState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state)
 	{
-		pushResourceToTrackList(buffer);
-
-		buffer->setState(state);
-	}
-}
-
-void Gear::Core::D3D12Core::ResourceStateTracker::solvePendingBarriers(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers)
-{
-	if (pendingBufferBarrier.size())
-	{
-		for (const Resource::D3D12Resource::PendingBufferBarrier& pendingBarrier : pendingBufferBarrier)
+		if (buffer && buffer->getStateTracking())
 		{
-			pendingBarrier.buffer->solvePendingBarrier(outBarriers, pendingBarrier.afterState);
+			pushResourceToTrackList(buffer);
+
+			buffer->setState(state);
 		}
-
-		pendingBufferBarrier.clear();
 	}
 
-	if (pendingTextureBarrier.size())
+	void ResourceStateTracker::solvePendingBarriers(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers)
 	{
-		for (const Resource::D3D12Resource::PendingTextureBarrier& pendingBarrier : pendingTextureBarrier)
+		if (pendingBufferBarrier.size())
 		{
-			pendingBarrier.texture->solvePendingBarrier(outBarriers, pendingBarrier.mipSlice, pendingBarrier.afterState);
+			for (const Resource::D3D12Resource::PendingBufferBarrier& pendingBarrier : pendingBufferBarrier)
+			{
+				pendingBarrier.buffer->solvePendingBarrier(outBarriers, pendingBarrier.afterState);
+			}
+
+			pendingBufferBarrier.clear();
 		}
 
-		pendingTextureBarrier.clear();
-	}
-}
-
-void Gear::Core::D3D12Core::ResourceStateTracker::updateReferredSharedResourceStates()
-{
-	if (referredResources.size())
-	{
-		for (Resource::D3D12Resource::D3D12ResourceBase* const res : referredResources)
+		if (pendingTextureBarrier.size())
 		{
-			res->updateGlobalStates();
+			for (const Resource::D3D12Resource::PendingTextureBarrier& pendingBarrier : pendingTextureBarrier)
+			{
+				pendingBarrier.texture->solvePendingBarrier(outBarriers, pendingBarrier.mipSlice, pendingBarrier.afterState);
+			}
 
-			res->resetInternalStates();
+			pendingTextureBarrier.clear();
+		}
+	}
 
-			res->popFromReferredList();
+	void ResourceStateTracker::updateReferredSharedResourceStates()
+	{
+		if (referredResources.size())
+		{
+			for (Resource::D3D12Resource::D3D12ResourceBase* const res : referredResources)
+			{
+				res->updateGlobalStates();
+
+				res->resetInternalStates();
+
+				res->popFromReferredList();
+			}
+
+			referredResources.clear();
+		}
+	}
+
+	void ResourceStateTracker::transitionResources(ID3D12GraphicsCommandList6* const commandList)
+	{
+		if (transitionBuffers.size())
+		{
+			for (Resource::D3D12Resource::Buffer* const buff : transitionBuffers)
+			{
+				buff->transition(transitionBarriers, pendingBufferBarrier);
+
+				buff->popFromTrackingList();
+			}
+
+			transitionBuffers.clear();
 		}
 
-		referredResources.clear();
-	}
-}
-
-void Gear::Core::D3D12Core::ResourceStateTracker::transitionResources(ID3D12GraphicsCommandList6* const commandList)
-{
-	if (transitionBuffers.size())
-	{
-		for (Resource::D3D12Resource::Buffer* const buff : transitionBuffers)
+		if (transitionTextures.size())
 		{
-			buff->transition(transitionBarriers, pendingBufferBarrier);
+			for (Resource::D3D12Resource::Texture* const tex : transitionTextures)
+			{
+				tex->transition(transitionBarriers, pendingTextureBarrier);
 
-			buff->popFromTrackingList();
+				tex->popFromTrackingList();
+			}
+
+			transitionTextures.clear();
 		}
 
-		transitionBuffers.clear();
-	}
-
-	if (transitionTextures.size())
-	{
-		for (Resource::D3D12Resource::Texture* const tex : transitionTextures)
+		if (transitionBarriers.size())
 		{
-			tex->transition(transitionBarriers, pendingTextureBarrier);
+			commandList->ResourceBarrier(static_cast<uint32_t>(transitionBarriers.size()), transitionBarriers.data());
 
-			tex->popFromTrackingList();
+			transitionBarriers.clear();
 		}
-
-		transitionTextures.clear();
 	}
 
-	if (transitionBarriers.size())
+	void ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::Texture* const texture)
 	{
-		commandList->ResourceBarrier(static_cast<uint32_t>(transitionBarriers.size()), transitionBarriers.data());
+		texture->pushToReferredList(referredResources);
 
-		transitionBarriers.clear();
+		texture->pushToTrackingList(transitionTextures);
 	}
-}
 
-void Gear::Core::D3D12Core::ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::Texture* const texture)
-{
-	texture->pushToReferredList(referredResources);
+	void ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::Buffer* const buffer)
+	{
+		buffer->pushToReferredList(referredResources);
 
-	texture->pushToTrackingList(transitionTextures);
-}
-
-void Gear::Core::D3D12Core::ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::Buffer* const buffer)
-{
-	buffer->pushToReferredList(referredResources);
-
-	buffer->pushToTrackingList(transitionBuffers);
+		buffer->pushToTrackingList(transitionBuffers);
+	}
 }

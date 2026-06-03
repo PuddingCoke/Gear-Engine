@@ -1,63 +1,66 @@
 ﻿#include<Gear/Core/Resource/ImmutableCBuffer.h>
 
-Gear::Core::Resource::ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent) :
-	ResourceBase(persistent), gpuAddress(), bufferIndex(), buffer(buffer)
+namespace Gear::Core::Resource
 {
-	if (size % 256 != 0)
+	ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent) :
+		ResourceBase(persistent), gpuAddress(), bufferIndex(), buffer(buffer)
 	{
-		LOGERROR(L"size of constant buffer must be multiply of 256");
+		if (size % 256 != 0)
+		{
+			LOGERROR(L"size of constant buffer must be multiply of 256");
+		}
+
+		if (buffer)
+		{
+			D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
+			desc.BufferLocation = buffer->getGPUAddress();
+			desc.SizeInBytes = size;
+
+			setNumCBVSRVUAVDescriptors(1);
+
+			D3D12Core::DescriptorHandle descriptorHandle = allocCBVSRVUAVDescriptors();
+
+			GraphicsDevice::get()->CreateConstantBufferView(&desc, descriptorHandle.getCurrentCPUHandle());
+
+			gpuAddress = buffer->getGPUAddress();
+
+			bufferIndex = descriptorHandle.getCurrentIndex();
+		}
 	}
 
-	if (buffer)
+	ImmutableCBuffer::~ImmutableCBuffer()
 	{
-		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
-		desc.BufferLocation = buffer->getGPUAddress();
-		desc.SizeInBytes = size;
-
-		setNumCBVSRVUAVDescriptors(1);
-
-		D3D12Core::DescriptorHandle descriptorHandle = allocCBVSRVUAVDescriptors();
-
-		GraphicsDevice::get()->CreateConstantBufferView(&desc, descriptorHandle.getCurrentCPUHandle());
-
-		gpuAddress = buffer->getGPUAddress();
-
-		bufferIndex = descriptorHandle.getCurrentIndex();
+		if (buffer)
+		{
+			delete buffer;
+		}
 	}
-}
 
-Gear::Core::Resource::ImmutableCBuffer::~ImmutableCBuffer()
-{
-	if (buffer)
+	D3D12Resource::ShaderResourceDesc ImmutableCBuffer::getBufferIndex() const
 	{
-		delete buffer;
+		D3D12Resource::ShaderResourceDesc desc = {};
+		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
+		desc.state = D3D12Resource::ShaderResourceDesc::CBV;
+		desc.resourceIndex = bufferIndex;
+		desc.bufferDesc.buffer = buffer;
+
+		return desc;
 	}
-}
 
-Gear::Core::Resource::D3D12Resource::ShaderResourceDesc Gear::Core::Resource::ImmutableCBuffer::getBufferIndex() const
-{
-	D3D12Resource::ShaderResourceDesc desc = {};
-	desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
-	desc.state = D3D12Resource::ShaderResourceDesc::CBV;
-	desc.resourceIndex = bufferIndex;
-	desc.bufferDesc.buffer = buffer;
+	D3D12_GPU_VIRTUAL_ADDRESS ImmutableCBuffer::getGPUAddress() const
+	{
+		return gpuAddress;
+	}
 
-	return desc;
-}
+	D3D12Resource::Buffer* ImmutableCBuffer::getBuffer() const
+	{
+		return buffer;
+	}
 
-D3D12_GPU_VIRTUAL_ADDRESS Gear::Core::Resource::ImmutableCBuffer::getGPUAddress() const
-{
-	return gpuAddress;
-}
+	void ImmutableCBuffer::copyDescriptors()
+	{
+		const D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
 
-Gear::Core::Resource::D3D12Resource::Buffer* Gear::Core::Resource::ImmutableCBuffer::getBuffer() const
-{
-	return buffer;
-}
-
-void Gear::Core::Resource::ImmutableCBuffer::copyDescriptors()
-{
-	const D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
-
-	bufferIndex = shaderVisibleHandle.getCurrentIndex();
+		bufferIndex = shaderVisibleHandle.getCurrentIndex();
+	}
 }

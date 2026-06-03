@@ -6,41 +6,44 @@
 
 #include<Gear/Core/Graphics.h>
 
-namespace
+namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 {
-	struct BackBufferBlitEffectImpl
+	namespace Internal
 	{
-		UniquePtr<Gear::Core::D3D12Core::PipelineState> backBufferBlitState;
-	}impl;
-}
+		struct BackBufferBlitEffectImpl
+		{
+			UniquePtr<D3D12Core::PipelineState> backBufferBlitState;
+		}impl;
 
-void Gear::Core::GlobalEffect::BackBufferBlitEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
-{
-	context->setPipelineState(*impl.backBufferBlitState);
+		void initialize()
+		{
+			impl.backBufferBlitState = PipelineStateBuilder()
+				.setDefaultFullScreenState()
+				.setPS(GlobalShader::getFullScreenPS())
+				.setRTVFormats({ Graphics::backBufferFormat })
+				.build();
 
-	context->setDefRenderTarget();
+			LOGSUCCESS(L"create", LogColor::brightMagenta, L"BackBufferBlitEffect", LogColor::defaultColor, L"succeeded");
+		}
 
-	context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
+		void release()
+		{
+			impl.backBufferBlitState.reset();
+		}
+	}
 
-	context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
+	void process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
+	{
+		context->setPipelineState(*Internal::impl.backBufferBlitState);
 
-	context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
+		context->setDefRenderTarget();
 
-	context->draw(3, 1, 0, 0);
-}
+		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
-void Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal::initialize()
-{
-	impl.backBufferBlitState = PipelineStateBuilder()
-		.setDefaultFullScreenState()
-		.setPS(GlobalShader::getFullScreenPS())
-		.setRTVFormats({ Graphics::backBufferFormat })
-		.build();
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-	LOGSUCCESS(L"create", LogColor::brightMagenta, L"BackBufferBlitEffect", LogColor::defaultColor, L"succeeded");
-}
+		context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
 
-void Gear::Core::GlobalEffect::BackBufferBlitEffect::Internal::release()
-{
-	impl.backBufferBlitState.reset();
+		context->draw(3, 1, 0, 0);
+	}
 }

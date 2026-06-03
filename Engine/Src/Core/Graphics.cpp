@@ -4,153 +4,156 @@
 
 #include<ImGUI/imgui.h>
 
-namespace
+namespace Gear::Core::Graphics
 {
-	struct GraphicsImpl
+	namespace Internal
 	{
+		struct GraphicsImpl
+		{
 
-		float exposure = 1.f;
+			float exposure = 1.f;
 
-		float gamma = 2.2f;
+			float gamma = 2.2f;
 
-		uint32_t frameBufferCount = 0;
+			uint32_t frameBufferCount = 0;
 
-		uint32_t frameIndex = 0;
+			uint32_t frameIndex = 0;
 
-		uint32_t width = 0;
+			uint32_t width = 0;
 
-		uint32_t height = 0;
+			uint32_t height = 0;
 
-		uint64_t renderedFrameCount = 0;
+			uint64_t renderedFrameCount = 0;
 
-		float aspectRatio = 0.f;
+			float aspectRatio = 0.f;
 
-		float deltaTime = 0.f;
+			float deltaTime = 0.f;
 
-		float timeElapsed = 0.f;
+			float timeElapsed = 0.f;
 
-		D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
+			D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
 
-		Gear::Core::Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer = nullptr;
+			Gear::Core::Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer = nullptr;
 
-	}impl;
-}
+		}impl;
 
-float Gear::Core::Graphics::getExposure()
-{
-	return impl.exposure;
-}
+		void initialize(const uint32_t frameBufferCount, const uint32_t width, const uint32_t height)
+		{
+			impl.frameBufferCount = frameBufferCount;
 
-void Gear::Core::Graphics::setExposure(const float exposure)
-{
-	impl.exposure = exposure;
-}
+			impl.width = width;
 
-float Gear::Core::Graphics::getGamma()
-{
-	return impl.gamma;
-}
+			impl.height = height;
 
-void Gear::Core::Graphics::setGamma(const float gamma)
-{
-	impl.gamma = gamma;
-}
+			impl.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+		}
 
-uint32_t Gear::Core::Graphics::getFrameBufferCount()
-{
-	return impl.frameBufferCount;
-}
+		void renderedFrameCountInc()
+		{
+			impl.renderedFrameCount++;
+		}
 
-uint32_t Gear::Core::Graphics::getFrameIndex()
-{
-	return impl.frameIndex;
-}
+		void setFrameIndex(const uint32_t frameIndex)
+		{
+			impl.frameIndex = frameIndex;
+		}
 
-float Gear::Core::Graphics::getDeltaTime()
-{
-	return impl.deltaTime;
-}
+		void setDeltaTime(const float deltaTime)
+		{
+			impl.deltaTime = deltaTime;
+		}
 
-float Gear::Core::Graphics::getTimeElapsed()
-{
-	return impl.timeElapsed;
-}
+		void updateTimeElapsed()
+		{
+			impl.timeElapsed += impl.deltaTime;
+		}
 
-uint32_t Gear::Core::Graphics::getWidth()
-{
-	return impl.width;
-}
+		void setBackBufferHandle(const D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle)
+		{
+			impl.backBufferHandle = backBufferHandle;
+		}
 
-uint32_t Gear::Core::Graphics::getHeight()
-{
-	return impl.height;
-}
+		void setEngineDefinedGlobalCBuffer(Resource::ImmutableCBuffer* const engineDefinedGlobalCBuffer)
+		{
+			impl.engineDefinedGlobalCBuffer = engineDefinedGlobalCBuffer;
+		}
 
-float Gear::Core::Graphics::getAspectRatio()
-{
-	return impl.aspectRatio;
-}
+		void imGUICall()
+		{
+			ImGui::Begin("Graphcis Settings");
+			ImGui::SliderFloat("Exposure", &impl.exposure, 0.f, 10.f);
+			ImGui::SliderFloat("Gamma", &impl.gamma, 0.f, 10.f);
+			ImGui::End();
+		}
+	}
 
-uint64_t Gear::Core::Graphics::getRenderedFrameCount()
-{
-	return impl.renderedFrameCount;
-}
+	float getExposure()
+	{
+		return Internal::impl.exposure;
+	}
 
-D3D12_CPU_DESCRIPTOR_HANDLE Gear::Core::Graphics::getBackBufferHandle()
-{
-	return impl.backBufferHandle;
-}
+	void setExposure(const float exposure)
+	{
+		Internal::impl.exposure = exposure;
+	}
 
-Gear::Core::Resource::ImmutableCBuffer* Gear::Core::Graphics::getEngineDefinedGlobalCBuffer()
-{
-	return impl.engineDefinedGlobalCBuffer;
-}
+	float getGamma()
+	{
+		return Internal::impl.gamma;
+	}
 
-void Gear::Core::Graphics::Internal::initialize(const uint32_t frameBufferCount, const uint32_t width, const uint32_t height)
-{
-	impl.frameBufferCount = frameBufferCount;
+	void setGamma(const float gamma)
+	{
+		Internal::impl.gamma = gamma;
+	}
 
-	impl.width = width;
+	uint32_t getFrameBufferCount()
+	{
+		return Internal::impl.frameBufferCount;
+	}
 
-	impl.height = height;
+	uint32_t getFrameIndex()
+	{
+		return Internal::impl.frameIndex;
+	}
 
-	impl.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-}
+	float getDeltaTime()
+	{
+		return Internal::impl.deltaTime;
+	}
 
-void Gear::Core::Graphics::Internal::renderedFrameCountInc()
-{
-	impl.renderedFrameCount++;
-}
+	float getTimeElapsed()
+	{
+		return Internal::impl.timeElapsed;
+	}
 
-void Gear::Core::Graphics::Internal::setFrameIndex(const uint32_t frameIndex)
-{
-	impl.frameIndex = frameIndex;
-}
+	uint32_t getWidth()
+	{
+		return Internal::impl.width;
+	}
 
-void Gear::Core::Graphics::Internal::setDeltaTime(const float deltaTime)
-{
-	impl.deltaTime = deltaTime;
-}
+	uint32_t getHeight()
+	{
+		return Internal::impl.height;
+	}
 
-void Gear::Core::Graphics::Internal::updateTimeElapsed()
-{
-	impl.timeElapsed += impl.deltaTime;
-}
+	float getAspectRatio()
+	{
+		return Internal::impl.aspectRatio;
+	}
 
-void Gear::Core::Graphics::Internal::setBackBufferHandle(const D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle)
-{
-	impl.backBufferHandle = backBufferHandle;
-}
+	uint64_t getRenderedFrameCount()
+	{
+		return Internal::impl.renderedFrameCount;
+	}
 
-void Gear::Core::Graphics::Internal::setEngineDefinedGlobalCBuffer(Resource::ImmutableCBuffer* const engineDefinedGlobalCBuffer)
-{
-	impl.engineDefinedGlobalCBuffer = engineDefinedGlobalCBuffer;
-}
+	D3D12_CPU_DESCRIPTOR_HANDLE getBackBufferHandle()
+	{
+		return Internal::impl.backBufferHandle;
+	}
 
-void Gear::Core::Graphics::Internal::imGUICall()
-{
-	ImGui::Begin("Graphcis Settings");
-	ImGui::SliderFloat("Exposure", &impl.exposure, 0.f, 10.f);
-	ImGui::SliderFloat("Gamma", &impl.gamma, 0.f, 10.f);
-	ImGui::End();
+	Resource::ImmutableCBuffer* getEngineDefinedGlobalCBuffer()
+	{
+		return Internal::impl.engineDefinedGlobalCBuffer;
+	}
 }

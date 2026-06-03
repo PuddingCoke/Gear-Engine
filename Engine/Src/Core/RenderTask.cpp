@@ -2,113 +2,116 @@
 
 #include<Gear/Core/GlobalEffect/BackBufferBlitEffect.h>
 
-Gear::Core::RenderTask::RenderTask() :
-	resManager(new ResourceManager()),
-	context(resManager->getGraphicsContext()),
-	taskCompleted(true),
-	errorOccur(false),
-	isRunning(true),
-	renderThread(nullptr)
+namespace Gear::Core
 {
-	context->begin();
-}
-
-Gear::Core::RenderTask::~RenderTask()
-{
-	isRunning = false;
-
-	beginTask();
-
-	if (renderThread)
+	RenderTask::RenderTask() :
+		resManager(new ResourceManager()),
+		context(resManager->getGraphicsContext()),
+		taskCompleted(true),
+		errorOccur(false),
+		isRunning(true),
+		renderThread(nullptr)
 	{
-		delete renderThread;
+		context->begin();
 	}
 
-	if (resManager)
+	RenderTask::~RenderTask()
 	{
-		delete resManager;
-	}
-}
+		isRunning = false;
 
-void Gear::Core::RenderTask::beginTask()
-{
+		beginTask();
+
+		if (renderThread)
+		{
+			delete renderThread;
+		}
+
+		if (resManager)
+		{
+			delete resManager;
+		}
+	}
+
+	void RenderTask::beginTask()
 	{
-		std::lock_guard<std::mutex> lockGuard(taskMutex);
+		{
+			std::lock_guard<std::mutex> lockGuard(taskMutex);
 
-		taskCompleted = false;
+			taskCompleted = false;
+		}
+
+		taskCondition.notify_one();
 	}
 
-	taskCondition.notify_one();
-}
+	bool RenderTask::waitTask()
+	{
+		std::unique_lock<std::mutex> lock(taskMutex);
 
-bool Gear::Core::RenderTask::waitTask()
-{
-	std::unique_lock<std::mutex> lock(taskMutex);
+		taskCondition.wait(lock, [this]() {return taskCompleted; });
 
-	taskCondition.wait(lock, [this]() {return taskCompleted; });
+		return errorOccur;
+	}
 
-	return errorOccur;
-}
+	D3D12Core::CommandList* RenderTask::getCommandList() const
+	{
+		return context->getCommandList();
+	}
 
-Gear::Core::D3D12Core::CommandList* Gear::Core::RenderTask::getCommandList() const
-{
-	return context->getCommandList();
-}
+	void RenderTask::imGUICall()
+	{
 
-void Gear::Core::RenderTask::imGUICall()
-{
+	}
 
-}
+	void RenderTask::blit(Resource::TextureRenderView& texture) const
+	{
+		GlobalEffect::BackBufferBlitEffect::process(context, texture);
+	}
 
-void Gear::Core::RenderTask::blit(Resource::TextureRenderView& texture) const
-{
-	GlobalEffect::BackBufferBlitEffect::process(context, texture);
-}
-
-void Gear::Core::RenderTask::workerLoop()
-{
+	void RenderTask::workerLoop()
+	{
 #ifdef _DEBUG
-	try
-	{
+		try
+		{
 #endif // _DEBUG
-		while (true)
+			while (true)
+			{
+				{
+					std::unique_lock<std::mutex> lock(taskMutex);
+
+					taskCondition.wait(lock, [this]() {return !taskCompleted; });
+
+					if (!isRunning)
+					{
+						break;
+					}
+
+					resManager->cleanTransientResources();
+
+					context->begin();
+
+					recordCommand();
+
+					taskCompleted = true;
+				}
+
+				taskCondition.notify_one();
+			}
+#ifdef _DEBUG
+		}
+		catch (const std::exception&)
 		{
 			{
 				std::unique_lock<std::mutex> lock(taskMutex);
 
-				taskCondition.wait(lock, [this]() {return !taskCompleted; });
-
-				if (!isRunning)
-				{
-					break;
-				}
-
-				resManager->cleanTransientResources();
-
-				context->begin();
-
-				recordCommand();
-
 				taskCompleted = true;
+
+				errorOccur = true;
 			}
 
 			taskCondition.notify_one();
+
+			return;
 		}
-#ifdef _DEBUG
-	}
-	catch (const std::exception&)
-	{
-		{
-			std::unique_lock<std::mutex> lock(taskMutex);
-
-			taskCompleted = true;
-
-			errorOccur = true;
-		}
-
-		taskCondition.notify_one();
-
-		return;
-	}
 #endif // _DEBUG
+	}
 }

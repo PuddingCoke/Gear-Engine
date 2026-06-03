@@ -1,45 +1,48 @@
 ﻿#include<Gear/Utils/WallpaperHelper.h>
 
-void Gear::Utils::WallpaperHelper::getSystemResolution(uint32_t& width, uint32_t& height)
+namespace Gear::Utils::WallpaperHelper
 {
-	HMONITOR monitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
+	void getSystemResolution(uint32_t& width, uint32_t& height)
+	{
+		HMONITOR monitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
 
-	MONITORINFOEX monitorInfo;
-	monitorInfo.cbSize = sizeof(MONITORINFOEX);
+		MONITORINFOEX monitorInfo;
+		monitorInfo.cbSize = sizeof(MONITORINFOEX);
 
-	GetMonitorInfo(monitor, &monitorInfo);
+		GetMonitorInfo(monitor, &monitorInfo);
 
-	DEVMODE devMode;
-	devMode.dmSize = sizeof(DEVMODE);
-	devMode.dmDriverExtra = 0;
+		DEVMODE devMode;
+		devMode.dmSize = sizeof(DEVMODE);
+		devMode.dmDriverExtra = 0;
 
-	EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
+		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-	width = devMode.dmPelsWidth;
+		width = devMode.dmPelsWidth;
 
-	height = devMode.dmPelsHeight;
-}
+		height = devMode.dmPelsHeight;
+	}
 
-HWND Gear::Utils::WallpaperHelper::getWallpaperHWND()
-{
-	const HWND progman = FindWindow(L"ProgMan", nullptr);
+	HWND getWallpaperHWND()
+	{
+		const HWND progman = FindWindow(L"ProgMan", nullptr);
 
-	SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, nullptr);
+		SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, nullptr);
 
-	HWND wallpaperHWND = nullptr;
+		HWND wallpaperHWND = nullptr;
 
-	auto EnumWindowsProc = [](HWND hwnd, LPARAM lParam)->BOOL
-		{
-			HWND p = FindWindowEx(hwnd, nullptr, L"SHELLDLL_DefView", nullptr);
-			HWND* ret = (HWND*)lParam;
-			if (p)
+		auto EnumWindowsProc = [](HWND hwnd, LPARAM lParam)->BOOL
 			{
-				*ret = FindWindowEx(nullptr, hwnd, L"WorkerW", nullptr);
-			}
-			return true;
-		};
+				HWND p = FindWindowEx(hwnd, nullptr, L"SHELLDLL_DefView", nullptr);
+				HWND* ret = (HWND*)lParam;
+				if (p)
+				{
+					*ret = FindWindowEx(nullptr, hwnd, L"WorkerW", nullptr);
+				}
+				return true;
+			};
 
-	EnumWindows(EnumWindowsProc, (LPARAM)&wallpaperHWND);
+		EnumWindows(EnumWindowsProc, (LPARAM)&wallpaperHWND);
 
-	return wallpaperHWND;
+		return wallpaperHWND;
+	}
 }

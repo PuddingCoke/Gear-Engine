@@ -6,56 +6,59 @@
 
 #include<Gear/CompiledShaders/ToneMapCS.h>
 
-namespace
+namespace Gear::Core::GlobalEffect::ToneMapEffect
 {
-	struct ToneMapEffectImpl
+	namespace Internal
 	{
-		UniquePtr<Gear::Core::D3D12Core::Shader> toneMapCS;
+		struct ToneMapEffectImpl
+		{
+			UniquePtr<D3D12Core::Shader> toneMapCS;
 
-		UniquePtr<Gear::Core::D3D12Core::PipelineState> toneMapState;
+			UniquePtr<D3D12Core::PipelineState> toneMapState;
 
-		UniquePtr<Gear::Core::Resource::TextureRenderView> outputTexture;
-	} impl;
+			UniquePtr<Resource::TextureRenderView> outputTexture;
+		} impl;
 
-	constexpr DXGI_FORMAT outputTextureFormat = Gear::Core::FMT::RGBA16UN;
-}
+		constexpr DXGI_FORMAT outputTextureFormat = FMT::RGBA16UN;
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::ToneMapEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
-{
-	context->setPipelineState(*impl.toneMapState);
+		void initialize()
+		{
+			impl.toneMapCS = D3D12Core::Shader::create(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes));
 
-	context->setCSConstants({ inputTexture.getSRVMipIndex(0),impl.outputTexture->getUAVMipIndex(0) }, 0);
+			impl.toneMapState = PipelineStateBuilder::build(*impl.toneMapCS);
 
-	const float exposure = Graphics::getExposure();
+			impl.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
+				outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
 
-	context->setCSConstants(1, &exposure, 2);
+			impl.outputTexture->getTexture()->setName(L"Tone Mapped Texture");
 
-	context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
+			LOGSUCCESS(L"create", LogColor::brightMagenta, L"ToneMapEffect", LogColor::defaultColor, L"succeeded");
+		}
 
-	context->uavBarrier({ impl.outputTexture->getTexture() });
+		void release()
+		{
+			impl.outputTexture.reset();
 
-	return impl.outputTexture.get();
-}
+			impl.toneMapState.reset();
 
-void Gear::Core::GlobalEffect::ToneMapEffect::Internal::initialize()
-{
-	impl.toneMapCS = D3D12Core::Shader::create(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes));
+			impl.toneMapCS.reset();
+		}
+	}
 
-	impl.toneMapState = PipelineStateBuilder::build(*impl.toneMapCS);
+	Resource::TextureRenderView* process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
+	{
+		context->setPipelineState(*Internal::impl.toneMapState);
 
-	impl.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
-		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
+		context->setCSConstants({ inputTexture.getSRVMipIndex(0),Internal::impl.outputTexture->getUAVMipIndex(0) }, 0);
 
-	impl.outputTexture->getTexture()->setName(L"Tone Mapped Texture");
+		const float exposure = Graphics::getExposure();
 
-	LOGSUCCESS(L"create", LogColor::brightMagenta, L"ToneMapEffect", LogColor::defaultColor, L"succeeded");
-}
+		context->setCSConstants(1, &exposure, 2);
 
-void Gear::Core::GlobalEffect::ToneMapEffect::Internal::release()
-{
-	impl.outputTexture.reset();
+		context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
 
-	impl.toneMapState.reset();
+		context->uavBarrier({ Internal::impl.outputTexture->getTexture() });
 
-	impl.toneMapCS.reset();
+		return Internal::impl.outputTexture.get();
+	}
 }

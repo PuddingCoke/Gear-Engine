@@ -4,44 +4,47 @@
 
 #include<Gear/CompiledShaders/HDRClampCS.h>
 
-namespace
+namespace Gear::Core::GlobalEffect::HDRClampEffect
 {
-	struct HDRClampEffectImpl
+	namespace Internal
 	{
+		struct HDRClampEffectImpl
+		{
 
-		UniquePtr<Gear::Core::D3D12Core::Shader> hdrClampShader;
+			UniquePtr<D3D12Core::Shader> hdrClampShader;
 
-		UniquePtr<Gear::Core::D3D12Core::PipelineState> hdrClampState;
+			UniquePtr<D3D12Core::PipelineState> hdrClampState;
 
-	}impl;
-}
+		}impl;
 
-void Gear::Core::GlobalEffect::HDRClampEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inOutTexture)
-{
-	if (inOutTexture.getTexture()->getFormat() == FMT::RGBA16F)
-	{
-		context->setPipelineState(*impl.hdrClampState);
+		void initialize()
+		{
+			impl.hdrClampShader = D3D12Core::Shader::create(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes));
 
-		context->setCSConstants({ inOutTexture.getUAVMipIndex(0) }, 0);
+			impl.hdrClampState = PipelineStateBuilder::build(*impl.hdrClampShader);
 
-		context->dispatch(inOutTexture.getTexture()->getWidth() / 16 + 1, inOutTexture.getTexture()->getHeight() / 16 + 1, 1);
+			LOGSUCCESS(L"create", LogColor::brightMagenta, L"HDRClampEffect", LogColor::defaultColor, L"succeeded");
+		}
 
-		context->uavBarrier({ inOutTexture.getTexture() });
+		void release()
+		{
+			impl.hdrClampShader.reset();
+
+			impl.hdrClampState.reset();
+		}
 	}
-}
 
-void Gear::Core::GlobalEffect::HDRClampEffect::Internal::initialize()
-{
-	impl.hdrClampShader = D3D12Core::Shader::create(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes));
+	void process(GraphicsContext* const context, Resource::TextureRenderView& inOutTexture)
+	{
+		if (inOutTexture.getTexture()->getFormat() == FMT::RGBA16F)
+		{
+			context->setPipelineState(*Internal::impl.hdrClampState);
 
-	impl.hdrClampState = PipelineStateBuilder::build(*impl.hdrClampShader);
+			context->setCSConstants({ inOutTexture.getUAVMipIndex(0) }, 0);
 
-	LOGSUCCESS(L"create", LogColor::brightMagenta, L"HDRClampEffect", LogColor::defaultColor, L"succeeded");
-}
+			context->dispatch(inOutTexture.getTexture()->getWidth() / 16 + 1, inOutTexture.getTexture()->getHeight() / 16 + 1, 1);
 
-void Gear::Core::GlobalEffect::HDRClampEffect::Internal::release()
-{
-	impl.hdrClampShader.reset();
-
-	impl.hdrClampState.reset();
+			context->uavBarrier({ inOutTexture.getTexture() });
+		}
+	}
 }

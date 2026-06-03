@@ -1,39 +1,42 @@
 ﻿#include<Gear/Utils/Math.h>
 
-float Gear::Utils::Math::lerp(const float x, const float y, const float s)
+namespace Gear::Utils::Math
 {
-	return x * (1.f - s) + y * s;
-}
-
-float Gear::Utils::Math::clamp(const float value, const float min, const float max)
-{
-	if (value < min)
+	float lerp(const float x, const float y, const float s)
 	{
-		return min;
-	}
-	else if (value > max)
-	{
-		return max;
+		return x * (1.f - s) + y * s;
 	}
 
-	return value;
-}
+	float clamp(const float value, const float min, const float max)
+	{
+		if (value < min)
+		{
+			return min;
+		}
+		else if (value > max)
+		{
+			return max;
+		}
 
-float Gear::Utils::Math::saturate(const float value)
-{
-	return clamp(value, 0.f, 1.f);
-}
+		return value;
+	}
 
-float Gear::Utils::Math::gauss(const float sigma, const float x)
-{
-	return 1.f / (sigma * 2.506628274631000502415765284811f) * exp(-0.5f * (x / sigma) * (x / sigma));
-}
+	float saturate(const float value)
+	{
+		return clamp(value, 0.f, 1.f);
+	}
 
-uint32_t Gear::Utils::Math::log2(const uint32_t x)
-{
-	unsigned long y;
+	float gauss(const float sigma, const float x)
+	{
+		return 1.f / (sigma * 2.506628274631000502415765284811f) * exp(-0.5f * (x / sigma) * (x / sigma));
+	}
 
-	_BitScanReverse(&y, x);
+	uint32_t log2(const uint32_t x)
+	{
+		unsigned long y;
 
-	return y;
+		_BitScanReverse(&y, x);
+
+		return y;
+	}
 }

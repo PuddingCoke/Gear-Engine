@@ -1,55 +1,58 @@
 ﻿#include<Gear/Game.h>
 
-Gear::Game::Game()
+namespace Gear
 {
-}
-
-Gear::Game::~Game()
-{
-}
-
-void Gear::Game::imGUICall()
-{
-}
-
-void Gear::Game::beginRenderTask(Core::RenderTask* const renderTask)
-{
-	renderTask->beginTask();
-
-	recordQueue.push(renderTask);
-
-	if (Core::RenderEngine::getDisplayImGuiSurface())
+	Game::Game()
 	{
-		renderTask->imGUICall();
-	}
-}
-
-void Gear::Game::pushCreateAsync(Core::RenderThread* const renderThread)
-{
-	createQueue.push(renderThread);
-}
-
-void Gear::Game::scheduleAllTasks()
-{
-	while (recordQueue.size())
-	{
-		if (recordQueue.front()->waitTask())
-		{
-			throw "error occur while command recording";
-		}
-
-		Core::RenderEngine::submitCommandList(recordQueue.front()->getCommandList());
-
-		recordQueue.pop();
 	}
 
-	while (createQueue.size())
+	Game::~Game()
 	{
-		if (createQueue.front()->waitInitialized())
+	}
+
+	void Game::imGUICall()
+	{
+	}
+
+	void Game::beginRenderTask(Core::RenderTask* const renderTask)
+	{
+		renderTask->beginTask();
+
+		recordQueue.push(renderTask);
+
+		if (Core::RenderEngine::getDisplayImGuiSurface())
 		{
-			throw "error occur while resource creation";
+			renderTask->imGUICall();
+		}
+	}
+
+	void Game::pushCreateAsync(Core::RenderThread* const renderThread)
+	{
+		createQueue.push(renderThread);
+	}
+
+	void Game::scheduleAllTasks()
+	{
+		while (recordQueue.size())
+		{
+			if (recordQueue.front()->waitTask())
+			{
+				throw "error occur while command recording";
+			}
+
+			Core::RenderEngine::submitCommandList(recordQueue.front()->getCommandList());
+
+			recordQueue.pop();
 		}
 
-		createQueue.pop();
+		while (createQueue.size())
+		{
+			if (createQueue.front()->waitInitialized())
+			{
+				throw "error occur while resource creation";
+			}
+
+			createQueue.pop();
+		}
 	}
 }

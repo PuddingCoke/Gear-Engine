@@ -1,46 +1,49 @@
 ﻿#include<Gear/InitializationParam.h>
 
-Gear::InitializationParam Gear::InitializationParam::RealTime(const uint32_t width, const uint32_t height, const std::wstring& title, const bool enableImGuiSurface)
+namespace Gear
 {
-	InitializationParam param = {};
+	InitializationParam InitializationParam::RealTime(const uint32_t width, const uint32_t height, const std::wstring& title, const bool enableImGuiSurface)
+	{
+		InitializationParam param = {};
 
-	param.usage = EngineUsage::REALTIMERENDER;
+		param.usage = EngineUsage::REALTIMERENDER;
 
-	param.title = title;
+		param.title = title;
 
-	param.realTimeRender.width = width;
+		param.realTimeRender.width = width;
 
-	param.realTimeRender.height = height;
+		param.realTimeRender.height = height;
 
-	param.realTimeRender.enableImGuiSurface = enableImGuiSurface;
+		param.realTimeRender.enableImGuiSurface = enableImGuiSurface;
 
-	return param;
-}
+		return param;
+	}
 
-Gear::InitializationParam Gear::InitializationParam::VideoRender(const uint32_t width, const uint32_t height, const uint32_t second)
-{
-	InitializationParam param = {};
+	InitializationParam InitializationParam::VideoRender(const uint32_t width, const uint32_t height, const uint32_t second)
+	{
+		InitializationParam param = {};
 
-	param.usage = EngineUsage::VIDEORENDER;
+		param.usage = EngineUsage::VIDEORENDER;
 
-	param.title = L"Video Render";
+		param.title = L"Video Render";
 
-	param.videoRender.width = width;
+		param.videoRender.width = width;
 
-	param.videoRender.height = height;
+		param.videoRender.height = height;
 
-	param.videoRender.second = second;
+		param.videoRender.second = second;
 
-	return param;
-}
+		return param;
+	}
 
-Gear::InitializationParam Gear::InitializationParam::Wallpaper()
-{
-	InitializationParam param = {};
+	InitializationParam InitializationParam::Wallpaper()
+	{
+		InitializationParam param = {};
 
-	param.usage = EngineUsage::WALLPAPER;
+		param.usage = EngineUsage::WALLPAPER;
 
-	param.title = L"Wallpaper";
+		param.title = L"Wallpaper";
 
-	return param;
+		return param;
+	}
 }

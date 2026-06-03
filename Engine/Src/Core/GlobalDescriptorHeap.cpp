@@ -2,50 +2,49 @@
 
 #include<Gear/Core/Internal/GlobalDescriptorHeapInternal.h>
 
-namespace Gear::Core::GlobalDescriptorHeap::Internal
+namespace Gear::Core::GlobalDescriptorHeap
 {
-	struct GlobalDescriptorHeapImpl
+	namespace Internal
 	{
-		GlobalDescriptorHeapImpl();
+		struct GlobalDescriptorHeapImpl
+		{
+			GlobalDescriptorHeapImpl();
 
-		UniquePtr<D3D12Core::DescriptorHeap> resourceHeap;
+			UniquePtr<D3D12Core::DescriptorHeap> resourceHeap;
 
-		UniquePtr<D3D12Core::DescriptorHeap> samplerHeap;
+			UniquePtr<D3D12Core::DescriptorHeap> samplerHeap;
+		};
 
-	};
+		GlobalDescriptorHeapImpl::GlobalDescriptorHeapImpl()
+		{
+			resourceHeap = makeUnique<D3D12Core::DescriptorHeap>(numResourceHeapDescriptors, numResourceHeapDescriptors - numStaticCBVSRVUAVDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
-	GlobalDescriptorHeapImpl::GlobalDescriptorHeapImpl()
-	{
-		resourceHeap = makeUnique<D3D12Core::DescriptorHeap>(numResourceHeapDescriptors, numResourceHeapDescriptors - numStaticCBVSRVUAVDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+			samplerHeap = makeUnique<D3D12Core::DescriptorHeap>(1024, 0, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
-		samplerHeap = makeUnique<D3D12Core::DescriptorHeap>(1024, 0, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+			LOGSUCCESS(L"create", LogColor::brightMagenta, L"global descriptor heaps", LogColor::defaultColor, L"succeeded");
+		}
 
-		LOGSUCCESS(L"create", LogColor::brightMagenta, L"global descriptor heaps", LogColor::defaultColor, L"succeeded");
+		UniquePtr<GlobalDescriptorHeapImpl> impl;
+
+		void initialize()
+		{
+			impl = makeUnique<GlobalDescriptorHeapImpl>();
+		}
+
+		void release()
+		{
+			impl.reset();
+		}
 	}
-}
 
-namespace
-{
-	UniquePtr<Gear::Core::GlobalDescriptorHeap::Internal::GlobalDescriptorHeapImpl> impl;
-}
+	D3D12Core::DescriptorHeap* getResourceHeap()
+	{
+		return Internal::impl->resourceHeap.get();
+	}
 
-void Gear::Core::GlobalDescriptorHeap::Internal::initialize()
-{
-	impl = makeUnique<GlobalDescriptorHeapImpl>();
-}
-
-void Gear::Core::GlobalDescriptorHeap::Internal::release()
-{
-	impl.reset();
-}
-
-Gear::Core::D3D12Core::DescriptorHeap* Gear::Core::GlobalDescriptorHeap::getResourceHeap()
-{
-	return impl->resourceHeap.get();
-}
-
-Gear::Core::D3D12Core::DescriptorHeap* Gear::Core::GlobalDescriptorHeap::getSamplerHeap()
-{
-	return impl->samplerHeap.get();
+	D3D12Core::DescriptorHeap* getSamplerHeap()
+	{
+		return Internal::impl->samplerHeap.get();
+	}
 }
 

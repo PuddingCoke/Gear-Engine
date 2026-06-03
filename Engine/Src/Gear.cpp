@@ -419,36 +419,33 @@ namespace Gear
 
 		OutputDebugStringA("**********Live Object Report**********\n");
 	}
-}
 
-namespace
-{
-	UniquePtr<Gear::GearImpl> impl;
-}
+	UniquePtr<GearImpl> impl;
 
-int32_t Gear::iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
-{
-	return impl->iniEngine(param, argc, argv);
-}
+	int32_t iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
+	{
+		return impl->iniEngine(param, argc, argv);
+	}
 
-void Gear::iniGame(UniquePtr<Game> gamePtr)
-{
-	impl->iniGame(std::move(gamePtr));
-}
+	void iniGame(UniquePtr<Game> gamePtr)
+	{
+		impl->iniGame(std::move(gamePtr));
+	}
 
-void Gear::initialize()
-{
-	impl = makeUnique<GearImpl>();
-}
+	void initialize()
+	{
+		impl = makeUnique<GearImpl>();
+	}
 
-void Gear::release()
-{
-	impl.reset();
-}
+	void release()
+	{
+		impl.reset();
+	}
 
-void Gear::failureExit()
-{
-	Gear::Utils::Logger::Internal::release();
+	void failureExit()
+	{
+		Utils::Logger::Internal::release();
 
-	std::quick_exit(EXIT_FAILURE);
+		std::quick_exit(EXIT_FAILURE);
+	}
 }

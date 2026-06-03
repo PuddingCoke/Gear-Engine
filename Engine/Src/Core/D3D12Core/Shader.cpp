@@ -2,65 +2,68 @@
 
 #include<Gear/Utils/File.h>
 
-UniquePtr<Gear::Core::D3D12Core::Shader> Gear::Core::D3D12Core::Shader::create(const uint8_t* const bytes, const size_t byteSize)
+namespace Gear::Core::D3D12Core
 {
-	return makeUnique<Shader>(bytes, byteSize);
-}
-
-UniquePtr<Gear::Core::D3D12Core::Shader> Gear::Core::D3D12Core::Shader::create(const std::wstring& filePath)
-{
-	return makeUnique<Shader>(filePath);
-}
-
-UniquePtr<Gear::Core::D3D12Core::Shader> Gear::Core::D3D12Core::Shader::create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
-{
-	return makeUnique<Shader>(filePath, profile);
-}
-
-Gear::Core::D3D12Core::Shader::Shader(const uint8_t* const bytes, const size_t byteSize)
-{
-	shaderByteCode.pShaderBytecode = bytes;
-
-	shaderByteCode.BytecodeLength = byteSize;
-}
-
-Gear::Core::D3D12Core::Shader::Shader(const std::wstring& filePath)
-{
-	if (Utils::File::getExtension(filePath) == L"cso")
+	UniquePtr<Shader> Shader::create(const uint8_t* const bytes, const size_t byteSize)
 	{
-		shaderBlob = DXCCompiler::read(filePath);
-
-		shaderByteCode.pShaderBytecode = shaderBlob->GetBufferPointer();
-
-		shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
-
-		LOGSUCCESS(L"read byte code at", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
+		return makeUnique<Shader>(bytes, byteSize);
 	}
-	else
+
+	UniquePtr<Shader> Shader::create(const std::wstring& filePath)
 	{
-		LOGERROR(L"input file's extension must be cso");
+		return makeUnique<Shader>(filePath);
 	}
-}
 
-Gear::Core::D3D12Core::Shader::Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
-{
-	if (Utils::File::getExtension(filePath) == L"hlsl")
+	UniquePtr<Shader> Shader::create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
 	{
-		shaderBlob = DXCCompiler::compile(filePath, profile);
-
-		shaderByteCode.pShaderBytecode = shaderBlob->GetBufferPointer();
-
-		shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
-
-		LOGSUCCESS(L"compile shader at", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
+		return makeUnique<Shader>(filePath, profile);
 	}
-	else
+
+	Shader::Shader(const uint8_t* const bytes, const size_t byteSize)
 	{
-		LOGERROR(L"input file's extension must be hlsl");
-	}
-}
+		shaderByteCode.pShaderBytecode = bytes;
 
-D3D12_SHADER_BYTECODE Gear::Core::D3D12Core::Shader::getByteCode() const
-{
-	return shaderByteCode;
+		shaderByteCode.BytecodeLength = byteSize;
+	}
+
+	Shader::Shader(const std::wstring& filePath)
+	{
+		if (Utils::File::getExtension(filePath) == L"cso")
+		{
+			shaderBlob = DXCCompiler::read(filePath);
+
+			shaderByteCode.pShaderBytecode = shaderBlob->GetBufferPointer();
+
+			shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
+
+			LOGSUCCESS(L"read byte code at", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
+		}
+		else
+		{
+			LOGERROR(L"input file's extension must be cso");
+		}
+	}
+
+	Shader::Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
+	{
+		if (Utils::File::getExtension(filePath) == L"hlsl")
+		{
+			shaderBlob = DXCCompiler::compile(filePath, profile);
+
+			shaderByteCode.pShaderBytecode = shaderBlob->GetBufferPointer();
+
+			shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
+
+			LOGSUCCESS(L"compile shader at", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
+		}
+		else
+		{
+			LOGERROR(L"input file's extension must be hlsl");
+		}
+	}
+
+	D3D12_SHADER_BYTECODE Shader::getByteCode() const
+	{
+		return shaderByteCode;
+	}
 }

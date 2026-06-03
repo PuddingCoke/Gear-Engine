@@ -4,7 +4,7 @@
 
 #include<random>
 
-namespace
+namespace Gear::Utils::Random
 {
 	thread_local std::mt19937 randomEngine = std::mt19937(static_cast<uint32_t>(time(nullptr)));
 
@@ -17,29 +17,29 @@ namespace
 	thread_local std::uniform_int_distribution<int32_t> intDistribution = std::uniform_int_distribution<int32_t>(INT32_MIN, INT32_MAX);
 
 	thread_local std::uniform_int_distribution<uint32_t> uintDistribution = std::uniform_int_distribution<uint32_t>(0u, UINT32_MAX);
-}
 
-float Gear::Utils::Random::genGauss()
-{
-	return normalDistribution(randomEngine);
-}
+	float genGauss()
+	{
+		return normalDistribution(randomEngine);
+	}
 
-float Gear::Utils::Random::genFloat()
-{
-	return floatDistribution(randomEngine);
-}
+	float genFloat()
+	{
+		return floatDistribution(randomEngine);
+	}
 
-double Gear::Utils::Random::genDouble()
-{
-	return doubleDistribution(randomEngine);
-}
+	double genDouble()
+	{
+		return doubleDistribution(randomEngine);
+	}
 
-int32_t Gear::Utils::Random::genInt()
-{
-	return intDistribution(randomEngine);
-}
+	int32_t genInt()
+	{
+		return intDistribution(randomEngine);
+	}
 
-uint32_t Gear::Utils::Random::genUint()
-{
-	return uintDistribution(randomEngine);
+	uint32_t genUint()
+	{
+		return uintDistribution(randomEngine);
+	}
 }

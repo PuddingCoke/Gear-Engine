@@ -6,56 +6,59 @@
 
 #include<Gear/CompiledShaders/GammaCorrectCS.h>
 
-namespace
+namespace Gear::Core::GlobalEffect::GammaCorrectEffect
 {
-	struct GammaCorrectEffectImpl
+	namespace Internal
 	{
-		UniquePtr<Gear::Core::D3D12Core::Shader> gammaCorrectCS;
+		struct GammaCorrectEffectImpl
+		{
+			UniquePtr<D3D12Core::Shader> gammaCorrectCS;
 
-		UniquePtr<Gear::Core::D3D12Core::PipelineState> gammaCorrectState;
+			UniquePtr<D3D12Core::PipelineState> gammaCorrectState;
 
-		UniquePtr<Gear::Core::Resource::TextureRenderView> outputTexture;
-	} impl;
+			UniquePtr<Resource::TextureRenderView> outputTexture;
+		} impl;
 
-	constexpr DXGI_FORMAT outputTextureFormat = Gear::Core::FMT::RGBA16UN;
-}
+		constexpr DXGI_FORMAT outputTextureFormat = FMT::RGBA16UN;
 
-Gear::Core::Resource::TextureRenderView* Gear::Core::GlobalEffect::GammaCorrectEffect::process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
-{
-	context->setPipelineState(*impl.gammaCorrectState);
+		void initialize()
+		{
+			impl.gammaCorrectCS = D3D12Core::Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes));
 
-	context->setCSConstants({ inputTexture.getSRVMipIndex(0),impl.outputTexture->getUAVMipIndex(0) }, 0);
+			impl.gammaCorrectState = PipelineStateBuilder::build(*impl.gammaCorrectCS);
 
-	const float gamma = Graphics::getGamma();
+			impl.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
+				outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
 
-	context->setCSConstants(1, &gamma, 2);
+			impl.outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
 
-	context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
+			LOGSUCCESS(L"create", LogColor::brightMagenta, L"GammaCorrectEffect", LogColor::defaultColor, L"succeeded");
+		}
 
-	context->uavBarrier({ impl.outputTexture->getTexture() });
+		void release()
+		{
+			impl.gammaCorrectCS.reset();
 
-	return impl.outputTexture.get();
-}
+			impl.gammaCorrectState.reset();
 
-void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::initialize()
-{
-	impl.gammaCorrectCS = D3D12Core::Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes));
+			impl.outputTexture.reset();
+		}
+	}
 
-	impl.gammaCorrectState = PipelineStateBuilder::build(*impl.gammaCorrectCS);
+	Resource::TextureRenderView* process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
+	{
+		context->setPipelineState(*Internal::impl.gammaCorrectState);
 
-	impl.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
-		outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
+		context->setCSConstants({ inputTexture.getSRVMipIndex(0),Internal::impl.outputTexture->getUAVMipIndex(0) }, 0);
 
-	impl.outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
+		const float gamma = Graphics::getGamma();
 
-	LOGSUCCESS(L"create", LogColor::brightMagenta, L"GammaCorrectEffect", LogColor::defaultColor, L"succeeded");
-}
+		context->setCSConstants(1, &gamma, 2);
 
-void Gear::Core::GlobalEffect::GammaCorrectEffect::Internal::release()
-{
-	impl.gammaCorrectCS.reset();
+		context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
 
-	impl.gammaCorrectState.reset();
+		context->uavBarrier({ Internal::impl.outputTexture->getTexture() });
 
-	impl.outputTexture.reset();
+		return Internal::impl.outputTexture.get();
+	}
 }

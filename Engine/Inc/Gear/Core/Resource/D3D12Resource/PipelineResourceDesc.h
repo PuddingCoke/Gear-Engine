@@ -5,112 +5,103 @@
 
 #include<D3D12Headers/d3dx12.h>
 
-namespace Gear
+namespace Gear::Core::Resource::D3D12Resource
 {
-	namespace Core
+	class Buffer;
+
+	class Texture;
+
+	struct ShaderResourceDesc
 	{
-		namespace Resource
+		enum ResourceType
 		{
-			namespace D3D12Resource
-			{
-				class Buffer;
+			BUFFER,
+			TEXTURE
+		} type;
 
-				class Texture;
+		enum TargetStates
+		{
+			SRV,
+			UAV,
+			CBV
+		} state;
 
-				struct ShaderResourceDesc
-				{
-					enum ResourceType
-					{
-						BUFFER,
-						TEXTURE
-					} type;
+		uint32_t resourceIndex;
 
-					enum TargetStates
-					{
-						SRV,
-						UAV,
-						CBV
-					} state;
+		struct TextureTransitionDesc
+		{
+			Texture* texture;
+			uint32_t mipSlice;
+		};
 
-					uint32_t resourceIndex;
+		struct BufferTransitionDesc
+		{
+			Buffer* buffer;
+			Buffer* counterBuffer;
+		};
 
-					struct TextureTransitionDesc
-					{
-						Texture* texture;
-						uint32_t mipSlice;
-					};
+		union
+		{
+			TextureTransitionDesc textureDesc;
+			BufferTransitionDesc bufferDesc;
+		};
+	};
 
-					struct BufferTransitionDesc
-					{
-						Buffer* buffer;
-						Buffer* counterBuffer;
-					};
+	struct RenderTargetDesc
+	{
+		Texture* texture;
+		uint32_t mipSlice;
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
+	};
 
-					union
-					{
-						TextureTransitionDesc textureDesc;
-						BufferTransitionDesc bufferDesc;
-					};
-				};
+	struct DepthStencilDesc
+	{
+		Texture* texture;
+		uint32_t mipSlice;
+		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+	};
 
-				struct RenderTargetDesc
-				{
-					Texture* texture;
-					uint32_t mipSlice;
-					D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
-				};
+	struct VertexBufferDesc
+	{
+		Buffer* buffer;
+		D3D12_VERTEX_BUFFER_VIEW vbv;
+	};
 
-				struct DepthStencilDesc
-				{
-					Texture* texture;
-					uint32_t mipSlice;
-					D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
-				};
+	struct IndexBufferDesc
+	{
+		Buffer* buffer;
+		D3D12_INDEX_BUFFER_VIEW ibv;
+	};
 
-				struct VertexBufferDesc
-				{
-					Buffer* buffer;
-					D3D12_VERTEX_BUFFER_VIEW vbv;
-				};
+	struct ClearUAVDesc
+	{
+		enum ResourceType
+		{
+			BUFFER,
+			TEXTURE
+		} type;
 
-				struct IndexBufferDesc
-				{
-					Buffer* buffer;
-					D3D12_INDEX_BUFFER_VIEW ibv;
-				};
+		struct TextureClearDesc
+		{
+			Texture* texture;
+			uint32_t mipSlice;
+		};
 
-				struct ClearUAVDesc
-				{
-					enum ResourceType
-					{
-						BUFFER,
-						TEXTURE
-					} type;
+		struct BufferClearDesc
+		{
+			Buffer* buffer;
+		};
 
-					struct TextureClearDesc
-					{
-						Texture* texture;
-						uint32_t mipSlice;
-					};
+		union
+		{
+			TextureClearDesc textureDesc;
+			BufferClearDesc bufferDesc;
+		};
 
-					struct BufferClearDesc
-					{
-						Buffer* buffer;
-					};
+		D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
 
-					union
-					{
-						TextureClearDesc textureDesc;
-						BufferClearDesc bufferDesc;
-					};
-
-					D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
-
-					D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
-				};
-			}
-		}
-	}
+		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
+	};
 }
 
 #endif // !_GEAR_CORE_RESOURCE_D3D12RESOURCE_PIPELINERESOURCEDESC_H_

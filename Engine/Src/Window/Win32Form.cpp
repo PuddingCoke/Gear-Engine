@@ -20,7 +20,9 @@
 
 #define EXITUID 0
 
-namespace
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam);
+
+namespace Gear::Window::Win32Form
 {
 	class Win32FormImpl
 	{
@@ -57,263 +59,260 @@ namespace
 
 		NOTIFYICONDATA nid;
 
-	}*impl = nullptr;
-}
+	};
 
-Win32FormImpl::Win32FormImpl(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam)) :
-	hWnd(nullptr), iniTrayIcon(windowCallback == Gear::Window::Win32Form::wallpaperCallBack), hMenu(nullptr), nid{}
-{
-	SetProcessDPIAware();
-
-	const HINSTANCE hInstance = GetModuleHandle(0);
-
-	WNDCLASSEX wcex = {};
-	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = reinterpret_cast<HBRUSH>(GetStockObject(NULL_BRUSH));
-	wcex.hIcon = LoadIcon(0, IDI_APPLICATION);
-	wcex.hIconSm = LoadIcon(0, IDI_APPLICATION);
-	wcex.lpszClassName = L"MyWindowClass";
-	wcex.hInstance = hInstance;
-	wcex.lpfnWndProc = windowCallback;
-
-	RegisterClassEx(&wcex);
-
-	RECT rect = { 0,0,static_cast<LONG>(width),static_cast<LONG>(height) };
-
-	AdjustWindowRect(&rect, windowStyle, false);
-
-	hWnd = CreateWindow(L"MyWindowClass", title.c_str(), windowStyle, startX, startY,
-		rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, hInstance, nullptr);
-
-	if (!hWnd)
+	Win32FormImpl::Win32FormImpl(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam)) :
+		hWnd(nullptr), iniTrayIcon(windowCallback == wallpaperCallBack), hMenu(nullptr), nid{}
 	{
-		LOGERROR(L"create window failed");
-	}
+		SetProcessDPIAware();
 
-	ShowWindow(hWnd, SW_SHOW);
+		const HINSTANCE hInstance = GetModuleHandle(0);
 
-	if (iniTrayIcon)
-	{
-		nid.cbSize = sizeof(NOTIFYICONDATA);
-		nid.hWnd = hWnd;
-		nid.uID = 0;
-		nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-		nid.uCallbackMessage = WM_TRAYICON;
-		nid.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-		wcscpy_s(nid.szTip, L"动态壁纸");
+		WNDCLASSEX wcex = {};
+		wcex.cbSize = sizeof(WNDCLASSEX);
+		wcex.style = CS_HREDRAW | CS_VREDRAW;
+		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+		wcex.hbrBackground = reinterpret_cast<HBRUSH>(GetStockObject(NULL_BRUSH));
+		wcex.hIcon = LoadIcon(0, IDI_APPLICATION);
+		wcex.hIconSm = LoadIcon(0, IDI_APPLICATION);
+		wcex.lpszClassName = L"MyWindowClass";
+		wcex.hInstance = hInstance;
+		wcex.lpfnWndProc = windowCallback;
 
-		Shell_NotifyIcon(NIM_ADD, &nid);
+		RegisterClassEx(&wcex);
 
-		hMenu = CreatePopupMenu();
+		RECT rect = { 0,0,static_cast<LONG>(width),static_cast<LONG>(height) };
 
-		AppendMenu(hMenu, MF_STRING, EXITUID, L"退出程序");
-	}
-}
+		AdjustWindowRect(&rect, windowStyle, false);
 
-Win32FormImpl::~Win32FormImpl()
-{
-	if (iniTrayIcon)
-	{
-		DestroyMenu(hMenu);
+		hWnd = CreateWindow(L"MyWindowClass", title.c_str(), windowStyle, startX, startY,
+			rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, hInstance, nullptr);
 
-		Shell_NotifyIcon(NIM_DELETE, &nid);
-	}
-
-	DestroyWindow(hWnd);
-}
-
-bool Win32FormImpl::pollEvents()
-{
-	Gear::Input::Mouse::Internal::resetDeltaValue();
-
-	Gear::Input::Keyboard::Internal::resetDeltaValue();
-
-	MSG msg = {};
-
-	if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-	{
-		TranslateMessage(&msg);
-
-		DispatchMessage(&msg);
-	}
-
-	return msg.message != WM_QUIT;
-}
-
-HWND Win32FormImpl::getHandle() const
-{
-	return hWnd;
-}
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam);
-
-LRESULT Win32FormImpl::windowProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
-{
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-		return true;
-
-	switch (uMsg)
-	{
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-
-		BeginPaint(hWnd, &ps);
-
-		EndPaint(hWnd, &ps);
-	}
-	break;
-
-	case WM_MOUSEMOVE:
-		Gear::Input::Mouse::Internal::move(static_cast<float>(LOWORD(lParam)), static_cast<float>(Gear::Core::Graphics::getHeight()) - static_cast<float>(HIWORD(lParam)));
-		break;
-
-	case WM_LBUTTONDOWN:
-		Gear::Input::Mouse::Internal::pressLeft();
-		break;
-
-	case WM_RBUTTONDOWN:
-		Gear::Input::Mouse::Internal::pressRight();
-		break;
-
-	case WM_LBUTTONUP:
-		Gear::Input::Mouse::Internal::releaseLeft();
-		break;
-
-	case WM_RBUTTONUP:
-		Gear::Input::Mouse::Internal::releaseRight();
-		break;
-
-	case WM_MOUSEWHEEL:
-		Gear::Input::Mouse::Internal::scroll(GET_WHEEL_DELTA_WPARAM(wParam) / 120.f);
-		break;
-
-	case WM_KEYDOWN:
-		if ((HIWORD(lParam) & KF_REPEAT) == 0)
+		if (!hWnd)
 		{
-			Gear::Input::Keyboard::Internal::pressKey(static_cast<Gear::Input::Keyboard::Key>(wParam));
+			LOGERROR(L"create window failed");
+		}
+
+		ShowWindow(hWnd, SW_SHOW);
+
+		if (iniTrayIcon)
+		{
+			nid.cbSize = sizeof(NOTIFYICONDATA);
+			nid.hWnd = hWnd;
+			nid.uID = 0;
+			nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+			nid.uCallbackMessage = WM_TRAYICON;
+			nid.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+			wcscpy_s(nid.szTip, L"动态壁纸");
+
+			Shell_NotifyIcon(NIM_ADD, &nid);
+
+			hMenu = CreatePopupMenu();
+
+			AppendMenu(hMenu, MF_STRING, EXITUID, L"退出程序");
+		}
+	}
+
+	Win32FormImpl::~Win32FormImpl()
+	{
+		if (iniTrayIcon)
+		{
+			DestroyMenu(hMenu);
+
+			Shell_NotifyIcon(NIM_DELETE, &nid);
+		}
+
+		DestroyWindow(hWnd);
+	}
+
+	bool Win32FormImpl::pollEvents()
+	{
+		Input::Mouse::Internal::resetDeltaValue();
+
+		Input::Keyboard::Internal::resetDeltaValue();
+
+		MSG msg = {};
+
+		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+
+			DispatchMessage(&msg);
+		}
+
+		return msg.message != WM_QUIT;
+	}
+
+	HWND Win32FormImpl::getHandle() const
+	{
+		return hWnd;
+	}
+
+	LRESULT Win32FormImpl::windowProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
+	{
+		if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+			return true;
+
+		switch (uMsg)
+		{
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+
+			BeginPaint(hWnd, &ps);
+
+			EndPaint(hWnd, &ps);
 		}
 		break;
 
-	case WM_KEYUP:
-		Gear::Input::Keyboard::Internal::releaseKey(static_cast<Gear::Input::Keyboard::Key>(wParam));
-		break;
+		case WM_MOUSEMOVE:
+			Input::Mouse::Internal::move(static_cast<float>(LOWORD(lParam)), static_cast<float>(Core::Graphics::getHeight()) - static_cast<float>(HIWORD(lParam)));
+			break;
 
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
+		case WM_LBUTTONDOWN:
+			Input::Mouse::Internal::pressLeft();
+			break;
 
-	default:
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
+		case WM_RBUTTONDOWN:
+			Input::Mouse::Internal::pressRight();
+			break;
 
-	return 0;
-}
+		case WM_LBUTTONUP:
+			Input::Mouse::Internal::releaseLeft();
+			break;
 
-LRESULT Win32FormImpl::encodeProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
-{
-	switch (uMsg)
-	{
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
+		case WM_RBUTTONUP:
+			Input::Mouse::Internal::releaseRight();
+			break;
 
-		BeginPaint(hWnd, &ps);
+		case WM_MOUSEWHEEL:
+			Input::Mouse::Internal::scroll(GET_WHEEL_DELTA_WPARAM(wParam) / 120.f);
+			break;
 
-		EndPaint(hWnd, &ps);
-	}
-	break;
+		case WM_KEYDOWN:
+			if ((HIWORD(lParam) & KF_REPEAT) == 0)
+			{
+				Input::Keyboard::Internal::pressKey(static_cast<Input::Keyboard::Key>(wParam));
+			}
+			break;
 
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
+		case WM_KEYUP:
+			Input::Keyboard::Internal::releaseKey(static_cast<Input::Keyboard::Key>(wParam));
+			break;
 
-	default:
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-
-	return 0;
-}
-
-LRESULT Win32FormImpl::wallpaperProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
-{
-	switch (uMsg)
-	{
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-
-		BeginPaint(hWnd, &ps);
-
-		EndPaint(hWnd, &ps);
-	}
-	break;
-
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-
-	case WM_TRAYICON:
-		if (LOWORD(lParam) == WM_RBUTTONUP)
-		{
-			POINT pt;
-
-			GetCursorPos(&pt);
-
-			TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, nullptr);
-		}
-		break;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == EXITUID)
-		{
+		case WM_DESTROY:
 			PostQuitMessage(0);
+			break;
+
+		default:
+			return DefWindowProc(hWnd, uMsg, wParam, lParam);
+		}
+
+		return 0;
+	}
+
+	LRESULT Win32FormImpl::encodeProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
+	{
+		switch (uMsg)
+		{
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+
+			BeginPaint(hWnd, &ps);
+
+			EndPaint(hWnd, &ps);
 		}
 		break;
 
-	default:
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			break;
+
+		default:
+			return DefWindowProc(hWnd, uMsg, wParam, lParam);
+		}
+
+		return 0;
 	}
 
-	return 0;
-}
-
-LRESULT Gear::Window::Win32Form::windowCallback(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
-{
-	return impl->windowProc(hWnd, uMsg, wParam, lParam);
-}
-
-LRESULT Gear::Window::Win32Form::encodeCallback(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
-{
-	return impl->encodeProc(hWnd, uMsg, wParam, lParam);
-}
-
-LRESULT Gear::Window::Win32Form::wallpaperCallBack(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
-{
-	return impl->wallpaperProc(hWnd, uMsg, wParam, lParam);
-}
-
-void Gear::Window::Win32Form::initialize(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
-{
-	impl = new Win32FormImpl(title, startX, startY, width, height, windowStyle, windowCallback);
-}
-
-void Gear::Window::Win32Form::release()
-{
-	if (impl)
+	LRESULT Win32FormImpl::wallpaperProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const
 	{
-		delete impl;
+		switch (uMsg)
+		{
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+
+			BeginPaint(hWnd, &ps);
+
+			EndPaint(hWnd, &ps);
+		}
+		break;
+
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			break;
+
+		case WM_TRAYICON:
+			if (LOWORD(lParam) == WM_RBUTTONUP)
+			{
+				POINT pt;
+
+				GetCursorPos(&pt);
+
+				TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, nullptr);
+			}
+			break;
+
+		case WM_COMMAND:
+			if (LOWORD(wParam) == EXITUID)
+			{
+				PostQuitMessage(0);
+			}
+			break;
+
+		default:
+			return DefWindowProc(hWnd, uMsg, wParam, lParam);
+		}
+
+		return 0;
 	}
-}
 
-bool Gear::Window::Win32Form::pollEvents()
-{
-	return impl->pollEvents();
-}
+	UniquePtr<Win32FormImpl> impl;
 
-HWND Gear::Window::Win32Form::getHandle()
-{
-	return impl->getHandle();
+	void initialize(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
+	{
+		impl = makeUnique<Win32FormImpl>(title, startX, startY, width, height, windowStyle, windowCallback);
+	}
+
+	void release()
+	{
+		impl.reset();
+	}
+
+	bool pollEvents()
+	{
+		return impl->pollEvents();
+	}
+
+	HWND getHandle()
+	{
+		return impl->getHandle();
+	}
+
+	LRESULT CALLBACK windowCallback(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		return impl->windowProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	LRESULT CALLBACK encodeCallback(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		return impl->encodeProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	LRESULT CALLBACK wallpaperCallBack(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		return impl->wallpaperProc(hWnd, uMsg, wParam, lParam);
+	}
 }

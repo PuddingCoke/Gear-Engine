@@ -1,42 +1,45 @@
 ﻿#include<Gear/Utils/Timer.h>
 
-Gear::Utils::Timer::Timer() :
-	curTime(0), timeLimit(0)
+namespace Gear::Utils
 {
-
-}
-
-Gear::Utils::Timer::Timer(const float timeLimit) :
-	timeLimit(timeLimit), curTime(0)
-{
-
-}
-
-bool Gear::Utils::Timer::update(const float dt)
-{
-	if (curTime >= timeLimit)
+	Timer::Timer() :
+		curTime(0), timeLimit(0)
 	{
-		curTime -= timeLimit;
 
-		return true;
 	}
 
-	curTime += dt;
+	Timer::Timer(const float timeLimit) :
+		timeLimit(timeLimit), curTime(0)
+	{
 
-	return false;
-}
+	}
 
-void Gear::Utils::Timer::restart()
-{
-	curTime = 0;
-}
+	bool Timer::update(const float dt)
+	{
+		if (curTime >= timeLimit)
+		{
+			curTime -= timeLimit;
 
-void Gear::Utils::Timer::setTimeLimit(const float timeLimit)
-{
-	this->timeLimit = timeLimit;
-}
+			return true;
+		}
 
-float Gear::Utils::Timer::getTimeLimit() const
-{
-	return timeLimit;
+		curTime += dt;
+
+		return false;
+	}
+
+	void Timer::restart()
+	{
+		curTime = 0;
+	}
+
+	void Timer::setTimeLimit(const float timeLimit)
+	{
+		this->timeLimit = timeLimit;
+	}
+
+	float Timer::getTimeLimit() const
+	{
+		return timeLimit;
+	}
 }
