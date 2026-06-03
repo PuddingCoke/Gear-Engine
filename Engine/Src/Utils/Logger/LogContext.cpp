@@ -15,7 +15,6 @@ namespace Gear::Utils::Logger
 	LogContext::LogContext() :
 		textColor{ L"" },
 		displayColor{ L"" },
-		slots(new BufferSlot[slotNum]),
 		writeIndex(0),
 		messageStr(nullptr)
 	{
@@ -32,11 +31,6 @@ namespace Gear::Utils::Logger
 
 				inUseCV.wait(inUseLock, [this, i]() {return !slots[i].inUse; });
 			}
-		}
-
-		if (slots)
-		{
-			delete[] slots;
 		}
 	}
 

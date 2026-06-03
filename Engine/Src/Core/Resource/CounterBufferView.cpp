@@ -3,7 +3,7 @@
 namespace Gear::Core::Resource
 {
 	CounterBufferView::CounterBufferView(const bool persistent) :
-		ResourceBase(persistent), buffer(new D3D12Resource::Buffer(4, true, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS)), srvIndex(0), uavIndex(0), viewGPUHandle(), viewCPUHandle()
+		ResourceBase(persistent), buffer(makeUnique<D3D12Resource::Buffer>(4, true, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS)), srvIndex(0), uavIndex(0), viewGPUHandle(), viewCPUHandle()
 	{
 		setNumCBVSRVUAVDescriptors(2);
 
@@ -58,10 +58,6 @@ namespace Gear::Core::Resource
 
 	CounterBufferView::~CounterBufferView()
 	{
-		if (buffer)
-		{
-			delete buffer;
-		}
 	}
 
 	D3D12Resource::ShaderResourceDesc CounterBufferView::getSRVIndex() const
@@ -70,7 +66,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
 		desc.resourceIndex = srvIndex;
-		desc.bufferDesc.buffer = buffer;
+		desc.bufferDesc.buffer = buffer.get();
 
 		return desc;
 	}
@@ -81,7 +77,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
 		desc.state = D3D12Resource::ShaderResourceDesc::UAV;
 		desc.resourceIndex = uavIndex;
-		desc.bufferDesc.buffer = buffer;
+		desc.bufferDesc.buffer = buffer.get();
 
 		return desc;
 	}
@@ -90,7 +86,7 @@ namespace Gear::Core::Resource
 	{
 		D3D12Resource::ClearUAVDesc desc = {};
 		desc.type = D3D12Resource::ClearUAVDesc::BUFFER;
-		desc.bufferDesc.buffer = buffer;
+		desc.bufferDesc.buffer = buffer.get();
 		desc.viewGPUHandle = viewGPUHandle;
 		desc.viewCPUHandle = viewCPUHandle;
 
@@ -112,6 +108,6 @@ namespace Gear::Core::Resource
 
 	D3D12Resource::Buffer* CounterBufferView::getBuffer() const
 	{
-		return buffer;
+		return buffer.get();
 	}
 }

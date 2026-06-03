@@ -11,6 +11,8 @@ static_assert(sizeof(double) == 8, "size of double must be 8");
 
 #include<Gear/Utils/Logger.h>
 
+#include<Gear/Utils/GearMemory.h>
+
 #include<Gear/Core/TOPOLOGY.h>
 
 #include<D3D12Headers/d3dx12.h>
@@ -21,27 +23,7 @@ static_assert(sizeof(double) == 8, "size of double must be 8");
 
 #include<comdef.h>
 
-#include<memory>
-
 using Microsoft::WRL::ComPtr;
-
-template<typename T, typename Deleter = std::default_delete<T>>
-using UniquePtr = std::unique_ptr<T, Deleter>;
-
-template<typename T>
-using SharedPtr = std::shared_ptr<T>;
-
-template<typename T, typename... Args>
-UniquePtr<T> makeUnique(Args&&... args)
-{
-	return std::make_unique<T>(std::forward<Args>(args)...);
-}
-
-template<typename T, typename... Args>
-SharedPtr<T> makeShared(Args&&... args)
-{
-	return std::make_shared<T>(std::forward<Args>(args)...);
-}
 
 #define CHECKERROR(x) \
 {\

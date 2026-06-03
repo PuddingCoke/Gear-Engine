@@ -32,7 +32,7 @@ namespace Gear::Core
 	void RenderThread::workerLoop()
 	{
 		//申请每个渲染线程独享的描述符堆
-		LocalDescriptorHeap::Internal::initialize();
+		LocalDescriptorHeap::Internal::InitializeToken token;
 
 #ifdef _DEBUG
 		try
@@ -44,7 +44,7 @@ namespace Gear::Core
 
 				createFunc(&renderTask);
 
-				renderTask->renderThread = this;
+				renderTask->renderThread = UniquePtr<RenderThread>(this);
 
 				RenderEngine::submitCommandList(renderTask->getCommandList());
 
@@ -75,8 +75,5 @@ namespace Gear::Core
 		//进入工作循环
 		//由主渲染线程来调度
 		renderTask->workerLoop();
-
-		//释放申请的独享描述符堆
-		LocalDescriptorHeap::Internal::release();
 	}
 }

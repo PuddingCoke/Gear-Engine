@@ -23,9 +23,9 @@
 namespace Gear::Core
 {
 	ResourceManager::ResourceManager() :
-		context(new GraphicsContext()), commandList(context->getCommandList()),
-		d3d12Resources(new std::vector<Resource::D3D12Resource::D3D12ResourceBase*>[Graphics::getFrameBufferCount()]),
-		resources(new std::vector<Resource::ResourceBase*>[Graphics::getFrameBufferCount()])
+		context(makeUnique<GraphicsContext>()), commandList(context->getCommandList()),
+		d3d12Resources(makeUnique<std::vector<Resource::D3D12Resource::D3D12ResourceBase*>[]>(Graphics::getFrameBufferCount())),
+		resources(makeUnique<std::vector<Resource::ResourceBase*>[]>(Graphics::getFrameBufferCount()))
 	{
 	}
 
@@ -47,12 +47,6 @@ namespace Gear::Core
 
 			resources[i].clear();
 		}
-
-		delete[] d3d12Resources;
-
-		delete[] resources;
-
-		delete context;
 	}
 
 	void ResourceManager::deferredRelease(Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource)
@@ -84,7 +78,7 @@ namespace Gear::Core
 
 	GraphicsContext* ResourceManager::getGraphicsContext() const
 	{
-		return context;
+		return context.get();
 	}
 
 	D3D12Core::CommandList* ResourceManager::getCommandList() const
@@ -678,7 +672,7 @@ namespace Gear::Core
 
 		deferredRelease(equirectangularMap);
 
-		GlobalEffect::HDRClampEffect::process(context, *equirectangularMap);
+		GlobalEffect::HDRClampEffect::process(context.get(), *equirectangularMap);
 
 		DXGI_FORMAT resFormat = FMT::UNKNOWN;
 
@@ -705,7 +699,7 @@ namespace Gear::Core
 
 		deferredRelease(cubeMap);
 
-		GlobalEffect::LatLongMapToCubeMapEffect::process(context, *equirectangularMap, *cubeMap);
+		GlobalEffect::LatLongMapToCubeMapEffect::process(context.get(), *equirectangularMap, *cubeMap);
 
 		bool stateTracking = true;
 

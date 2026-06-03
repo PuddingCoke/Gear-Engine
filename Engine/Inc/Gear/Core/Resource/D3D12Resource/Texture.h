@@ -111,21 +111,21 @@ namespace Gear::Core::Resource::D3D12Resource
 
 			uint32_t allState;
 
-			uint32_t* mipLevelStates;
+			UniquePtr<uint32_t[]> mipLevelStates;
 		};
 
 		SharedPtr<States> globalState;
 
-		States* internalState;
+		UniquePtr<States> internalState;
 
-		States* transitionState;
+		UniquePtr<States> transitionState;
 
 	};
 
 	template<typename Func>
 	inline void Texture::States::forEach(const Func& func) const
 	{
-		std::for_each(mipLevelStates, mipLevelStates + mipLevels, func);
+		std::for_each(mipLevelStates.get(), mipLevelStates.get() + mipLevels, func);
 	}
 }
 

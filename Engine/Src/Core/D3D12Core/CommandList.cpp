@@ -6,7 +6,7 @@ namespace Gear::Core::D3D12Core
 {
 	CommandList::CommandList(const D3D12_COMMAND_LIST_TYPE type)
 	{
-		allocators = new ComPtr<ID3D12CommandAllocator>[Graphics::getFrameBufferCount()];
+		allocators = makeUnique<ComPtr<ID3D12CommandAllocator>[]>(Graphics::getFrameBufferCount());
 
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
@@ -20,10 +20,6 @@ namespace Gear::Core::D3D12Core
 
 	CommandList::~CommandList()
 	{
-		if (allocators)
-		{
-			delete[] allocators;
-		}
 	}
 
 	void CommandList::resourceBarrier(const uint32_t numBarriers, const D3D12_RESOURCE_BARRIER* const pBarriers) const

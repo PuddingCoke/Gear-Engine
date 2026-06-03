@@ -18,7 +18,7 @@ public:
 
 	const uint32_t vertexNum;
 
-	Model(const aiScene* const scene, const aiMesh* const mesh, ResourceManager* const resManager) :
+	Model(const aiScene* const scene, const aiMesh* const mesh, ResourceManager& resManager) :
 		vertexNum(mesh->mNumVertices)
 	{
 		{
@@ -29,7 +29,7 @@ public:
 				vertices.push_back(Vertex{ {mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z},{mesh->mNormals[i].x,mesh->mNormals[i].y,mesh->mNormals[i].z} });
 			}
 
-			vertexBuffer = resManager->createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertexNum,
+			vertexBuffer = resManager.createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertexNum,
 				false, false, true, false, true, vertices.data());
 		}
 
@@ -56,7 +56,7 @@ public:
 
 			property.specularColor = DirectX::XMFLOAT4(color.r, color.g, color.b, 1.f);
 
-			materialBuffer = resManager->createImmutableCBuffer(sizeof(MaterialProperty), &property, true);
+			materialBuffer = resManager.createImmutableCBuffer(sizeof(MaterialProperty), &property, true);
 		}
 	}
 

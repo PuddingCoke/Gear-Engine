@@ -19,7 +19,7 @@ namespace Gear::Core::VideoEncoder
 {
 	NvidiaEncoder::NvidiaEncoder(const uint32_t frameToEncode) :
 		Encoder(frameToEncode, outputVideoFormat), encoder(nullptr),
-		readbackHeap(new Resource::D3D12Resource::ReadbackHeap(2 * 4 * Graphics::getWidth() * Graphics::getHeight())),
+		readbackHeap(makeUnique<Resource::D3D12Resource::ReadbackHeap>(2 * 4 * Graphics::getWidth() * Graphics::getHeight())),
 		nvencAPI{ NV_ENCODE_API_FUNCTION_LIST_VER },
 		outputFenceValue(0)
 	{
@@ -132,8 +132,6 @@ namespace Gear::Core::VideoEncoder
 			}
 
 			NVENCCALL(nvencAPI.nvEncDestroyEncoder(encoder));
-
-			delete readbackHeap;
 
 			FreeLibrary(moduleNvEncAPI);
 		}

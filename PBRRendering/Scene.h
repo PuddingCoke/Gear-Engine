@@ -22,7 +22,7 @@ public:
 		uint32_t enableDiffuseIBL = 1;
 	}sceneInfo;
 
-	Scene(const std::string& filePath, ResourceManager* const resManager, const DXGI_FORMAT rtvFormat) :
+	Scene(const std::string& filePath, ResourceManager& resManager, const DXGI_FORMAT rtvFormat) :
 		vertexShader(Shader::create(Utils::File::getRootFolder() + L"PBRVS.cso")),
 		pixelShader(Shader::create(Utils::File::getRootFolder() + L"PBRPS.cso"))
 	{

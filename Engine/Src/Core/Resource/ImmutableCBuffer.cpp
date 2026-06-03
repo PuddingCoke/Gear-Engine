@@ -30,10 +30,6 @@ namespace Gear::Core::Resource
 
 	ImmutableCBuffer::~ImmutableCBuffer()
 	{
-		if (buffer)
-		{
-			delete buffer;
-		}
 	}
 
 	D3D12Resource::ShaderResourceDesc ImmutableCBuffer::getBufferIndex() const
@@ -42,7 +38,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
 		desc.state = D3D12Resource::ShaderResourceDesc::CBV;
 		desc.resourceIndex = bufferIndex;
-		desc.bufferDesc.buffer = buffer;
+		desc.bufferDesc.buffer = buffer.get();
 
 		return desc;
 	}
@@ -54,7 +50,7 @@ namespace Gear::Core::Resource
 
 	D3D12Resource::Buffer* ImmutableCBuffer::getBuffer() const
 	{
-		return buffer;
+		return buffer.get();
 	}
 
 	void ImmutableCBuffer::copyDescriptors()

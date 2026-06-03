@@ -220,7 +220,7 @@ namespace Gear::Core
 
 		D3D12_RECT rt;
 
-		D3D12Core::CommandList* const commandList;
+		UniquePtr<D3D12Core::CommandList> commandList;
 
 		uint32_t resourceIndices[32];
 

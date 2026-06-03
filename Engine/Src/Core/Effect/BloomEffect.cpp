@@ -20,14 +20,14 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<BloomEffect> BloomEffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager* const resManager)
+	UniquePtr<BloomEffect> BloomEffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager& resManager)
 	{
 		return makeUnique<BloomEffect>(context, width, height, resManager);
 	}
 
-	BloomEffect::BloomEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager* const resManager) :
+	BloomEffect::BloomEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager& resManager) :
 		EffectBase(context, width, height, FMT::RGBA16F),
-		lensDirtTexture(resManager->createTextureRenderView(Utils::File::getRootFolder() + L"bloom_dirt_mask.png", true)),
+		lensDirtTexture(resManager.createTextureRenderView(Utils::File::getRootFolder() + L"bloom_dirt_mask.png", true)),
 		filteredTexture(ResourceManager::createTextureRenderView(width, height, FMT::RGBA16F, 1, 1, false, true,
 			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F))
 	{

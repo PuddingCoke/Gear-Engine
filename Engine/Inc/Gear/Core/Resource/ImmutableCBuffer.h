@@ -37,7 +37,7 @@ namespace Gear::Core::Resource
 
 		uint32_t bufferIndex;
 
-		D3D12Resource::Buffer* buffer;
+		UniquePtr<D3D12Resource::Buffer> buffer;
 
 	};
 }

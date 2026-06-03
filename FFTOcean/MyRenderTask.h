@@ -110,7 +110,7 @@ public:
 
 		depthTexture = ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true);
 
-		effect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
+		effect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
 
 		vertexBuffer = resManager->createStructuredBufferView(sizeof(DirectX::XMFLOAT3), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * vertices.size()), false, false, true, true, true, vertices.data());
 

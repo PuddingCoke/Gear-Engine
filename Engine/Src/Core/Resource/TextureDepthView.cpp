@@ -381,10 +381,6 @@ namespace Gear::Core::Resource
 
 	TextureDepthView::~TextureDepthView()
 	{
-		if (texture)
-		{
-			delete texture;
-		}
 	}
 
 	D3D12Resource::ShaderResourceDesc TextureDepthView::getAllDepthIndex() const
@@ -393,7 +389,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
 		desc.resourceIndex = allDepthSRVIndex;
-		desc.textureDesc.texture = texture;
+		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS;
 
 		return desc;
@@ -405,7 +401,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
 		desc.resourceIndex = allStencilSRVIndex;
-		desc.textureDesc.texture = texture;
+		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS;
 
 		return desc;
@@ -417,7 +413,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
 		desc.resourceIndex = depthSRVMipIndices[mipSlice];
-		desc.textureDesc.texture = texture;
+		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = mipSlice;
 
 		return desc;
@@ -434,7 +430,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
 		desc.resourceIndex = stencilSRVMipIndices[mipSlice];
-		desc.textureDesc.texture = texture;
+		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = mipSlice;
 
 		return desc;
@@ -443,7 +439,7 @@ namespace Gear::Core::Resource
 	D3D12Resource::DepthStencilDesc TextureDepthView::getDSVMipHandle(const uint32_t mipSlice) const
 	{
 		D3D12Resource::DepthStencilDesc desc = {};
-		desc.texture = texture;
+		desc.texture = texture.get();
 		desc.mipSlice = mipSlice;
 		desc.dsvHandle = dsvMipHandles[mipSlice];
 
@@ -452,7 +448,7 @@ namespace Gear::Core::Resource
 
 	D3D12Resource::Texture* TextureDepthView::getTexture() const
 	{
-		return texture;
+		return texture.get();
 	}
 
 	void TextureDepthView::copyDescriptors()

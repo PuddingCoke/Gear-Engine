@@ -2,8 +2,6 @@
 
 #include<Gear/Utils/Internal/LoggerInternal.h>
 
-#include<Gear/Core/GraphicsDevice.h>
-
 #include<iostream>
 
 #include<fstream>

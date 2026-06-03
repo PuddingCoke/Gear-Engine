@@ -69,7 +69,7 @@ namespace Gear::Core::VideoEncoder
 
 		void* encoder;
 
-		Resource::D3D12Resource::ReadbackHeap* readbackHeap;
+		UniquePtr<Resource::D3D12Resource::ReadbackHeap> readbackHeap;
 
 		ComPtr<ID3D12Fence> outputFence;
 

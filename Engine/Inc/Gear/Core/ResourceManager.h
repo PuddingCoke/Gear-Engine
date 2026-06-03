@@ -114,7 +114,7 @@ namespace Gear::Core
 	protected:
 
 		//处理高级任务，比如从等距柱状图创建立方体贴图
-		GraphicsContext* const context;
+		UniquePtr<GraphicsContext> context;
 
 		//处理低级任务，比如用数据初始化纹理
 		//注意：这个指针只是引用
@@ -122,9 +122,9 @@ namespace Gear::Core
 
 	private:
 
-		std::vector<Resource::D3D12Resource::D3D12ResourceBase*>* d3d12Resources;
+		UniquePtr<std::vector<Resource::D3D12Resource::D3D12ResourceBase*>[]> d3d12Resources;
 
-		std::vector<Resource::ResourceBase*>* resources;
+		UniquePtr<std::vector<Resource::ResourceBase*>[]> resources;
 
 	};
 }

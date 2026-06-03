@@ -50,7 +50,7 @@ namespace Gear::Core::Resource
 
 	private:
 
-		CounterBufferView* counterBuffer;
+		UniquePtr<CounterBufferView> counterBuffer;
 
 		uint32_t srvIndex;
 
@@ -67,9 +67,9 @@ namespace Gear::Core::Resource
 			D3D12_INDEX_BUFFER_VIEW ibv;
 		};
 
-		D3D12Resource::UploadHeap** uploadHeaps;
+		UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeaps;
 
-		D3D12Resource::Buffer* buffer;
+		UniquePtr<D3D12Resource::Buffer> buffer;
 	};
 }
 

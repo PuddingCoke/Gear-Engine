@@ -165,7 +165,7 @@ namespace Gear::Core::RenderEngine
 
 			UniquePtr<D3D12_CPU_DESCRIPTOR_HANDLE[]> backBufferHandles;
 
-			std::vector<UniquePtr<Resource::D3D12Resource::Texture>> backBufferTextures;
+			UniquePtr<UniquePtr<Resource::D3D12Resource::Texture>[]> backBufferTextures;
 
 			const bool initializeImGuiSurface;
 
@@ -311,6 +311,8 @@ namespace Gear::Core::RenderEngine
 
 				backBufferHandles = makeUnique<D3D12_CPU_DESCRIPTOR_HANDLE[]>(Graphics::getFrameBufferCount());
 
+				backBufferTextures = makeUnique<UniquePtr<Resource::D3D12Resource::Texture>[]>(Graphics::getFrameBufferCount());
+
 				for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 				{
 					ComPtr<ID3D12Resource> texture;
@@ -324,7 +326,7 @@ namespace Gear::Core::RenderEngine
 					descriptorHandle.move();
 
 					//后备缓冲的初态为D3D12_RESOURCE_STATE_PRESENT
-					backBufferTextures.emplace_back(makeUnique<Resource::D3D12Resource::Texture>(texture, true, D3D12_RESOURCE_STATE_PRESENT));
+					backBufferTextures[i] = makeUnique<Resource::D3D12Resource::Texture>(texture, true, D3D12_RESOURCE_STATE_PRESENT);
 				}
 			}
 

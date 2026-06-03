@@ -63,7 +63,7 @@ namespace Gear::Core::Resource
 
 		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> viewCPUHandles;
 
-		D3D12Resource::Texture* texture;
+		UniquePtr<D3D12Resource::Texture> texture;
 	};
 }
 

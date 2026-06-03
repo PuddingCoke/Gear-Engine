@@ -267,10 +267,6 @@ namespace Gear::Core::Resource
 
 	TextureRenderView::~TextureRenderView()
 	{
-		if (texture)
-		{
-			delete texture;
-		}
 	}
 
 	D3D12Resource::ShaderResourceDesc TextureRenderView::getAllSRVIndex() const
@@ -279,7 +275,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
 		desc.resourceIndex = allSRVIndex;
-		desc.textureDesc.texture = texture;
+		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS;
 
 		return desc;
@@ -291,7 +287,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
 		desc.resourceIndex = srvMipIndices[mipSlice];
-		desc.textureDesc.texture = texture;
+		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = mipSlice;
 
 		return desc;
@@ -308,7 +304,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::UAV;
 		desc.resourceIndex = uavMipIndices[mipSlice];
-		desc.textureDesc.texture = texture;
+		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = mipSlice;
 
 		return desc;
@@ -317,7 +313,7 @@ namespace Gear::Core::Resource
 	D3D12Resource::RenderTargetDesc TextureRenderView::getRTVMipHandle(const uint32_t mipSlice) const
 	{
 		D3D12Resource::RenderTargetDesc desc = {};
-		desc.texture = texture;
+		desc.texture = texture.get();
 		desc.mipSlice = mipSlice;
 		desc.rtvHandle = rtvMipHandles[mipSlice];
 
@@ -328,7 +324,7 @@ namespace Gear::Core::Resource
 	{
 		D3D12Resource::ClearUAVDesc desc = {};
 		desc.type = D3D12Resource::ClearUAVDesc::TEXTURE;
-		desc.textureDesc.texture = texture;
+		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = mipSlice;
 		desc.viewGPUHandle = viewGPUHandles[mipSlice];
 		desc.viewCPUHandle = viewCPUHandles[mipSlice];
@@ -338,7 +334,7 @@ namespace Gear::Core::Resource
 
 	D3D12Resource::Texture* TextureRenderView::getTexture() const
 	{
-		return texture;
+		return texture.get();
 	}
 
 	void TextureRenderView::copyDescriptors()

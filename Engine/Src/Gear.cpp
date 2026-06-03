@@ -254,7 +254,7 @@ namespace Gear
 				const uint8_t* const dataPtr = reinterpret_cast<uint8_t*>(backBufferHeap->map(CD3DX12_RANGE(0ull,
 					Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height)));
 
-				uint8_t* const colors = new uint8_t[Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height];
+				UniquePtr<uint8_t[]> colors = makeUnique<uint8_t[]>(Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
 
 				for (uint32_t i = 0; i < realTimeRender.width * realTimeRender.height; i++)
 				{
@@ -272,9 +272,7 @@ namespace Gear
 
 				backBufferHeap->unmap();
 
-				stbi_write_png("output.png", realTimeRender.width, realTimeRender.height, 4, colors, Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width);
-
-				delete[] colors;
+				stbi_write_png("output.png", realTimeRender.width, realTimeRender.height, 4, colors.get(), Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width);
 
 				LOGSUCCESS(L"screenshot saved to output.png");
 			}
@@ -285,14 +283,14 @@ namespace Gear
 	{
 		const Core::GPUVendor vendor = Core::RenderEngine::getVendor();
 
-		Core::VideoEncoder::Encoder* encoder = nullptr;
+		UniquePtr<Core::VideoEncoder::Encoder> encoder;
 
 		const uint32_t frameToEncode = videoRender.second * Core::VideoEncoder::Encoder::frameRate;
 
 		switch (vendor)
 		{
 		case Core::GPUVendor::NVIDIA:
-			encoder = new Core::VideoEncoder::NvidiaEncoder(frameToEncode);
+			encoder = makeUnique<Core::VideoEncoder::NvidiaEncoder>(frameToEncode);
 			break;
 		case Core::GPUVendor::AMD:
 		case Core::GPUVendor::INTEL:
@@ -306,7 +304,7 @@ namespace Gear
 		{
 			const uint32_t numTextures = Core::VideoEncoder::NvidiaEncoder::lookaheadDepth + 1;
 
-			Core::Resource::D3D12Resource::Texture* renderTextures[numTextures] = {};
+			UniquePtr<Core::Resource::D3D12Resource::Texture> renderTextures[numTextures] = {};
 
 			D3D12_CPU_DESCRIPTOR_HANDLE textureHandles[numTextures] = {};
 
@@ -323,7 +321,7 @@ namespace Gear
 				{
 					const D3D12_CLEAR_VALUE clearValue = { Core::Graphics::backBufferFormat ,{0.f,0.f,0.f,1.f} };
 
-					renderTextures[i] = new Core::Resource::D3D12Resource::Texture(Core::Graphics::getWidth(), Core::Graphics::getHeight(), Core::Graphics::backBufferFormat, 1, 1, true, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, &clearValue);
+					renderTextures[i] = makeUnique<Core::Resource::D3D12Resource::Texture>(Core::Graphics::getWidth(), Core::Graphics::getHeight(), Core::Graphics::backBufferFormat, 1, 1, true, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, &clearValue);
 
 					Core::GraphicsDevice::get()->CreateRenderTargetView(renderTextures[i]->getResource(), &rtvDesc, descriptorHandle.getCurrentCPUHandle());
 
@@ -339,7 +337,7 @@ namespace Gear
 
 			while (true)
 			{
-				Core::RenderEngine::Internal::setRenderTexture(renderTextures[index], textureHandles[index]);
+				Core::RenderEngine::Internal::setRenderTexture(renderTextures[index].get(), textureHandles[index]);
 
 				Core::RenderEngine::Internal::begin();
 
@@ -360,16 +358,6 @@ namespace Gear
 
 				index = (index + 1) % numTextures;
 			}
-
-			for (uint32_t i = 0; i < numTextures; i++)
-			{
-				delete renderTextures[i];
-			}
-		}
-
-		if (encoder)
-		{
-			delete encoder;
 		}
 	}
 

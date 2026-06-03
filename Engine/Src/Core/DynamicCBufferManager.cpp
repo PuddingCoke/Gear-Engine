@@ -40,82 +40,40 @@ namespace Gear::Core::DynamicCBufferManager
 
 			const uint64_t subRegionSize;
 
-			Resource::D3D12Resource::UploadHeap** const uploadHeap;
+			UniquePtr<UniquePtr<Resource::D3D12Resource::UploadHeap>[]> uploadHeap;
 
-			uint8_t** const dataPtr;
+			UniquePtr<uint8_t* []> dataPtr;
 
 			std::atomic<uint64_t> currentOffset;
 
 		};
 
-		class DynamicCBufferManagerImpl
-		{
-		public:
-
-			DynamicCBufferManagerImpl();
-
-			~DynamicCBufferManagerImpl();
-
-			DynamicCBufferManager::AvailableLocation requestLocation(const uint32_t regionIndex);
-
-			void recordCommands(D3D12Core::CommandList* const commandList);
-
-			//每个区域的子区域数量
-			//256bytes 512bytes 1024bytes .....
-			static constexpr uint32_t numSubRegion[] = { 4096,2048 };
-
-			static constexpr uint32_t numRegion = sizeof(numSubRegion) / sizeof(uint32_t);
-
-		private:
-
-			Resource::D3D12Resource::Buffer* buffer;
-
-			DynamicCBufferRegion** bufferRegions;
-
-			uint64_t dstOffset[numRegion];
-
-			//constantBufferAddress = baseAddressOffsets[regionIndex] + (256 << regionIndex) * subregionIndex
-			uint64_t baseAddressOffsets[numRegion];
-
-			//descriptorIndex = baseDescriptorIndices[regionIndex] + subregionIndex 
-			uint32_t baseDescriptorIndices[numRegion];
-
-		};
-
 		DynamicCBufferRegion::DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t subRegionNum) :
 			subRegionSize(subRegionSize),
-			uploadHeap(new Resource::D3D12Resource::UploadHeap* [Graphics::getFrameBufferCount()]),
-			dataPtr(new uint8_t* [Graphics::getFrameBufferCount()]),
+			uploadHeap(makeUnique<UniquePtr<Resource::D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
+			dataPtr(makeUnique<uint8_t* []>(Graphics::getFrameBufferCount())),
 			currentOffset(0)
 		{
 			for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 			{
-				uploadHeap[i] = new Resource::D3D12Resource::UploadHeap(subRegionSize * subRegionNum);
+				uploadHeap[i] = makeUnique<Resource::D3D12Resource::UploadHeap>(subRegionSize * subRegionNum);
 
+				//这里有个技巧，上传堆可以保持映射状态，这样可以避免每帧映射和取消映射带来的开销，但是不要忘了析构时取消映射
 				dataPtr[i] = static_cast<uint8_t*>(uploadHeap[i]->map());
 			}
 		}
 
 		DynamicCBufferRegion::~DynamicCBufferRegion()
 		{
-			if (uploadHeap)
+			if (uploadHeap.get())
 			{
 				for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 				{
-					if (uploadHeap[i])
+					if (uploadHeap[i].get())
 					{
 						uploadHeap[i]->unmap();
-
-						delete uploadHeap[i];
 					}
 				}
-
-				delete[] uploadHeap;
-			}
-
-			if (dataPtr)
-			{
-				delete[] dataPtr;
 			}
 		}
 
@@ -138,8 +96,42 @@ namespace Gear::Core::DynamicCBufferManager
 
 		Resource::D3D12Resource::UploadHeap* DynamicCBufferRegion::getUploadHeap() const
 		{
-			return uploadHeap[Graphics::getFrameIndex()];
+			return uploadHeap[Graphics::getFrameIndex()].get();
 		}
+
+		class DynamicCBufferManagerImpl
+		{
+		public:
+
+			DynamicCBufferManagerImpl();
+
+			~DynamicCBufferManagerImpl();
+
+			DynamicCBufferManager::AvailableLocation requestLocation(const uint32_t regionIndex);
+
+			void recordCommands(D3D12Core::CommandList* const commandList);
+
+			//每个区域的子区域数量
+			//256bytes 512bytes 1024bytes .....
+			static constexpr uint32_t numSubRegion[] = { 4096,2048 };
+
+			static constexpr uint32_t numRegion = sizeof(numSubRegion) / sizeof(uint32_t);
+
+		private:
+
+			UniquePtr<Resource::D3D12Resource::Buffer> buffer;
+
+			UniquePtr<UniquePtr<DynamicCBufferRegion>[]> bufferRegions;
+
+			uint64_t dstOffset[numRegion];
+
+			//constantBufferAddress = baseAddressOffsets[regionIndex] + (256 << regionIndex) * subregionIndex
+			uint64_t baseAddressOffsets[numRegion];
+
+			//descriptorIndex = baseDescriptorIndices[regionIndex] + subregionIndex 
+			uint32_t baseDescriptorIndices[numRegion];
+
+		};
 
 		DynamicCBufferManagerImpl::DynamicCBufferManagerImpl()
 		{
@@ -154,7 +146,7 @@ namespace Gear::Core::DynamicCBufferManager
 					requiredSize += (256u << regionIndex) * numSubRegion[regionIndex];
 				}
 
-				buffer = new Resource::D3D12Resource::Buffer(requiredSize, true, D3D12_RESOURCE_FLAG_NONE);
+				buffer = makeUnique<Resource::D3D12Resource::Buffer>(requiredSize, true, D3D12_RESOURCE_FLAG_NONE);
 
 				buffer->setName(L"Large Constant Buffer");
 
@@ -163,11 +155,11 @@ namespace Gear::Core::DynamicCBufferManager
 
 			//为大缓冲的每个区域创建上传堆，并进行管理
 			{
-				bufferRegions = new DynamicCBufferRegion * [numRegion];
+				bufferRegions = makeUnique<UniquePtr<DynamicCBufferRegion>[]>(numRegion);
 
 				for (uint32_t regionIndex = 0; regionIndex < numRegion; regionIndex++)
 				{
-					bufferRegions[regionIndex] = new DynamicCBufferRegion(256ull << regionIndex, numSubRegion[regionIndex]);
+					bufferRegions[regionIndex] = makeUnique<DynamicCBufferRegion>(256ull << regionIndex, numSubRegion[regionIndex]);
 				}
 			}
 
@@ -208,23 +200,6 @@ namespace Gear::Core::DynamicCBufferManager
 
 		DynamicCBufferManagerImpl::~DynamicCBufferManagerImpl()
 		{
-			if (buffer)
-			{
-				delete buffer;
-			}
-
-			if (bufferRegions)
-			{
-				for (uint32_t i = 0; i < numRegion; i++)
-				{
-					if (bufferRegions[i])
-					{
-						delete bufferRegions[i];
-					}
-				}
-
-				delete[] bufferRegions;
-			}
 		}
 
 		DynamicCBufferManager::AvailableLocation DynamicCBufferManagerImpl::requestLocation(const uint32_t regionIndex)
@@ -237,15 +212,16 @@ namespace Gear::Core::DynamicCBufferManager
 		void DynamicCBufferManagerImpl::recordCommands(D3D12Core::CommandList* const commandList)
 		{
 			//把大常量缓冲转变到STATE_COPY_DEST状态，用于内容更新
-			commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_COPY_DEST);
+			commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_COPY_DEST);
 
 			commandList->transitionResources();
 
+			//划分有着固定子区域大小的区域后，可以通过极少的copyBufferRegion调用完成一帧所需的常量缓冲的更新，简直完美
 			for (uint32_t regionIndex = 0; regionIndex < numRegion; regionIndex++)
 			{
 				if (bufferRegions[regionIndex]->getUpdateSize())
 				{
-					commandList->copyBufferRegion(buffer, dstOffset[regionIndex],
+					commandList->copyBufferRegion(buffer.get(), dstOffset[regionIndex],
 						bufferRegions[regionIndex]->getUploadHeap(), 0,
 						bufferRegions[regionIndex]->getUpdateSize());
 
@@ -254,7 +230,7 @@ namespace Gear::Core::DynamicCBufferManager
 			}
 
 			//把大常量缓冲转变到STATE_VERTEX_AND_CONSTANT_BUFFER状态，用于后续使用
-			commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+			commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
 			commandList->transitionResources();
 		}

@@ -20,7 +20,7 @@ namespace Gear::Core::Resource
 			//为结构化缓冲创建计数器缓冲
 			if (isStructuredBuffer && createUAV)
 			{
-				counterBuffer = new CounterBufferView(persistent);
+				counterBuffer = makeUnique<CounterBufferView>(persistent);
 			}
 
 			D3D12Core::DescriptorHandle descriptorHandle = allocCBVSRVUAVDescriptors();
@@ -132,42 +132,23 @@ namespace Gear::Core::Resource
 
 		if (cpuWritable)
 		{
-			uploadHeaps = new D3D12Resource::UploadHeap * [Graphics::getFrameBufferCount()];
+			uploadHeaps = makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount());
 
 			for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 			{
-				uploadHeaps[i] = new D3D12Resource::UploadHeap(size);
+				uploadHeaps[i] = makeUnique<D3D12Resource::UploadHeap>(size);
 			}
 		}
 	}
 
 	BufferView::~BufferView()
 	{
-		if (counterBuffer)
-		{
-			delete counterBuffer;
-		}
-
-		if (buffer)
-		{
-			delete buffer;
-		}
-
-		if (uploadHeaps)
-		{
-			for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
-			{
-				delete uploadHeaps[i];
-			}
-
-			delete[] uploadHeaps;
-		}
 	}
 
 	D3D12Resource::VertexBufferDesc BufferView::getVertexBuffer() const
 	{
 		D3D12Resource::VertexBufferDesc desc = {};
-		desc.buffer = buffer;
+		desc.buffer = buffer.get();
 		desc.vbv = vbv;
 
 		return desc;
@@ -176,7 +157,7 @@ namespace Gear::Core::Resource
 	D3D12Resource::IndexBufferDesc BufferView::getIndexBuffer() const
 	{
 		D3D12Resource::IndexBufferDesc desc = {};
-		desc.buffer = buffer;
+		desc.buffer = buffer.get();
 		desc.ibv = ibv;
 
 		return desc;
@@ -189,7 +170,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
 		desc.resourceIndex = srvIndex;
-		desc.bufferDesc.buffer = buffer;
+		desc.bufferDesc.buffer = buffer.get();
 
 		return desc;
 	}
@@ -200,7 +181,7 @@ namespace Gear::Core::Resource
 		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
 		desc.state = D3D12Resource::ShaderResourceDesc::UAV;
 		desc.resourceIndex = uavIndex;
-		desc.bufferDesc.buffer = buffer;
+		desc.bufferDesc.buffer = buffer.get();
 		desc.bufferDesc.counterBuffer = (counterBuffer ? counterBuffer->getBuffer() : nullptr);
 
 		return desc;
@@ -210,7 +191,7 @@ namespace Gear::Core::Resource
 	{
 		D3D12Resource::ClearUAVDesc desc = {};
 		desc.type = D3D12Resource::ClearUAVDesc::BUFFER;
-		desc.bufferDesc.buffer = buffer;
+		desc.bufferDesc.buffer = buffer.get();
 		desc.viewGPUHandle = viewGPUHandle;
 		desc.viewCPUHandle = viewCPUHandle;
 
@@ -219,12 +200,12 @@ namespace Gear::Core::Resource
 
 	CounterBufferView* BufferView::getCounterBuffer() const
 	{
-		return counterBuffer;
+		return counterBuffer.get();
 	}
 
 	D3D12Resource::Buffer* BufferView::getBuffer() const
 	{
-		return buffer;
+		return buffer.get();
 	}
 
 	void BufferView::copyDescriptors()
@@ -250,7 +231,7 @@ namespace Gear::Core::Resource
 	{
 		uploadHeaps[Graphics::getFrameIndex()]->update(data, size);
 
-		const UpdateStruct updateStruct = { buffer,uploadHeaps[Graphics::getFrameIndex()] };
+		const UpdateStruct updateStruct = { buffer.get(),uploadHeaps[Graphics::getFrameIndex()].get() };
 
 		return updateStruct;
 	}

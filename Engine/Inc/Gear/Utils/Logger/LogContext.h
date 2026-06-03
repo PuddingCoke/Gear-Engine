@@ -5,9 +5,13 @@
 
 #include"LogColor.h"
 
+#include<Gear/Utils/GearMemory.h>
+
 #include<thread>
 
 #include<condition_variable>
+
+#include<array>
 
 namespace Gear::Utils::Logger
 {
@@ -146,7 +150,7 @@ namespace Gear::Utils::Logger
 
 		static constexpr size_t slotNum = 128;
 
-		BufferSlot* const slots;
+		std::array<BufferSlot,slotNum> slots;
 
 		uint32_t writeIndex;
 
@@ -161,11 +165,11 @@ namespace Gear::Utils::Logger
 	template<typename ...Args>
 	inline LogMessage LogContext::createLogMessage(const wchar_t* const functionName, const LogType& type, const Args & ...args)
 	{
-		thread_local LogContext context;
+		thread_local UniquePtr<LogContext> context = makeUnique<LogContext>();
 
-		context.resetState();
+		context->resetState();
 
-		return context.getLogMessage(functionName, type, args...);
+		return context->getLogMessage(functionName, type, args...);
 	}
 
 	template<typename ...Args>

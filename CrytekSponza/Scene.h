@@ -15,7 +15,7 @@ class Scene
 {
 public:
 
-	Scene(const std::string& filePath, ResourceManager* const resManager)
+	Scene(const std::string& filePath, ResourceManager& resManager)
 	{
 		Assimp::Importer importer;
 
@@ -155,9 +155,9 @@ public:
 			startIndexLocation += indexCount;
 		}
 
-		modelBuffer = resManager->createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertices.size(), true, false, true, false, true, vertices.data());
+		modelBuffer = resManager.createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertices.size(), true, false, true, false, true, vertices.data());
 
-		indexBuffer = resManager->createTypedBufferView(FMT::R32UI, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
+		indexBuffer = resManager.createTypedBufferView(FMT::R32UI, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
 	}
 
 	~Scene()

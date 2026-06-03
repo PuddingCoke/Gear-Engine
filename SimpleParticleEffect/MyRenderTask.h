@@ -40,7 +40,7 @@ public:
 			.setPS(*particlePS)
 			.build();
 
-		bloomEffect = BloomEffect::create(context, Core::Graphics::getWidth(), Core::Graphics::getHeight(), resManager);
+		bloomEffect = BloomEffect::create(context, Core::Graphics::getWidth(), Core::Graphics::getHeight(), *resManager);
 
 		fxaaEffect = FXAAEffect::create(context, Core::Graphics::getWidth(), Core::Graphics::getHeight());
 

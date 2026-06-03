@@ -21,9 +21,9 @@ namespace Gear::Core::Effect
 
 		static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
 
-		static UniquePtr<BloomEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager* const resManager);
+		static UniquePtr<BloomEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager& resManager);
 
-		BloomEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager* const resManager);
+		BloomEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager& resManager);
 
 		~BloomEffect();
 

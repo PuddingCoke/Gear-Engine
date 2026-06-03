@@ -7,7 +7,7 @@ class Material
 {
 public:
 
-	Material(ResourceManager* const resManager, const std::string& diffusePath, const std::string& roughnessMetallicPath, std::string& normalPath)
+	Material(ResourceManager& resManager, const std::string& diffusePath, const std::string& roughnessMetallicPath, std::string& normalPath)
 	{
 		const std::wstring wDiffusePath = std::wstring(diffusePath.begin(), diffusePath.end());
 
@@ -15,11 +15,11 @@ public:
 
 		const std::wstring wNormalPath = std::wstring(normalPath.begin(), normalPath.end());
 
-		diffuse = resManager->createTextureRenderView(wDiffusePath, true);
+		diffuse = resManager.createTextureRenderView(wDiffusePath, true);
 
-		roughnessMetallic = resManager->createTextureRenderView(wRoughnessMetallicPath, true);
+		roughnessMetallic = resManager.createTextureRenderView(wRoughnessMetallicPath, true);
 
-		normal = resManager->createTextureRenderView(wNormalPath, true);
+		normal = resManager.createTextureRenderView(wNormalPath, true);
 	}
 
 	~Material()

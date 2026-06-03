@@ -5,7 +5,7 @@
 namespace Gear::Core
 {
 	RenderTask::RenderTask() :
-		resManager(new ResourceManager()),
+		resManager(makeUnique<ResourceManager>()),
 		context(resManager->getGraphicsContext()),
 		taskCompleted(true),
 		errorOccur(false),
@@ -20,16 +20,6 @@ namespace Gear::Core
 		isRunning = false;
 
 		beginTask();
-
-		if (renderThread)
-		{
-			delete renderThread;
-		}
-
-		if (resManager)
-		{
-			delete resManager;
-		}
 	}
 
 	void RenderTask::beginTask()

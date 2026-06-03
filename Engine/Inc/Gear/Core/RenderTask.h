@@ -36,7 +36,7 @@ namespace Gear::Core
 
 		virtual void recordCommand() = 0;
 
-		ResourceManager* const resManager;
+		UniquePtr<ResourceManager> resManager;
 
 		//引用
 		GraphicsContext* const context;
@@ -57,7 +57,7 @@ namespace Gear::Core
 
 		std::condition_variable taskCondition;
 
-		RenderThread* renderThread;
+		UniquePtr<RenderThread> renderThread;
 
 	};
 }

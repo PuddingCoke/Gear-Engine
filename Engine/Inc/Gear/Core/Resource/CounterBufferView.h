@@ -39,7 +39,7 @@ namespace Gear::Core::Resource
 
 		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
 
-		D3D12Resource::Buffer* buffer;
+		UniquePtr<D3D12Resource::Buffer> buffer;
 	};
 }
 

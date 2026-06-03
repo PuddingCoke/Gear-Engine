@@ -7,13 +7,13 @@ namespace Gear::Core::Resource
 	StaticCBuffer::StaticCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent) :
 		ImmutableCBuffer(buffer, size, persistent)
 	{
-		uploadHeaps = new D3D12Resource::UploadHeap * [Graphics::getFrameBufferCount()];
+		uploadHeaps = makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount());
 
-		dataPtrs = new void* [Graphics::getFrameBufferCount()];
+		dataPtrs = makeUnique<void* []>(Graphics::getFrameBufferCount());
 
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
-			uploadHeaps[i] = new D3D12Resource::UploadHeap(size);
+			uploadHeaps[i] = makeUnique<D3D12Resource::UploadHeap>(size);
 
 			dataPtrs[i] = uploadHeaps[i]->map();
 		}
@@ -21,24 +21,15 @@ namespace Gear::Core::Resource
 
 	StaticCBuffer::~StaticCBuffer()
 	{
-		if (uploadHeaps)
+		if (uploadHeaps.get())
 		{
 			for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 			{
-				if (uploadHeaps[i])
+				if (uploadHeaps[i].get())
 				{
 					uploadHeaps[i]->unmap();
-
-					delete uploadHeaps[i];
 				}
 			}
-
-			delete[] uploadHeaps;
-		}
-
-		if (dataPtrs)
-		{
-			delete[] dataPtrs;
 		}
 	}
 
@@ -46,7 +37,7 @@ namespace Gear::Core::Resource
 	{
 		memcpy(dataPtrs[Graphics::getFrameIndex()], data, size);
 
-		const UpdateStruct updateStruct = { buffer,uploadHeaps[Graphics::getFrameIndex()] };
+		const UpdateStruct updateStruct = { buffer.get(),uploadHeaps[Graphics::getFrameIndex()].get() };
 
 		return updateStruct;
 	}

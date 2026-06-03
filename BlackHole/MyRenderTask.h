@@ -16,7 +16,7 @@ public:
 		diskTexture(resManager->createTextureRenderView(L"Disk.jpg", true)),
 		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
 			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F)),
-		effect(new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), resManager))
+		effect(new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), *resManager))
 	{
 		pipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()

@@ -11,7 +11,7 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		effect(BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), resManager)),
+		effect(BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), *resManager)),
 		computeCS(Shader::create(Utils::File::getRootFolder() + L"ComputeCS.cso")),
 		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true,
 			FMT::RGBA16UN, FMT::RGBA16UN, FMT::UNKNOWN))

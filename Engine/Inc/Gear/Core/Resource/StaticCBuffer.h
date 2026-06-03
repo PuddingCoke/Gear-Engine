@@ -27,9 +27,9 @@ namespace Gear::Core::Resource
 
 	private:
 
-		D3D12Resource::UploadHeap** uploadHeaps;
+		UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeaps;
 
-		void** dataPtrs;
+		UniquePtr<void* []> dataPtrs;
 
 	};
 }

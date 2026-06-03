@@ -201,7 +201,7 @@ public:
 
 		hbaoPlusEffect = HBAOPlusEffect::create(context, Graphics::getWidth(), Graphics::getHeight());
 
-		bloomEffect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), resManager);
+		bloomEffect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
 
 		bloomEffect->setIntensity(0.5f);
 
@@ -209,7 +209,7 @@ public:
 
 		ssrEffect = SSREffect::create(context, Graphics::getWidth(), Graphics::getHeight());
 
-		scene = makeUnique<Scene>(assetPath + "Sponza.gltf", resManager);
+		scene = makeUnique<Scene>(assetPath + "Sponza.gltf", *resManager);
 
 		Graphics::setExposure(0.6f);
 

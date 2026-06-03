@@ -95,7 +95,7 @@ namespace Gear::Core::D3D12Core
 
 	private:
 
-		ComPtr<ID3D12CommandAllocator>* allocators;
+		UniquePtr<ComPtr<ID3D12CommandAllocator>[]> allocators;
 
 		ComPtr<ID3D12GraphicsCommandList6> commandList;
 

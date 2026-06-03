@@ -10,8 +10,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		mipLevels(mipLevels),
 		format(format),
 		globalState(makeShared<States>(D3D12_RESOURCE_STATE_COPY_DEST, mipLevels)),
-		internalState(new States(D3D12_RESOURCE_STATE_COPY_DEST, mipLevels)),
-		transitionState(new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
+		internalState(makeUnique<States>(D3D12_RESOURCE_STATE_COPY_DEST, mipLevels)),
+		transitionState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
 	{
 
 	}
@@ -27,8 +27,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		format = desc.Format;
 
 		globalState = makeShared<States>(initialState, mipLevels);
-		internalState = new States(initialState, mipLevels);
-		transitionState = new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels);
+		internalState = makeUnique<States>(initialState, mipLevels);
+		transitionState = makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels);
 	}
 
 	Texture::Texture(Texture& tex) :
@@ -47,15 +47,6 @@ namespace Gear::Core::Resource::D3D12Resource
 
 	Texture::~Texture()
 	{
-		if (internalState)
-		{
-			delete internalState;
-		}
-
-		if (transitionState)
-		{
-			delete transitionState;
-		}
 	}
 
 	void Texture::updateGlobalStates()
@@ -510,24 +501,20 @@ namespace Gear::Core::Resource::D3D12Resource
 	}
 
 	Texture::States::States(const uint32_t initialState, const uint32_t mipLevels) :
-		mipLevels(mipLevels), mipLevelStates(new uint32_t[mipLevels])
+		mipLevels(mipLevels), mipLevelStates(makeUnique<uint32_t[]>(mipLevels))
 	{
 		set(initialState);
 	}
 
 	Texture::States::~States()
 	{
-		if (mipLevelStates)
-		{
-			delete[] mipLevelStates;
-		}
 	}
 
 	void Texture::States::set(const uint32_t state)
 	{
 		allState = state;
 
-		std::fill(mipLevelStates, mipLevelStates + mipLevels, state);
+		std::fill(mipLevelStates.get(), mipLevelStates.get() + mipLevels, state);
 	}
 
 	void Texture::States::reset()
@@ -547,7 +534,7 @@ namespace Gear::Core::Resource::D3D12Resource
 
 	bool Texture::States::allOfEqual(const uint32_t state) const
 	{
-		return std::all_of(mipLevelStates, mipLevelStates + mipLevels,
+		return std::all_of(mipLevelStates.get(), mipLevelStates.get() + mipLevels,
 			[state](const uint32_t element)
 			{
 				return element == state;

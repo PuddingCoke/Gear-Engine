@@ -7,7 +7,7 @@
 namespace Gear::Core
 {
 	GraphicsContext::GraphicsContext() :
-		commandList(new D3D12Core::CommandList(D3D12_COMMAND_LIST_TYPE_DIRECT)),
+		commandList(makeUnique<D3D12Core::CommandList>(D3D12_COMMAND_LIST_TYPE_DIRECT)),
 		vp{ 0.f,0.f,0.f,0.f,0.f,1.f },
 		rt{ 0,0,0,0 },
 		resourceIndices{}
@@ -17,10 +17,6 @@ namespace Gear::Core
 
 	GraphicsContext::~GraphicsContext()
 	{
-		if (commandList)
-		{
-			delete commandList;
-		}
 	}
 
 	void GraphicsContext::updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const
@@ -369,7 +365,7 @@ namespace Gear::Core
 
 	D3D12Core::CommandList* GraphicsContext::getCommandList() const
 	{
-		return commandList;
+		return commandList.get();
 	}
 
 	void GraphicsContext::transitionResources()
