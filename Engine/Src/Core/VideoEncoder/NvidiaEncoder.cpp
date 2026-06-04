@@ -56,11 +56,21 @@ namespace Gear::Core::VideoEncoder
 		config.rcParams.enableLookahead = 1;
 		config.rcParams.lookaheadDepth = lookaheadDepth;
 		config.rcParams.rateControlMode = NV_ENC_PARAMS_RC_VBR;
-		config.rcParams.averageBitRate = 20000000U;
-		config.rcParams.maxBitRate = 40000000U;
 		config.rcParams.vbvBufferSize = config.rcParams.maxBitRate * 8;
 		config.rcParams.enableAQ = 1;
 		config.rcParams.multiPass = NV_ENC_TWO_PASS_FULL_RESOLUTION;
+
+		//小于2K
+		if (Graphics::getWidth() < 2048u)
+		{
+			config.rcParams.averageBitRate = 40000000U;
+			config.rcParams.maxBitRate = 80000000U;
+		}
+		else
+		{
+			config.rcParams.averageBitRate = 80000000U;
+			config.rcParams.maxBitRate = 160000000U;
+		}
 
 		NV_ENC_INITIALIZE_PARAMS encoderParams = { NV_ENC_INITIALIZE_PARAMS_VER };
 		encoderParams.bufferFormat = bufferFormat;
