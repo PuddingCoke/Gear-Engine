@@ -19,7 +19,8 @@ namespace Gear::Core::Resource
 
 		void operator=(const ImmutableCBuffer&) = delete;
 
-		ImmutableCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent);
+		//用于一般类型的常量缓冲
+		ImmutableCBuffer(UniquePtr<D3D12Resource::Buffer> bufferPtr, const uint32_t size, const bool persistent);
 
 		~ImmutableCBuffer();
 

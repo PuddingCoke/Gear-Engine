@@ -39,8 +39,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		mipLevels(tex.mipLevels),
 		format(tex.format),
 		globalState(tex.globalState),
-		internalState(new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels)),
-		transitionState(new States(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
+		internalState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels)),
+		transitionState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
 	{
 		tex.resetInternalStates();
 	}

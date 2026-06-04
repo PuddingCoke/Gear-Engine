@@ -4,8 +4,8 @@
 
 namespace Gear::Core::Resource
 {
-	StaticCBuffer::StaticCBuffer(D3D12Resource::Buffer* const buffer, const uint32_t size, const bool persistent) :
-		ImmutableCBuffer(buffer, size, persistent)
+	StaticCBuffer::StaticCBuffer(UniquePtr<D3D12Resource::Buffer> bufferPtr, const uint32_t size, const bool persistent) :
+		ImmutableCBuffer(std::move(bufferPtr), size, persistent)
 	{
 		uploadHeaps = makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount());
 

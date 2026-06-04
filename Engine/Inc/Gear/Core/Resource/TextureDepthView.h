@@ -20,7 +20,7 @@ namespace Gear::Core::Resource
 		//R16_TYPELESS 
 		//R32G8X24_TYPELESS 
 		//R24G8_TYPELESS
-		TextureDepthView(D3D12Resource::Texture* const texture, const bool isTextureCube, const bool persistent);
+		TextureDepthView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent);
 
 		TextureDepthView(const TextureDepthView&);
 

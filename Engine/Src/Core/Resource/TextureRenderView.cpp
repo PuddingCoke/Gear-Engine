@@ -2,8 +2,8 @@
 
 namespace Gear::Core::Resource
 {
-	TextureRenderView::TextureRenderView(D3D12Resource::Texture* const texture, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat) :
-		ResourceBase(persistent), texture(texture), hasRTV((rtvFormat != FMT::UNKNOWN)), hasUAV((uavFormat != FMT::UNKNOWN))
+	TextureRenderView::TextureRenderView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat) :
+		ResourceBase(persistent), texture(std::move(texturePtr)), hasRTV((rtvFormat != FMT::UNKNOWN)), hasUAV((uavFormat != FMT::UNKNOWN))
 	{
 		//创建SRV、UAV
 		{
@@ -261,7 +261,7 @@ namespace Gear::Core::Resource
 		rtvMipHandles(trv.rtvMipHandles),
 		viewGPUHandles(trv.viewGPUHandles),
 		viewCPUHandles(trv.viewCPUHandles),
-		texture(new D3D12Resource::Texture(*trv.texture))
+		texture(makeUnique<D3D12Resource::Texture>(*trv.texture))
 	{
 	}
 

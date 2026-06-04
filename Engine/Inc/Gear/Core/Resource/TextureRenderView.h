@@ -21,7 +21,7 @@ namespace Gear::Core::Resource
 
 		TextureRenderView() = delete;
 
-		TextureRenderView(D3D12Resource::Texture* const texture, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
+		TextureRenderView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
 
 		TextureRenderView(const TextureRenderView&);
 

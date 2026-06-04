@@ -2,8 +2,8 @@
 
 namespace Gear::Core::Resource
 {
-	TextureDepthView::TextureDepthView(D3D12Resource::Texture* const texture, const bool isTextureCube, const bool persistent) :
-		ResourceBase(persistent), texture(texture), allDepthSRVIndex(0), allStencilSRVIndex(0)
+	TextureDepthView::TextureDepthView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent) :
+		ResourceBase(persistent), texture(std::move(texturePtr)), allDepthSRVIndex(0), allStencilSRVIndex(0)
 	{
 		const uint32_t mipLevels = texture->getMipLevels();
 		const uint32_t arraySize = texture->getArraySize();
@@ -375,7 +375,7 @@ namespace Gear::Core::Resource
 		depthSRVMipIndices(tdv.depthSRVMipIndices),
 		stencilSRVMipIndices(tdv.stencilSRVMipIndices),
 		dsvMipHandles(tdv.dsvMipHandles),
-		texture(new D3D12Resource::Texture(*tdv.texture))
+		texture(makeUnique<D3D12Resource::Texture>(*tdv.texture))
 	{
 	}
 

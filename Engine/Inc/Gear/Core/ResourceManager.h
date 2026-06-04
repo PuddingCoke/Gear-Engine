@@ -44,10 +44,10 @@ namespace Gear::Core
 		~ResourceManager();
 
 		//延迟释放低级资源
-		void deferredRelease(Resource::D3D12Resource::D3D12ResourceBase* const d3d12Resource);
+		void deferredRelease(UniquePtr<Resource::D3D12Resource::D3D12ResourceBase> d3d12Resource);
 
 		//延迟释放高级资源
-		void deferredRelease(Resource::ResourceBase* const resource);
+		void deferredRelease(UniquePtr<Resource::ResourceBase> resource);
 
 		void cleanTransientResources();
 
@@ -58,13 +58,13 @@ namespace Gear::Core
 		//以下的方法用于创建并使用数据来初始化低级资源
 
 		//从数据创建缓冲
-		Resource::D3D12Resource::Buffer* createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags);
+		UniquePtr<Resource::D3D12Resource::Buffer> createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags);
 
 		//从文件创建纹理
-		Resource::D3D12Resource::Texture* createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube);
+		UniquePtr<Resource::D3D12Resource::Texture> createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube);
 
 		//从随机数据创建纹理
-		Resource::D3D12Resource::Texture* createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags);
+		UniquePtr<Resource::D3D12Resource::Texture> createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags);
 
 		//以下的方法用于创建高级资源
 
@@ -122,9 +122,9 @@ namespace Gear::Core
 
 	private:
 
-		UniquePtr<std::vector<Resource::D3D12Resource::D3D12ResourceBase*>[]> d3d12Resources;
+		UniquePtr<std::vector<UniquePtr<Resource::D3D12Resource::D3D12ResourceBase>>[]> d3d12Resources;
 
-		UniquePtr<std::vector<Resource::ResourceBase*>[]> resources;
+		UniquePtr<std::vector<UniquePtr<Resource::ResourceBase>>[]> resources;
 
 	};
 }
