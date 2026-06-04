@@ -17,14 +17,13 @@ public:
 	{
 		MainCamera::setProj(Utils::Math::pi / 3.f, Graphics::getAspectRatio(), 1.f, 5000.f);
 
-		pushCreateAsync(createRenderTaskAsync(&renderTask, &camera));
+		pushCreateAsync(createRenderTaskAsync(renderTask, &camera));
 
 		scheduleAllTasks();
 	}
 
 	~MyGame()
 	{
-		delete renderTask;
 	}
 
 	void update(const float dt) override
@@ -34,12 +33,12 @@ public:
 
 	void render()
 	{
-		beginRenderTask(renderTask);
+		beginRenderTask(*renderTask);
 
 		scheduleAllTasks();
 	}
 
-	MyRenderTask* renderTask;
+	UniquePtr<MyRenderTask> renderTask;
 
 	FPSCamera camera;
 

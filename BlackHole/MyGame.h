@@ -12,14 +12,13 @@ public:
 
 	MyGame()
 	{
-		pushCreateAsync(createRenderTaskAsync(&renderTask));
+		pushCreateAsync(createRenderTaskAsync(renderTask));
 
 		scheduleAllTasks();
 	}
 
 	~MyGame()
 	{
-		delete renderTask;
 	}
 
 	void update(const float dt) override
@@ -29,11 +28,11 @@ public:
 
 	void render()
 	{
-		beginRenderTask(renderTask);
+		beginRenderTask(*renderTask);
 
 		scheduleAllTasks();
 	}
 
-	MyRenderTask* renderTask;
+	UniquePtr<MyRenderTask> renderTask;
 	
 };

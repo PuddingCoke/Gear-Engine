@@ -14,15 +14,15 @@ namespace Gear
 	{
 	}
 
-	void Game::beginRenderTask(Core::RenderTask* const renderTask)
+	void Game::beginRenderTask(Core::RenderTask& renderTask)
 	{
-		renderTask->beginTask();
+		renderTask.beginTask();
 
-		recordQueue.push(renderTask);
+		recordQueue.push(&renderTask);
 
 		if (Core::RenderEngine::getDisplayImGuiSurface())
 		{
-			renderTask->imGUICall();
+			renderTask.imGUICall();
 		}
 	}
 

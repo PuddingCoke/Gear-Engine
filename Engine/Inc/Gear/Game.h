@@ -27,7 +27,7 @@ namespace Gear
 
 		virtual void render() = 0;
 
-		void beginRenderTask(Core::RenderTask* const renderTask);
+		void beginRenderTask(Core::RenderTask& renderTask);
 
 		void pushCreateAsync(Core::RenderThread* const renderThread);
 

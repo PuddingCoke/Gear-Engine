@@ -17,7 +17,7 @@ public:
 	MyGame() :
 		camera({ 2,0,0 }, { 0,1,0 }, 1.f)
 	{
-		pushCreateAsync(createRenderTaskAsync(&renderTask));
+		pushCreateAsync(createRenderTaskAsync(renderTask));
 
 		scheduleAllTasks();
 
@@ -26,7 +26,6 @@ public:
 
 	~MyGame()
 	{
-		delete renderTask;
 	}
 
 	void update(const float dt) override
@@ -36,12 +35,12 @@ public:
 
 	void render()
 	{
-		beginRenderTask(renderTask);
+		beginRenderTask(*renderTask);
 
 		scheduleAllTasks();
 	}
 
-	MyRenderTask* renderTask;
+	UniquePtr<MyRenderTask> renderTask;
 
 	OrbitCamera camera;
 

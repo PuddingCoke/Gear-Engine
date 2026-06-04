@@ -41,13 +41,15 @@ namespace Gear::Core
 	};
 
 	template <typename First, typename... Rest>
-	RenderThread* createRenderTaskAsync(const First& first, const Rest&... args)
+	RenderThread* createRenderTaskAsync(First& first, const Rest&... args)
 	{
-		using RenderTaskType = std::remove_pointer_t<std::remove_pointer_t<First>>;
+		using RenderTaskType = typename First::element_type;
 
 		auto createFunc = [&](RenderTask** renderTask)
 			{
-				*renderTask = *first = new RenderTaskType(args...);
+				first = makeUnique<RenderTaskType>(args...);
+
+				*renderTask = first.get();
 			};
 
 		return new RenderThread(createFunc);
