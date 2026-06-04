@@ -5,7 +5,7 @@
 
 #include<Gear/Core/GraphicsDevice.h>
 
-#include"ShaderRegisterLayout.h"
+#include"CommonShaderLayout.h"
 
 namespace Gear::Core::D3D12Core
 {
@@ -75,9 +75,9 @@ namespace Gear::Core::D3D12Core
 		};
 
 		//V H G D P C，与ShaderType中枚举表示的整数值一一对应
-		ShaderRegisterLayout::ShaderLocalParameterIndices localParameterIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];
+		CommonShaderLayout::ShaderLocalParameterIndices localParameterIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];
 
-		ShaderRegisterLayout::ShaderLocalParameterIndices getLocalParameterIndices(const ShaderType shaderType) const;
+		CommonShaderLayout::ShaderLocalParameterIndices getLocalParameterIndices(const ShaderType shaderType) const;
 
 		uint32_t getLocalConstantsParameterIndex(const ShaderType shaderType) const;
 

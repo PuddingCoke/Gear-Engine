@@ -77,8 +77,7 @@
     </FxCompile>
     <PostBuildEvent />
     <PreBuildEvent>
-      <Command>powershell -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)Scripts\ParseShaderRegisterLayout.ps1"
-"$(SolutionDir)Build\CommonShaderParse\$(Configuration)\CommonShaderParse.exe"</Command>
+      <Command>"$(SolutionDir)Build\CommonShaderParse\$(Configuration)\CommonShaderParse.exe"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -109,8 +108,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </FxCompile>
     <PreBuildEvent>
-      <Command>powershell -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)Scripts\ParseShaderRegisterLayout.ps1"
-"$(SolutionDir)Build\CommonShaderParse\$(Configuration)\CommonShaderParse.exe"</Command>
+      <Command>"$(SolutionDir)Build\CommonShaderParse\$(Configuration)\CommonShaderParse.exe"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

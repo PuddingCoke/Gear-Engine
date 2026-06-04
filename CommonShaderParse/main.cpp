@@ -6,6 +6,8 @@
 
 #include<vector>
 
+#include<cwctype>
+
 #include"HeaderWriter.h"
 
 using Microsoft::WRL::ComPtr;
@@ -34,6 +36,105 @@ std::vector<uint8_t> readAllBinary(const std::wstring& filePath)
 	file.close();
 
 	return bytes;
+}
+
+//根据分隔符利用find_first_of进行分割
+std::vector<std::wstring> split(std::wstring str, const wchar_t separator)
+{
+	std::vector<std::wstring> result;
+
+	size_t idx = str.find_first_of(separator);
+
+	while (idx != std::wstring::npos)
+	{
+		const std::wstring splitFront = str.substr(0ull, idx);
+
+		const std::wstring splitBack = str.substr(idx + 1ull, str.length() - idx - 1ull);
+
+		str = splitBack;
+
+		result.emplace_back(splitFront);
+
+		idx = str.find_first_of(separator);
+	}
+
+	result.emplace_back(str);
+
+	return result;
+}
+
+//进行合并
+std::wstring concatenate(const std::vector<std::wstring>& vec)
+{
+	std::wstring result = L"";
+
+	for (const std::wstring& str : vec)
+	{
+		result += str;
+	}
+
+	return result;
+}
+
+std::wstring toUpper(const std::wstring& str)
+{
+	std::wstring result = L"";
+
+	for (const wchar_t& c : str)
+	{
+		result.push_back(std::towupper(c));
+	}
+
+	return result;
+}
+
+std::wstring toLower(const std::wstring& str)
+{
+	std::wstring result = L"";
+
+	for (const wchar_t& c : str)
+	{
+		result.push_back(std::towlower(c));
+	}
+
+	return result;
+}
+
+std::wstring toCamel(const std::wstring& str)
+{
+	size_t idx = 1ull;
+
+	if (str.length() == 1)
+	{
+		return toUpper(str);
+	}
+
+	if (str == L"CBUFFER")
+	{
+		idx = 2ull;
+	}
+
+	return toUpper(str.substr(0ull, idx)) + toLower(str.substr(idx, str.length() - idx));
+}
+
+//关键词检测
+bool vectorHas(const std::vector<std::wstring>& vec, const std::wstring& str)
+{
+	for (const std::wstring& s : vec)
+	{
+		if (s == str)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+//获取寄存器值
+uint32_t getRegisterValue(const std::wstring& str)
+{
+	return static_cast<uint32_t>(std::stoi(str.substr(1ull)));
 }
 
 int wmain(int argc, const wchar_t* argv[])
@@ -134,6 +235,8 @@ int wmain(int argc, const wchar_t* argv[])
 
 		writer.beginDesc(DescType::NAMESPACE, L"D3D12Core");
 
+		writer.beginDesc(DescType::NAMESPACE, L"CommonShaderLayout");
+
 		writer.beginDesc(DescType::STRUCT, L"PerframeResource");
 
 		uint32_t currentWriteSize = 0u;
@@ -159,6 +262,9 @@ int wmain(int argc, const wchar_t* argv[])
 
 				switch (memberDesc.Type)
 				{
+				case D3D_SVT_INT:
+					writeType = static_cast<uint32_t>(VarType::INT);
+					break;
 				case D3D_SVT_UINT:
 					writeType = static_cast<uint32_t>(VarType::UINT);
 					break;
@@ -222,7 +328,121 @@ int wmain(int argc, const wchar_t* argv[])
 		}
 	}
 
-	writer.endDesc(L"");
+	writer.endDescQuick(L"CommonShaderLayout");
+
+	{
+		std::wifstream inputStream = std::wifstream(rootFolder + L"\\Common.hlsli");
+
+		//用于全局参数对
+		uint32_t rootParameterIndex = 0;
+
+		std::vector<std::pair<std::wstring, uint32_t>> globalParameterPair;
+
+		std::vector<std::pair<std::wstring, uint32_t>> localParameterPair;
+
+		std::vector<std::pair<std::wstring, uint32_t>> registerPair;
+
+		while (true)
+		{
+			std::wstring str;
+
+			std::getline(inputStream, str);
+
+			//先用空格分割
+			const std::vector<std::wstring> splitResult = split(str, L' ');
+
+			if (splitResult.back()[0] != L'b')
+			{
+				break;
+			}
+
+			const std::wstring name = splitResult[1];
+
+			std::vector<std::wstring> subName = split(name, L'_');
+
+			std::vector<std::wstring> lowerCamelSubName = subName;
+
+			lowerCamelSubName[0] = toLower(lowerCamelSubName[0]);
+
+			for (uint32_t i = 1; i < lowerCamelSubName.size(); i++)
+			{
+				lowerCamelSubName[i] = toCamel(lowerCamelSubName[i]);
+			}
+
+			const std::wstring lowerCamelName = concatenate(lowerCamelSubName);
+
+			registerPair.push_back(std::pair<std::wstring, uint32_t>
+				(lowerCamelName + L"Register", getRegisterValue(splitResult.back())));
+
+			//通过GLOBAL关键词进行识别
+			if (vectorHas(subName, L"GLOBAL"))
+			{
+				globalParameterPair.push_back(std::pair<std::wstring, uint32_t>
+					(lowerCamelName + L"ParameterIndex", rootParameterIndex));
+			}
+			else
+			{
+				localParameterPair.push_back(std::pair<std::wstring, uint32_t>
+					(lowerCamelName + L"ParameterIndex", 0u));
+			}
+
+			rootParameterIndex++;
+		}
+
+		{
+			writer.beginDesc(VarModifier::CONSTEXPR, DescType::STRUCT, L"ShaderGlobalParameterIndices");
+
+			for (const auto& pair : globalParameterPair)
+			{
+				writer.writeUint(VarModifier::NONE, pair.first, pair.second);
+			}
+
+			writer.endDesc(L"globalParameterIndices");
+		}
+
+		{
+			writer.beginDesc(VarModifier::NONE, DescType::STRUCT, L"ShaderLocalParameterIndices");
+
+			for (const auto& pair : localParameterPair)
+			{
+				writer.writeUint(VarModifier::NONE, pair.first, pair.second);
+			}
+
+			writer.endDesc();
+		}
+
+		{
+			for (const auto& pair : registerPair)
+			{
+				writer.writeUint(VarModifier::CONSTEXPR, pair.first, pair.second);
+			}
+		}
+
+		/*std::wcout << "global parameter\n";
+
+		for (const auto& a : globalParameterPair)
+		{
+			std::wcout << a.first << " " << a.second << "\n";
+		}
+
+		std::wcout << "local parameter\n";
+
+		for (const auto& a : localParameterPair)
+		{
+			std::wcout << a.first << " " << 0ull << "\n";
+		}
+
+		std::wcout << "register\n";
+
+		for (const auto& a : registerPair)
+		{
+			std::wcout << a.first << " " << a.second << "\n";
+		}*/
+
+		inputStream.close();
+	}
+
+	writer.endDescQuick(L"");
 
 	writer.close();
 

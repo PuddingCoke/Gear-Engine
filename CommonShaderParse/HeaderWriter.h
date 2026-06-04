@@ -14,6 +14,8 @@ enum class DescType;
 
 enum class VarType;
 
+enum class VarModifier;
+
 std::wstring getParentFolder(const std::wstring& filePath)
 {
 	size_t idx = filePath.find_last_of(L'\\');
@@ -45,14 +47,20 @@ public:
 
 	void backward();
 
+	void beginDesc(const VarModifier modifier, const DescType type, const wchar_t* name);
+
 	void beginDesc(const DescType type, const wchar_t* name);
 
+	//仅用于着色器反射
 	void writeVar(const VarType type, const char* const name, const uint32_t numElement = 1u);
 
-	//快速退出并跳转到
-	void endDesc(const std::wstring& name);
+	void writeUint(const VarModifier modifier, const std::wstring& name, const uint32_t value);
 
-	void endDesc();
+	//快速退出并跳转到
+	void endDescQuick(const std::wstring& name);
+
+	//退出并留下变量名
+	void endDesc(const std::wstring& varName = L"");
 
 	std::wostream& writeLine();
 
@@ -133,6 +141,15 @@ inline void HeaderWriter::backward()
 	currentCount--;
 }
 
+#undef CONST
+
+enum class VarModifier
+{
+	NONE,
+	CONST,
+	CONSTEXPR
+};
+
 enum class DescType
 {
 	ENUM,
@@ -141,23 +158,38 @@ enum class DescType
 	NAMESPACE
 };
 
-inline void HeaderWriter::beginDesc(const DescType type, const wchar_t* name)
+inline void HeaderWriter::beginDesc(const VarModifier modifier, const DescType type, const wchar_t* name)
 {
 	descStack.push({ type,std::wstring(name) });
+
+	switch (modifier)
+	{
+	case VarModifier::NONE:
+		writeLine();
+		break;
+	case VarModifier::CONST:
+		writeLine() << L"const ";
+		break;
+	case VarModifier::CONSTEXPR:
+		writeLine() << L"constexpr ";
+		break;
+	default:
+		break;
+	}
 
 	switch (type)
 	{
 	case DescType::ENUM:
-		writeLine() << L"enum";
+		write() << L"enum";
 		break;
 	case DescType::STRUCT:
-		writeLine() << L"struct";
+		write() << L"struct";
 		break;
 	case DescType::UNION:
-		writeLine() << L"union";
+		write() << L"union";
 		break;
 	case DescType::NAMESPACE:
-		writeLine() << L"namespace";
+		write() << L"namespace";
 		break;
 	default:
 		break;
@@ -170,6 +202,11 @@ inline void HeaderWriter::beginDesc(const DescType type, const wchar_t* name)
 	foward();
 }
 
+inline void HeaderWriter::beginDesc(const DescType type, const wchar_t* name)
+{
+	beginDesc(VarModifier::NONE, type, name);
+}
+
 enum class VarType
 {
 	FLOAT,//float
@@ -180,7 +217,11 @@ enum class VarType
 	UINT2,//uint2
 	UINT3,//uint3
 	UINT4,//uint4
-	MATRIX//matrix
+	MATRIX,//matrix
+	INT,//int
+	INT2,//int2
+	INT3,//int3
+	INT4//int4
 };
 
 inline void HeaderWriter::writeVar(const VarType type, const char* const name, const uint32_t numElement)
@@ -214,6 +255,18 @@ inline void HeaderWriter::writeVar(const VarType type, const char* const name, c
 	case VarType::MATRIX:
 		writeLine() << L"DirectX::XMMATRIX";
 		break;
+	case VarType::INT:
+		writeLine() << L"int32_t";
+		break;
+	case VarType::INT2:
+		writeLine() << L"DirectX::XMINT2";
+		break;
+	case VarType::INT3:
+		writeLine() << L"DirectX::XMINT3";
+		break;
+	case VarType::INT4:
+		writeLine() << L"DirectX::XMINT4";
+		break;
 	default:
 		break;
 	}
@@ -228,7 +281,27 @@ inline void HeaderWriter::writeVar(const VarType type, const char* const name, c
 	write() << L";";
 }
 
-inline void HeaderWriter::endDesc(const std::wstring& name)
+inline void HeaderWriter::writeUint(const VarModifier modifier, const std::wstring& name, const uint32_t value)
+{
+	switch (modifier)
+	{
+	case VarModifier::NONE:
+		writeLine();
+		break;
+	case VarModifier::CONST:
+		writeLine() << L"const ";
+		break;
+	case VarModifier::CONSTEXPR:
+		writeLine() << L"constexpr ";
+		break;
+	default:
+		break;
+	}
+
+	write() << L"uint32_t" << L" " << name << L" = " << value << L";";
+}
+
+inline void HeaderWriter::endDescQuick(const std::wstring& name)
 {
 	while (!descStack.empty() && descStack.top().name != name)
 	{
@@ -236,17 +309,17 @@ inline void HeaderWriter::endDesc(const std::wstring& name)
 	}
 }
 
-inline void HeaderWriter::endDesc()
+inline void HeaderWriter::endDesc(const std::wstring& varName)
 {
 	backward();
 
-	writeLine() << L"}";
+	writeLine() << L"}" << varName;
 
 	const DescType type = descStack.top().descType;
 
 	if (type == DescType::STRUCT || type == DescType::UNION || type == DescType::ENUM)
 	{
-		write() << L";";
+		write() << L";\n";
 	}
 
 	descStack.pop();

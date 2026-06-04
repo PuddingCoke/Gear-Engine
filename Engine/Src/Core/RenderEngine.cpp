@@ -186,7 +186,7 @@ namespace Gear::Core::RenderEngine
 
 			int32_t syncInterval;
 
-			D3D12Core::PerframeResource perframeResource;
+			D3D12Core::CommonShaderLayout::PerframeResource perframeResource;
 
 		};
 

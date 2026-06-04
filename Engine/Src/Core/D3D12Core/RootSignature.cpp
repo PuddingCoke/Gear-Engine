@@ -5,13 +5,13 @@ namespace Gear::Core::D3D12Core
 	RootSignature::RootSignature(const uint32_t numVSConstants, const uint32_t numHSConstants, const uint32_t numDSConstants, const uint32_t numGSConstants, const uint32_t numPSConstants, const uint32_t numCSConstants, CD3DX12_STATIC_SAMPLER_DESC* const samplerDescs, const uint32_t samplerCount, const D3D12_ROOT_SIGNATURE_FLAGS signatureFlags)
 	{
 		//根据全局和局部结构体的大小和传入的参数计算需要多少个根参数
-		const uint32_t numRootParameters = static_cast<uint32_t>(sizeof(ShaderRegisterLayout::ShaderGlobalParameterIndices) / sizeof(uint32_t))
+		const uint32_t numRootParameters = static_cast<uint32_t>(sizeof(CommonShaderLayout::ShaderGlobalParameterIndices) / sizeof(uint32_t))
 			+ (static_cast<bool>(numVSConstants)
 				+ static_cast<bool>(numHSConstants)
 				+ static_cast<bool>(numDSConstants)
 				+ static_cast<bool>(numGSConstants)
 				+ static_cast<bool>(numPSConstants)
-				+ static_cast<bool>(numCSConstants)) * static_cast<uint32_t>(sizeof(ShaderRegisterLayout::ShaderLocalParameterIndices) / sizeof(uint32_t));
+				+ static_cast<bool>(numCSConstants)) * static_cast<uint32_t>(sizeof(CommonShaderLayout::ShaderLocalParameterIndices) / sizeof(uint32_t));
 
 		std::vector<CD3DX12_ROOT_PARAMETER1> rootParameters;
 
@@ -22,10 +22,10 @@ namespace Gear::Core::D3D12Core
 		//全局根参数的初始化顺序禁止改变
 
 		//由引擎决定的所有着色器可见的全局常量缓冲
-		rootParameters[rootParameterIndex++].InitAsConstantBufferView(ShaderRegisterLayout::engineGlobalCBufferRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
+		rootParameters[rootParameterIndex++].InitAsConstantBufferView(CommonShaderLayout::engineGlobalCBufferRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
 
 		//由用户决定的所有着色器可见的全局常量缓冲
-		rootParameters[rootParameterIndex++].InitAsConstantBufferView(ShaderRegisterLayout::userGlobalCBufferRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
+		rootParameters[rootParameterIndex++].InitAsConstantBufferView(CommonShaderLayout::userGlobalCBufferRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, D3D12_SHADER_VISIBILITY_ALL);
 
 		{
 			auto getShaderVisibility = [](const ShaderType shaderType)
@@ -59,24 +59,24 @@ namespace Gear::Core::D3D12Core
 					return shaderVisibility;
 				};
 
-			auto setShaderLocalConstantsParameter = [getShaderVisibility](ShaderRegisterLayout::ShaderLocalParameterIndices& localParameterIndices, CD3DX12_ROOT_PARAMETER1* const rootParameters,
+			auto setShaderLocalConstantsParameter = [getShaderVisibility](CommonShaderLayout::ShaderLocalParameterIndices& localParameterIndices, CD3DX12_ROOT_PARAMETER1* const rootParameters,
 				uint32_t& rootParameterIndex, const ShaderType shaderType, const uint32_t numConstants)
 				{
 					const D3D12_SHADER_VISIBILITY shaderVisibility = getShaderVisibility(shaderType);
 
 					localParameterIndices.perInvokeConstantsParameterIndex = rootParameterIndex;
 
-					rootParameters[rootParameterIndex++].InitAsConstants(numConstants, ShaderRegisterLayout::perInvokeConstantsRegister, 0, shaderVisibility);
+					rootParameters[rootParameterIndex++].InitAsConstants(numConstants, CommonShaderLayout::perInvokeConstantsRegister, 0, shaderVisibility);
 				};
 
-			auto setShaderLocalConstantBufferParameter = [getShaderVisibility](ShaderRegisterLayout::ShaderLocalParameterIndices& localParameterIndices, CD3DX12_ROOT_PARAMETER1* const rootParameters,
+			auto setShaderLocalConstantBufferParameter = [getShaderVisibility](CommonShaderLayout::ShaderLocalParameterIndices& localParameterIndices, CD3DX12_ROOT_PARAMETER1* const rootParameters,
 				uint32_t& rootParameterIndex, const ShaderType shaderType)
 				{
 					const D3D12_SHADER_VISIBILITY shaderVisibility = getShaderVisibility(shaderType);
 
 					localParameterIndices.perInvokeCBufferParameterIndex = rootParameterIndex;
 
-					rootParameters[rootParameterIndex++].InitAsConstantBufferView(ShaderRegisterLayout::perInvokeCBufferRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, shaderVisibility);
+					rootParameters[rootParameterIndex++].InitAsConstantBufferView(CommonShaderLayout::perInvokeCBufferRegister, 0, D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC_WHILE_SET_AT_EXECUTE, shaderVisibility);
 				};
 
 			auto setShaderLocalParameter = [this, setShaderLocalConstantsParameter, setShaderLocalConstantBufferParameter]
@@ -130,12 +130,12 @@ namespace Gear::Core::D3D12Core
 
 	uint32_t RootSignature::getEngineDefinedGlobalConstantBufferParameterIndex()
 	{
-		return ShaderRegisterLayout::globalParameterIndices.engineGlobalCBufferParameterIndex;
+		return CommonShaderLayout::globalParameterIndices.engineGlobalCBufferParameterIndex;
 	}
 
 	uint32_t RootSignature::getUserDefinedGlobalConstantBufferParameterIndex()
 	{
-		return ShaderRegisterLayout::globalParameterIndices.userGlobalCBufferParameterIndex;
+		return CommonShaderLayout::globalParameterIndices.userGlobalCBufferParameterIndex;
 	}
 
 	uint32_t RootSignature::getVSConstantsParameterIndex() const
@@ -198,7 +198,7 @@ namespace Gear::Core::D3D12Core
 		return getLocalConstantBufferParameterIndex(ShaderType::COMPUTE);
 	}
 
-	ShaderRegisterLayout::ShaderLocalParameterIndices RootSignature::getLocalParameterIndices(const ShaderType shaderType) const
+	CommonShaderLayout::ShaderLocalParameterIndices RootSignature::getLocalParameterIndices(const ShaderType shaderType) const
 	{
 		const uint32_t index = static_cast<uint32_t>(shaderType);
 
