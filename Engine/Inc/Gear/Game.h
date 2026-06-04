@@ -29,7 +29,7 @@ namespace Gear
 
 		void beginRenderTask(Core::RenderTask& renderTask);
 
-		void pushCreateAsync(Core::RenderThread* const renderThread);
+		void pushCreateAsync(UniquePtr<Core::RenderThread> renderThread);
 
 		void scheduleAllTasks();
 
@@ -37,7 +37,7 @@ namespace Gear
 
 		std::queue<Core::RenderTask*> recordQueue;
 
-		std::queue<Core::RenderThread*> createQueue;
+		std::queue<UniquePtr<Core::RenderThread>> createQueue;
 
 	};
 }

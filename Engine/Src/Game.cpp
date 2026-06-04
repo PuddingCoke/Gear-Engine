@@ -26,9 +26,9 @@ namespace Gear
 		}
 	}
 
-	void Game::pushCreateAsync(Core::RenderThread* const renderThread)
+	void Game::pushCreateAsync(UniquePtr<Core::RenderThread> renderThread)
 	{
-		createQueue.push(renderThread);
+		createQueue.push(std::move(renderThread));
 	}
 
 	void Game::scheduleAllTasks()
@@ -51,6 +51,10 @@ namespace Gear
 			{
 				throw "error occur while resource creation";
 			}
+
+			Core::RenderThread* const renderThread = createQueue.front().get();
+
+			renderThread->transferOwnerShip(std::move(createQueue.front()));
 
 			createQueue.pop();
 		}

@@ -19,6 +19,9 @@ namespace Gear::Core
 
 		bool waitInitialized();
 
+		//把RenderThread管理权移交给RenderTask
+		void transferOwnerShip(UniquePtr<RenderThread> renderThread);
+
 	private:
 
 		void workerLoop();
@@ -40,8 +43,11 @@ namespace Gear::Core
 
 	};
 
+	//异步创建函数，原理很简单
+	//先把RenderThread所有权移交给Game
+	//待RenderTask初始化完毕后，Game调用RenderThread的transferOwnerShip把所有权移交给RenderTask
 	template <typename First, typename... Rest>
-	RenderThread* createRenderTaskAsync(First& first, const Rest&... args)
+	UniquePtr<RenderThread> createRenderTaskAsync(First& first, const Rest&... args)
 	{
 		using RenderTaskType = typename First::element_type;
 
@@ -52,7 +58,7 @@ namespace Gear::Core
 				*renderTask = first.get();
 			};
 
-		return new RenderThread(createFunc);
+		return makeUnique<RenderThread>(createFunc);
 	}
 }
 

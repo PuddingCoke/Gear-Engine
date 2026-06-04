@@ -29,6 +29,11 @@ namespace Gear::Core
 		return errorOccured;
 	}
 
+	void RenderThread::transferOwnerShip(UniquePtr<RenderThread> renderThread)
+	{
+		renderTask->renderThread = std::move(renderThread);
+	}
+
 	void RenderThread::workerLoop()
 	{
 		//申请每个渲染线程独享的描述符堆
@@ -43,8 +48,6 @@ namespace Gear::Core
 				std::lock_guard<std::mutex> lockGuard(taskMutex);
 
 				createFunc(&renderTask);
-
-				renderTask->renderThread = UniquePtr<RenderThread>(this);
 
 				RenderEngine::submitCommandList(renderTask->getCommandList());
 
