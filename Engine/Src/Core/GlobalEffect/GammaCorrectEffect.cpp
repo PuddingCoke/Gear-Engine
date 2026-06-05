@@ -32,7 +32,7 @@ namespace Gear::Core::GlobalEffect::GammaCorrectEffect
 
 			impl.outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, L"GammaCorrectEffect", LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(GammaCorrectEffect), LogColor::defaultColor, L"succeeded");
 		}
 
 		void release()

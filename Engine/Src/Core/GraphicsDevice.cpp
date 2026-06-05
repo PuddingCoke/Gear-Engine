@@ -15,7 +15,7 @@ namespace Gear::Core::GraphicsDevice
 		{
 			if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&impl.device))))
 			{
-				LOGSUCCESS(L"create d3d12 device with feature level", LogColor::brightMagenta, L"D3D_FEATURE_LEVEL_12_0", LogColor::defaultColor, L"succeeded");
+				LOGSUCCESS(L"create d3d12 device with feature level", LogColor::brightMagenta, TOWSTRING(D3D_FEATURE_LEVEL_12_0), LogColor::defaultColor, L"succeeded");
 			}
 			else
 			{
@@ -45,13 +45,13 @@ namespace Gear::Core::GraphicsDevice
 				{
 				default:
 				case D3D12_RESOURCE_BINDING_TIER_1:
-					bindingTierString = L"D3D12_RESOURCE_BINDING_TIER_1";
+					bindingTierString = TOWSTRING(D3D12_RESOURCE_BINDING_TIER_1);
 					break;
 				case D3D12_RESOURCE_BINDING_TIER_2:
-					bindingTierString = L"D3D12_RESOURCE_BINDING_TIER_2";
+					bindingTierString = TOWSTRING(D3D12_RESOURCE_BINDING_TIER_2);
 					break;
 				case D3D12_RESOURCE_BINDING_TIER_3:
-					bindingTierString = L"D3D12_RESOURCE_BINDING_TIER_3";
+					bindingTierString = TOWSTRING(D3D12_RESOURCE_BINDING_TIER_3);
 					break;
 				}
 
@@ -67,34 +67,34 @@ namespace Gear::Core::GraphicsDevice
 				{
 				default:
 				case D3D_SHADER_MODEL_5_1:
-					shaderModelString = L"D3D_SHADER_MODEL_5_1";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_5_1);
 					break;
 				case D3D_SHADER_MODEL_6_0:
-					shaderModelString = L"D3D_SHADER_MODEL_6_0";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_0);
 					break;
 				case D3D_SHADER_MODEL_6_1:
-					shaderModelString = L"D3D_SHADER_MODEL_6_1";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_1);
 					break;
 				case D3D_SHADER_MODEL_6_2:
-					shaderModelString = L"D3D_SHADER_MODEL_6_2";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_2);
 					break;
 				case D3D_SHADER_MODEL_6_3:
-					shaderModelString = L"D3D_SHADER_MODEL_6_3";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_3);
 					break;
 				case D3D_SHADER_MODEL_6_4:
-					shaderModelString = L"D3D_SHADER_MODEL_6_4";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_4);
 					break;
 				case D3D_SHADER_MODEL_6_5:
-					shaderModelString = L"D3D_SHADER_MODEL_6_5";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_5);
 					break;
 				case D3D_SHADER_MODEL_6_6:
-					shaderModelString = L"D3D_SHADER_MODEL_6_6";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_6);
 					break;
 				case D3D_SHADER_MODEL_6_7:
-					shaderModelString = L"D3D_SHADER_MODEL_6_7";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_7);
 					break;
 				case D3D_SHADER_MODEL_6_8:
-					shaderModelString = L"D3D_SHADER_MODEL_6_8";
+					shaderModelString = TOWSTRING(D3D_SHADER_MODEL_6_8);
 					break;
 				}
 
@@ -126,13 +126,13 @@ namespace Gear::Core::GraphicsDevice
 				{
 				default:
 				case D3D12_RAYTRACING_TIER_NOT_SUPPORTED:
-					raytracingTierString = L"D3D12_RAYTRACING_TIER_NOT_SUPPORTED";
+					raytracingTierString = TOWSTRING(D3D12_RAYTRACING_TIER_NOT_SUPPORTED);
 					break;
 				case D3D12_RAYTRACING_TIER_1_0:
-					raytracingTierString = L"D3D12_RAYTRACING_TIER_1_0";
+					raytracingTierString = TOWSTRING(D3D12_RAYTRACING_TIER_1_0);
 					break;
 				case D3D12_RAYTRACING_TIER_1_1:
-					raytracingTierString = L"D3D12_RAYTRACING_TIER_1_1";
+					raytracingTierString = TOWSTRING(D3D12_RAYTRACING_TIER_1_1);
 					break;
 				}
 

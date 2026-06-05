@@ -35,6 +35,8 @@ LOGERROR(L"Failed with",IntegerMode::HEX,static_cast<uint32_t>(hr),L"Failed reas
 }\
 }\
 
+#define TOWSTRING(x) L#x
+
 #undef DOMAIN
 
 namespace Gear::Core::GraphicsDevice

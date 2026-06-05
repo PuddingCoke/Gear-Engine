@@ -707,7 +707,7 @@
     <ClCompile Include="Src\Core\Resource\DynamicCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\StatiCBuffer.cpp">
+    <ClCompile Include="Src\Core\Resource\StaticCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Utils\Logger.cpp">

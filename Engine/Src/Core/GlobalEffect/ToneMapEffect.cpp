@@ -32,7 +32,7 @@ namespace Gear::Core::GlobalEffect::ToneMapEffect
 
 			impl.outputTexture->getTexture()->setName(L"Tone Mapped Texture");
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, L"ToneMapEffect", LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(ToneMapEffect), LogColor::defaultColor, L"succeeded");
 		}
 
 		void release()

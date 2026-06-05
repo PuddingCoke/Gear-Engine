@@ -97,7 +97,7 @@ namespace Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect
 				impl.matricesBuffer->getBuffer()->setName(L"LatLongMap To Cubemap Matrices");
 			}
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, L"LatLongMapToCubeMapEffect", LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(LatLongMapToCubeMapEffect), LogColor::defaultColor, L"succeeded");
 		}
 
 		void release()

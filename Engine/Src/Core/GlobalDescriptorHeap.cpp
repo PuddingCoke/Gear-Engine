@@ -21,7 +21,7 @@ namespace Gear::Core::GlobalDescriptorHeap
 
 			samplerHeap = makeUnique<D3D12Core::DescriptorHeap>(1024, 0, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, L"global descriptor heaps", LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(GlobalDescriptorHeap), LogColor::defaultColor, L"succeeded");
 		}
 
 		UniquePtr<GlobalDescriptorHeapImpl> impl;

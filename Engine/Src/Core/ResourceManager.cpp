@@ -350,7 +350,7 @@ namespace Gear::Core
 	{
 		if (createVBV && createIBV)
 		{
-			LOGERROR(L"a bufffer cannot be used as VBV and IBV at the same time");
+			LOGERROR(L"a buffer cannot be used as VBV and IBV at the same time");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;

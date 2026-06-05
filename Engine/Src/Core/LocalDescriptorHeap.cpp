@@ -25,7 +25,7 @@ namespace Gear::Core::LocalDescriptorHeap
 
 			perThreadDepthStencilHeap = makeUnique<D3D12Core::DescriptorHeap>(numRTVDescriptors, numRTVDescriptors - numStaticRTVDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, L"local descriptor heaps", LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(LocalDescriptorHeap), LogColor::defaultColor, L"succeeded");
 		}
 
 		void release()
