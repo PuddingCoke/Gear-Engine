@@ -49,10 +49,10 @@ namespace Gear::Core::GlobalEffect::ToneMapEffect
 	{
 		context->setPipelineState(*Internal::impl.toneMapState);
 
+		const float exposure = Graphics::getExposure();
+
 		SETCONSTS({
 		context->setCSConstants({ inputTexture.getSRVMipIndex(0),Internal::impl.outputTexture->getUAVMipIndex(0) }, co);
-
-		const float exposure = Graphics::getExposure();
 
 		context->setCSConstants(1, &exposure, co);
 			});
