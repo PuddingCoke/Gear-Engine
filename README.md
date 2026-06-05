@@ -63,14 +63,15 @@ context->setPipelineState(*irradianceState);
 
 context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-context->setViewportSimple(irradianceCube->getTexture()->getWidth(),
-                           irradianceCube->getTexture()->getHeight());
+context->setViewportSimple(irradianceCube->getTexture()->getWidth(), irradianceCube->getTexture()->getHeight());
 
 context->setRenderTargets({ irradianceCube->getRTVMipHandle(0) });
 
 context->setVSConstantBuffer(*viewProjMatrixBuffer);
 
-context->setPSConstants({ envCube->getAllSRVIndex() }, 0);
+SETCONSTS({
+context->setPSConstants({ envCube->getAllSRVIndex() }, co);
+	});
 
 context->draw(36, 6, 0, 0);
 ```

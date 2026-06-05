@@ -163,6 +163,8 @@ protected:
 
 		context->setRenderTargets({ irradianceCube->getRTVMipHandle(0) });
 
+		context->setVSConstantBuffer(*viewProjMatrixBuffer);
+
 		SETCONSTS({
 		context->setPSConstants({ envCube->getAllSRVIndex() }, co);
 			});
