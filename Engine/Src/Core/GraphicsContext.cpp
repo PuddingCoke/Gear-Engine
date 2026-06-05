@@ -46,8 +46,66 @@ namespace Gear::Core
 		}
 	}
 
+	void GraphicsContext::constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const
+	{
+		uint32_t numShaderConstants = 0u;
+
+		switch (shaderType)
+		{
+		case D3D12Core::RootSignature::ShaderType::VERTEX:
+		case D3D12Core::RootSignature::ShaderType::HULL:
+		case D3D12Core::RootSignature::ShaderType::DOMAIN:
+		case D3D12Core::RootSignature::ShaderType::GEOMETRY:
+		case D3D12Core::RootSignature::ShaderType::PIXEL:
+			numShaderConstants = graphicsRootSignature->getNumShaderConstants(shaderType);
+			break;
+		case D3D12Core::RootSignature::ShaderType::COMPUTE:
+			numShaderConstants = computeRootSignature->getNumShaderConstants(shaderType);
+			break;
+		default:
+			break;
+		}
+
+		if (numShaderConstants < numWrite)
+		{
+			std::wstring errorString = L"";
+
+			switch (shaderType)
+			{
+			case D3D12Core::RootSignature::ShaderType::VERTEX:
+				errorString += L"顶点着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::HULL:
+				errorString += L"外壳着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::DOMAIN:
+				errorString += L"域着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::GEOMETRY:
+				errorString += L"几何着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::PIXEL:
+				errorString += L"像素着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::COMPUTE:
+				errorString += L"计算着色器";
+				break;
+			default:
+				break;
+			}
+
+			errorString += L"分配了" + std::to_wstring(numShaderConstants) + L"个可写入常数，但侦测到了" + std::to_wstring(numWrite) + L"个常量写入。请检查你的代码实现！";
+
+			LOGERROR(errorString);
+		}
+	}
+
 	void GraphicsContext::setVSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
+#ifdef _DEBUG
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::VERTEX, numValues);
+#endif // _DEBUG
+
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getVSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
@@ -55,6 +113,10 @@ namespace Gear::Core
 
 	void GraphicsContext::setHSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
+#ifdef _DEBUG
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::HULL, numValues);
+#endif // _DEBUG
+
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getHSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
@@ -62,6 +124,10 @@ namespace Gear::Core
 
 	void GraphicsContext::setDSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
+#ifdef _DEBUG
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::DOMAIN, numValues);
+#endif // _DEBUG
+
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getDSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
@@ -69,6 +135,10 @@ namespace Gear::Core
 
 	void GraphicsContext::setGSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
+#ifdef _DEBUG
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::GEOMETRY, numValues);
+#endif // _DEBUG
+
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getGSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
@@ -76,6 +146,10 @@ namespace Gear::Core
 
 	void GraphicsContext::setPSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
+#ifdef _DEBUG
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::PIXEL, numValues);
+#endif // _DEBUG
+
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getPSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
@@ -83,6 +157,10 @@ namespace Gear::Core
 
 	void GraphicsContext::setCSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
+#ifdef _DEBUG
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::COMPUTE, numValues);
+#endif // _DEBUG
+
 		commandList->setComputeRootConstants(computeRootSignature->getCSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;

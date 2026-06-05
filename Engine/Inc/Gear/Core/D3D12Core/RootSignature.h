@@ -61,8 +61,6 @@ namespace Gear::Core::D3D12Core
 
 		uint32_t getCSConstantBufferParameterIndex() const;
 
-	private:
-
 		enum class ShaderType
 		{
 			VERTEX,
@@ -73,6 +71,12 @@ namespace Gear::Core::D3D12Core
 			COMPUTE,
 			TYPECOUNT
 		};
+
+		uint32_t getNumShaderConstants(const ShaderType shaderType) const;
+
+	private:
+
+		std::array<uint32_t, static_cast<uint32_t>(ShaderType::TYPECOUNT)> numShaderConstants;
 
 		//V H G D P C，与ShaderType中枚举表示的整数值一一对应
 		CommonShaderLayout::ShaderLocalParameterIndices localParameterIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];

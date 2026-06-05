@@ -4,6 +4,13 @@ namespace Gear::Core::D3D12Core
 {
 	RootSignature::RootSignature(const uint32_t numVSConstants, const uint32_t numHSConstants, const uint32_t numDSConstants, const uint32_t numGSConstants, const uint32_t numPSConstants, const uint32_t numCSConstants, CD3DX12_STATIC_SAMPLER_DESC* const samplerDescs, const uint32_t samplerCount, const D3D12_ROOT_SIGNATURE_FLAGS signatureFlags)
 	{
+		numShaderConstants[static_cast<uint32_t>(ShaderType::VERTEX)] = numVSConstants;
+		numShaderConstants[static_cast<uint32_t>(ShaderType::HULL)] = numHSConstants;
+		numShaderConstants[static_cast<uint32_t>(ShaderType::DOMAIN)] = numDSConstants;
+		numShaderConstants[static_cast<uint32_t>(ShaderType::GEOMETRY)] = numGSConstants;
+		numShaderConstants[static_cast<uint32_t>(ShaderType::PIXEL)] = numPSConstants;
+		numShaderConstants[static_cast<uint32_t>(ShaderType::COMPUTE)] = numCSConstants;
+
 		//根据全局和局部结构体的大小和传入的参数计算需要多少个根参数
 		const uint32_t numRootParameters = static_cast<uint32_t>(sizeof(CommonShaderLayout::ShaderGlobalParameterIndices) / sizeof(uint32_t))
 			+ (static_cast<bool>(numVSConstants)
@@ -196,6 +203,11 @@ namespace Gear::Core::D3D12Core
 	uint32_t RootSignature::getCSConstantBufferParameterIndex() const
 	{
 		return getLocalConstantBufferParameterIndex(ShaderType::COMPUTE);
+	}
+
+	uint32_t RootSignature::getNumShaderConstants(const ShaderType shaderType) const
+	{
+		return numShaderConstants[static_cast<uint32_t>(shaderType)];
 	}
 
 	CommonShaderLayout::ShaderLocalParameterIndices RootSignature::getLocalParameterIndices(const ShaderType shaderType) const

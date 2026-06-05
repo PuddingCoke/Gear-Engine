@@ -77,6 +77,8 @@ namespace Gear::Core
 		template<typename T>
 		void setCSConstants(const T& t, uint32_t& offset) const;
 
+		void constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const;
+
 		void setVSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
 
 		void setHSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
