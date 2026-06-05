@@ -94,6 +94,8 @@ protected:
 
 		context->dispatch(dispatchCeil(numVehicle, 32), 1, 1);
 
+		context->uavBarrier({ positionVelocity->write()->getBuffer() });
+
 		positionVelocity->swap();
 
 		context->setPipelineState(*vehicleRenderState);
