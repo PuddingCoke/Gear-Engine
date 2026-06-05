@@ -117,15 +117,19 @@ namespace Gear::Core::Effect
 		context->setViewportSimple(width, height);
 		context->setPipelineState(*bloomFilterState);
 		context->setRenderTargets({ filteredTexture->getRTVMipHandle(0) }, {});
-		context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
-		context->setPSConstants(5, &bloomParam, 1);
+		SETCONSTS({
+		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
+		context->setPSConstants(5, &bloomParam, co);
+			});
 		context->draw(3, 1, 0, 0);
 
 		context->setViewportSimple(resolutions[0].x, resolutions[0].y);
 		context->setPipelineState(*bloomKarisAverageState);
 		context->setRenderTargets({ swapTexture[0]->write()->getRTVMipHandle(0) }, {});
-		context->setPSConstants({ filteredTexture->getAllSRVIndex() }, 0);
-		context->setPSConstants(4, &bloomParam, 1);
+		SETCONSTS({
+		context->setPSConstants({ filteredTexture->getAllSRVIndex() }, co);
+		context->setPSConstants(4, &bloomParam, co);
+			});
 		context->draw(3, 1, 0, 0);
 		swapTexture[0]->swap();
 
@@ -135,16 +139,20 @@ namespace Gear::Core::Effect
 		{
 			context->setViewportSimple(resolutions[i + 1].x, resolutions[i + 1].y);
 			context->setRenderTargets({ swapTexture[i + 1]->write()->getRTVMipHandle(0) }, {});
-			context->setPSConstants({ swapTexture[i]->read()->getAllSRVIndex() }, 0);
+			SETCONSTS({
+			context->setPSConstants({ swapTexture[i]->read()->getAllSRVIndex() }, co);
+				});
 			context->draw(3, 1, 0, 0);
 			swapTexture[i + 1]->swap();
 		}
 
 		context->setPipelineState(*bloomHBlurState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			swapTexture[blurSteps - 1]->read()->getAllSRVIndex(),
-			swapTexture[blurSteps - 1]->write()->getUAVMipIndex(0) }, 0);
+			swapTexture[blurSteps - 1]->write()->getUAVMipIndex(0) }, co);
+			});
 
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
@@ -154,9 +162,11 @@ namespace Gear::Core::Effect
 
 		context->setPipelineState(*bloomVBlurState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			swapTexture[blurSteps - 1]->read()->getAllSRVIndex(),
-			swapTexture[blurSteps - 1]->write()->getUAVMipIndex(0) }, 0);
+			swapTexture[blurSteps - 1]->write()->getUAVMipIndex(0) }, co);
+			});
 
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
@@ -168,9 +178,11 @@ namespace Gear::Core::Effect
 		{
 			context->setPipelineState(*bloomHBlurState);
 
+			SETCONSTS({
 			context->setCSConstants({
 				swapTexture[blurSteps - 2 - i]->read()->getAllSRVIndex(),
-				swapTexture[blurSteps - 2 - i]->write()->getUAVMipIndex(0) }, 0);
+				swapTexture[blurSteps - 2 - i]->write()->getUAVMipIndex(0) }, co);
+				});
 
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
@@ -180,9 +192,11 @@ namespace Gear::Core::Effect
 
 			context->setPipelineState(*bloomVBlurState);
 
+			SETCONSTS({
 			context->setCSConstants({
 				swapTexture[blurSteps - 2 - i]->read()->getAllSRVIndex(),
-				swapTexture[blurSteps - 2 - i]->write()->getUAVMipIndex(0) }, 0);
+				swapTexture[blurSteps - 2 - i]->write()->getUAVMipIndex(0) }, co);
+				});
 
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
@@ -192,7 +206,9 @@ namespace Gear::Core::Effect
 			context->setViewportSimple(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 			context->setPipelineState(*bloomUpSampleState);
 			context->setRenderTargets({ swapTexture[blurSteps - 2 - i]->write()->getRTVMipHandle(0) }, {});
-			context->setPSConstants({ swapTexture[blurSteps - 1 - i]->read()->getAllSRVIndex() }, 0);
+			SETCONSTS({
+			context->setPSConstants({ swapTexture[blurSteps - 1 - i]->read()->getAllSRVIndex() }, co);
+				});
 			context->draw(3, 1, 0, 0);
 			swapTexture[blurSteps - 2 - i]->swap();
 		}
@@ -200,11 +216,13 @@ namespace Gear::Core::Effect
 		context->setViewportSimple(width, height);
 		context->setPipelineState(*bloomFinalState);
 		context->setRenderTargets({ outputTexture->getRTVMipHandle(0) }, {});
+		SETCONSTS({
 		context->setPSConstants({
 			inputTexture.getAllSRVIndex(),
 			swapTexture[0]->read()->getAllSRVIndex(),
-			lensDirtTexture->getAllSRVIndex() }, 0);
-		context->setPSConstants(6, &bloomParam, 3);
+			lensDirtTexture->getAllSRVIndex() }, co);
+		context->setPSConstants(6, &bloomParam, co);
+			});
 		context->draw(3, 1, 0, 0);
 
 		return outputTexture.get();

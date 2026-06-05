@@ -77,9 +77,11 @@ public:
 
 		sceneInfo.lightPos = lightPos;
 
-		context->setPSConstants(12, &sceneInfo, 0);
+		SETCONSTS({
+		context->setPSConstants(sceneInfo, co);
 
-		context->setPSConstants({ prefilterTexture.getAllSRVIndex(),brdfLUTTexture.getAllSRVIndex(),irradianceTexture.getAllSRVIndex() }, 12);
+		context->setPSConstants({ prefilterTexture.getAllSRVIndex(),brdfLUTTexture.getAllSRVIndex(),irradianceTexture.getAllSRVIndex() }, co);
+			});
 
 		for (uint32_t i = 0; i < models.size(); i++)
 		{

@@ -67,8 +67,6 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setPSConstants({ noiseTexture->getAllSRVIndex(),diskTexture->getAllSRVIndex() }, 0);
-
 		perframeData.resolution = { static_cast<float>(Graphics::getWidth()) ,static_cast<float>(Graphics::getHeight()) };
 
 		//perframeData.timeElapsed = perframeData.texturePeriod * 3.f + sinf(Graphics::getTimeElapsed()) * 1.f;
@@ -77,7 +75,10 @@ protected:
 
 		//perframeData.timeElapsed = 0.f;
 
-		context->setPSConstants(sizeof(PerframeData) / 4ull, &perframeData, 2);
+		SETCONSTS({
+		context->setPSConstants({ noiseTexture->getAllSRVIndex(),diskTexture->getAllSRVIndex() }, co);
+		context->setPSConstants(perframeData, co);
+			});
 
 		context->draw(3, 1, 0, 0);
 

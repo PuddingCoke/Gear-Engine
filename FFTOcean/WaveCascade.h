@@ -42,18 +42,22 @@ public:
 	{
 		context->setPipelineState(*ifftState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			tempTexture->getUAVMipIndex(0),
-			inputTexture.getAllSRVIndex() }, 0);
+			inputTexture.getAllSRVIndex() }, co);
+			});
 
 		context->dispatch(size, 1, 1);
 
 		context->uavBarrier({
 			tempTexture->getTexture() });
 
+		SETCONSTS({
 		context->setCSConstants({
 			inputTexture.getUAVMipIndex(0),
-			tempTexture->getAllSRVIndex() }, 0);
+			tempTexture->getAllSRVIndex() }, co);
+			});
 
 		context->dispatch(size, 1, 1);
 
@@ -62,8 +66,10 @@ public:
 
 		context->setPipelineState(*permutationState);
 
+		SETCONSTS({
 		context->setCSConstants({
-			inputTexture.getUAVMipIndex(0) }, 0);
+			inputTexture.getUAVMipIndex(0) }, co);
+			});
 
 		context->dispatch(size / 8, size / 8, 1);
 
@@ -75,10 +81,12 @@ public:
 	{
 		context->setPipelineState(*spectrumState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			tildeh0Texture->getUAVMipIndex(0),
 			waveDataTexture->getUAVMipIndex(0),
-			randomGaussTexture->getAllSRVIndex() }, 0);
+			randomGaussTexture->getAllSRVIndex() }, co);
+			});
 
 		context->setCSConstantBuffer(spectrumParamBuffer);
 
@@ -90,9 +98,11 @@ public:
 
 		context->setPipelineState(*conjugateState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			waveSpectrumTexture->getUAVMipIndex(0),
-			tildeh0Texture->getAllSRVIndex() }, 0);
+			tildeh0Texture->getAllSRVIndex() }, co);
+			});
 
 		context->dispatch(size / 8, size / 8, 1);
 
@@ -104,13 +114,15 @@ public:
 	{
 		context->setPipelineState(*displacementSpectrumState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			DxDz->getUAVMipIndex(0),
 			DyDxz->getUAVMipIndex(0),
 			DyxDyz->getUAVMipIndex(0),
 			DxxDzz->getUAVMipIndex(0),
 			waveDataTexture->getAllSRVIndex(),
-			waveSpectrumTexture->getAllSRVIndex() }, 0);
+			waveSpectrumTexture->getAllSRVIndex() }, co);
+			});
 
 		context->dispatch(size / 8, size / 8, 1);
 
@@ -133,6 +145,7 @@ public:
 
 		context->setPipelineState(*waveMergeState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			displacementTexture->getUAVMipIndex(0),
 			derivativeTexture->getUAVMipIndex(0),
@@ -140,7 +153,8 @@ public:
 			DxDz->getAllSRVIndex(),
 			DyDxz->getAllSRVIndex(),
 			DyxDyz->getAllSRVIndex(),
-			DxxDzz->getAllSRVIndex() }, 0);
+			DxxDzz->getAllSRVIndex() }, co);
+			});
 
 		context->dispatch(size / 8, size / 8, 1);
 

@@ -55,7 +55,9 @@ namespace Gear::Core::Effect
 	{
 		context->setPipelineState(*hiZCopyState);
 
-		context->setCSConstants({ depthTexture.getDepthMipIndex(0),hiZTexture->getUAVMipIndex(0) }, 0);
+		SETCONSTS({
+		context->setCSConstants({ depthTexture.getDepthMipIndex(0),hiZTexture->getUAVMipIndex(0) }, co);
+			});
 
 		context->dispatch(
 			dispatchCeil(hiZTexture->getTexture()->getWidth(), 16u),
@@ -68,7 +70,10 @@ namespace Gear::Core::Effect
 
 		for (uint32_t i = 0; i < hiZMiplvel - 1; i++)
 		{
-			context->setCSConstants({ hiZTexture->getSRVMipIndex(i),hiZTexture->getUAVMipIndex(i + 1) }, 0);
+			SETCONSTS({
+			context->setCSConstants({ hiZTexture->getSRVMipIndex(i),hiZTexture->getUAVMipIndex(i + 1) }, co);
+				});
+
 
 			context->dispatch(
 				dispatchCeil(hiZTexture->getTexture()->getWidth() >> (i + 1u), 16u),
@@ -86,11 +91,13 @@ namespace Gear::Core::Effect
 
 		context->setRenderTargets({ outputTexture->getRTVMipHandle(0) });
 
-		context->setPSConstants({ gPosition.getAllSRVIndex(),gNormal.getAllSRVIndex(),hiZTexture->getAllSRVIndex() }, 0);
-
 		int maxLevel = static_cast<int>(hiZTexture->getTexture()->getMipLevels() - 1u);
 
-		context->setPSConstants(1, &maxLevel, 3u);
+		SETCONSTS({
+		context->setPSConstants({ gPosition.getAllSRVIndex(),gNormal.getAllSRVIndex(),hiZTexture->getAllSRVIndex() }, co);
+
+		context->setPSConstants(1, &maxLevel, co);
+			});
 
 		context->draw(3, 1, 0, 0);
 

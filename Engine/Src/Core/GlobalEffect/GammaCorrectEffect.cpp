@@ -49,11 +49,13 @@ namespace Gear::Core::GlobalEffect::GammaCorrectEffect
 	{
 		context->setPipelineState(*Internal::impl.gammaCorrectState);
 
-		context->setCSConstants({ inputTexture.getSRVMipIndex(0),Internal::impl.outputTexture->getUAVMipIndex(0) }, 0);
-
 		const float gamma = Graphics::getGamma();
 
-		context->setCSConstants(1, &gamma, 2);
+		SETCONSTS({
+		context->setCSConstants({ inputTexture.getSRVMipIndex(0),Internal::impl.outputTexture->getUAVMipIndex(0) }, co);
+
+		context->setCSConstants(1, &gamma, co);
+			});
 
 		context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
 

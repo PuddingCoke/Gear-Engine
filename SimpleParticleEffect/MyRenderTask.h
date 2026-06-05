@@ -113,9 +113,11 @@ protected:
 	{
 		context->setPipelineState(*particleComputeState);
 
-		context->setCSConstants({ positionBuffer->getUAVIndex() }, 0);
+		SETCONSTS({
+		context->setCSConstants({ positionBuffer->getUAVIndex() }, co);
 
-		context->setCSConstants(sizeof(SimulationParam) / 4, &simulationParam, 1);
+		context->setCSConstants(simulationParam, co);
+			});
 
 		context->dispatch(numParticles / 100, 1, 1);
 
@@ -136,7 +138,9 @@ protected:
 			colorBuffer->getVertexBuffer()
 			});
 
-		context->setGSConstants(sizeof(SimulationParam) / 4, &simulationParam, 0);
+		SETCONSTS({
+		context->setGSConstants(simulationParam, co);
+			});
 
 		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 

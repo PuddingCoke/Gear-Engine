@@ -141,11 +141,13 @@ protected:
 
 			context->setVSConstantBuffer(*viewProjMatrixBuffer);
 
-			context->setPSConstants({ envCube->getAllSRVIndex() }, 0);
-
 			const float roughness = static_cast<float>(i) / static_cast<float>(prefilterCube->getTexture()->getMipLevels() - 1u);
 
-			context->setPSConstants(1, &roughness, 1);
+			SETCONSTS({
+			context->setPSConstants({ envCube->getAllSRVIndex() }, co);
+
+			context->setPSConstants(1, &roughness, co);
+				});
 
 			context->draw(36, 6, 0, 0);
 		}
@@ -161,7 +163,9 @@ protected:
 
 		context->setRenderTargets({ irradianceCube->getRTVMipHandle(0) });
 
-		context->setPSConstants({ envCube->getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ envCube->getAllSRVIndex() }, co);
+			});
 
 		context->draw(36, 6, 0, 0);
 	}
@@ -188,7 +192,9 @@ protected:
 
 		context->setRenderTargets({ renderTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 
-		context->setPSConstants({ envCube->getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ envCube->getAllSRVIndex() }, co);
+			});
 
 		context->draw(36, 1, 0, 0);
 

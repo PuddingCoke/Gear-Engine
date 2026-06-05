@@ -29,7 +29,9 @@ public:
 	//use first 3 slots of pixel constants
 	void bind(GraphicsContext* const context)
 	{
-		context->setPSConstants({ diffuse->getAllSRVIndex(),roughnessMetallic->getAllSRVIndex(),normal->getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ diffuse->getAllSRVIndex(),roughnessMetallic->getAllSRVIndex(),normal->getAllSRVIndex() }, co);
+			});
 	}
 
 private:

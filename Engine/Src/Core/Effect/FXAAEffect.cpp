@@ -41,7 +41,9 @@ namespace Gear::Core::Effect
 
 		context->setRenderTargets({ colorLumaTexture->getRTVMipHandle(0) });
 
-		context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
+			});
 
 		context->draw(3, 1, 0, 0);
 
@@ -53,9 +55,11 @@ namespace Gear::Core::Effect
 
 		context->setRenderTargets({ outputTexture->getRTVMipHandle(0) });
 
-		context->setPSConstants({ colorLumaTexture->getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ colorLumaTexture->getAllSRVIndex() }, co);
 
-		context->setPSConstants(4, &fxaaParam, 1);
+		context->setPSConstants(fxaaParam, co);
+			});
 
 		context->draw(3, 1, 0, 0);
 

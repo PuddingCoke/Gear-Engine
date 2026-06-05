@@ -15,6 +15,12 @@
 
 #include<array>
 
+#include<type_traits>
+
+//创建一个作用域，内置默认值为0的临时偏移co，它会随着API调用自增，建议搭配CodeSnippets中的片段使用
+//注意事项：作用域内只允许ctx->set*SConstants调用！因为宏定义是无法处理某些特殊情况的
+#define SETCONSTS(x) { uint32_t co = 0u; x }
+
 namespace Gear::Core
 {
 	class GraphicsContext
@@ -36,34 +42,52 @@ namespace Gear::Core
 		void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
 		template<size_t N>
-		void setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+		void setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+		void setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+		void setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+		void setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+		void setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset);
+		void setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
-		void setVSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+		template<typename T>
+		void setVSConstants(const T& t, uint32_t& offset) const;
 
-		void setHSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+		template<typename T>
+		void setHSConstants(const T& t, uint32_t& offset) const;
 
-		void setDSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+		template<typename T>
+		void setDSConstants(const T& t, uint32_t& offset) const;
 
-		void setGSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+		template<typename T>
+		void setGSConstants(const T& t, uint32_t& offset) const;
 
-		void setPSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+		template<typename T>
+		void setPSConstants(const T& t, uint32_t& offset) const;
 
-		void setCSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const;
+		template<typename T>
+		void setCSConstants(const T& t, uint32_t& offset) const;
+
+		void setVSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
+
+		void setHSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
+
+		void setDSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
+
+		void setGSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
+
+		void setPSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
+
+		void setCSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
 
 		void setVSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
@@ -250,7 +274,7 @@ namespace Gear::Core
 	};
 
 	template<size_t N>
-	inline void GraphicsContext::setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	inline void GraphicsContext::setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -260,7 +284,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	inline void GraphicsContext::setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -270,7 +294,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	inline void GraphicsContext::setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -280,7 +304,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	inline void GraphicsContext::setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -290,7 +314,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	inline void GraphicsContext::setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -300,13 +324,73 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t offset)
+	inline void GraphicsContext::setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
 		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 
 		setCSConstants(N, transientResourceIndices.data(), offset);
+	}
+
+	template<typename T>
+	inline void GraphicsContext::setVSConstants(const T& t, uint32_t& offset) const
+	{
+		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+
+		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+
+		setVSConstants(numElements, &t, offset);
+	}
+
+	template<typename T>
+	inline void GraphicsContext::setHSConstants(const T& t, uint32_t& offset) const
+	{
+		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+
+		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+
+		setHSConstants(numElements, &t, offset);
+	}
+
+	template<typename T>
+	inline void GraphicsContext::setDSConstants(const T& t, uint32_t& offset) const
+	{
+		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+
+		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+
+		setDSConstants(numElements, &t, offset);
+	}
+
+	template<typename T>
+	inline void GraphicsContext::setGSConstants(const T& t, uint32_t& offset) const
+	{
+		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+
+		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+
+		setGSConstants(numElements, &t, offset);
+	}
+
+	template<typename T>
+	inline void GraphicsContext::setPSConstants(const T& t, uint32_t& offset) const
+	{
+		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+
+		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+
+		setPSConstants(numElements, &t, offset);
+	}
+
+	template<typename T>
+	inline void GraphicsContext::setCSConstants(const T& t, uint32_t& offset) const
+	{
+		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+
+		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+
+		setCSConstants(numElements, &t, offset);
 	}
 
 	template<size_t N>

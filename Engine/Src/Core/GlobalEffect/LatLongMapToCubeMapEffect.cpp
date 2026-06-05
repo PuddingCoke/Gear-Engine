@@ -139,7 +139,9 @@ namespace Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect
 
 		context->setVSConstantBuffer(*Internal::impl.matricesBuffer);
 
-		context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
+			});
 
 		context->draw(36, 6, 0, 0);
 	}

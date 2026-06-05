@@ -79,9 +79,11 @@ protected:
 
 		context->setPipelineState(*accumulateState);
 
-		context->setPSConstants(2, &accumulateParam, 0);
+		SETCONSTS({
+		context->setPSConstants(accumulateParam, co);
 
-		context->setPSConstants(4, &cameraParam, 2);
+		context->setPSConstants(cameraParam, co);
+			});
 
 		context->setRenderTargets({ accumulatedTexture->getRTVMipHandle(0) }, {});
 
@@ -89,7 +91,9 @@ protected:
 
 		context->setPipelineState(*displayState);
 
-		context->setPSConstants({ accumulatedTexture->getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ accumulatedTexture->getAllSRVIndex() }, co);
+			});
 
 		context->setDefRenderTarget();
 

@@ -42,7 +42,9 @@ namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setPSConstants({ inputTexture.getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
+			});
 
 		context->draw(3, 1, 0, 0);
 	}

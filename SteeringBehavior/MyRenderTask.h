@@ -83,12 +83,14 @@ protected:
 
 		context->setPipelineState(*stepState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			positionVelocity->write()->getUAVIndex(),
 			positionVelocity->read()->getSRVIndex(),
-			maxSpeedMaxForce->getSRVIndex() }, 0);
+			maxSpeedMaxForce->getSRVIndex() }, co);
 
-		context->setCSConstants(sizeof(SimulationParam) / sizeof(uint32_t), &simulationParam, 3);
+		context->setCSConstants(simulationParam, co);
+			});
 
 		context->dispatch(dispatchCeil(numVehicle, 32), 1, 1);
 
@@ -106,7 +108,9 @@ protected:
 
 		context->setVertexBuffers(0, { positionVelocity->read()->getVertexBuffer() });
 
-		context->setPSConstants({ arrowTexture->getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ arrowTexture->getAllSRVIndex() }, co);
+			});
 
 		context->draw(numVehicle, 1, 0, 0);
 

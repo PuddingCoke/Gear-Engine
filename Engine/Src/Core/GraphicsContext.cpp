@@ -46,34 +46,46 @@ namespace Gear::Core
 		}
 	}
 
-	void GraphicsContext::setVSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const
+	void GraphicsContext::setVSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getVSConstantsParameterIndex(), numValues, data, offset);
+
+		offset += numValues;
 	}
 
-	void GraphicsContext::setHSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const
+	void GraphicsContext::setHSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getHSConstantsParameterIndex(), numValues, data, offset);
+
+		offset += numValues;
 	}
 
-	void GraphicsContext::setDSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const
+	void GraphicsContext::setDSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getDSConstantsParameterIndex(), numValues, data, offset);
+
+		offset += numValues;
 	}
 
-	void GraphicsContext::setGSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const
+	void GraphicsContext::setGSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getGSConstantsParameterIndex(), numValues, data, offset);
+
+		offset += numValues;
 	}
 
-	void GraphicsContext::setPSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const
+	void GraphicsContext::setPSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 		commandList->setGraphicsRootConstants(graphicsRootSignature->getPSConstantsParameterIndex(), numValues, data, offset);
+
+		offset += numValues;
 	}
 
-	void GraphicsContext::setCSConstants(const uint32_t numValues, const void* const data, const uint32_t offset) const
+	void GraphicsContext::setCSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 		commandList->setComputeRootConstants(computeRootSignature->getCSConstantsParameterIndex(), numValues, data, offset);
+
+		offset += numValues;
 	}
 
 	void GraphicsContext::setVSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)

@@ -60,11 +60,13 @@ protected:
 	{
 		context->setPipelineState(*whiteNoiseState);
 
-		context->setCSConstants({ swapTexture.write()->getUAVMipIndex(0) }, 0);
+		const uint32_t uintSeed = Utils::Random::genUint();
 
-		UINT uintSeed = Utils::Random::genUint();
+		SETCONSTS({
+		context->setCSConstants({ swapTexture.write()->getUAVMipIndex(0) }, co);
 
-		context->setCSConstants(1, &uintSeed, 1);
+		context->setCSConstants(1, &uintSeed, co);
+			});
 
 		context->dispatch(swapTexture.width / 16, swapTexture.height / 9, 1);
 
@@ -77,10 +79,12 @@ protected:
 	{
 		context->setPipelineState(*evolveState);
 
+		SETCONSTS({
 		context->setCSConstants({ swapTexture.read()->getAllSRVIndex(),
-			swapTexture.write()->getUAVMipIndex(0) }, 0);
+			swapTexture.write()->getUAVMipIndex(0) }, co);
 
-		context->setCSConstants(8, &simulationParam, 2);
+		context->setCSConstants(simulationParam, co);
+			});
 
 		context->dispatch(swapTexture.width / 16, swapTexture.height / 9, 1);
 
@@ -106,8 +110,10 @@ protected:
 	{
 		context->setPipelineState(*visualizeState);
 
+		SETCONSTS({
 		context->setCSConstants({ originTexture->getUAVMipIndex(0),
-			swapTexture->read()->getAllSRVIndex() }, 0);
+			swapTexture->read()->getAllSRVIndex() }, co);
+			});
 
 		context->dispatch(swapTexture->width / 16, swapTexture->height / 9, 1);
 

@@ -302,8 +302,10 @@ private:
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, {});
 
+		SETCONSTS({
 		context->setPSConstants({
-			enviromentCube->getAllSRVIndex() }, 0);
+			enviromentCube->getAllSRVIndex() }, co);
+			});
 
 		context->draw(36, 1, 0, 0);
 
@@ -321,13 +323,16 @@ private:
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthStencilDesc);
 
+		SETCONSTS({
 		context->setDSConstants({
 			cascade[0]->displacementTexture->getAllSRVIndex(),
 			cascade[1]->displacementTexture->getAllSRVIndex(),
-			cascade[2]->displacementTexture->getAllSRVIndex() }, 0);
+			cascade[2]->displacementTexture->getAllSRVIndex() }, co);
+			});
 
 		context->setDSConstantBuffer(*renderParamBuffer);
 
+		SETCONSTS({
 		context->setPSConstants({
 			cascade[0]->displacementTexture->getAllSRVIndex(),
 			cascade[0]->derivativeTexture->getAllSRVIndex(),
@@ -338,7 +343,8 @@ private:
 			cascade[2]->displacementTexture->getAllSRVIndex(),
 			cascade[2]->derivativeTexture->getAllSRVIndex(),
 			cascade[2]->jacobianTexture->getAllSRVIndex(),
-			enviromentCube->getAllSRVIndex() }, 0);
+			enviromentCube->getAllSRVIndex() }, co);
+			});
 
 		context->setPSConstantBuffer(*renderParamBuffer);
 

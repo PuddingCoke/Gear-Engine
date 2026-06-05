@@ -360,10 +360,13 @@ protected:
 
 		context->setVSConstantBuffer(cubeRenderBuffer);
 
+		SETCONSTS({
+		co = 3;
 		context->setPSConstants({
 			shadowTexture->getAllDepthIndex(),
 			irradianceVolumeBuffer->getBufferIndex()
-			}, 3);
+			}, co);
+			});
 
 		context->setPSConstantBuffer(cubeRenderBuffer);
 
@@ -377,10 +380,12 @@ protected:
 
 		context->setPipelineState(*irradianceOctahedralEncodeState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			irradianceOctahedralMap->getUAVMipIndex(0),
 			radianceCube->getAllSRVIndex()
-			}, 0);
+			}, co);
+			});
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
@@ -390,10 +395,12 @@ protected:
 
 		context->setPipelineState(*depthOctahedralEncodeState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			depthOctahedralMap->getUAVMipIndex(0),
 			distanceCube->getAllSRVIndex()
-			}, 0);
+			}, co);
+			});
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
@@ -416,12 +423,15 @@ protected:
 
 		context->setVSConstantBuffer(cubeRenderBuffer);
 
+		SETCONSTS({
+		co = 3;
 		context->setPSConstants({
 			shadowTexture->getAllDepthIndex(),
 			irradianceVolumeBuffer->getBufferIndex(),
 			irradianceOctahedralMap->getAllSRVIndex(),
 			depthOctahedralMap->getAllSRVIndex()
-			}, 3);
+			}, co);
+			});
 
 		context->setPSConstantBuffer(cubeRenderBuffer);
 
@@ -433,10 +443,12 @@ protected:
 
 		context->setPipelineState(*irradianceOctahedralEncodeState);
 
+		SETCONSTS({
 		context->setCSConstants({
 			irradianceBounceOctahedralMap->getUAVMipIndex(0),
 			radianceCube->getAllSRVIndex()
-			}, 0);
+			}, co);
+			});
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
@@ -461,7 +473,10 @@ protected:
 			gBaseColor->getRTVMipHandle(0)
 			}, dsDesc);
 
-		context->setPSConstants(2, &clipParameters, 3);
+		SETCONSTS({
+		co = 3;
+		context->setPSConstants(clipParameters, co);
+			});
 
 		context->clearRenderTarget(gPositionMetallic->getRTVMipHandle(0), DirectX::g_XMHalfPi);
 
@@ -485,6 +500,7 @@ protected:
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) });
 
+		SETCONSTS({
 		context->setPSConstants({
 			gPositionMetallic->getAllSRVIndex(),
 			gNormalRoughness->getAllSRVIndex(),
@@ -493,7 +509,8 @@ protected:
 			irradianceBounceOctahedralMap->getAllSRVIndex(),
 			depthOctahedralMap->getAllSRVIndex(),
 			aoTexture->getAllSRVIndex()
-			}, 0);
+			}, co);
+			});
 
 		context->setPSConstantBuffer(*irradianceVolumeBuffer);
 
@@ -511,7 +528,9 @@ protected:
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, dsDesc);
 
-		context->setPSConstants({ skybox->getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ skybox->getAllSRVIndex() }, co);
+			});
 
 		context->draw(36, 1, 0, 0);
 
@@ -525,9 +544,11 @@ protected:
 
 		context->setRenderTargets({ ssrCombinedTexture->getRTVMipHandle(0) });
 
-		context->setPSConstants({ originTexture->getAllSRVIndex(),ssrUVVisibilityTexture->getAllSRVIndex(),gNormalRoughness->getAllSRVIndex() }, 0);
+		SETCONSTS({
+		context->setPSConstants({ originTexture->getAllSRVIndex(),ssrUVVisibilityTexture->getAllSRVIndex(),gNormalRoughness->getAllSRVIndex() }, co);
 
-		context->setPSConstants(2, &ssrParameters, 3);
+		context->setPSConstants(ssrParameters, co);
+			});
 
 		context->clearRenderTarget(ssrCombinedTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 

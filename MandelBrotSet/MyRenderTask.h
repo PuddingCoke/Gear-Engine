@@ -81,11 +81,13 @@ protected:
 
 		context->setPipelineState(*computeState);
 
-		context->setCSConstants({ originTexture->getUAVMipIndex(0) }, 0);
+		SETCONSTS({
+		context->setCSConstants({ originTexture->getUAVMipIndex(0) }, co);
 
-		context->setCSConstants(sizeof(SimulationParam) / 4, &param, 1);
+		context->setCSConstants(param, co);
 
-		context->setCSConstants(2, &accParam, sizeof(SimulationParam) / 4 + 1);
+		context->setCSConstants(accParam, co);
+			});
 
 		context->dispatch(Graphics::getWidth() / 16, Graphics::getHeight() / 9, 1);
 
