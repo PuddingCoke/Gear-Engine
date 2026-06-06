@@ -2,8 +2,6 @@
 
 #include<Gear/Core/RenderTask.h>
 
-#include<Gear/Core/Effect/BloomEffect.h>
-
 #include<Gear/DevEssential.h>
 
 class MyRenderTask :public RenderTask
@@ -29,42 +27,35 @@ public:
 	{
 		const DirectX::XMUINT2 simRes = { Graphics::getWidth() >> config.resolutionFactor,Graphics::getHeight() >> config.resolutionFactor };
 
-		velocityTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true,
-			FMT::RG32F, FMT::RG32F, FMT::UNKNOWN); });
+		velocityTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true); });
 
 		velocityTex->read()->getTexture()->getResource()->SetName(L"Velocity Texture (0)");
 
 		velocityTex->write()->getTexture()->getResource()->SetName(L"Velocity Texture (1)");
 
-		colorTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::RGBA16F, FMT::UNKNOWN); });
+		colorTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true); });
 
 		colorTex->read()->getTexture()->getResource()->SetName(L"Color Texture (0)");
 
 		colorTex->write()->getTexture()->getResource()->SetName(L"Color Texture (1)");
 
-		divergenceTex = ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true,
-			FMT::R32F, FMT::R32F, FMT::UNKNOWN);
+		divergenceTex = ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
 
 		divergenceTex->getTexture()->getResource()->SetName(L"Divergence Texture");
 
-		pressureTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true,
-			FMT::R32F, FMT::R32F, FMT::UNKNOWN); });
+		pressureTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true); });
 
 		pressureTex->read()->getTexture()->getResource()->SetName(L"Pressure Texture (0)");
 
 		pressureTex->write()->getTexture()->getResource()->SetName(L"Pressure Texture (1)");
 
-		vorticityTex = ResourceManager::createTextureRenderView(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true,
-			FMT::R32F, FMT::R32F, FMT::UNKNOWN);
+		vorticityTex = ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
 
 		vorticityTex->getTexture()->getResource()->SetName(L"Vorticity Texture");
 
-		phongShadeTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::RGBA16F, FMT::UNKNOWN);
+		phongShadeTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true);
 
-		edgeHighlightTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true,
-			FMT::RGBA8UN, FMT::RGBA8UN, FMT::UNKNOWN);
+		edgeHighlightTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true);
 
 		simulationParamBuffer = ResourceManager::createDynamicCBuffer(sizeof(SimulationParam));
 
@@ -110,7 +101,7 @@ public:
 
 		edgeHighlightState = PipelineStateBuilder::build(*edgeHighlightCS);
 
-		effect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
+		effect = BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
 
 		effect->setThreshold(0.f);
 
@@ -342,7 +333,7 @@ public:
 			advect();
 		}
 
-		TextureRenderView* outputTexture = nullptr;
+		RenderTextureView* outputTexture = nullptr;
 
 		if (config.phongShading)
 		{
@@ -360,7 +351,7 @@ public:
 			outputTexture = effect->process(*colorTex->read());
 		}
 
-		TextureRenderView* texture = nullptr;
+		RenderTextureView* texture = nullptr;
 
 		if (config.edgeHighlight)
 		{
@@ -393,15 +384,15 @@ private:
 
 	UniquePtr<SwapTexture> velocityTex;
 
-	UniquePtr<TextureRenderView> vorticityTex;
+	UniquePtr<RenderTextureView> vorticityTex;
 
-	UniquePtr<TextureRenderView> divergenceTex;
+	UniquePtr<RenderTextureView> divergenceTex;
 
 	UniquePtr<SwapTexture> pressureTex;
 
-	UniquePtr<TextureRenderView> phongShadeTexture;
+	UniquePtr<RenderTextureView> phongShadeTexture;
 
-	UniquePtr<TextureRenderView> edgeHighlightTexture;
+	UniquePtr<RenderTextureView> edgeHighlightTexture;
 
 	struct Configuration
 	{

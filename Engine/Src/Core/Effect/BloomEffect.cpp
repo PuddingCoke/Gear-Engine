@@ -20,16 +20,15 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<BloomEffect> BloomEffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager& resManager)
+	UniquePtr<BloomEffect> BloomEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager)
 	{
-		return makeUnique<BloomEffect>(context, width, height, resManager);
+		return makeUnique<BloomEffect>(contextRef, width, height, resManager);
 	}
 
-	BloomEffect::BloomEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager& resManager) :
-		EffectBase(context, width, height, FMT::RGBA16F),
-		lensDirtTexture(resManager.createTextureRenderView(Utils::File::getRootFolder() + L"bloom_dirt_mask.png", true)),
-		filteredTexture(ResourceManager::createTextureRenderView(width, height, FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F))
+	BloomEffect::BloomEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager) :
+		EffectBase(contextRef, width, height, FMT::RGBA16F),
+		lensDirtTexture(resManager.createRenderTextureView(Utils::File::getRootFolder() + L"bloom_dirt_mask.png", true)),
+		filteredTexture(ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16F, 1, 1, false, true))
 	{
 		filteredTexture->getTexture()->setName(L"Bloom Effect Filtered Texture");
 
@@ -49,8 +48,7 @@ namespace Gear::Core::Effect
 
 				swapTexture[i] = ResourceManager::createSwapTexture(
 					[=] {
-						return ResourceManager::createTextureRenderView(resolutions[i].x, resolutions[i].y, FMT::RGBA16F, 1, 1, false, true,
-							FMT::RGBA16F, FMT::RGBA16F, FMT::RGBA16F);
+						return ResourceManager::createRenderTextureView(resolutions[i].x, resolutions[i].y, FMT::RGBA16F, 1, 1, false, true);
 					}
 				);
 
@@ -106,7 +104,7 @@ namespace Gear::Core::Effect
 	{
 	}
 
-	Resource::TextureRenderView* BloomEffect::process(Resource::TextureRenderView& inputTexture)
+	Resource::RenderTextureView* BloomEffect::process(Resource::RenderTextureView& inputTexture)
 	{
 		bloomParam.exposure = Graphics::getExposure();
 

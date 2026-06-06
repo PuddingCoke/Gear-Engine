@@ -6,15 +6,14 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<FXAAEffect> FXAAEffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height)
+	UniquePtr<FXAAEffect> FXAAEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
-		return makeUnique<FXAAEffect>(context, width, height);
+		return makeUnique<FXAAEffect>(contextRef, width, height);
 	}
 
-	FXAAEffect::FXAAEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height) :
-		EffectBase(context, width, height, FMT::RGBA16UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
-		colorLumaTexture(ResourceManager::createTextureRenderView(width, height, FMT::RGBA16UN, 1, 1, false, true,
-			FMT::RGBA16UN, FMT::UNKNOWN, FMT::RGBA16UN))
+	FXAAEffect::FXAAEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height) :
+		EffectBase(contextRef, width, height, FMT::RGBA16UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
+		colorLumaTexture(ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16UN, 1, 1, false, true))
 	{
 		colorToColorLumaPS = D3D12Core::Shader::create(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
 
@@ -31,7 +30,7 @@ namespace Gear::Core::Effect
 	{
 	}
 
-	Resource::TextureRenderView* FXAAEffect::process(Resource::TextureRenderView& inputTexture) const
+	Resource::RenderTextureView* FXAAEffect::process(Resource::RenderTextureView& inputTexture) const
 	{
 		context->setPipelineState(*colorToColorLumaState);
 

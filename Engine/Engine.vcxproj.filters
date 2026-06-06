@@ -186,10 +186,10 @@
     <ClInclude Include="Inc\Gear\Core\Resource\SwapTexture.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\TextureDepthView.h">
+    <ClInclude Include="Inc\Gear\Core\Resource\DepthTextureView.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\TextureRenderView.h">
+    <ClInclude Include="Inc\Gear\Core\Resource\RenderTextureView.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\VideoEncoder\Encoder.h">
@@ -572,10 +572,10 @@
     <ClCompile Include="Src\Core\Resource\SwapTexture.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\TextureDepthView.cpp">
+    <ClCompile Include="Src\Core\Resource\DepthTextureView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\TextureRenderView.cpp">
+    <ClCompile Include="Src\Core\Resource\RenderTextureView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\VideoEncoder\NvidiaEncoder.cpp">

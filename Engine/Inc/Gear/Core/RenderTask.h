@@ -32,7 +32,7 @@ namespace Gear::Core
 	protected:
 
 		//把纹理绘制到后备缓冲上
-		void blit(Resource::TextureRenderView& texture) const;
+		void blit(Resource::RenderTextureView& texture) const;
 
 		virtual void recordCommand() = 0;
 

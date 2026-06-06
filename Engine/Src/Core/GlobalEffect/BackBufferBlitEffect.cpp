@@ -32,7 +32,7 @@ namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 		}
 	}
 
-	void process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
+	void process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture)
 	{
 		context->setPipelineState(*Internal::impl.backBufferBlitState);
 

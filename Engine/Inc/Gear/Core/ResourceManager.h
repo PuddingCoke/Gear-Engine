@@ -17,9 +17,9 @@
 
 #include<Gear/Core/Resource/BufferView.h>
 
-#include<Gear/Core/Resource/TextureRenderView.h>
+#include<Gear/Core/Resource/RenderTextureView.h>
 
-#include<Gear/Core/Resource/TextureDepthView.h>
+#include<Gear/Core/Resource/DepthTextureView.h>
 
 namespace Gear::Core
 {
@@ -88,28 +88,37 @@ namespace Gear::Core
 
 		static UniquePtr<Resource::BufferView> createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent);
 
-		static UniquePtr<Resource::TextureDepthView> createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent);
+		static UniquePtr<Resource::DepthTextureView> createDepthTextureView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent);
 
-		UniquePtr<Resource::TextureRenderView> createTextureRenderView(const std::wstring& filePath, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
+		UniquePtr<Resource::RenderTextureView> createRenderTextureView(const std::wstring& filePath, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
 
-		UniquePtr<Resource::TextureRenderView> createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent,
+		UniquePtr<Resource::RenderTextureView> createRenderTextureView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent,
 			const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
 
-		static UniquePtr<Resource::TextureRenderView> createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent,
-			const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color = nullptr);
+		//创建能同时用于图形管线和计算管线或自定义的高级纹理
+		static UniquePtr<Resource::RenderTextureView> createRenderTextureView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent,
+			DXGI_FORMAT srvFormat = FMT::UNKNOWN, DXGI_FORMAT uavFormat = FMT::UNKNOWN, DXGI_FORMAT rtvFormat = FMT::UNKNOWN, const float* const color = nullptr);
 
-		UniquePtr<Resource::TextureRenderView> createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
+		//创建仅用于图形管线的高级纹理
+		static UniquePtr<Resource::RenderTextureView> createGraphicsTexture(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent,
+			const float* const color = nullptr, DXGI_FORMAT srvFormat = FMT::UNKNOWN, DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
 
-		UniquePtr<Resource::TextureRenderView> createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent,
+		//创建仅用于计算管线的高级纹理
+		static UniquePtr<Resource::RenderTextureView> createComputeTexture(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent,
+			DXGI_FORMAT srvFormat = FMT::UNKNOWN, DXGI_FORMAT uavFormat = FMT::UNKNOWN);
+
+		UniquePtr<Resource::RenderTextureView> createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
+
+		UniquePtr<Resource::RenderTextureView> createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent,
 			const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
 
 		static UniquePtr<Resource::SwapBuffer> createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& readBufferFunc, const std::function<UniquePtr<Resource::BufferView>(void)>& writeBufferFunc);
 
 		static UniquePtr<Resource::SwapBuffer> createSwapBuffer(const std::function<UniquePtr<Resource::BufferView>(void)>& bufferFunc);
 
-		static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::TextureRenderView>(void)>& writeTextureFunc);
+		static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::RenderTextureView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::RenderTextureView>(void)>& writeTextureFunc);
 
-		static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& textureFunc);
+		static UniquePtr<Resource::SwapTexture> createSwapTexture(const std::function<UniquePtr<Resource::RenderTextureView>(void)>& textureFunc);
 
 	protected:
 

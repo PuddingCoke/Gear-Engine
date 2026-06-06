@@ -7,7 +7,7 @@
 
 namespace Gear::Core::GlobalEffect::ToneMapEffect
 {
-	Resource::TextureRenderView* process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture);
+	Resource::RenderTextureView* process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture);
 }
 
 #endif // !_GEAR_CORE_GLOBALEFFECT_TONEMAPEFFECT_H_

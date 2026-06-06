@@ -11,13 +11,13 @@ namespace Gear::Core::Effect
 	{
 	public:
 
-		static UniquePtr<FXAAEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+		static UniquePtr<FXAAEffect> create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
-		FXAAEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+		FXAAEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
 		~FXAAEffect();
 
-		Resource::TextureRenderView* process(Resource::TextureRenderView& inputTexture) const;
+		Resource::RenderTextureView* process(Resource::RenderTextureView& inputTexture) const;
 
 		void imGUICall() override;
 
@@ -29,7 +29,7 @@ namespace Gear::Core::Effect
 
 	private:
 
-		UniquePtr<Resource::TextureRenderView> colorLumaTexture;
+		UniquePtr<Resource::RenderTextureView> colorLumaTexture;
 
 		struct FXAAParam
 		{

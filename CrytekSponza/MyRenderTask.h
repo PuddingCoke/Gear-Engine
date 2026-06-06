@@ -2,19 +2,9 @@
 
 #include<Gear/Core/RenderTask.h>
 
-#include<Gear/Core/Effect/BloomEffect.h>
-
-#include<Gear/Core/Effect/FXAAEffect.h>
-
-#include<Gear/Core/Effect/SSREffect.h>
-
-#include<Gear/Core/Effect/HBAOPlusEffect.h>
-
 #include<Gear/DevEssential.h>
 
 #include"Scene.h"
-
-#include<iostream>
 
 using namespace Core;
 
@@ -23,23 +13,26 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		gPositionMetallic(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA32F, 1, 1, false, true,
-			FMT::RGBA32F, FMT::UNKNOWN, FMT::RGBA32F, DirectX::g_XMHalfPi)),
-		gNormalRoughness(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA32F, 1, 1, false, true,
-			FMT::RGBA32F, FMT::UNKNOWN, FMT::RGBA32F, DirectX::Colors::Transparent)),
-		gBaseColor(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true,
-			FMT::RGBA8UN, FMT::UNKNOWN, FMT::RGBA8UN, DirectX::Colors::Transparent)),
-		depthTexture(ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true)),
-		shadowTexture(ResourceManager::createTextureDepthView(shadowTextureResolution, shadowTextureResolution, FMT::R32TL, 1, 1, false, true)),
-		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black)),
-		ssrCombinedTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black)),
-		radianceCube(ResourceManager::createTextureRenderView(probeCaptureResolution, probeCaptureResolution, FMT::RGBA16F, 6, 1, true, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, radianceCubeClearColor)),
-		distanceCube(ResourceManager::createTextureRenderView(probeCaptureResolution, probeCaptureResolution, FMT::R32F, 6, 1, true, true,
-			FMT::R32F, FMT::UNKNOWN, FMT::R32F, distanceCubeClearColor)),
-		depthCube(ResourceManager::createTextureDepthView(probeCaptureResolution, probeCaptureResolution, FMT::D32F, 6, 1, true, true)),
+		gPositionMetallic(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
+			FMT::RGBA32F, 1, 1, false, true, DirectX::g_XMHalfPi)),
+		gNormalRoughness(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
+			FMT::RGBA32F, 1, 1, false, true, DirectX::Colors::Transparent)),
+		gBaseColor(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
+			FMT::RGBA8UN, 1, 1, false, true, DirectX::Colors::Transparent)),
+		depthTexture(ResourceManager::createDepthTextureView(Graphics::getWidth(), Graphics::getHeight(),
+			FMT::R32TL, 1, 1, false, true)),
+		shadowTexture(ResourceManager::createDepthTextureView(shadowTextureResolution, shadowTextureResolution,
+			FMT::R32TL, 1, 1, false, true)),
+		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
+			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black)),
+		ssrCombinedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
+			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black)),
+		radianceCube(ResourceManager::createGraphicsTexture(probeCaptureResolution, probeCaptureResolution,
+			FMT::RGBA16F, 6, 1, true, true, radianceCubeClearColor)),
+		distanceCube(ResourceManager::createGraphicsTexture(probeCaptureResolution, probeCaptureResolution,
+			FMT::R32F, 6, 1, true, true, distanceCubeClearColor)),
+		depthCube(ResourceManager::createDepthTextureView(probeCaptureResolution, probeCaptureResolution,
+			FMT::D32F, 6, 1, true, true)),
 		irradianceVolumeBuffer(ResourceManager::createStaticCBuffer(sizeof(IrradianceVolume), true)),
 		shadowVS(Shader::create(Utils::File::getRootFolder() + L"ShadowVS.cso")),
 		deferredVShader(Shader::create(Utils::File::getRootFolder() + L"DeferredVShader.cso")),
@@ -199,15 +192,15 @@ public:
 			}
 		}
 
-		hbaoPlusEffect = HBAOPlusEffect::create(context, Graphics::getWidth(), Graphics::getHeight());
+		hbaoPlusEffect = HBAOPlusEffect::create(*context, Graphics::getWidth(), Graphics::getHeight());
 
-		bloomEffect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
+		bloomEffect = BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
 
 		bloomEffect->setIntensity(0.5f);
 
-		fxaaEffect = FXAAEffect::create(context, Graphics::getWidth(), Graphics::getHeight());
+		fxaaEffect = FXAAEffect::create(*context, Graphics::getWidth(), Graphics::getHeight());
 
-		ssrEffect = SSREffect::create(context, Graphics::getWidth(), Graphics::getHeight());
+		ssrEffect = SSREffect::create(*context, Graphics::getWidth(), Graphics::getHeight());
 
 		scene = makeUnique<Scene>(assetPath + "Sponza.gltf", *resManager);
 
@@ -221,18 +214,17 @@ public:
 
 		bloomEffect->setIntensity(0.17f);
 
-		irradianceOctahedralMap = ResourceManager::createTextureRenderView(6, 6, FMT::RG11B10F, probeCount, 1, false, true,
-			FMT::RG11B10F, FMT::RG11B10F, FMT::UNKNOWN);
+		irradianceOctahedralMap = ResourceManager::createComputeTexture(6, 6, FMT::RG11B10F, probeCount, 1, false, true);
 
 		const bool irradianceDataExist = Utils::File::exist(L"Irradiance_Bounce_Octahedral_Map.dds");
 
-		irradianceBounceOctahedralMap = irradianceDataExist ? resManager->createTextureRenderView(L"Irradiance_Bounce_Octahedral_Map.dds", true, true, false) : ResourceManager::createTextureRenderView(6, 6, FMT::RG11B10F, probeCount, 1, false, true,
-			FMT::RG11B10F, FMT::RG11B10F, FMT::UNKNOWN);
+		irradianceBounceOctahedralMap = irradianceDataExist ? resManager->createRenderTextureView(L"Irradiance_Bounce_Octahedral_Map.dds", true, true, false) :
+			ResourceManager::createComputeTexture(6, 6, FMT::RG11B10F, probeCount, 1, false, true);
 
 		const bool depthDataExist = Utils::File::exist(L"Depth_Octahedral_Map.dds");
 
-		depthOctahedralMap = depthDataExist ? resManager->createTextureRenderView(L"Depth_Octahedral_Map.dds", true, true, false) : ResourceManager::createTextureRenderView(16, 16, FMT::RG16F, probeCount, 1, false, true,
-			FMT::RG16F, FMT::RG16F, FMT::UNKNOWN);
+		depthOctahedralMap = depthDataExist ? resManager->createRenderTextureView(L"Depth_Octahedral_Map.dds", true, true, false) :
+			ResourceManager::createComputeTexture(16, 16, FMT::RG16F, probeCount, 1, false, true);
 
 		irradianceOctahedralMap->getTexture()->setName(L"Irradiance Octahedral Map");
 
@@ -488,7 +480,7 @@ protected:
 
 		scene->render(context);
 
-		TextureRenderView* const aoTexture = hbaoPlusEffect->process(*depthTexture, *gNormalRoughness);
+		RenderTextureView* const aoTexture = hbaoPlusEffect->process(*depthTexture, *gNormalRoughness);
 
 		context->setPipelineState(*deferredFinalPipelineState);
 
@@ -534,7 +526,7 @@ protected:
 
 		context->draw(36, 1, 0, 0);
 
-		TextureRenderView* const ssrUVVisibilityTexture = ssrEffect->process(*depthTexture, *gPositionMetallic, *gNormalRoughness);
+		RenderTextureView* const ssrUVVisibilityTexture = ssrEffect->process(*depthTexture, *gPositionMetallic, *gNormalRoughness);
 
 		context->setPipelineState(*ssrCombineState);
 
@@ -554,13 +546,13 @@ protected:
 
 		context->draw(3, 1, 0, 0);
 
-		TextureRenderView* const bloomTexture = bloomEffect->process(*ssrCombinedTexture);
+		RenderTextureView* const bloomTexture = bloomEffect->process(*ssrCombinedTexture);
 
-		TextureRenderView* const toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
+		RenderTextureView* const toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
 
-		TextureRenderView* const fxaaTexture = fxaaEffect->process(*toneMappedTexture);
+		RenderTextureView* const fxaaTexture = fxaaEffect->process(*toneMappedTexture);
 
-		TextureRenderView* const gammaCorrectedTexture = GammaCorrectEffect::process(context, *fxaaTexture);
+		RenderTextureView* const gammaCorrectedTexture = GammaCorrectEffect::process(context, *fxaaTexture);
 
 		blit(*gammaCorrectedTexture);
 	}
@@ -622,33 +614,33 @@ protected:
 
 	float sunAngle;
 
-	UniquePtr<TextureRenderView> gPositionMetallic;
+	UniquePtr<RenderTextureView> gPositionMetallic;
 
-	UniquePtr<TextureRenderView> gNormalRoughness;
+	UniquePtr<RenderTextureView> gNormalRoughness;
 
-	UniquePtr<TextureRenderView> gBaseColor;
+	UniquePtr<RenderTextureView> gBaseColor;
 
-	UniquePtr<TextureDepthView> depthTexture;
+	UniquePtr<DepthTextureView> depthTexture;
 
-	UniquePtr<TextureDepthView> shadowTexture;
+	UniquePtr<DepthTextureView> shadowTexture;
 
-	UniquePtr<TextureRenderView> originTexture;
+	UniquePtr<RenderTextureView> originTexture;
 
-	UniquePtr<TextureRenderView> ssrCombinedTexture;
+	UniquePtr<RenderTextureView> ssrCombinedTexture;
 
-	UniquePtr<TextureRenderView> radianceCube;
+	UniquePtr<RenderTextureView> radianceCube;
 
-	UniquePtr<TextureRenderView> distanceCube;
+	UniquePtr<RenderTextureView> distanceCube;
 
-	UniquePtr<TextureDepthView> depthCube;
+	UniquePtr<DepthTextureView> depthCube;
 
-	UniquePtr<TextureRenderView> irradianceOctahedralMap;
+	UniquePtr<RenderTextureView> irradianceOctahedralMap;
 
-	UniquePtr<TextureRenderView> irradianceBounceOctahedralMap;
+	UniquePtr<RenderTextureView> irradianceBounceOctahedralMap;
 
-	UniquePtr<TextureRenderView> depthOctahedralMap;
+	UniquePtr<RenderTextureView> depthOctahedralMap;
 
-	UniquePtr<TextureRenderView> skybox;
+	UniquePtr<RenderTextureView> skybox;
 
 	UniquePtr<PipelineState> shadowPipelineState;
 

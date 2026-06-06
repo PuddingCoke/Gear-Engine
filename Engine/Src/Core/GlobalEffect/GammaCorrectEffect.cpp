@@ -16,7 +16,7 @@ namespace Gear::Core::GlobalEffect::GammaCorrectEffect
 
 			UniquePtr<D3D12Core::PipelineState> gammaCorrectState;
 
-			UniquePtr<Resource::TextureRenderView> outputTexture;
+			UniquePtr<Resource::RenderTextureView> outputTexture;
 		} impl;
 
 		constexpr DXGI_FORMAT outputTextureFormat = FMT::RGBA16UN;
@@ -27,8 +27,7 @@ namespace Gear::Core::GlobalEffect::GammaCorrectEffect
 
 			impl.gammaCorrectState = PipelineStateBuilder::build(*impl.gammaCorrectCS);
 
-			impl.outputTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true,
-				outputTextureFormat, outputTextureFormat, FMT::UNKNOWN);
+			impl.outputTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true);
 
 			impl.outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
 
@@ -45,7 +44,7 @@ namespace Gear::Core::GlobalEffect::GammaCorrectEffect
 		}
 	}
 
-	Resource::TextureRenderView* process(GraphicsContext* const context, Resource::TextureRenderView& inputTexture)
+	Resource::RenderTextureView* process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture)
 	{
 		context->setPipelineState(*Internal::impl.gammaCorrectState);
 

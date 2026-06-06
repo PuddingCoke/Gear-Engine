@@ -8,14 +8,14 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<SSREffect> SSREffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height)
+	UniquePtr<SSREffect> SSREffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
-		return makeUnique<SSREffect>(context, width, height);
+		return makeUnique<SSREffect>(contextRef, width, height);
 	}
 
-	SSREffect::SSREffect(GraphicsContext* const context, const uint32_t width, const uint32_t height) :
-		EffectBase(context, width, height, outputTextureFormat),
-		hiZTexture(ResourceManager::createTextureRenderView(width, height, hiZTextureFormat, 1, hiZMiplvel, false, true, hiZTextureFormat, hiZTextureFormat, FMT::UNKNOWN))
+	SSREffect::SSREffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height) :
+		EffectBase(contextRef, width, height, outputTextureFormat),
+		hiZTexture(ResourceManager::createComputeTexture(width, height, hiZTextureFormat, 1, hiZMiplvel, false, true))
 	{
 		hiZCopyCS = D3D12Core::Shader::create(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes));
 
@@ -51,7 +51,7 @@ namespace Gear::Core::Effect
 
 	}
 
-	Resource::TextureRenderView* SSREffect::process(Resource::TextureDepthView& depthTexture, Resource::TextureRenderView& gPosition, Resource::TextureRenderView& gNormal)
+	Resource::RenderTextureView* SSREffect::process(Resource::DepthTextureView& depthTexture, Resource::RenderTextureView& gPosition, Resource::RenderTextureView& gNormal)
 	{
 		context->setPipelineState(*hiZCopyState);
 

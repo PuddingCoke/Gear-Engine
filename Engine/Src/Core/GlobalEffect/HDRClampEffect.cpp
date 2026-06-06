@@ -34,7 +34,7 @@ namespace Gear::Core::GlobalEffect::HDRClampEffect
 		}
 	}
 
-	void process(GraphicsContext* const context, Resource::TextureRenderView& inOutTexture)
+	void process(GraphicsContext* const context, Resource::RenderTextureView& inOutTexture)
 	{
 		if (inOutTexture.getTexture()->getFormat() == FMT::RGBA16F)
 		{

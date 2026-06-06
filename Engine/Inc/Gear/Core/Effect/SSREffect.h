@@ -12,22 +12,22 @@ namespace Gear::Core::Effect
 	{
 	public:
 
-		static UniquePtr<SSREffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+		static UniquePtr<SSREffect> create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
-		SSREffect(GraphicsContext* const context, const uint32_t width, const uint32_t height);
+		SSREffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
 		~SSREffect();
 
-		Resource::TextureRenderView* process(
-			Resource::TextureDepthView& depthTexture,
-			Resource::TextureRenderView& gPosition,
-			Resource::TextureRenderView& gNormal);
+		Resource::RenderTextureView* process(
+			Resource::DepthTextureView& depthTexture,
+			Resource::RenderTextureView& gPosition,
+			Resource::RenderTextureView& gNormal);
 
 		void imGUICall() override;
 
 	private:
 
-		UniquePtr<Resource::TextureRenderView> hiZTexture;
+		UniquePtr<Resource::RenderTextureView> hiZTexture;
 
 		UniquePtr<D3D12Core::Shader> hiZCopyCS;
 

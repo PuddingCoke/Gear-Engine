@@ -13,8 +13,7 @@ public:
 		whiteNoiseCS(Shader::create(Utils::File::getRootFolder() + L"WhiteNoiseCS.cso")),
 		evolveCS(Shader::create(Utils::File::getRootFolder() + L"EvolveCS.cso")),
 		visualizeCS(Shader::create(Utils::File::getRootFolder() + L"VisualizeCS.cso")),
-		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true,
-			FMT::RGBA8UN, FMT::RGBA8UN, FMT::UNKNOWN))
+		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true))
 	{
 		whiteNoiseState = PipelineStateBuilder::build(*whiteNoiseCS);
 
@@ -22,8 +21,7 @@ public:
 
 		visualizeState = PipelineStateBuilder::build(*visualizeCS);
 
-		swapTexture = ResourceManager::createSwapTexture([] {return ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true,
-			FMT::R32F, FMT::R32F, FMT::UNKNOWN); });
+		swapTexture = ResourceManager::createSwapTexture([] {return ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true); });
 
 		initialize();
 	}
@@ -164,7 +162,7 @@ private:
 
 	UniquePtr<SwapTexture> swapTexture;
 
-	UniquePtr<TextureRenderView> originTexture;
+	UniquePtr<RenderTextureView> originTexture;
 
 	Utils::Timer timer;
 

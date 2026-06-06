@@ -38,7 +38,7 @@ public:
 	{
 	}
 
-	void ifftPermutation(TextureRenderView& inputTexture)
+	void ifftPermutation(RenderTextureView& inputTexture)
 	{
 		context->setPipelineState(*ifftState);
 
@@ -176,28 +176,28 @@ public:
 
 	static PipelineState* waveMergeState;
 
-	static TextureRenderView* tempTexture;
+	static RenderTextureView* tempTexture;
 
-	static TextureRenderView* randomGaussTexture;
+	static RenderTextureView* randomGaussTexture;
 
 	//(tildeh0(k))
 	//x y
-	static TextureRenderView* tildeh0Texture;
+	static RenderTextureView* tildeh0Texture;
 
 	//Dx Dy Dz
-	UniquePtr<TextureRenderView> displacementTexture;
+	UniquePtr<RenderTextureView> displacementTexture;
 
 	//dDy/dx dDy/dz dDx/dx dDz/dz
-	UniquePtr<TextureRenderView> derivativeTexture;
+	UniquePtr<RenderTextureView> derivativeTexture;
 
 	//J
-	UniquePtr<TextureRenderView> jacobianTexture;
+	UniquePtr<RenderTextureView> jacobianTexture;
 
 private:
 
-	static UniquePtr<TextureRenderView> createTexture(const UINT& resolution, const DXGI_FORMAT& format)
+	static UniquePtr<RenderTextureView> createTexture(const UINT& resolution, const DXGI_FORMAT& format)
 	{
-		return ResourceManager::createTextureRenderView(resolution, resolution, format, 1, 1, false, true, format, format, FMT::UNKNOWN);
+		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false, true);
 	}
 
 	const UINT size;
@@ -206,23 +206,23 @@ private:
 
 	//k.x 1.0/length(K) k.z angularSpeed
 	//x y z w
-	UniquePtr<TextureRenderView> waveDataTexture;
+	UniquePtr<RenderTextureView> waveDataTexture;
 
 	//(tildeh0(k), conj(tildeh0(-k)))
 	//x y z w
-	UniquePtr<TextureRenderView> waveSpectrumTexture;
+	UniquePtr<RenderTextureView> waveSpectrumTexture;
 
 	//Dx Dz
-	UniquePtr<TextureRenderView> DxDz;
+	UniquePtr<RenderTextureView> DxDz;
 
 	//Dy dDx/dz
-	UniquePtr<TextureRenderView> DyDxz;
+	UniquePtr<RenderTextureView> DyDxz;
 
 	//dDy/dx dDy/dz
-	UniquePtr<TextureRenderView> DyxDyz;
+	UniquePtr<RenderTextureView> DyxDyz;
 
 	//dDx/dx dDz/dz
-	UniquePtr<TextureRenderView> DxxDzz;
+	UniquePtr<RenderTextureView> DxxDzz;
 
 };
 
@@ -238,8 +238,8 @@ PipelineState* WaveCascade::permutationState = nullptr;
 
 PipelineState* WaveCascade::waveMergeState = nullptr;
 
-TextureRenderView* WaveCascade::tempTexture = nullptr;
+RenderTextureView* WaveCascade::tempTexture = nullptr;
 
-TextureRenderView* WaveCascade::randomGaussTexture = nullptr;
+RenderTextureView* WaveCascade::randomGaussTexture = nullptr;
 
-TextureRenderView* WaveCascade::tildeh0Texture = nullptr;
+RenderTextureView* WaveCascade::tildeh0Texture = nullptr;

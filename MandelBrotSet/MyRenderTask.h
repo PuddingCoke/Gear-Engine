@@ -2,8 +2,6 @@
 
 #include<Gear/Core/RenderTask.h>
 
-#include<Gear/Core/Effect/BloomEffect.h>
-
 #include<Gear/DevEssential.h>
 
 class MyRenderTask :public RenderTask
@@ -11,10 +9,9 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		effect(BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), *resManager)),
+		effect(BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager)),
 		computeCS(Shader::create(Utils::File::getRootFolder() + L"ComputeCS.cso")),
-		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true,
-			FMT::RGBA16UN, FMT::RGBA16UN, FMT::UNKNOWN))
+		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true))
 	{
 		computeState = PipelineStateBuilder::build(*computeCS);
 
@@ -108,7 +105,7 @@ private:
 
 	UniquePtr<PipelineState> computeState;
 
-	UniquePtr<TextureRenderView> originTexture;
+	UniquePtr<RenderTextureView> originTexture;
 
 	struct SimulationParam
 	{

@@ -1,8 +1,8 @@
-﻿#include<Gear/Core/Resource/TextureRenderView.h>
+﻿#include<Gear/Core/Resource/RenderTextureView.h>
 
 namespace Gear::Core::Resource
 {
-	TextureRenderView::TextureRenderView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat) :
+	RenderTextureView::RenderTextureView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat) :
 		ResourceBase(persistent), texture(std::move(texturePtr)), hasRTV((rtvFormat != FMT::UNKNOWN)), hasUAV((uavFormat != FMT::UNKNOWN))
 	{
 		//创建SRV、UAV
@@ -251,7 +251,7 @@ namespace Gear::Core::Resource
 		}
 	}
 
-	TextureRenderView::TextureRenderView(const TextureRenderView& trv) :
+	RenderTextureView::RenderTextureView(const RenderTextureView& trv) :
 		ResourceBase(trv.persistent),
 		hasRTV(trv.hasRTV),
 		hasUAV(trv.hasUAV),
@@ -265,11 +265,11 @@ namespace Gear::Core::Resource
 	{
 	}
 
-	TextureRenderView::~TextureRenderView()
+	RenderTextureView::~RenderTextureView()
 	{
 	}
 
-	D3D12Resource::ShaderResourceDesc TextureRenderView::getAllSRVIndex() const
+	D3D12Resource::ShaderResourceDesc RenderTextureView::getAllSRVIndex() const
 	{
 		D3D12Resource::ShaderResourceDesc desc = {};
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
@@ -281,7 +281,7 @@ namespace Gear::Core::Resource
 		return desc;
 	}
 
-	D3D12Resource::ShaderResourceDesc TextureRenderView::getSRVMipIndex(const uint32_t mipSlice) const
+	D3D12Resource::ShaderResourceDesc RenderTextureView::getSRVMipIndex(const uint32_t mipSlice) const
 	{
 		D3D12Resource::ShaderResourceDesc desc = {};
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
@@ -293,12 +293,12 @@ namespace Gear::Core::Resource
 		return desc;
 	}
 
-	D3D12_GPU_DESCRIPTOR_HANDLE TextureRenderView::getSRVMipGPUHandle(const uint32_t mipSlice) const
+	D3D12_GPU_DESCRIPTOR_HANDLE RenderTextureView::getSRVMipGPUHandle(const uint32_t mipSlice) const
 	{
 		return srvMipGPUHandles[mipSlice];
 	}
 
-	D3D12Resource::ShaderResourceDesc TextureRenderView::getUAVMipIndex(const uint32_t mipSlice) const
+	D3D12Resource::ShaderResourceDesc RenderTextureView::getUAVMipIndex(const uint32_t mipSlice) const
 	{
 		D3D12Resource::ShaderResourceDesc desc = {};
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
@@ -310,7 +310,7 @@ namespace Gear::Core::Resource
 		return desc;
 	}
 
-	D3D12Resource::RenderTargetDesc TextureRenderView::getRTVMipHandle(const uint32_t mipSlice) const
+	D3D12Resource::RenderTargetDesc RenderTextureView::getRTVMipHandle(const uint32_t mipSlice) const
 	{
 		D3D12Resource::RenderTargetDesc desc = {};
 		desc.texture = texture.get();
@@ -320,7 +320,7 @@ namespace Gear::Core::Resource
 		return desc;
 	}
 
-	D3D12Resource::ClearUAVDesc TextureRenderView::getClearUAVDesc(const uint32_t mipSlice) const
+	D3D12Resource::ClearUAVDesc RenderTextureView::getClearUAVDesc(const uint32_t mipSlice) const
 	{
 		D3D12Resource::ClearUAVDesc desc = {};
 		desc.type = D3D12Resource::ClearUAVDesc::TEXTURE;
@@ -332,12 +332,12 @@ namespace Gear::Core::Resource
 		return desc;
 	}
 
-	D3D12Resource::Texture* TextureRenderView::getTexture() const
+	D3D12Resource::Texture* RenderTextureView::getTexture() const
 	{
 		return texture.get();
 	}
 
-	void TextureRenderView::copyDescriptors()
+	void RenderTextureView::copyDescriptors()
 	{
 		D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
 

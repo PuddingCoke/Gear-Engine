@@ -55,7 +55,7 @@ public:
 	{
 	}
 
-	void draw(GraphicsContext* const context, TextureRenderView& prefilterTexture, TextureRenderView& brdfLUTTexture, TextureRenderView& irradianceTexture)
+	void draw(GraphicsContext* const context, RenderTextureView& prefilterTexture, RenderTextureView& brdfLUTTexture, RenderTextureView& irradianceTexture)
 	{
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 

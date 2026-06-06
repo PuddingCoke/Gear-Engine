@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_RESOURCE_TEXTURERENDERVIEW_H_
-#define _GEAR_CORE_RESOURCE_TEXTURERENDERVIEW_H_
+#ifndef _GEAR_CORE_RESOURCE_RENDERTEXTUREVIEW_H_
+#define _GEAR_CORE_RESOURCE_RENDERTEXTUREVIEW_H_
 
 #include"D3D12Resource/Texture.h"
 
@@ -15,17 +15,17 @@ namespace Gear::Core::Resource
 	//texture2darray
 	//texture2d
 	//SRV/RTV/UAV
-	class TextureRenderView :public ResourceBase
+	class RenderTextureView :public ResourceBase
 	{
 	public:
 
-		TextureRenderView() = delete;
+		RenderTextureView() = delete;
 
-		TextureRenderView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
+		RenderTextureView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
 
-		TextureRenderView(const TextureRenderView&);
+		RenderTextureView(const RenderTextureView&);
 
-		~TextureRenderView();
+		~RenderTextureView();
 
 		D3D12Resource::ShaderResourceDesc getAllSRVIndex() const;
 
@@ -67,4 +67,4 @@ namespace Gear::Core::Resource
 	};
 }
 
-#endif // !_GEAR_CORE_RESOURCE_TEXTURERENDERVIEW_H_
+#endif // !_GEAR_CORE_RESOURCE_RENDERTEXTUREVIEW_H_

@@ -17,12 +17,12 @@ public:
 		prefilterPS(Shader::create(Utils::File::getRootFolder() + L"PrefilterPS.cso")),
 		irradiancePS(Shader::create(Utils::File::getRootFolder() + L"IrradiancePS.cso"))
 	{
-		renderTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black);
+		renderTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), 
+			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
 
-		depthTexture = ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
+		depthTexture = ResourceManager::createDepthTextureView(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
 
-		brdfLUTTexture = resManager->createTextureRenderView(L"BRDFLUT.dds", true);
+		brdfLUTTexture = resManager->createRenderTextureView(L"BRDFLUT.dds", true);
 
 		brdfLUTTexture->getTexture()->setName(L"BRDFLUT");
 
@@ -39,8 +39,7 @@ public:
 			.setPS(*skyboxPS)
 			.build();
 
-		prefilterCube = ResourceManager::createTextureRenderView(1024, 1024, FMT::RGBA16F, 6, 6, true, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F);
+		prefilterCube = ResourceManager::createGraphicsTexture(1024, 1024, FMT::RGBA16F, 6, 6, true, true);
 
 		prefilterCube->getTexture()->setName(L"Prefilter Cube");
 
@@ -95,8 +94,7 @@ public:
 			.setRTVFormats({ FMT::RGBA16F })
 			.build();
 
-		irradianceCube = ResourceManager::createTextureRenderView(128, 128, FMT::RGBA16F, 6, 1, true, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F);
+		irradianceCube = ResourceManager::createGraphicsTexture(128, 128, FMT::RGBA16F, 6, 1, true, true);
 
 		irradianceCube->getTexture()->setName(L"Irradiance Cube");
 
@@ -221,17 +219,17 @@ private:
 
 	Scene scene;
 
-	UniquePtr<TextureRenderView> renderTexture;
+	UniquePtr<RenderTextureView> renderTexture;
 
-	UniquePtr<TextureDepthView> depthTexture;
+	UniquePtr<DepthTextureView> depthTexture;
 
-	UniquePtr<TextureRenderView> envCube;
+	UniquePtr<RenderTextureView> envCube;
 
-	UniquePtr<TextureRenderView> irradianceCube;
+	UniquePtr<RenderTextureView> irradianceCube;
 
-	UniquePtr<TextureRenderView> prefilterCube;
+	UniquePtr<RenderTextureView> prefilterCube;
 
-	UniquePtr<TextureRenderView> brdfLUTTexture;
+	UniquePtr<RenderTextureView> brdfLUTTexture;
 
 	UniquePtr<Shader> skyboxPS;
 

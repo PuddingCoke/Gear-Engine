@@ -2,10 +2,6 @@
 
 #include<Gear/Core/RenderTask.h>
 
-#include<Gear/Core/Effect/BloomEffect.h>
-
-#include<Gear/Core/Effect/FXAAEffect.h>
-
 #include<Gear/DevEssential.h>
 
 class MyRenderTask :public RenderTask
@@ -40,14 +36,13 @@ public:
 			.setPS(*particlePS)
 			.build();
 
-		bloomEffect = BloomEffect::create(context, Core::Graphics::getWidth(), Core::Graphics::getHeight(), *resManager);
+		bloomEffect = BloomEffect::create(*context, Core::Graphics::getWidth(), Core::Graphics::getHeight(), *resManager);
 
-		fxaaEffect = FXAAEffect::create(context, Core::Graphics::getWidth(), Core::Graphics::getHeight());
+		fxaaEffect = FXAAEffect::create(*context, Core::Graphics::getWidth(), Core::Graphics::getHeight());
 
-		originTexture = ResourceManager::createTextureRenderView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black);
+		originTexture = ResourceManager::createGraphicsTexture(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
 
-		depthTexture = ResourceManager::createTextureDepthView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
+		depthTexture = ResourceManager::createDepthTextureView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
 
 		{
 			DirectX::XMFLOAT4* const positions = new DirectX::XMFLOAT4[numParticles];
@@ -183,9 +178,9 @@ private:
 
 	UniquePtr<Shader> particleCS;
 
-	UniquePtr<TextureRenderView> originTexture;
+	UniquePtr<RenderTextureView> originTexture;
 
-	UniquePtr<TextureDepthView> depthTexture;
+	UniquePtr<DepthTextureView> depthTexture;
 
 	UniquePtr<BufferView> positionBuffer;
 

@@ -15,11 +15,11 @@ public:
 
 		const std::wstring wNormalPath = std::wstring(normalPath.begin(), normalPath.end());
 
-		diffuse = resManager.createTextureRenderView(wDiffusePath, true);
+		diffuse = resManager.createRenderTextureView(wDiffusePath, true);
 
-		roughnessMetallic = resManager.createTextureRenderView(wRoughnessMetallicPath, true);
+		roughnessMetallic = resManager.createRenderTextureView(wRoughnessMetallicPath, true);
 
-		normal = resManager.createTextureRenderView(wNormalPath, true);
+		normal = resManager.createRenderTextureView(wNormalPath, true);
 	}
 
 	~Material()
@@ -36,10 +36,10 @@ public:
 
 private:
 
-	UniquePtr<TextureRenderView> diffuse;
+	UniquePtr<RenderTextureView> diffuse;
 
-	UniquePtr<TextureRenderView> roughnessMetallic;
+	UniquePtr<RenderTextureView> roughnessMetallic;
 
-	UniquePtr<TextureRenderView> normal;
+	UniquePtr<RenderTextureView> normal;
 
 };

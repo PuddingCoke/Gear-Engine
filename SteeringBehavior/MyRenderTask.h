@@ -9,9 +9,9 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		renderTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(),
-			FMT::RGBA8UN, 1, 1, false, true, FMT::RGBA8UN, FMT::UNKNOWN, FMT::RGBA8UN, DirectX::Colors::White)),
-		arrowTexture(resManager->createTextureRenderView(L"arrow.png", true)),
+		renderTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), 
+			FMT::RGBA8UN, 1, 1, false, true, DirectX::Colors::White)),
+		arrowTexture(resManager->createRenderTextureView(L"arrow.png", true)),
 		stepCS(Shader::create(Utils::File::getRootFolder() + L"StepCS.cso")),
 		vehicleVS(Shader::create(Utils::File::getRootFolder() + L"VehicleVS.cso")),
 		vehicleGS(Shader::create(Utils::File::getRootFolder() + L"VehicleGS.cso")),
@@ -125,9 +125,9 @@ private:
 
 	UniquePtr<BufferView> maxSpeedMaxForce;
 
-	UniquePtr<TextureRenderView> renderTexture;
+	UniquePtr<RenderTextureView> renderTexture;
 
-	UniquePtr<TextureRenderView> arrowTexture;
+	UniquePtr<RenderTextureView> arrowTexture;
 
 	struct SimulationParam
 	{

@@ -2,8 +2,6 @@
 
 #include<Gear/Core/RenderTask.h>
 
-#include<Gear/Core/Effect/BloomEffect.h>
-
 #include<Gear/DevEssential.h>
 
 #include"WaveCascade.h"
@@ -105,12 +103,11 @@ public:
 
 		WaveCascade::tempTexture = tempTexture.get();
 
-		originTexture = ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F, DirectX::Colors::Black);
+		originTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
 
-		depthTexture = ResourceManager::createTextureDepthView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true);
+		depthTexture = ResourceManager::createDepthTextureView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true);
 
-		effect = BloomEffect::create(context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
+		effect = BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
 
 		vertexBuffer = resManager->createStructuredBufferView(sizeof(DirectX::XMFLOAT3), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * vertices.size()), false, false, true, true, true, vertices.data());
 
@@ -144,7 +141,7 @@ public:
 			indexBuffer = resManager->createTypedBufferView(FMT::R32UI, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
 		}
 
-		randomGaussTexture = resManager->createTextureRenderView(textureResolution, textureResolution, RandomDataType::GAUSS, true);
+		randomGaussTexture = resManager->createRenderTextureView(textureResolution, textureResolution, RandomDataType::GAUSS, true);
 
 		WaveCascade::randomGaussTexture = randomGaussTexture.get();
 
@@ -223,9 +220,9 @@ private:
 
 	static constexpr UINT gridSize = 128;
 
-	static UniquePtr<TextureRenderView> createTexture(const UINT& resolution, const DXGI_FORMAT& format)
+	static UniquePtr<RenderTextureView> createTexture(const UINT& resolution, const DXGI_FORMAT& format)
 	{
-		return ResourceManager::createTextureRenderView(resolution, resolution, format, 1, 1, false, true, format, format, FMT::UNKNOWN);
+		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false, true);
 	}
 
 	void calculateInitialSpectrum()
@@ -689,22 +686,22 @@ private:
 
 	UniquePtr<PipelineState> waveMergeState;
 
-	UniquePtr<TextureRenderView> enviromentCube;
+	UniquePtr<RenderTextureView> enviromentCube;
 
 	//4 channel random gaussian distribution texture
 	//mean 0 standard deviation 1
-	UniquePtr<TextureRenderView> randomGaussTexture;
+	UniquePtr<RenderTextureView> randomGaussTexture;
 
 	//(tildeh0(k))
 	//x y
-	UniquePtr<TextureRenderView> tildeh0Texture;
+	UniquePtr<RenderTextureView> tildeh0Texture;
 
 	//intermediate texture for ifft compute
-	UniquePtr<TextureRenderView> tempTexture;
+	UniquePtr<RenderTextureView> tempTexture;
 
-	UniquePtr<TextureRenderView> originTexture;
+	UniquePtr<RenderTextureView> originTexture;
 
-	UniquePtr<TextureDepthView> depthTexture;
+	UniquePtr<DepthTextureView> depthTexture;
 
 	UniquePtr<BloomEffect> effect;
 

@@ -11,8 +11,7 @@ public:
 	MyRenderTask() :
 		accumulateShader(Shader::create(Utils::File::getRootFolder() + L"AccumulateShader.cso")),
 		displayShader(Shader::create(Utils::File::getRootFolder() + L"DisplayShader.cso")),
-		accumulatedTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, false,
-			FMT::RGBA16UN, FMT::UNKNOWN, FMT::RGBA16UN)),
+		accumulatedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, false)),
 		cameraParam{ Utils::Math::pi / 4.f + 0.4f,0.f,3.0f,8.f },
 		accumulateParam{ 0,0.f }
 	{
@@ -106,7 +105,7 @@ private:
 
 	UniquePtr<Shader> displayShader;
 
-	UniquePtr<TextureRenderView> accumulatedTexture;
+	UniquePtr<RenderTextureView> accumulatedTexture;
 
 	UniquePtr<PipelineState> accumulateState;
 

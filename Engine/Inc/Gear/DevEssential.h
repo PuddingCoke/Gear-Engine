@@ -17,6 +17,14 @@
 
 #include<Gear/Core/Effect/EffectBase.h>
 
+#include<Gear/Core/Effect/BloomEffect.h>
+
+#include<Gear/Core/Effect/FXAAEffect.h>
+
+#include<Gear/Core/Effect/SSREffect.h>
+
+#include<Gear/Core/Effect/HBAOPlusEffect.h>
+
 #include<Gear/Core/GlobalEffect/ToneMapEffect.h>
 
 #include<Gear/Core/GlobalEffect/GammaCorrectEffect.h>

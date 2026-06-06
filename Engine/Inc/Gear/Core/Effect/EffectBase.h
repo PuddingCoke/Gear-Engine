@@ -27,9 +27,9 @@ namespace Gear::Core::Effect
 
 		void operator=(const EffectBase&) = delete;
 
-		EffectBase(GraphicsContext* const context, const uint32_t width, const uint32_t height, const DXGI_FORMAT format);
+		EffectBase(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, const DXGI_FORMAT format);
 
-		EffectBase(GraphicsContext* const context, const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube,
+		EffectBase(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube,
 			const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
 
 		virtual ~EffectBase();
@@ -38,7 +38,7 @@ namespace Gear::Core::Effect
 
 	protected:
 
-		UniquePtr<Resource::TextureRenderView> outputTexture;
+		UniquePtr<Resource::RenderTextureView> outputTexture;
 
 		//引用
 		GraphicsContext* const context;

@@ -52,7 +52,7 @@ namespace Gear::Core
 
 	}
 
-	void RenderTask::blit(Resource::TextureRenderView& texture) const
+	void RenderTask::blit(Resource::RenderTextureView& texture) const
 	{
 		GlobalEffect::BackBufferBlitEffect::process(context, texture);
 	}

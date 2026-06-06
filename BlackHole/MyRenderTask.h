@@ -2,8 +2,6 @@
 
 #include<Gear/Core/RenderTask.h>
 
-#include<Gear/Core/Effect/BloomEffect.h>
-
 #include<Gear/DevEssential.h>
 
 class MyRenderTask :public RenderTask
@@ -12,11 +10,10 @@ public:
 
 	MyRenderTask() :
 		blackHoleShader(Shader::create(Utils::File::getRootFolder() + L"BlackHolePS.cso")),
-		noiseTexture(resManager->createTextureRenderView(L"Noise.png", true)),
-		diskTexture(resManager->createTextureRenderView(L"Disk.jpg", true)),
-		originTexture(ResourceManager::createTextureRenderView(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true,
-			FMT::RGBA16F, FMT::UNKNOWN, FMT::RGBA16F)),
-		effect(new BloomEffect(context, Graphics::getWidth(), Graphics::getHeight(), *resManager))
+		noiseTexture(resManager->createRenderTextureView(L"Noise.png", true)),
+		diskTexture(resManager->createRenderTextureView(L"Disk.jpg", true)),
+		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true)),
+		effect(BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager))
 	{
 		pipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
@@ -97,11 +94,11 @@ private:
 
 	UniquePtr<Shader> blackHoleShader;
 
-	UniquePtr<TextureRenderView> noiseTexture;
+	UniquePtr<RenderTextureView> noiseTexture;
 
-	UniquePtr<TextureRenderView> diskTexture;
+	UniquePtr<RenderTextureView> diskTexture;
 
-	UniquePtr<TextureRenderView> originTexture;
+	UniquePtr<RenderTextureView> originTexture;
 
 	UniquePtr<BloomEffect> effect;
 

@@ -458,7 +458,7 @@ namespace Gear::Core
 		return makeUnique<Resource::BufferView>(std::move(buffer), 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
 	}
 
-	UniquePtr<Resource::TextureDepthView> ResourceManager::createTextureDepthView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)
+	UniquePtr<Resource::DepthTextureView> ResourceManager::createDepthTextureView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)
 	{
 		DXGI_FORMAT clearValueFormat = FMT::UNKNOWN;
 
@@ -492,10 +492,10 @@ namespace Gear::Core
 
 		UniquePtr<Resource::D3D12Resource::Texture> texture = makeUnique<Resource::D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &clearValue);
 
-		return makeUnique<Resource::TextureDepthView>(std::move(texture), isTextureCube, persistent);
+		return makeUnique<Resource::DepthTextureView>(std::move(texture), isTextureCube, persistent);
 	}
 
-	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureRenderView(const std::wstring& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
+	UniquePtr<Resource::RenderTextureView> ResourceManager::createRenderTextureView(const std::wstring& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
 	{
 		bool stateTracking = true;
 
@@ -533,17 +533,17 @@ namespace Gear::Core
 
 		if (stateTracking)
 		{
-			return makeUnique<Resource::TextureRenderView>(std::move(texture), isTextureCube, persistent, texture->getFormat(),
+			return makeUnique<Resource::RenderTextureView>(std::move(texture), isTextureCube, persistent, texture->getFormat(),
 				hasUAV ? texture->getFormat() : FMT::UNKNOWN, hasRTV ? texture->getFormat() : FMT::UNKNOWN);
 		}
 		else
 		{
-			return makeUnique<Resource::TextureRenderView>(std::move(texture), isTextureCube, persistent, texture->getFormat(),
+			return makeUnique<Resource::RenderTextureView>(std::move(texture), isTextureCube, persistent, texture->getFormat(),
 				FMT::UNKNOWN, FMT::UNKNOWN);
 		}
 	}
 
-	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
+	UniquePtr<Resource::RenderTextureView> ResourceManager::createRenderTextureView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 	{
 		const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
 
@@ -583,27 +583,37 @@ namespace Gear::Core
 
 		if (srvFormat == FMT::UNKNOWN)
 		{
-			return makeUnique<Resource::TextureRenderView>(std::move(texture), false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+			return makeUnique<Resource::RenderTextureView>(std::move(texture), false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 		}
 		else
 		{
-			return makeUnique<Resource::TextureRenderView>(std::move(texture), false, persistent, srvFormat, uavFormat, rtvFormat);
+			return makeUnique<Resource::RenderTextureView>(std::move(texture), false, persistent, srvFormat, uavFormat, rtvFormat);
 		}
 	}
 
-	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureRenderView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat, const float* const color)
+	UniquePtr<Resource::RenderTextureView> ResourceManager::createRenderTextureView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, DXGI_FORMAT rtvFormat, const float* const color)
 	{
-		const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
-
-		const bool hasUAV = (uavFormat != FMT::UNKNOWN);
-
-		if ((!hasRTV) && (!hasUAV))
+		if (FMT::UNKNOWN == srvFormat && FMT::UNKNOWN == uavFormat && FMT::UNKNOWN == rtvFormat)
 		{
-			LOGERROR(L"you must set UAV or RTV format for customized render texture view");
+			srvFormat = resFormat;
+
+			uavFormat = resFormat;
+
+			rtvFormat = resFormat;
 		}
-		else if (srvFormat == FMT::UNKNOWN)
+
+		if (FMT::UNKNOWN == srvFormat)
 		{
-			LOGERROR(L"customized render texture view must have a valid SRV format");
+			LOGERROR(TOWSTRING(srvFormat), L"不能为", TOWSTRING(FMT::UNKNOWN));
+		}
+
+		const bool hasUAV = (FMT::UNKNOWN != uavFormat);
+
+		const bool hasRTV = (FMT::UNKNOWN != rtvFormat);
+
+		if (!hasUAV && !hasRTV)
+		{
+			LOGERROR(TOWSTRING(uavFormat), L"和", TOWSTRING(rtvFormat), L"其中一个必须为有效格式");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -633,15 +643,47 @@ namespace Gear::Core
 			texture = makeUnique<Resource::D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, resFlags);
 		}
 
-		return makeUnique<Resource::TextureRenderView>(std::move(texture), isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
+		return makeUnique<Resource::RenderTextureView>(std::move(texture), isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
 	}
 
-	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
+	UniquePtr<Resource::RenderTextureView> ResourceManager::createGraphicsTexture(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, const float* const color, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat)
 	{
-		Resource::TextureRenderView* equirectangularMap = nullptr;
+		if (FMT::UNKNOWN == srvFormat && FMT::UNKNOWN == rtvFormat)
+		{
+			srvFormat = resFormat;
+
+			rtvFormat = resFormat;
+		}
+		else if (FMT::UNKNOWN == srvFormat && FMT::UNKNOWN != rtvFormat || FMT::UNKNOWN != srvFormat && FMT::UNKNOWN == rtvFormat)
+		{
+			LOGERROR(TOWSTRING(srvFormat), L"和", TOWSTRING(rtvFormat), L"要么同时为", TOWSTRING(FMT::UNKNOWN), L"，要么同时得被设置成有效值！");
+		}
+
+		return createRenderTextureView(width, height, resFormat, arraySize, mipLevels, isTextureCube, persistent, srvFormat, FMT::UNKNOWN, rtvFormat, color);
+	}
+
+	UniquePtr<Resource::RenderTextureView> ResourceManager::createComputeTexture(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat)
+	{
+		if (FMT::UNKNOWN == srvFormat && FMT::UNKNOWN == uavFormat)
+		{
+			srvFormat = resFormat;
+
+			uavFormat = resFormat;
+		}
+		else if (FMT::UNKNOWN == srvFormat && FMT::UNKNOWN != uavFormat || FMT::UNKNOWN != srvFormat && FMT::UNKNOWN == uavFormat)
+		{
+			LOGERROR(TOWSTRING(srvFormat), L"和", TOWSTRING(uavFormat), L"要么同时为", TOWSTRING(FMT::UNKNOWN), L"，要么同时得被设置成有效值！");
+		}
+
+		return createRenderTextureView(width, height, resFormat, arraySize, mipLevels, isTextureCube, persistent, srvFormat, uavFormat, FMT::UNKNOWN);
+	}
+
+	UniquePtr<Resource::RenderTextureView> ResourceManager::createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
+	{
+		Resource::RenderTextureView* equirectangularMap = nullptr;
 
 		{
-			UniquePtr<Resource::TextureRenderView> equirectangularMapRet = createTextureRenderView(filePath, false, true, false);
+			UniquePtr<Resource::RenderTextureView> equirectangularMapRet = createRenderTextureView(filePath, false, true, false);
 
 			equirectangularMap = equirectangularMapRet.get();
 
@@ -670,11 +712,10 @@ namespace Gear::Core
 			break;
 		}
 
-		Resource::TextureRenderView* cubeMap = nullptr;
+		Resource::RenderTextureView* cubeMap = nullptr;
 
 		{
-			UniquePtr<Resource::TextureRenderView> cubeMapRet = createTextureRenderView(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false,
-				resFormat, FMT::UNKNOWN, resFormat);
+			UniquePtr<Resource::RenderTextureView> cubeMapRet = createGraphicsTexture(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false);
 
 			cubeMap = cubeMapRet.get();
 
@@ -728,17 +769,17 @@ namespace Gear::Core
 
 		if (stateTracking)
 		{
-			return makeUnique<Resource::TextureRenderView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(),
+			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(),
 				hasUAV ? dstTexture->getFormat() : FMT::UNKNOWN, hasRTV ? dstTexture->getFormat() : FMT::UNKNOWN);
 		}
 		else
 		{
-			return makeUnique<Resource::TextureRenderView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(),
+			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(),
 				FMT::UNKNOWN, FMT::UNKNOWN);
 		}
 	}
 
-	UniquePtr<Resource::TextureRenderView> ResourceManager::createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
+	UniquePtr<Resource::RenderTextureView> ResourceManager::createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 	{
 		Resource::D3D12Resource::Texture* srcTextures[6] = {};
 
@@ -806,11 +847,11 @@ namespace Gear::Core
 
 		if (srvFormat == FMT::UNKNOWN)
 		{
-			return makeUnique<Resource::TextureRenderView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 		}
 		else
 		{
-			return makeUnique<Resource::TextureRenderView>(std::move(dstTexture), true, persistent, srvFormat, uavFormat, rtvFormat);
+			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture), true, persistent, srvFormat, uavFormat, rtvFormat);
 		}
 	}
 
@@ -824,12 +865,12 @@ namespace Gear::Core
 		return makeUnique<Resource::SwapBuffer>(bufferFunc, bufferFunc);
 	}
 
-	UniquePtr<Resource::SwapTexture> ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::TextureRenderView>(void)>& writeTextureFunc)
+	UniquePtr<Resource::SwapTexture> ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::RenderTextureView>(void)>& readTextureFunc, const std::function<UniquePtr<Resource::RenderTextureView>(void)>& writeTextureFunc)
 	{
 		return makeUnique<Resource::SwapTexture>(readTextureFunc, writeTextureFunc);
 	}
 
-	UniquePtr<Resource::SwapTexture> ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::TextureRenderView>(void)>& textureFunc)
+	UniquePtr<Resource::SwapTexture> ResourceManager::createSwapTexture(const std::function<UniquePtr<Resource::RenderTextureView>(void)>& textureFunc)
 	{
 		return makeUnique<Resource::SwapTexture>(textureFunc, textureFunc);
 	}

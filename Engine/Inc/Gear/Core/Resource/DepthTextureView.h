@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_RESOURCE_TEXTUREDEPTHVIEW_H_
-#define _GEAR_CORE_RESOURCE_TEXTUREDEPTHVIEW_H_
+#ifndef _GEAR_CORE_RESOURCE_DEPTHTEXTUREVIEW_H_
+#define _GEAR_CORE_RESOURCE_DEPTHTEXTUREVIEW_H_
 
 #include"D3D12Resource/Texture.h"
 
@@ -9,22 +9,22 @@
 
 namespace Gear::Core::Resource
 {
-	class TextureDepthView :public ResourceBase
+	class DepthTextureView :public ResourceBase
 	{
 	public:
 
-		TextureDepthView() = delete;
+		DepthTextureView() = delete;
 
 		//支持的类型
 		//R32_TYPELESS 
 		//R16_TYPELESS 
 		//R32G8X24_TYPELESS 
 		//R24G8_TYPELESS
-		TextureDepthView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent);
+		DepthTextureView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent);
 
-		TextureDepthView(const TextureDepthView&);
+		DepthTextureView(const DepthTextureView&);
 
-		~TextureDepthView();
+		~DepthTextureView();
 
 		D3D12Resource::ShaderResourceDesc getAllDepthIndex() const;
 
@@ -64,4 +64,4 @@ namespace Gear::Core::Resource
 	};
 }
 
-#endif // !_GEAR_CORE_RESOURCE_TEXTUREDEPTHVIEW_H_
+#endif // !_GEAR_CORE_RESOURCE_DEPTHTEXTUREVIEW_H_

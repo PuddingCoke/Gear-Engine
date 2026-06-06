@@ -21,13 +21,13 @@ namespace Gear::Core::Effect
 
 		static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
 
-		static UniquePtr<BloomEffect> create(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager& resManager);
+		static UniquePtr<BloomEffect> create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager);
 
-		BloomEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height, ResourceManager& resManager);
+		BloomEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager);
 
 		~BloomEffect();
 
-		Resource::TextureRenderView* process(Resource::TextureRenderView& inputTexture);
+		Resource::RenderTextureView* process(Resource::RenderTextureView& inputTexture);
 
 		void imGUICall() override;
 
@@ -69,11 +69,11 @@ namespace Gear::Core::Effect
 
 		DirectX::XMUINT2 resolutions[blurSteps];
 
-		UniquePtr<Resource::TextureRenderView> lensDirtTexture;
+		UniquePtr<Resource::RenderTextureView> lensDirtTexture;
 
 		UniquePtr<Resource::SwapTexture> swapTexture[blurSteps];
 
-		UniquePtr<Resource::TextureRenderView> filteredTexture;
+		UniquePtr<Resource::RenderTextureView> filteredTexture;
 
 		UniquePtr<Resource::StaticCBuffer> blurParamBuffer[blurSteps];
 

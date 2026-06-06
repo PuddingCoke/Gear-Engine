@@ -6,13 +6,13 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<HBAOPlusEffect> HBAOPlusEffect::create(GraphicsContext* const context, const uint32_t width, const uint32_t height)
+	UniquePtr<HBAOPlusEffect> HBAOPlusEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
-		return makeUnique<HBAOPlusEffect>(context, width, height);
+		return makeUnique<HBAOPlusEffect>(contextRef, width, height);
 	}
 
-	HBAOPlusEffect::HBAOPlusEffect(GraphicsContext* const context, const uint32_t width, const uint32_t height) :
-		EffectBase(context, width, height, FMT::R32F), aoParameters{}
+	HBAOPlusEffect::HBAOPlusEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height) :
+		EffectBase(contextRef, width, height, FMT::R32F), aoParameters{}
 	{
 		GFSDK_SSAO_CustomHeap customHeap;
 
@@ -73,7 +73,7 @@ namespace Gear::Core::Effect
 		ImGui::End();
 	}
 
-	Resource::TextureRenderView* HBAOPlusEffect::process(Resource::TextureDepthView& depthTexture, Resource::TextureRenderView& gNormal)
+	Resource::RenderTextureView* HBAOPlusEffect::process(Resource::DepthTextureView& depthTexture, Resource::RenderTextureView& gNormal)
 	{
 		GFSDK_SSAO_InputData_D3D12 inputData = {};
 
