@@ -10,7 +10,8 @@ namespace Gear::Core
 		commandList(makeUnique<D3D12Core::CommandList>(D3D12_COMMAND_LIST_TYPE_DIRECT)),
 		vp{ 0.f,0.f,0.f,0.f,0.f,1.f },
 		rt{ 0,0,0,0 },
-		renderTargetClearDescIndex(0)
+		rootConstantBufferDescIndex(0u),
+		renderTargetClearDescIndex(0u)
 	{
 		resetTrackedStates();
 	}
@@ -297,7 +298,7 @@ namespace Gear::Core
 
 		depthStencilClearDesc.setClearData(flags, depth, stencil);
 
-		resetDepthStencilClearDescs();
+		resetDepthStencilClearDesc();
 	}
 
 	void GraphicsContext::setIndexBuffer(const Resource::D3D12Resource::IndexBufferDesc& indexBuffer)
@@ -391,7 +392,7 @@ namespace Gear::Core
 
 		flushRenderTargetClearDescs();
 
-		resetDepthStencilClearDescs();
+		resetDepthStencilClearDesc();
 
 		commandList->drawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 	}
@@ -404,7 +405,7 @@ namespace Gear::Core
 
 		flushRenderTargetClearDescs();
 
-		resetDepthStencilClearDescs();
+		resetDepthStencilClearDesc();
 
 		commandList->drawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 	}
@@ -467,29 +468,44 @@ namespace Gear::Core
 
 	void GraphicsContext::pushRootConstantBufferDesc(const RootConstantBufferDesc& desc)
 	{
-		rootConstantBufferDescs.emplace_back(desc);
+#ifdef _DEBUG
+		if (rootConstantBufferDescIndex >= D3D12Core::RootSignature::maxDWORD / D3D12Core::RootSignature::perDescriptorDWORD)
+		{
+			LOGERROR(L"设置太多的根常量缓冲了！请检查API调用！");
+		}
+#endif // _DEBUG
+
+		rootConstantBufferDescs[rootConstantBufferDescIndex++] = desc;
 	}
 
 	void GraphicsContext::flushRootConstantBufferDescs(const bool isGraphicsRootSignature)
 	{
-		if (rootConstantBufferDescs.size())
+		if (rootConstantBufferDescIndex)
 		{
 			if (isGraphicsRootSignature)
 			{
-				for (const RootConstantBufferDesc& desc : rootConstantBufferDescs)
+				for (uint32_t i = 0; i < rootConstantBufferDescIndex; i++)
 				{
-					commandList->setGraphicsRootConstantBuffer(desc.rootParameterIndex, desc.gpuAddress);
+					const uint32_t rootParameterIndex = rootConstantBufferDescs[i].rootParameterIndex;
+
+					const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = rootConstantBufferDescs[i].gpuAddress;
+
+					commandList->setGraphicsRootConstantBuffer(rootParameterIndex, gpuAddress);
 				}
 			}
 			else
 			{
-				for (const RootConstantBufferDesc& desc : rootConstantBufferDescs)
+				for (uint32_t i = 0; i < rootConstantBufferDescIndex; i++)
 				{
-					commandList->setComputeRootConstantBuffer(desc.rootParameterIndex, desc.gpuAddress);
+					const uint32_t rootParameterIndex = rootConstantBufferDescs[i].rootParameterIndex;
+
+					const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = rootConstantBufferDescs[i].gpuAddress;
+
+					commandList->setComputeRootConstantBuffer(rootParameterIndex, gpuAddress);
 				}
 			}
 
-			rootConstantBufferDescs.clear();
+			rootConstantBufferDescIndex = 0;
 		}
 	}
 
@@ -510,7 +526,7 @@ namespace Gear::Core
 		}
 	}
 
-	void GraphicsContext::resetDepthStencilClearDescs()
+	void GraphicsContext::resetDepthStencilClearDesc()
 	{
 		if (depthStencilClearDesc.needClear)
 		{

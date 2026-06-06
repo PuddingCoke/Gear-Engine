@@ -74,6 +74,12 @@ namespace Gear::Core::D3D12Core
 
 		uint32_t getNumShaderConstants(const ShaderType shaderType) const;
 
+		static constexpr uint32_t maxDWORD = 64u;
+
+		static constexpr uint32_t perConstantDWORD = 1u;
+
+		static constexpr uint32_t perDescriptorDWORD = 2u;
+
 	private:
 
 		std::array<uint32_t, static_cast<uint32_t>(ShaderType::TYPECOUNT)> numShaderConstants;

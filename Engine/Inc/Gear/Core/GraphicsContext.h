@@ -185,9 +185,9 @@ namespace Gear::Core
 
 		struct RootConstantBufferDesc
 		{
-			const uint32_t rootParameterIndex;
+			uint32_t rootParameterIndex;
 
-			const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
+			D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
 		};
 
 		struct RenderTargetClearDesc
@@ -232,7 +232,7 @@ namespace Gear::Core
 
 		void flushRenderTargetClearDescs();
 
-		void resetDepthStencilClearDescs();
+		void resetDepthStencilClearDesc();
 
 		void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
 
@@ -270,7 +270,12 @@ namespace Gear::Core
 
 		UniquePtr<D3D12Core::CommandList> commandList;
 
-		std::vector<RootConstantBufferDesc> rootConstantBufferDescs;
+		//这里有个假设，微软的官方文档说每个根签名最多有 64 个DWORD
+		//如果根签名全部都是根常量缓冲，那么最多有 64/2 = 32 个根常量缓冲
+		//这个想法是我在优化GraphicsContext时一瞬之间想到的
+		std::array<RootConstantBufferDesc, D3D12Core::RootSignature::maxDWORD / D3D12Core::RootSignature::perDescriptorDWORD> rootConstantBufferDescs;
+
+		uint32_t rootConstantBufferDescIndex;
 
 		std::array<RenderTargetClearDesc, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> renderTargetClearDescs;
 
