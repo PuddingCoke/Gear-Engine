@@ -6,8 +6,6 @@
 
 #include"Scene.h"
 
-using namespace Core;
-
 class MyRenderTask :public RenderTask
 {
 public:
