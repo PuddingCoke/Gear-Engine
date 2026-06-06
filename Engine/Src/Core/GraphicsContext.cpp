@@ -507,7 +507,7 @@ namespace Gear::Core
 
 	void GraphicsContext::resetDepthStencilClearDescs()
 	{
-		if (depthStencilClearDesc.handle.ptr != 0ull)
+		if (depthStencilClearDesc.needClear)
 		{
 			commandList->clearDepthStencil(depthStencilClearDesc.handle, depthStencilClearDesc.flags, depthStencilClearDesc.depth, depthStencilClearDesc.stencil, 0, nullptr);
 
@@ -649,10 +649,12 @@ namespace Gear::Core
 		this->depth = depth;
 
 		this->stencil = stencil;
+
+		this->needClear = true;
 	}
 
 	void GraphicsContext::DepthStencilClearDesc::reset()
 	{
-		this->handle.ptr = 0ull;
+		this->needClear = false;
 	}
 }

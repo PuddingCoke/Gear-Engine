@@ -205,13 +205,16 @@ namespace Gear::Core
 
 			void reset();
 
-			D3D12_CPU_DESCRIPTOR_HANDLE handle = {};
+			D3D12_CPU_DESCRIPTOR_HANDLE handle;
 
 			D3D12_CLEAR_FLAGS flags;
 
 			float depth;
 
 			uint8_t stencil;
+
+			bool needClear = false;
+
 		} depthStencilClearDesc;
 
 		void transitionResources();
