@@ -178,7 +178,7 @@ protected:
 
 		context->clearRenderTarget(renderTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 
-		context->clearDepthStencil(depthTexture->getDSVMipHandle(0), D3D12_CLEAR_FLAG_DEPTH, 1.f, 0);
+		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
 		//基本物体
 		scene.draw(context, *prefilterCube, *brdfLUTTexture, *irradianceCube);

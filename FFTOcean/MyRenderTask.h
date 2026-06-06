@@ -316,9 +316,7 @@ private:
 
 		context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
-		const D3D12Resource::DepthStencilDesc depthStencilDesc = depthTexture->getDSVMipHandle(0);
-
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthStencilDesc);
+		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 
 		SETCONSTS({
 		context->setDSConstants({
@@ -345,7 +343,7 @@ private:
 
 		context->setPSConstantBuffer(*renderParamBuffer);
 
-		context->clearDepthStencil(depthStencilDesc, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0);
+		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
 		context->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 

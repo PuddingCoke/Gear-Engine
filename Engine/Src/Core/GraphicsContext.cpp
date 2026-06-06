@@ -250,6 +250,8 @@ namespace Gear::Core
 
 		setResourceState(depthStencil);
 
+		depthStencilClearDesc.setHandle(depthStencil.dsvHandle);
+
 		commandList->setRenderTargets(0, nullptr, FALSE, &depthStencil.dsvHandle);
 	}
 
@@ -268,11 +270,6 @@ namespace Gear::Core
 		renderTargetClearDescs.emplace_back(RenderTargetClearDesc{ desc.rtvHandle,{clearValue[0],clearValue[1],clearValue[2],clearValue[3]} });
 	}
 
-	void GraphicsContext::clearDepthStencil(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
-	{
-		depthStencilClearDescs.emplace_back(DepthStencilClearDesc{ desc.dsvHandle,flags,depth,stencil });
-	}
-
 	void GraphicsContext::clearRenderTargetInstant(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4])
 	{
 		clearRenderTarget(desc, clearValue);
@@ -284,15 +281,22 @@ namespace Gear::Core
 		flushRenderTargetClearDescs();
 	}
 
+	void GraphicsContext::clearDepthStencil(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
+	{
+		depthStencilClearDesc.setClearData(flags, depth, stencil);
+	}
+
 	void GraphicsContext::clearDepthStencilInstant(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
 	{
-		clearDepthStencil(desc, flags, depth, stencil);
-
 		setResourceState(desc);
 
 		transitionResources();
 
-		flushDepthStencilClearDescs();
+		depthStencilClearDesc.setHandle(desc.dsvHandle);
+
+		depthStencilClearDesc.setClearData(flags, depth, stencil);
+
+		resetDepthStencilClearDescs();
 	}
 
 	void GraphicsContext::setIndexBuffer(const Resource::D3D12Resource::IndexBufferDesc& indexBuffer)
@@ -386,7 +390,7 @@ namespace Gear::Core
 
 		flushRenderTargetClearDescs();
 
-		flushDepthStencilClearDescs();
+		resetDepthStencilClearDescs();
 
 		commandList->drawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 	}
@@ -399,7 +403,7 @@ namespace Gear::Core
 
 		flushRenderTargetClearDescs();
 
-		flushDepthStencilClearDescs();
+		resetDepthStencilClearDescs();
 
 		commandList->drawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 	}
@@ -501,16 +505,13 @@ namespace Gear::Core
 		}
 	}
 
-	void GraphicsContext::flushDepthStencilClearDescs()
+	void GraphicsContext::resetDepthStencilClearDescs()
 	{
-		if (depthStencilClearDescs.size())
+		if (depthStencilClearDesc.handle.ptr != 0ull)
 		{
-			for (const DepthStencilClearDesc& desc : depthStencilClearDescs)
-			{
-				commandList->clearDepthStencil(desc.handle, desc.flags, desc.depth, desc.stencil, 0, nullptr);
-			}
+			commandList->clearDepthStencil(depthStencilClearDesc.handle, depthStencilClearDesc.flags, depthStencilClearDesc.depth, depthStencilClearDesc.stencil, 0, nullptr);
 
-			depthStencilClearDescs.clear();
+			depthStencilClearDesc.reset();
 		}
 	}
 
@@ -634,5 +635,24 @@ namespace Gear::Core
 	void GraphicsContext::resetUserDefinedGlobalConstantBuffer()
 	{
 		userDefinedGlobalConstantBuffer = nullptr;
+	}
+
+	void GraphicsContext::DepthStencilClearDesc::setHandle(const D3D12_CPU_DESCRIPTOR_HANDLE& handle)
+	{
+		this->handle = handle;
+	}
+
+	void GraphicsContext::DepthStencilClearDesc::setClearData(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
+	{
+		this->flags = flags;
+
+		this->depth = depth;
+
+		this->stencil = stencil;
+	}
+
+	void GraphicsContext::DepthStencilClearDesc::reset()
+	{
+		this->handle.ptr = 0ull;
 	}
 }

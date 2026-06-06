@@ -310,9 +310,7 @@ protected:
 
 		context->setPipelineState(*shadowPipelineState);
 
-		const D3D12Resource::DepthStencilDesc dsDesc = shadowTexture->getDSVMipHandle(0);
-
-		context->setRenderTargets(dsDesc);
+		context->setRenderTargets(shadowTexture->getDSVMipHandle(0));
 
 		context->setViewport(shadowTextureResolution, shadowTextureResolution);
 
@@ -320,7 +318,7 @@ protected:
 
 		context->setVSConstantBuffer(*irradianceVolumeBuffer);
 
-		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0);
+		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
 		scene->render(context);
 	}
@@ -346,9 +344,7 @@ protected:
 
 		context->setScissorRect(0, 0, probeCaptureResolution, probeCaptureResolution);
 
-		const D3D12Resource::DepthStencilDesc dsDesc = depthCube->getDSVMipHandle(0);
-
-		context->setRenderTargets({ radianceCube->getRTVMipHandle(0),distanceCube->getRTVMipHandle(0) }, dsDesc);
+		context->setRenderTargets({ radianceCube->getRTVMipHandle(0),distanceCube->getRTVMipHandle(0) }, depthCube->getDSVMipHandle(0));
 
 		context->setVSConstantBuffer(cubeRenderBuffer);
 
@@ -366,7 +362,7 @@ protected:
 
 		context->clearRenderTarget(distanceCube->getRTVMipHandle(0), distanceCubeClearColor);
 
-		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0);
+		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
 		scene->renderCube(context);
 
@@ -409,9 +405,7 @@ protected:
 
 		context->setScissorRect(0, 0, probeCaptureResolution, probeCaptureResolution);
 
-		const D3D12Resource::DepthStencilDesc dsDesc = depthCube->getDSVMipHandle(0);
-
-		context->setRenderTargets({ radianceCube->getRTVMipHandle(0) }, dsDesc);
+		context->setRenderTargets({ radianceCube->getRTVMipHandle(0) }, depthCube->getDSVMipHandle(0));
 
 		context->setVSConstantBuffer(cubeRenderBuffer);
 
@@ -429,7 +423,7 @@ protected:
 
 		context->clearRenderTarget(radianceCube->getRTVMipHandle(0), radianceCubeClearColor);
 
-		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0);
+		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
 		scene->renderCube(context);
 
@@ -457,13 +451,11 @@ protected:
 
 		context->setScissorRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
 
-		const D3D12Resource::DepthStencilDesc dsDesc = depthTexture->getDSVMipHandle(0);
-
 		context->setRenderTargets({
 			gPositionMetallic->getRTVMipHandle(0),
 			gNormalRoughness->getRTVMipHandle(0),
 			gBaseColor->getRTVMipHandle(0)
-			}, dsDesc);
+			}, depthTexture->getDSVMipHandle(0));
 
 		SETCONSTS({
 		co = 3;
@@ -476,7 +468,7 @@ protected:
 
 		context->clearRenderTarget(gBaseColor->getRTVMipHandle(0), DirectX::Colors::Transparent);
 
-		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0);
+		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
 		scene->render(context);
 
@@ -518,7 +510,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, dsDesc);
+		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 
 		SETCONSTS({
 		context->setPSConstants({ skybox->getAllSRVIndex() }, co);

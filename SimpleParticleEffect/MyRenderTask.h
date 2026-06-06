@@ -118,11 +118,9 @@ protected:
 
 		context->uavBarrier({ positionBuffer->getBuffer() });
 
-		const D3D12Resource::DepthStencilDesc dsDesc = depthTexture->getDSVMipHandle(0);
-
 		context->setPipelineState(*particleRenderState);
 
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, dsDesc);
+		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 
 		context->setViewportSimple(Core::Graphics::getWidth(), Core::Graphics::getHeight());
 
@@ -139,7 +137,7 @@ protected:
 
 		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 
-		context->clearDepthStencil(dsDesc, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0);
+		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
 		context->draw(numParticles, 1, 0, 0);
 

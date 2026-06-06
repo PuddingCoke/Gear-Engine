@@ -23,6 +23,15 @@
 
 namespace Gear::Core
 {
+	namespace CLEARFLAG
+	{
+		constexpr D3D12_CLEAR_FLAGS DEPTH = D3D12_CLEAR_FLAGS::D3D12_CLEAR_FLAG_DEPTH;
+
+		constexpr D3D12_CLEAR_FLAGS STENCIL = D3D12_CLEAR_FLAGS::D3D12_CLEAR_FLAG_STENCIL;
+
+		constexpr D3D12_CLEAR_FLAGS ALL = D3D12_CLEAR_FLAGS::D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAGS::D3D12_CLEAR_FLAG_STENCIL;
+	}
+
 	class GraphicsContext
 	{
 	public:
@@ -114,16 +123,16 @@ namespace Gear::Core
 
 		void clearDefRenderTarget(const float clearValue[4]) const;
 
-		//推迟到draw call进行清理
+		//推迟到draw call清理渲染目标视图
 		void clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
 
-		//推迟到draw call进行清理
-		void clearDepthStencil(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
-
-		//立刻进行清理
+		//立刻清理渲染目标视图
 		void clearRenderTargetInstant(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
 
-		//立刻进行清理
+		//清理下一个draw call即将绑定或已经绑定的深度模板视图
+		void clearDepthStencil(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
+
+		//立刻清理深度模板视图
 		void clearDepthStencilInstant(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
 
 		template<size_t N>
@@ -190,14 +199,20 @@ namespace Gear::Core
 
 		struct DepthStencilClearDesc
 		{
-			const D3D12_CPU_DESCRIPTOR_HANDLE handle;
+			void setHandle(const D3D12_CPU_DESCRIPTOR_HANDLE& handle);
 
-			const D3D12_CLEAR_FLAGS flags;
+			void setClearData(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
 
-			const float depth;
+			void reset();
 
-			const uint8_t stencil;
-		};
+			D3D12_CPU_DESCRIPTOR_HANDLE handle = {};
+
+			D3D12_CLEAR_FLAGS flags;
+
+			float depth;
+
+			uint8_t stencil;
+		} depthStencilClearDesc;
 
 		void transitionResources();
 
@@ -214,7 +229,7 @@ namespace Gear::Core
 
 		void flushRenderTargetClearDescs();
 
-		void flushDepthStencilClearDescs();
+		void resetDepthStencilClearDescs();
 
 		void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
 
@@ -251,8 +266,6 @@ namespace Gear::Core
 		std::vector<RootConstantBufferDesc> rootConstantBufferDescs;
 
 		std::vector<RenderTargetClearDesc> renderTargetClearDescs;
-
-		std::vector<DepthStencilClearDesc> depthStencilClearDescs;
 
 		//这些是内部追踪的状态，用于减少图形API的调用
 		const D3D12Core::PipelineState* currentPipelineState;
@@ -417,6 +430,8 @@ namespace Gear::Core
 		if (depthStencil.texture)
 		{
 			setResourceState(depthStencil);
+
+			depthStencilClearDesc.setHandle(depthStencil.dsvHandle);
 
 			commandList->setRenderTargets(static_cast<uint32_t>(N), transientRTVHandles.data(), FALSE, &(depthStencil.dsvHandle));
 		}
