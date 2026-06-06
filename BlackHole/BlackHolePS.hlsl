@@ -381,19 +381,7 @@ float4 main(float2 uv : TEXCOORD) : SV_TARGET
         Haze(color, raypos, alpha);
     }
     
-    color *= 0.02;
-    
-    color = pow(color, float3(1.5, 1.5, 1.5));
-    color = color / (1.0 + color);
-    color = pow(color, float3(1.0 / 1.5, 1.0 / 1.5, 1.0 / 1.5));
-
-    
-    color = lerp(color, color * color * (3.0 - 2.0 * color), float3(1.0, 1.0, 1.0));
-    color = pow(color, float3(1.3, 1.20, 1.0));
-
-    color = saturate(color * 1.01);
-    
-    color = pow(color, float3(0.7 / 2.2, 0.7 / 2.2, 0.7 / 2.2));
+    color *= 0.0001;
     
     return float4(saturate(color), 1.0);
 }

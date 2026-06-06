@@ -10,9 +10,11 @@ public:
 
 	MyRenderTask() :
 		blackHoleShader(Shader::create(Utils::File::getRootFolder() + L"BlackHolePS.cso")),
+		colorGradingShader(Shader::create(Utils::File::getRootFolder() + L"ColorGradingPS.cso")),
 		noiseTexture(resManager->createRenderTextureView(L"Noise.png", true)),
 		diskTexture(resManager->createRenderTextureView(L"Disk.jpg", true)),
 		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true)),
+		colorGradingTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true)),
 		effect(BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager))
 	{
 		pipelineState = PipelineStateBuilder()
@@ -21,11 +23,19 @@ public:
 			.setPS(*blackHoleShader)
 			.build();
 
+		colorGradingState = PipelineStateBuilder()
+			.setDefaultFullScreenState()
+			.setRTVFormats({ FMT::RGBA16UN })
+			.setPS(*colorGradingShader)
+			.build();
+
 		Input::Keyboard::addKeyDownEvent(Input::Keyboard::K, [this]() {perframeData.useOriginalVer = ~perframeData.useOriginalVer; });
 
-		Graphics::setExposure(1.f);
+		effect->setIntensity(0.55f);
 
-		Graphics::setGamma(1.f);
+		Graphics::setExposure(200.f);
+
+		Graphics::setGamma(3.1428571428571428571f);
 	}
 
 	~MyRenderTask()
@@ -83,7 +93,21 @@ protected:
 
 		auto toneMappedTexture = ToneMapEffect::process(*context, *bloomTexture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(*context, *toneMappedTexture);
+		context->setPipelineState(*colorGradingState);
+
+		context->setRenderTargets({ colorGradingTexture->getRTVMipHandle(0) });
+
+		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
+
+		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
+
+		SETCONSTS({
+		context->setPSConstants({toneMappedTexture->getAllSRVIndex()},co);
+			});
+
+		context->draw(3, 1, 0, 0);
+
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(*context, *colorGradingTexture);
 
 		blit(*gammaCorrectedTexture);
 	}
@@ -94,11 +118,17 @@ private:
 
 	UniquePtr<Shader> blackHoleShader;
 
+	UniquePtr<PipelineState> colorGradingState;
+
+	UniquePtr<Shader> colorGradingShader;
+
 	UniquePtr<RenderTextureView> noiseTexture;
 
 	UniquePtr<RenderTextureView> diskTexture;
 
 	UniquePtr<RenderTextureView> originTexture;
+
+	UniquePtr<RenderTextureView> colorGradingTexture;
 
 	UniquePtr<BloomEffect> effect;
 
