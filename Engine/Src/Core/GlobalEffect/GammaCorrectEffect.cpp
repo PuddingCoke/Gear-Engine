@@ -44,8 +44,10 @@ namespace Gear::Core::GlobalEffect::GammaCorrectEffect
 		}
 	}
 
-	Resource::RenderTextureView* process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture)
+	Resource::RenderTextureView* process(GraphicsContext& contextRef, Resource::RenderTextureView& inputTexture)
 	{
+		GraphicsContext* const context = &contextRef;
+
 		context->setPipelineState(*Internal::impl.gammaCorrectState);
 
 		const float gamma = Graphics::getGamma();

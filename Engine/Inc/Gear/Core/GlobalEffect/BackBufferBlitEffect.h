@@ -7,7 +7,7 @@
 
 namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 {
-	void process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture);
+	void process(GraphicsContext& contextRef, Resource::RenderTextureView& inputTexture);
 }
 
 #endif // !_GEAR_CORE_GLOBALEFFECT_BACKBUFFERBLITEFFECT_H_

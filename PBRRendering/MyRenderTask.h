@@ -198,9 +198,9 @@ protected:
 
 		context->draw(36, 1, 0, 0);
 
-		auto toneMappedTexture = ToneMapEffect::process(context, *renderTexture);
+		auto toneMappedTexture = ToneMapEffect::process(*context, *renderTexture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(*context, *toneMappedTexture);
 
 		blit(*gammaCorrectedTexture);
 	}

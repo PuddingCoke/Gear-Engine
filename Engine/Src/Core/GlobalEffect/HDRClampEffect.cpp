@@ -34,8 +34,10 @@ namespace Gear::Core::GlobalEffect::HDRClampEffect
 		}
 	}
 
-	void process(GraphicsContext* const context, Resource::RenderTextureView& inOutTexture)
+	void process(GraphicsContext& contextRef, Resource::RenderTextureView& inOutTexture)
 	{
+		GraphicsContext* const context = &contextRef;
+
 		if (inOutTexture.getTexture()->getFormat() == FMT::RGBA16F)
 		{
 			context->setPipelineState(*Internal::impl.hdrClampState);

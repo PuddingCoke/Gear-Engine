@@ -32,8 +32,10 @@ namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 		}
 	}
 
-	void process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture)
+	void process(GraphicsContext& contextRef, Resource::RenderTextureView& inputTexture)
 	{
+		GraphicsContext* const context = &contextRef;
+
 		context->setPipelineState(*Internal::impl.backBufferBlitState);
 
 		context->setDefRenderTarget();

@@ -81,9 +81,9 @@ protected:
 
 		auto bloomTexture = effect->process(*originTexture);
 
-		auto toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
+		auto toneMappedTexture = ToneMapEffect::process(*context, *bloomTexture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(*context, *toneMappedTexture);
 
 		blit(*gammaCorrectedTexture);
 	}

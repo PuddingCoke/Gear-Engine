@@ -369,9 +369,9 @@ public:
 			texture = outputTexture;
 		}
 
-		auto toneMappedTexture = ToneMapEffect::process(context, *texture);
+		auto toneMappedTexture = ToneMapEffect::process(*context, *texture);
 
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(context, *toneMappedTexture);
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(*context, *toneMappedTexture);
 
 		blit(*gammaCorrectedTexture);
 	}

@@ -44,8 +44,10 @@ namespace Gear::Core::GlobalEffect::ToneMapEffect
 		}
 	}
 
-	Resource::RenderTextureView* process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture)
+	Resource::RenderTextureView* process(GraphicsContext& contextRef, Resource::RenderTextureView& inputTexture)
 	{
+		GraphicsContext* const context = &contextRef;
+
 		context->setPipelineState(*Internal::impl.toneMapState);
 
 		const float exposure = Graphics::getExposure();

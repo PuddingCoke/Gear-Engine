@@ -548,11 +548,11 @@ protected:
 
 		RenderTextureView* const bloomTexture = bloomEffect->process(*ssrCombinedTexture);
 
-		RenderTextureView* const toneMappedTexture = ToneMapEffect::process(context, *bloomTexture);
+		RenderTextureView* const toneMappedTexture = ToneMapEffect::process(*context, *bloomTexture);
 
 		RenderTextureView* const fxaaTexture = fxaaEffect->process(*toneMappedTexture);
 
-		RenderTextureView* const gammaCorrectedTexture = GammaCorrectEffect::process(context, *fxaaTexture);
+		RenderTextureView* const gammaCorrectedTexture = GammaCorrectEffect::process(*context, *fxaaTexture);
 
 		blit(*gammaCorrectedTexture);
 	}

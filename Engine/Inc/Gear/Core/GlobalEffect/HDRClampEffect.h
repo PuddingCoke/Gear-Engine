@@ -7,7 +7,7 @@
 
 namespace Gear::Core::GlobalEffect::HDRClampEffect
 {
-	void process(GraphicsContext* const context, Resource::RenderTextureView& inOutTexture);
+	void process(GraphicsContext& contextRef, Resource::RenderTextureView& inOutTexture);
 }
 
 #endif // !_GEAR_CORE_GLOBALCEFFECT_HDRCLAMPEFFECT_H_

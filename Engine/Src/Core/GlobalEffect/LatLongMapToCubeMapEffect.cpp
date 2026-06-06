@@ -116,8 +116,10 @@ namespace Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect
 		}
 	}
 
-	void process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture, Resource::RenderTextureView& outputTexture)
+	void process(GraphicsContext& contextRef, Resource::RenderTextureView& inputTexture, Resource::RenderTextureView& outputTexture)
 	{
+		GraphicsContext* const context = &contextRef;
+
 		switch (outputTexture.getTexture()->getFormat())
 		{
 		case FMT::RGBA8UN:

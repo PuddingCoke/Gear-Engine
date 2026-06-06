@@ -692,7 +692,7 @@ namespace Gear::Core
 
 		equirectangularMap->copyDescriptors();
 
-		GlobalEffect::HDRClampEffect::process(context.get(), *equirectangularMap);
+		GlobalEffect::HDRClampEffect::process(*context, *equirectangularMap);
 
 		DXGI_FORMAT resFormat = FMT::UNKNOWN;
 
@@ -722,7 +722,7 @@ namespace Gear::Core
 			deferredRelease(std::move(cubeMapRet));
 		}
 
-		GlobalEffect::LatLongMapToCubeMapEffect::process(context.get(), *equirectangularMap, *cubeMap);
+		GlobalEffect::LatLongMapToCubeMapEffect::process(*context, *equirectangularMap, *cubeMap);
 
 		bool stateTracking = true;
 

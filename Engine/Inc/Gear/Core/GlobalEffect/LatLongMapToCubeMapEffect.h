@@ -7,7 +7,7 @@
 
 namespace Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect
 {
-	void process(GraphicsContext* const context, Resource::RenderTextureView& inputTexture, Resource::RenderTextureView& outputTexture);
+	void process(GraphicsContext& contextRef, Resource::RenderTextureView& inputTexture, Resource::RenderTextureView& outputTexture);
 }
 
 #endif // !_GEAR_CORE_GLOBALEFFECT_LATLONGMAPTOCUBEMAPEFFECT_H_
