@@ -23,7 +23,7 @@ namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 				.setRTVFormats({ Graphics::backBufferFormat })
 				.build();
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(BackBufferBlitEffect), LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(BackBufferBlitEffect));
 		}
 
 		void release()

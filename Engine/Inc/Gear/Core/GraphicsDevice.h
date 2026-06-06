@@ -31,9 +31,11 @@ const HRESULT hr = x;\
 if(FAILED(hr))\
 {\
 _com_error err(hr);\
-LOGERROR(L"Failed with",IntegerMode::HEX,static_cast<uint32_t>(hr),L"Failed reason",err.ErrorMessage());\
+LOGERROR(L"失败值",IntegerMode::HEX,static_cast<uint32_t>(hr),L"失败原因",err.ErrorMessage());\
 }\
 }\
+
+#define TOSTRING(x) #x
 
 #define TOWSTRING(x) L#x
 

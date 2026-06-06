@@ -124,7 +124,7 @@ namespace Gear::Core::GlobalRootSignature
 
 			basicShaderRootSignature->get()->SetName(L"Basic Shader Root Signature");
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(basicShaderRootSignature), LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(basicShaderRootSignature));
 
 			//总计 56 DWORDS
 			tessellationRootSignature = makeUnique<D3D12Core::RootSignature>(4u, 4u, 12u, 0u, 24u, 0u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
@@ -137,7 +137,7 @@ namespace Gear::Core::GlobalRootSignature
 
 			tessellationRootSignature->get()->SetName(L"Tessellation Root Signature");
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(tessellationRootSignature), LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(tessellationRootSignature));
 
 			//总计 54 DWORDS
 			geometryShaderRootSignature = makeUnique<D3D12Core::RootSignature>(8u, 0u, 0u, 8u, 28u, 0u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
@@ -151,7 +151,7 @@ namespace Gear::Core::GlobalRootSignature
 
 			geometryShaderRootSignature->get()->SetName(L"Geometry Shader Root Signature");
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(geometryShaderRootSignature), LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(geometryShaderRootSignature));
 
 			//总计 58 DWORDS
 			allGraphicsShaderRootSignature = makeUnique<D3D12Core::RootSignature>(4u, 4u, 8u, 4u, 24u, 0u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
@@ -163,7 +163,7 @@ namespace Gear::Core::GlobalRootSignature
 
 			allGraphicsShaderRootSignature->get()->SetName(L"All Graphics Shader Root Signature");
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(allGraphicsShaderRootSignature), LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(allGraphicsShaderRootSignature));
 
 			//总计 38 DWORDS
 			computeShaderRootSignature = makeUnique<D3D12Core::RootSignature>(0u, 0u, 0u, 0u, 0u, 32u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
@@ -172,7 +172,7 @@ namespace Gear::Core::GlobalRootSignature
 
 			computeShaderRootSignature->get()->SetName(L"Compute Shader Root Signature");
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(computeShaderRootSignature), LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(computeShaderRootSignature));
 		}
 
 		UniquePtr<GlobalRootSignatureImpl> impl;

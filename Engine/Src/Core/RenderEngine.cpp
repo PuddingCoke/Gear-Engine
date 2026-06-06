@@ -207,7 +207,7 @@ namespace Gear::Core::RenderEngine
 			ComPtr<IDXGIFactory7> factory;
 
 #ifdef _DEBUG
-			LOGENGINE(LogColor::brightGreen, L"enable", LogColor::defaultColor, L"debug layer");
+			LOGENGINE(LogColor::brightGreen, L"开启", LogColor::brightMagenta, L"调试层");
 
 			ComPtr<ID3D12Debug> debugController;
 
@@ -217,7 +217,7 @@ namespace Gear::Core::RenderEngine
 
 			CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&factory));
 #else
-			LOGENGINE(LogColor::brightRed, L"disable", LogColor::defaultColor, L"debug layer");
+			LOGENGINE(LogColor::brightRed, L"关闭", LogColor::brightMagenta, L"调试层");
 
 			CreateDXGIFactory2(0, IID_PPV_ARGS(&factory));
 #endif // _DEBUG
@@ -333,7 +333,7 @@ namespace Gear::Core::RenderEngine
 			//初始化ImGUI，如果有需要
 			if (initializeImGuiSurface)
 			{
-				LOGENGINE(L"enable ImGui");
+				LOGENGINE(LogColor::brightGreen, L"开启", LogColor::brightMagenta, L"ImGui");
 
 				IMGUI_CHECKVERSION();
 				ImGui::CreateContext();
@@ -350,7 +350,7 @@ namespace Gear::Core::RenderEngine
 			}
 			else
 			{
-				LOGENGINE(L"disable ImGui");
+				LOGENGINE(LogColor::brightRed, L"关闭", LogColor::brightMagenta, L"ImGui");
 			}
 
 			//设置默认的2D投影矩阵
@@ -677,15 +677,15 @@ namespace Gear::Core::RenderEngine
 						vendorName = L"UNKNOWN";
 					}
 
-					LOGENGINE(L"following are information about selected GPU");
+					LOGENGINE(L"以下是适配器的相关信息");
 
-					LOGENGINE(L"GPU Name", LogColor::brightMagenta, desc.Description);
+					LOGENGINE(L"适配器名称", LogColor::brightMagenta, desc.Description);
 
-					LOGENGINE(L"GPU Vendor ID", IntegerMode::HEX, vendorID);
+					LOGENGINE(L"适配器生产商ID", IntegerMode::HEX, vendorID);
 
-					LOGENGINE(L"GPU Vendor Name", LogColor::brightMagenta, vendorName);
+					LOGENGINE(L"适配器生产商", LogColor::brightMagenta, vendorName);
 
-					LOGENGINE(L"GPU Dedicated Memory", static_cast<float>(desc.DedicatedVideoMemory) / 1024.f / 1024.f / 1024.f, L"gigabytes");
+					LOGENGINE(L"适配器专有视频内存", static_cast<float>(desc.DedicatedVideoMemory) / 1024.f / 1024.f / 1024.f, L"GB");
 
 					break;
 				}

@@ -150,7 +150,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 				buffer->setName(L"Large Constant Buffer");
 
-				LOGSUCCESS(L"create", FloatPrecision(0), requiredSize / 1024.f, L"kbytes constant buffer succeeded");
+				LOGSUCCESS(L"创建", FloatPrecision(0), requiredSize / 1024.f, L"KB的大常量缓冲");
 			}
 
 			//为大缓冲的每个区域创建上传堆，并进行管理

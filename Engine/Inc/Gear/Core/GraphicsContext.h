@@ -192,9 +192,9 @@ namespace Gear::Core
 
 		struct RenderTargetClearDesc
 		{
-			const D3D12_CPU_DESCRIPTOR_HANDLE handle;
+			D3D12_CPU_DESCRIPTOR_HANDLE handle;
 
-			const float clearValue[4];
+			float clearValue[4];
 		};
 
 		struct DepthStencilClearDesc
@@ -215,7 +215,7 @@ namespace Gear::Core
 
 			bool needClear = false;
 
-		} depthStencilClearDesc;
+		};
 
 		void transitionResources();
 
@@ -237,6 +237,10 @@ namespace Gear::Core
 		void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
 
 		void setComputeRootSignature(const D3D12Core::RootSignature* const rootSignature);
+
+		const D3D12Core::RootSignature* getGraphicsRootSignature() const;
+
+		const D3D12Core::RootSignature* getComputeRootSignature() const;
 
 		//根据Desc设置对应资源的转变状态
 		void setResourceState(const Resource::D3D12Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState);
@@ -268,7 +272,11 @@ namespace Gear::Core
 
 		std::vector<RootConstantBufferDesc> rootConstantBufferDescs;
 
-		std::vector<RenderTargetClearDesc> renderTargetClearDescs;
+		std::array<RenderTargetClearDesc, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> renderTargetClearDescs;
+
+		uint32_t renderTargetClearDescIndex;
+
+		DepthStencilClearDesc depthStencilClearDesc;
 
 		//这些是内部追踪的状态，用于减少图形API的调用
 		const D3D12Core::PipelineState* currentPipelineState;

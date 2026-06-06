@@ -36,11 +36,11 @@ namespace Gear::Core::D3D12Core
 
 			shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
 
-			LOGSUCCESS(L"read byte code at", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"读取", LogColor::brightBlue, filePath);
 		}
 		else
 		{
-			LOGERROR(L"input file's extension must be cso");
+			LOGERROR(L"文件的扩展名必须为.cso");
 		}
 	}
 
@@ -54,11 +54,11 @@ namespace Gear::Core::D3D12Core
 
 			shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
 
-			LOGSUCCESS(L"compile shader at", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"编译", LogColor::brightBlue, filePath);
 		}
 		else
 		{
-			LOGERROR(L"input file's extension must be hlsl");
+			LOGERROR(L"文件的扩展名必须为.hlsl");
 		}
 	}
 

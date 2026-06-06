@@ -15,11 +15,11 @@ namespace Gear::Core::GraphicsDevice
 		{
 			if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&impl.device))))
 			{
-				LOGSUCCESS(L"create d3d12 device with feature level", LogColor::brightMagenta, TOWSTRING(D3D_FEATURE_LEVEL_12_0), LogColor::defaultColor, L"succeeded");
+				LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(D3D_FEATURE_LEVEL_12_0), LogColor::defaultColor, L"特性等级的", LogColor::brightMagenta, TOWSTRING(ID3D12Device));
 			}
 			else
 			{
-				LOGERROR(L"your graphics card should support D3D_FEATURE_LEVEL_12_0");
+				LOGERROR(L"找到的性能最强适配器不支持", TOWSTRING(D3D_FEATURE_LEVEL_12_0));
 			}
 		}
 
@@ -30,7 +30,7 @@ namespace Gear::Core::GraphicsDevice
 
 		void checkFeatureSupport()
 		{
-			LOGENGINE(L"following are feature support data");
+			LOGENGINE(L"以下是特性支持信息");
 
 			CD3DX12FeatureSupport features;
 
@@ -55,7 +55,7 @@ namespace Gear::Core::GraphicsDevice
 					break;
 				}
 
-				LOGENGINE(L"resource binding tier", LogColor::brightMagenta, bindingTierString);
+				LOGENGINE(L"资源绑定等级", LogColor::brightMagenta, bindingTierString);
 			}
 
 			{
@@ -98,22 +98,22 @@ namespace Gear::Core::GraphicsDevice
 					break;
 				}
 
-				LOGENGINE(L"highest supported shader model", LogColor::brightMagenta, shaderModelString);
+				LOGENGINE(L"最高支持的着色模型", LogColor::brightMagenta, shaderModelString);
 
 				if (shaderModel < D3D_SHADER_MODEL_6_6)
 				{
-					LOGERROR(L"your graphics card should at least support D3D_SHADER_MODEL_6_6");
+					LOGERROR(L"你的适配器不支持", TOWSTRING(D3D_SHADER_MODEL_6_6));
 				}
 			}
 
 			{
 				const BOOL typedUAVLoad = features.TypedUAVLoadAdditionalFormats();
 
-				LOGENGINE(L"typed uav load", (typedUAVLoad ? LogColor::brightGreen : LogColor::brightRed), (typedUAVLoad ? L"YES" : L"NO"));
+				LOGENGINE(L"有类型UAV读取", (typedUAVLoad ? LogColor::brightGreen : LogColor::brightRed), (typedUAVLoad ? L"YES" : L"NO"));
 
 				if (!typedUAVLoad)
 				{
-					LOGERROR(L"your graphics card should support typed uav load");
+					LOGERROR(L"你的适配器不支持有类型UAV读取");
 				}
 			}
 
@@ -136,7 +136,7 @@ namespace Gear::Core::GraphicsDevice
 					break;
 				}
 
-				LOGENGINE(L"raytracing tier", LogColor::brightMagenta, raytracingTierString);
+				LOGENGINE(L"光线追踪等级", LogColor::brightMagenta, raytracingTierString);
 			}
 		}
 	}

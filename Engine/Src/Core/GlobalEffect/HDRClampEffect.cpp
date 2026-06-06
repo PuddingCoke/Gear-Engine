@@ -23,7 +23,7 @@ namespace Gear::Core::GlobalEffect::HDRClampEffect
 
 			impl.hdrClampState = PipelineStateBuilder::build(*impl.hdrClampShader);
 
-			LOGSUCCESS(L"create", LogColor::brightMagenta, TOWSTRING(HDRClampEffect), LogColor::defaultColor, L"succeeded");
+			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(HDRClampEffect));
 		}
 
 		void release()

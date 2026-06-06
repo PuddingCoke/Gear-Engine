@@ -9,7 +9,8 @@ namespace Gear::Core
 	GraphicsContext::GraphicsContext() :
 		commandList(makeUnique<D3D12Core::CommandList>(D3D12_COMMAND_LIST_TYPE_DIRECT)),
 		vp{ 0.f,0.f,0.f,0.f,0.f,1.f },
-		rt{ 0,0,0,0 }
+		rt{ 0,0,0,0 },
+		renderTargetClearDescIndex(0)
 	{
 		resetTrackedStates();
 	}
@@ -57,10 +58,10 @@ namespace Gear::Core
 		case D3D12Core::RootSignature::ShaderType::DOMAIN:
 		case D3D12Core::RootSignature::ShaderType::GEOMETRY:
 		case D3D12Core::RootSignature::ShaderType::PIXEL:
-			numShaderConstants = graphicsRootSignature->getNumShaderConstants(shaderType);
+			numShaderConstants = getGraphicsRootSignature()->getNumShaderConstants(shaderType);
 			break;
 		case D3D12Core::RootSignature::ShaderType::COMPUTE:
-			numShaderConstants = computeRootSignature->getNumShaderConstants(shaderType);
+			numShaderConstants = getComputeRootSignature()->getNumShaderConstants(shaderType);
 			break;
 		default:
 			break;
@@ -106,7 +107,7 @@ namespace Gear::Core
 		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::VERTEX, numValues);
 #endif // _DEBUG
 
-		commandList->setGraphicsRootConstants(graphicsRootSignature->getVSConstantsParameterIndex(), numValues, data, offset);
+		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getVSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
 	}
@@ -117,7 +118,7 @@ namespace Gear::Core
 		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::HULL, numValues);
 #endif // _DEBUG
 
-		commandList->setGraphicsRootConstants(graphicsRootSignature->getHSConstantsParameterIndex(), numValues, data, offset);
+		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getHSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
 	}
@@ -128,7 +129,7 @@ namespace Gear::Core
 		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::DOMAIN, numValues);
 #endif // _DEBUG
 
-		commandList->setGraphicsRootConstants(graphicsRootSignature->getDSConstantsParameterIndex(), numValues, data, offset);
+		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getDSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
 	}
@@ -139,7 +140,7 @@ namespace Gear::Core
 		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::GEOMETRY, numValues);
 #endif // _DEBUG
 
-		commandList->setGraphicsRootConstants(graphicsRootSignature->getGSConstantsParameterIndex(), numValues, data, offset);
+		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getGSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
 	}
@@ -150,7 +151,7 @@ namespace Gear::Core
 		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::PIXEL, numValues);
 #endif // _DEBUG
 
-		commandList->setGraphicsRootConstants(graphicsRootSignature->getPSConstantsParameterIndex(), numValues, data, offset);
+		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getPSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
 	}
@@ -161,7 +162,7 @@ namespace Gear::Core
 		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::COMPUTE, numValues);
 #endif // _DEBUG
 
-		commandList->setComputeRootConstants(computeRootSignature->getCSConstantsParameterIndex(), numValues, data, offset);
+		commandList->setComputeRootConstants(getComputeRootSignature()->getCSConstantsParameterIndex(), numValues, data, offset);
 
 		offset += numValues;
 	}
@@ -172,7 +173,7 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ graphicsRootSignature->getVSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getVSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setHSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -181,7 +182,7 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ graphicsRootSignature->getHSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getHSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setDSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -190,7 +191,7 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ graphicsRootSignature->getDSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getDSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setGSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -199,7 +200,7 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ graphicsRootSignature->getGSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getGSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setPSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -208,7 +209,7 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ graphicsRootSignature->getPSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getPSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setCSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -217,7 +218,7 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ computeRootSignature->getCSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getComputeRootSignature()->getCSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setPipelineState(const D3D12Core::PipelineState& pipelineState)
@@ -241,13 +242,6 @@ namespace Gear::Core
 
 	void GraphicsContext::setRenderTargets(const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
 	{
-#ifdef _DEBUG
-		if (nullptr == depthStencil.texture)
-		{
-			LOGERROR(L"if you want to bind only depth stencil view then texture pointer cannot be nullptr");
-		}
-#endif // _DEBUG
-
 		setResourceState(depthStencil);
 
 		depthStencilClearDesc.setHandle(depthStencil.dsvHandle);
@@ -267,7 +261,14 @@ namespace Gear::Core
 
 	void GraphicsContext::clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4])
 	{
-		renderTargetClearDescs.emplace_back(RenderTargetClearDesc{ desc.rtvHandle,{clearValue[0],clearValue[1],clearValue[2],clearValue[3]} });
+#ifdef _DEBUG
+		if (renderTargetClearDescIndex >= D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT)
+		{
+			LOGERROR(L"无法清理更多的渲染目标视图！");
+		}
+#endif // _DEBUG
+
+		renderTargetClearDescs[renderTargetClearDescIndex++] = RenderTargetClearDesc{ desc.rtvHandle,{clearValue[0],clearValue[1],clearValue[2],clearValue[3]} };
 	}
 
 	void GraphicsContext::clearRenderTargetInstant(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4])
@@ -494,14 +495,18 @@ namespace Gear::Core
 
 	void GraphicsContext::flushRenderTargetClearDescs()
 	{
-		if (renderTargetClearDescs.size())
+		if (renderTargetClearDescIndex)
 		{
-			for (const RenderTargetClearDesc& desc : renderTargetClearDescs)
+			for (uint32_t i = 0; i < renderTargetClearDescIndex; i++)
 			{
-				commandList->clearRenderTarget(desc.handle, desc.clearValue, 0, nullptr);
+				const D3D12_CPU_DESCRIPTOR_HANDLE handle = renderTargetClearDescs[i].handle;
+
+				const float* const clearValue = renderTargetClearDescs[i].clearValue;
+
+				commandList->clearRenderTarget(handle, clearValue, 0, nullptr);
 			}
 
-			renderTargetClearDescs.clear();
+			renderTargetClearDescIndex = 0u;
 		}
 	}
 
@@ -543,6 +548,30 @@ namespace Gear::Core
 			if (userDefinedGlobalConstantBuffer)
 				commandList->setComputeRootConstantBuffer(D3D12Core::RootSignature::getUserDefinedGlobalConstantBufferParameterIndex(), userDefinedGlobalConstantBuffer->getGPUAddress());
 		}
+	}
+
+	const D3D12Core::RootSignature* GraphicsContext::getGraphicsRootSignature() const
+	{
+#ifdef _DEBUG
+		if (nullptr == graphicsRootSignature)
+		{
+			LOGERROR(L"没有检测到图形根签名绑定，是否忘记设置管线状态？");
+		}
+#endif // _DEBUG
+
+		return graphicsRootSignature;
+	}
+
+	const D3D12Core::RootSignature* GraphicsContext::getComputeRootSignature() const
+	{
+#ifdef _DEBUG
+		if (nullptr == computeRootSignature)
+		{
+			LOGERROR(L"没有检测到计算根签名绑定，是否忘记设置管线状态？");
+		}
+#endif // _DEBUG
+
+		return computeRootSignature;
 	}
 
 	void GraphicsContext::setResourceState(const Resource::D3D12Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState)

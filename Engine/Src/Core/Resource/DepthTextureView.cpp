@@ -46,7 +46,7 @@ namespace Gear::Core::Resource
 			dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 			break;
 		default:
-			LOGERROR(L"not supported depth stencil texture format");
+			LOGERROR(L"不支持的深度模板纹理格式！");
 			break;
 		}
 

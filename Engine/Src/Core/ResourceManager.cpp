@@ -176,10 +176,10 @@ namespace Gear::Core
 		}
 		else
 		{
-			LOGERROR(fileExtension, L"is not supported");
+			LOGERROR(fileExtension, L"是不被支持的文件扩展名");
 		}
 
-		LOGSUCCESS(L"load texture from", LogColor::brightBlue, filePath, LogColor::defaultColor, L"succeeded");
+		LOGSUCCESS(L"读取", LogColor::brightBlue, filePath);
 
 		return texture;
 	}
@@ -305,7 +305,7 @@ namespace Gear::Core
 	{
 		if (createVBV && createIBV)
 		{
-			LOGERROR(L"a buffer cannot be used as VBV and IBV at the same time");
+			LOGERROR(L"一个缓冲不能同时被用于顶点缓冲和索引缓冲");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -350,7 +350,7 @@ namespace Gear::Core
 	{
 		if (createVBV && createIBV)
 		{
-			LOGERROR(L"a buffer cannot be used as VBV and IBV at the same time");
+			LOGERROR(L"一个缓冲不能同时被用于顶点缓冲和索引缓冲");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -481,7 +481,7 @@ namespace Gear::Core
 			clearValueFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 			break;
 		default:
-			LOGERROR(L"not supported dsv format");
+			LOGERROR(L"不被支持的深度模板纹理格式");
 			break;
 		}
 
@@ -708,7 +708,7 @@ namespace Gear::Core
 			resFormat = FMT::RGBA32F;
 			break;
 		default:
-			LOGERROR(L"not supported equirectangular texture format");
+			LOGERROR(L"不被支持的等距柱状图纹理格式");
 			break;
 		}
 

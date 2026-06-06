@@ -88,8 +88,6 @@ namespace Gear
 
 	GearImpl::~GearImpl()
 	{
-		LOGENGINE(L"destroy resources");
-
 		Core::RenderEngine::Internal::waitForCurrentFrame();
 
 #ifdef _DEBUG
@@ -104,6 +102,8 @@ namespace Gear
 		reportLiveObjects();
 
 #endif // _DEBUG
+
+		LOGENGINE(L"资源销毁完毕");
 	}
 
 	int32_t GearImpl::iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
@@ -112,7 +112,7 @@ namespace Gear
 
 		Utils::File::Internal::setRootFolder(Utils::File::backslashToSlash(Utils::File::getParentFolder(argv[0])));
 
-		LOGENGINE(L"root folder", LogColor::brightBlue, Utils::File::getRootFolder());
+		LOGENGINE(L"EXE根目录", LogColor::brightBlue, Utils::File::getRootFolder());
 
 		usage = param.usage;
 
@@ -133,7 +133,7 @@ namespace Gear
 
 			backBufferHeap = makeUnique<Core::Resource::D3D12Resource::ReadbackHeap>(Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
 
-			LOGENGINE(L"engine usage real time render");
+			LOGENGINE(L"引擎用途", L"实时渲染");
 
 			break;
 
@@ -147,7 +147,7 @@ namespace Gear
 
 			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(videoRender.width, videoRender.height, Window::Win32Form::getHandle(), false, false);
 
-			LOGENGINE(L"engine usage video render");
+			LOGENGINE(L"引擎用途", L"视频渲染");
 
 			break;
 
@@ -163,7 +163,7 @@ namespace Gear
 
 			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(systemResolution.x, systemResolution.y, Window::Win32Form::getHandle(), true, false);
 
-			LOGENGINE(L"engine usage wallpaper");
+			LOGENGINE(L"引擎用途", L"动态壁纸");
 
 			break;
 
@@ -171,11 +171,11 @@ namespace Gear
 			break;
 		}
 
-		LOGENGINE(L"resolution", Core::Graphics::getWidth(), L"x", Core::Graphics::getHeight());
+		LOGENGINE(L"分辨率", Core::Graphics::getWidth(), L"x", Core::Graphics::getHeight());
 
-		LOGENGINE(L"aspect ratio", Core::Graphics::getAspectRatio());
+		LOGENGINE(L"横纵比", Core::Graphics::getAspectRatio());
 
-		LOGENGINE(L"back buffer count", Core::Graphics::getFrameBufferCount());
+		LOGENGINE(L"后备缓冲数量", Core::Graphics::getFrameBufferCount());
 
 		return 0;
 	}
