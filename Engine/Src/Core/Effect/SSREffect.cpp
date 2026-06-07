@@ -64,8 +64,6 @@ namespace Gear::Core::Effect
 			dispatchCeil(hiZTexture->getTexture()->getHeight(), 16u),
 			1u);
 
-		context->uavBarrier({ hiZTexture->getTexture() });
-
 		context->setPipelineState(*hiZCreateState);
 
 		for (uint32_t i = 0; i < hiZMiplvel - 1; i++)
@@ -79,8 +77,6 @@ namespace Gear::Core::Effect
 				dispatchCeil(hiZTexture->getTexture()->getWidth() >> (i + 1u), 16u),
 				dispatchCeil(hiZTexture->getTexture()->getHeight() >> (i + 1u), 16u),
 				1u);
-
-			context->uavBarrier({ hiZTexture->getTexture() });
 		}
 
 		context->setPipelineState(*hiZProcessState);

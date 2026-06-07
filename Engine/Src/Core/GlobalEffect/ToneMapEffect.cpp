@@ -60,8 +60,6 @@ namespace Gear::Core::GlobalEffect::ToneMapEffect
 
 		context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
 
-		context->uavBarrier({ Internal::impl.outputTexture->getTexture() });
-
 		return Internal::impl.outputTexture.get();
 	}
 }

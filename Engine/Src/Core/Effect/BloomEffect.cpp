@@ -155,7 +155,6 @@ namespace Gear::Core::Effect
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
 		context->dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
-		context->uavBarrier({ swapTexture[blurSteps - 1]->write()->getTexture() });
 		swapTexture[blurSteps - 1]->swap();
 
 		context->setPipelineState(*bloomVBlurState);
@@ -169,7 +168,6 @@ namespace Gear::Core::Effect
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
 		context->dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
-		context->uavBarrier({ swapTexture[blurSteps - 1]->write()->getTexture() });
 		swapTexture[blurSteps - 1]->swap();
 
 		for (uint32_t i = 0; i < blurSteps - 1; i++)
@@ -185,7 +183,6 @@ namespace Gear::Core::Effect
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
 			context->dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
-			context->uavBarrier({ swapTexture[blurSteps - 2 - i]->write()->getTexture() });
 			swapTexture[blurSteps - 2 - i]->swap();
 
 			context->setPipelineState(*bloomVBlurState);
@@ -199,7 +196,6 @@ namespace Gear::Core::Effect
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
 			context->dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
-			context->uavBarrier({ swapTexture[blurSteps - 2 - i]->write()->getTexture() });
 
 			context->setViewportSimple(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
 			context->setPipelineState(*bloomUpSampleState);

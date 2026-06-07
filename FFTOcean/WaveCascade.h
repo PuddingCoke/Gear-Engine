@@ -50,9 +50,6 @@ public:
 
 		context->dispatch(size, 1, 1);
 
-		context->uavBarrier({
-			tempTexture->getTexture() });
-
 		SETCONSTS({
 		context->setCSConstants({
 			inputTexture.getUAVMipIndex(0),
@@ -60,9 +57,6 @@ public:
 			});
 
 		context->dispatch(size, 1, 1);
-
-		context->uavBarrier({
-			inputTexture.getTexture() });
 
 		context->setPipelineState(*permutationState);
 
@@ -72,9 +66,6 @@ public:
 			});
 
 		context->dispatch(size / 8, size / 8, 1);
-
-		context->uavBarrier({
-			inputTexture.getTexture() });
 	}
 
 	void calculateInitialSpectrum(ImmutableCBuffer& spectrumParamBuffer)
@@ -92,10 +83,6 @@ public:
 
 		context->dispatch(size / 8, size / 8, 1);
 
-		context->uavBarrier({
-			tildeh0Texture->getTexture(),
-			waveDataTexture->getTexture() });
-
 		context->setPipelineState(*conjugateState);
 
 		SETCONSTS({
@@ -105,9 +92,6 @@ public:
 			});
 
 		context->dispatch(size / 8, size / 8, 1);
-
-		context->uavBarrier({
-			waveSpectrumTexture->getTexture() });
 	}
 
 	void calculateTimeDependentSpectrum()
@@ -125,12 +109,6 @@ public:
 			});
 
 		context->dispatch(size / 8, size / 8, 1);
-
-		context->uavBarrier({
-			DxDz->getTexture(),
-			DyDxz->getTexture(),
-			DyxDyz->getTexture(),
-			DxxDzz->getTexture() });
 	}
 
 	void calculateDisplacementAndDerivative()
@@ -157,11 +135,6 @@ public:
 			});
 
 		context->dispatch(size / 8, size / 8, 1);
-
-		context->uavBarrier({
-			displacementTexture->getTexture(),
-			derivativeTexture->getTexture(),
-			jacobianTexture->getTexture() });
 	}
 
 	static PipelineState* spectrumState;

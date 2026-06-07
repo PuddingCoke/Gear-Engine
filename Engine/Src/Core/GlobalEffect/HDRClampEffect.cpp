@@ -47,8 +47,6 @@ namespace Gear::Core::GlobalEffect::HDRClampEffect
 				});
 
 			context->dispatch(inOutTexture.getTexture()->getWidth() / 16 + 1, inOutTexture.getTexture()->getHeight() / 16 + 1, 1);
-
-			context->uavBarrier({ inOutTexture.getTexture() });
 		}
 	}
 }

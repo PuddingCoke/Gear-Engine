@@ -75,6 +75,10 @@ namespace Gear::Core::Resource::D3D12Resource
 
 			internalState = transitionState;
 		}
+		else if (internalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+		{
+			transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+		}
 
 		resetTransitionStates();
 	}
@@ -92,6 +96,10 @@ namespace Gear::Core::Resource::D3D12Resource
 			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
 			transitionBarriers.push_back(barrier);
+		}
+		else if (*globalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+		{
+			transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 		}
 	}
 

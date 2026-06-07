@@ -68,8 +68,6 @@ protected:
 
 		context->dispatch(swapTexture.width / 16, swapTexture.height / 9, 1);
 
-		context->uavBarrier({ swapTexture.write()->getTexture() });
-
 		swapTexture.swap();
 	}
 
@@ -85,8 +83,6 @@ protected:
 			});
 
 		context->dispatch(swapTexture.width / 16, swapTexture.height / 9, 1);
-
-		context->uavBarrier({ swapTexture.write()->getTexture() });
 
 		swapTexture.swap();
 	}
@@ -114,8 +110,6 @@ protected:
 			});
 
 		context->dispatch(swapTexture->width / 16, swapTexture->height / 9, 1);
-
-		context->uavBarrier({ originTexture->getTexture() });
 
 		blit(*originTexture);
 	}

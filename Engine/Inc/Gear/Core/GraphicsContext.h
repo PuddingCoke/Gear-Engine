@@ -32,6 +32,9 @@ namespace Gear::Core
 		constexpr D3D12_CLEAR_FLAGS ALL = D3D12_CLEAR_FLAGS::D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAGS::D3D12_CLEAR_FLAG_STENCIL;
 	}
 
+	/// <summary>
+	/// 注意事项：禁止将UAV用于只读用途，否则你需要手动调用uavBarrier方法！
+	/// </summary>
 	class GraphicsContext
 	{
 	public:
@@ -164,6 +167,8 @@ namespace Gear::Core
 
 		void dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ);
 
+		//根据微软提供的资料，UAV屏障是仅用于UAV的
+		//对于同一UAV来说，如果有先读后写或先写后读两个连续操作，或读写由一个着色器完成，那么请调用这个方法
 		template<size_t N>
 		void uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N]);
 

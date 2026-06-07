@@ -131,6 +131,10 @@ namespace Gear::Core::Resource::D3D12Resource
 
 						internalState->set(transitionState->allState);
 					}
+					else if (internalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+					{
+						transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+					}
 				}
 				//internalState的allState是未知的，那么需要进一步检查
 				else
@@ -153,6 +157,8 @@ namespace Gear::Core::Resource::D3D12Resource
 					//internalState的有些mipslice的状态是已知的
 					else
 					{
+						bool insertUAVBarrier = false;
+
 						//对于未知的内部状态我们需要PendingTextureBarrier
 						//对于已知的内部状态我们需要D3D12_RESOURCE_BARRIER
 						for (uint32_t mipSlice = 0; mipSlice < mipLevels; mipSlice++)
@@ -193,6 +199,12 @@ namespace Gear::Core::Resource::D3D12Resource
 
 									internalState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
 								}
+								else if (!insertUAVBarrier && internalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+								{
+									transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+
+									insertUAVBarrier = true;
+								}
 							}
 						}
 					}
@@ -228,6 +240,10 @@ namespace Gear::Core::Resource::D3D12Resource
 
 						internalState->set(transitionState->allState);
 					}
+					else if (internalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+					{
+						transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+					}
 				}
 			}
 		}
@@ -237,6 +253,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		{
 			if (mipLevels > 1)
 			{
+				bool insertUAVBarrier = false;
+
 				for (uint32_t mipSlice = 0; mipSlice < mipLevels; mipSlice++)
 				{
 					//检查transitionState的每个mipslice的状态，只有已知情况才进行状态转变
@@ -277,6 +295,12 @@ namespace Gear::Core::Resource::D3D12Resource
 								}
 
 								internalState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+							}
+							else if (!insertUAVBarrier && internalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+							{
+								transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+
+								insertUAVBarrier = true;
 							}
 						}
 					}
@@ -330,9 +354,15 @@ namespace Gear::Core::Resource::D3D12Resource
 
 						transitionBarriers.push_back(barrier);
 					}
+					else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+					{
+						transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+					}
 				}
 				else
 				{
+					bool insertUAVBarrier = false;
+
 					for (uint32_t mipSlice = 0; mipSlice < mipLevels; mipSlice++)
 					{
 						if (globalState->mipLevelStates[mipSlice] != targetState)
@@ -350,6 +380,12 @@ namespace Gear::Core::Resource::D3D12Resource
 								transitionBarriers.push_back(barrier);
 							}
 						}
+						else if (!insertUAVBarrier && globalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+						{
+							transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+
+							insertUAVBarrier = true;
+						}
 					}
 				}
 			}
@@ -366,6 +402,10 @@ namespace Gear::Core::Resource::D3D12Resource
 					barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(targetState);
 
 					transitionBarriers.push_back(barrier);
+				}
+				else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+				{
+					transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 				}
 			}
 		}
@@ -387,6 +427,10 @@ namespace Gear::Core::Resource::D3D12Resource
 
 						transitionBarriers.push_back(barrier);
 					}
+				}
+				else if (globalState->mipLevelStates[targetMipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+				{
+					transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 				}
 			}
 			else

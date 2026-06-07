@@ -116,8 +116,6 @@ protected:
 
 		context->dispatch(numParticles / 100, 1, 1);
 
-		context->uavBarrier({ positionBuffer->getBuffer() });
-
 		context->setPipelineState(*particleRenderState);
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));

@@ -377,8 +377,6 @@ protected:
 
 		context->dispatch(1, 1, 1);
 
-		context->uavBarrier({ irradianceOctahedralMap->getTexture() });
-
 		context->setPipelineState(*depthOctahedralEncodeState);
 
 		SETCONSTS({
@@ -391,8 +389,6 @@ protected:
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
 		context->dispatch(1, 1, 1);
-
-		context->uavBarrier({ depthOctahedralMap->getTexture() });
 	}
 
 	void renderCubeBounceAt(const ImmutableCBuffer& cubeRenderBuffer)
@@ -437,8 +433,6 @@ protected:
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
 		context->dispatch(1, 1, 1);
-
-		context->uavBarrier({ irradianceBounceOctahedralMap->getTexture() });
 	}
 
 	void recordCommand() override

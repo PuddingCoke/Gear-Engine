@@ -88,8 +88,6 @@ protected:
 
 		context->dispatch(Graphics::getWidth() / 16, Graphics::getHeight() / 9, 1);
 
-		context->uavBarrier({ originTexture->getTexture() });
-
 		auto bloomTexture = effect->process(*originTexture);
 
 		auto toneMappedTexture = ToneMapEffect::process(*context, *bloomTexture);
