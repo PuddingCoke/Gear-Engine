@@ -35,7 +35,7 @@ namespace Gear::Core::Resource
 #ifdef _DEBUG
 		if (getNumCBVSRVUAVDescriptors() == 0u)
 		{
-			LOGERROR(L"should set numCBVSRVUAVDescriptors before using this method");
+			LOGERROR(L"调用这个方法前应该先设置", TOWSTRING(numCBVSRVUAVDescriptors));
 		}
 #endif // _DEBUG
 
@@ -56,7 +56,7 @@ namespace Gear::Core::Resource
 #ifdef _DEBUG
 		if (persistent)
 		{
-			LOGERROR(L"call getTransientDescriptorHandle for persistent resources is not allowed");
+			LOGERROR(L"对于持久性资源来说，调用", TOWSTRING(copyToResourceHeap), L"是非法的！");
 		}
 #endif // _DEBUG
 

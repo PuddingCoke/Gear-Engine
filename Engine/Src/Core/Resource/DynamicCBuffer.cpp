@@ -15,13 +15,13 @@ namespace Gear::Core::Resource
 	{
 		if (regionIndex >= DynamicCBufferManager::getNumRegion())
 		{
-			std::wstring errorString = L"dynamic constant buffer size should be one of";
+			std::wstring errorString = L"动态常量缓冲的大小只能是以下这些";
 
 			uint32_t factor = 1u;
 
 			for (uint32_t i = 0; i < DynamicCBufferManager::getNumRegion(); i++)
 			{
-				errorString += L" " + std::to_wstring(256u * factor) + L"bytes";
+				errorString += L" " + std::to_wstring(256u * factor) + L"Bytes";
 
 				factor <<= 1u;
 			}
@@ -35,7 +35,7 @@ namespace Gear::Core::Resource
 #ifdef _DEBUG
 		if (acquireFrameIndex == Graphics::getRenderedFrameCount())
 		{
-			LOGERROR(L"you can only acquire data pointer for cbuffer once per frame");
+			LOGERROR(L"对于动态常量缓冲来说，每帧的数据指针获取只能有一次！");
 		}
 #endif // _DEBUG
 
@@ -55,12 +55,12 @@ namespace Gear::Core::Resource
 #ifdef _DEBUG
 		if (acquireFrameIndex != Graphics::getRenderedFrameCount())
 		{
-			LOGERROR(L"you haven't acquire data pointer for this dynamic cbuffer yet");
+			LOGERROR(L"你还没有为这个动态常量缓冲获取这一帧可用的数据指针！");
 		}
 
 		if (updateFrameIndex == Graphics::getRenderedFrameCount())
 		{
-			LOGERROR(L"you can only update cbuffer once per frame");
+			LOGERROR(L"一个动态常量缓冲每帧只能更新一次！");
 		}
 #endif // _DEBUG
 

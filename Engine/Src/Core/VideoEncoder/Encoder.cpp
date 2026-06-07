@@ -18,25 +18,25 @@ namespace Gear::Core::VideoEncoder
 		switch (format)
 		{
 		case OutputVideoFormat::H264:
-			LOGENGINE(L"output video format", LogColor::brightMagenta, L"H264");
+			LOGENGINE(L"输出视频格式", LogColor::brightMagenta, L"H264");
 			mediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_H264);
 			break;
 		case OutputVideoFormat::HEVC:
-			LOGENGINE(L"output video format", LogColor::brightMagenta, L"HEVC");
+			LOGENGINE(L"输出视频格式", LogColor::brightMagenta, L"HEVC");
 			mediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_HEVC);
 			break;
 		case OutputVideoFormat::AV1:
-			LOGENGINE(L"output video format", LogColor::brightMagenta, L"AV1");
+			LOGENGINE(L"输出视频格式", LogColor::brightMagenta, L"AV1");
 			mediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_AV1);
 			break;
 		default:
-			LOGERROR(L"not supported output video format!");
+			LOGERROR(L"不被支持的输出视频格式！");
 			break;
 		}
 
-		LOGENGINE(L"frame rate", frameRate);
+		LOGENGINE(L"视频帧率", frameRate);
 
-		LOGENGINE(L"frame to encode", frameToEncode);
+		LOGENGINE(L"待编码帧数", frameToEncode);
 
 		MFSetAttributeSize(mediaType.Get(), MF_MT_FRAME_SIZE, Graphics::getWidth(), Graphics::getHeight());
 

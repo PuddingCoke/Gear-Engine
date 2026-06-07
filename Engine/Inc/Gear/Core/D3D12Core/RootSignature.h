@@ -80,6 +80,9 @@ namespace Gear::Core::D3D12Core
 
 		static constexpr uint32_t perDescriptorDWORD = 2u;
 
+		//32个常量已经足够慷慨了，总计32个DWORD
+		static constexpr uint32_t maxPerShaderConstants = 32u;
+
 	private:
 
 		std::array<uint32_t, static_cast<uint32_t>(ShaderType::TYPECOUNT)> numShaderConstants;

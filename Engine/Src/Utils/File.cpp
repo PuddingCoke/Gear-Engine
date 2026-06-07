@@ -103,7 +103,8 @@ namespace Gear::Utils::File
 
 		if (!file.is_open())
 		{
-			LOGERROR(L"open file", filePath, L"failed");
+			
+			LOGERROR(L"打开文件", filePath, L"失败！");
 		}
 
 		std::wstringstream stringStream;
@@ -119,7 +120,7 @@ namespace Gear::Utils::File
 
 		if (!file.is_open())
 		{
-			LOGERROR(L"open file", filePath, L"failed");
+			LOGERROR(L"打开文件", filePath, L"失败！");
 		}
 
 		const size_t fileSize = static_cast<size_t>(file.tellg());

@@ -284,7 +284,7 @@ namespace Gear::Core::Resource::D3D12Resource
 			}
 			else
 			{
-				LOGERROR(L"when transition texture that has only 1 miplevel,its allState must be known");
+				LOGERROR(L"当转变只有一个miplevel的纹理时，它的allState必须是已知的！");
 			}
 		}
 
@@ -391,7 +391,7 @@ namespace Gear::Core::Resource::D3D12Resource
 			}
 			else
 			{
-				LOGERROR(L"when transition a texture that has only 1 miplevel,pending mipslice must be D3D12_TRANSITION_ALL_MIPLEVELS");
+				LOGERROR(L"当转变只有一个miplevel的纹理时，待定的mipslice必须为", TOWSTRING(D3D12_TRANSITION_ALL_MIPLEVELS));
 			}
 		}
 	}

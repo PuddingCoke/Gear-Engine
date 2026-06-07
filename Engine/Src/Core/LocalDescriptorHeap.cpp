@@ -43,7 +43,7 @@ namespace Gear::Core::LocalDescriptorHeap
 #ifdef _DEBUG
 		if (!Internal::perThreadStagingResourceHeap.get())
 		{
-			LOGERROR(L"你还没有分配线程独享的描述符堆!");
+			LOGERROR(L"你还没有分配线程独享的暂存资源描述符堆!");
 		}
 #endif // _DEBUG
 
@@ -55,7 +55,7 @@ namespace Gear::Core::LocalDescriptorHeap
 #ifdef _DEBUG
 		if (!Internal::perThreadRenderTargetHeap.get())
 		{
-			LOGERROR(L"你还没有分配线程独享的描述符堆!");
+			LOGERROR(L"你还没有分配线程独享的渲染目标描述符堆!");
 		}
 #endif // _DEBUG
 
@@ -67,7 +67,7 @@ namespace Gear::Core::LocalDescriptorHeap
 #ifdef _DEBUG
 		if (!Internal::perThreadDepthStencilHeap.get())
 		{
-			LOGERROR(L"你还没有分配线程独享的描述符堆!");
+			LOGERROR(L"你还没有分配线程独享的深度模板描述符堆!");
 		}
 #endif // _DEBUG
 

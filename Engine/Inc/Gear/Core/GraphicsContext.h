@@ -183,6 +183,8 @@ namespace Gear::Core
 
 	private:
 
+		static constexpr uint32_t maxPerInvokeUAVBarriers = 32u;
+
 		struct RootConstantBufferDesc
 		{
 			uint32_t rootParameterIndex;
@@ -205,16 +207,15 @@ namespace Gear::Core
 
 			void reset();
 
-			D3D12_CPU_DESCRIPTOR_HANDLE handle;
+			D3D12_CPU_DESCRIPTOR_HANDLE handle = {};
 
-			D3D12_CLEAR_FLAGS flags;
+			D3D12_CLEAR_FLAGS flags = CLEARFLAG::ALL;
 
-			float depth;
+			float depth = 0;
 
-			uint8_t stencil;
+			uint8_t stencil = 0;
 
 			bool needClear = false;
-
 		};
 
 		void transitionResources();
@@ -270,20 +271,7 @@ namespace Gear::Core
 
 		UniquePtr<D3D12Core::CommandList> commandList;
 
-		//这里有个假设，微软的官方文档说每个根签名最多有 64 个DWORD
-		//如果根签名全部都是根常量缓冲，那么最多有 64/2 = 32 个根常量缓冲
-		//这个想法是我在优化GraphicsContext时一瞬之间想到的
-		std::array<RootConstantBufferDesc, D3D12Core::RootSignature::maxDWORD / D3D12Core::RootSignature::perDescriptorDWORD> rootConstantBufferDescs;
-
-		uint32_t rootConstantBufferDescIndex;
-
-		std::array<RenderTargetClearDesc, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> renderTargetClearDescs;
-
-		uint32_t renderTargetClearDescIndex;
-
-		DepthStencilClearDesc depthStencilClearDesc;
-
-		//这些是内部追踪的状态，用于减少图形API的调用
+		//以下是内部追踪的状态，用于减少图形API的调用
 		const D3D12Core::PipelineState* currentPipelineState;
 
 		const Resource::ImmutableCBuffer* userDefinedGlobalConstantBuffer;
@@ -294,13 +282,28 @@ namespace Gear::Core
 
 		const D3D12Core::RootSignature* computeRootSignature;
 
-		std::array<uint32_t, 32> transientResourceIndices;
+		//以下是用于每次draw call或dispatch call的临时资源
+
+		//这里有个假设，微软的官方文档说每个根签名最多有 64 个 DWORD
+		//如果根签名全部都是根常量缓冲，那么最多有 64/2 = 32 个根常量缓冲
+		//这个想法是我在优化 GraphicsContext 时一瞬之间想到的
+		std::array<RootConstantBufferDesc, D3D12Core::RootSignature::maxDWORD / D3D12Core::RootSignature::perDescriptorDWORD> rootConstantBufferDescs;
+
+		uint32_t rootConstantBufferDescIndex;
+
+		std::array<RenderTargetClearDesc, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> renderTargetClearDescs;
+
+		uint32_t renderTargetClearDescIndex;
+
+		DepthStencilClearDesc depthStencilClearDesc;
+
+		std::array<uint32_t, D3D12Core::RootSignature::maxPerShaderConstants> transientResourceIndices;
 
 		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> transientRTVHandles;
 
 		std::array<D3D12_VERTEX_BUFFER_VIEW, D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT> transientVBViews;
 
-		std::array<D3D12_RESOURCE_BARRIER, 32> transientUAVBarriers;
+		std::array<D3D12_RESOURCE_BARRIER, maxPerInvokeUAVBarriers> transientUAVBarriers;
 
 	};
 
@@ -427,6 +430,13 @@ namespace Gear::Core
 	template<size_t N>
 	inline void GraphicsContext::getResourceIndicesFromDescs(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N])
 	{
+#ifdef _DEBUG
+		if (N > D3D12Core::RootSignature::maxPerShaderConstants)
+		{
+			LOGERROR(L"对于每个draw call和dispatch call来说，每个着色器的常量写入限制为", D3D12Core::RootSignature::maxPerShaderConstants, L"个！");
+		}
+#endif // _DEBUG
+
 		for (uint32_t i = 0; i < N; i++)
 		{
 			transientResourceIndices[i] = descs[i].resourceIndex;

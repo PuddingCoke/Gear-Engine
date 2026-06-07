@@ -7,7 +7,7 @@ namespace Gear::Core::Resource
 	{
 		if (size % 256 != 0)
 		{
-			LOGERROR(L"size of constant buffer must be multiply of 256");
+			LOGERROR(L"常量缓冲的字节大小必须是256的倍数！");
 		}
 
 		if (buffer)

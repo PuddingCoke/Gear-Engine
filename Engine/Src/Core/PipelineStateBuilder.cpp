@@ -121,11 +121,11 @@ namespace Gear::Core
 
 		if (!hasVertexShader)
 		{
-			LOGERROR(L"必须设置顶点着色器");
+			LOGERROR(L"必须设置顶点着色器！");
 		}
 		else if ((!hasHullShader && hasDomainShader) || (hasHullShader && !hasDomainShader))
 		{
-			LOGERROR(L"如果需要镶嵌细分，那么外壳着色器和域着色器必须都被设置");
+			LOGERROR(L"如果需要镶嵌细分，那么外壳着色器和域着色器必须都被设置！");
 		}
 
 		if (!hasHullShader && !hasDomainShader && !hasGeometryShader)

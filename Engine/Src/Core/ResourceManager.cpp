@@ -176,7 +176,7 @@ namespace Gear::Core
 		}
 		else
 		{
-			LOGERROR(fileExtension, L"是不被支持的文件扩展名");
+			LOGERROR(fileExtension, L"是不被支持的文件扩展名！");
 		}
 
 		LOGSUCCESS(L"读取", LogColor::brightBlue, filePath);
@@ -305,7 +305,7 @@ namespace Gear::Core
 	{
 		if (createVBV && createIBV)
 		{
-			LOGERROR(L"一个缓冲不能同时被用于顶点缓冲和索引缓冲");
+			LOGERROR(L"一个缓冲不能同时被用于顶点缓冲和索引缓冲！");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -350,7 +350,7 @@ namespace Gear::Core
 	{
 		if (createVBV && createIBV)
 		{
-			LOGERROR(L"一个缓冲不能同时被用于顶点缓冲和索引缓冲");
+			LOGERROR(L"一个缓冲不能同时被用于顶点缓冲和索引缓冲！");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -481,7 +481,7 @@ namespace Gear::Core
 			clearValueFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 			break;
 		default:
-			LOGERROR(L"不被支持的深度模板纹理格式");
+			LOGERROR(L"不被支持的深度模板纹理格式！");
 			break;
 		}
 
@@ -613,7 +613,7 @@ namespace Gear::Core
 
 		if (!hasUAV && !hasRTV)
 		{
-			LOGERROR(TOWSTRING(uavFormat), L"和", TOWSTRING(rtvFormat), L"其中一个必须为有效格式");
+			LOGERROR(TOWSTRING(uavFormat), L"和", TOWSTRING(rtvFormat), L"其中一个必须为有效格式！");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -708,7 +708,7 @@ namespace Gear::Core
 			resFormat = FMT::RGBA32F;
 			break;
 		default:
-			LOGERROR(L"不被支持的等距柱状图纹理格式");
+			LOGERROR(L"不被支持的等距柱状图纹理格式！");
 			break;
 		}
 

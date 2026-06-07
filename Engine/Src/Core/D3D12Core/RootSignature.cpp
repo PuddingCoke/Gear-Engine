@@ -11,6 +11,40 @@ namespace Gear::Core::D3D12Core
 		numShaderConstants[static_cast<uint32_t>(ShaderType::PIXEL)] = numPSConstants;
 		numShaderConstants[static_cast<uint32_t>(ShaderType::COMPUTE)] = numCSConstants;
 
+		for (uint32_t i = 0; i < static_cast<uint32_t>(ShaderType::TYPECOUNT); i++)
+		{
+			if (numShaderConstants[i] > maxPerShaderConstants)
+			{
+				std::wstring errorString = L"";
+
+				switch (static_cast<ShaderType>(i))
+				{
+				case ShaderType::VERTEX:
+					errorString += L"顶点着色器";
+					break;
+				case ShaderType::HULL:
+					errorString += L"外壳着色器";
+					break;
+				case ShaderType::DOMAIN:
+					errorString += L"域着色器";
+					break;
+				case ShaderType::GEOMETRY:
+					errorString += L"几何着色器";
+					break;
+				case ShaderType::PIXEL:
+					errorString += L"像素着色器";
+					break;
+				case ShaderType::COMPUTE:
+					errorString += L"计算着色器";
+					break;
+				default:
+					break;
+				}
+
+				LOGERROR(errorString, L"常量个数分配的限制为", maxPerShaderConstants, L"个");
+			}
+		}
+
 		//根据全局和局部结构体的大小和传入的参数计算需要多少个根参数
 		const uint32_t numRootParameters = static_cast<uint32_t>(sizeof(CommonShaderLayout::ShaderGlobalParameterIndices) / sizeof(uint32_t))
 			+ (static_cast<bool>(numVSConstants)
@@ -217,33 +251,33 @@ namespace Gear::Core::D3D12Core
 #ifdef _DEBUG
 		if (localParameterIndices[index].perInvokeConstantsParameterIndex == 0)
 		{
-			std::wstring errorString = L"there is no root parameter for ";
+			std::wstring errorString = L"";
 
 			switch (shaderType)
 			{
 			case ShaderType::VERTEX:
-				errorString += L"vertex";
+				errorString += L"顶点着色器";
 				break;
 			case ShaderType::HULL:
-				errorString += L"hull";
+				errorString += L"外壳着色器";
 				break;
 			case ShaderType::DOMAIN:
-				errorString += L"domain";
+				errorString += L"域着色器";
 				break;
 			case ShaderType::GEOMETRY:
-				errorString += L"geometry";
+				errorString += L"几何着色器";
 				break;
 			case ShaderType::PIXEL:
-				errorString += L"pixel";
+				errorString += L"像素着色器";
 				break;
 			case ShaderType::COMPUTE:
-				errorString += L"compute";
+				errorString += L"计算着色器";
 				break;
 			default:
 				break;
 			}
 
-			errorString += L" shader";
+			errorString += L"没有被分配根参数！";
 
 			LOGERROR(errorString);
 		}

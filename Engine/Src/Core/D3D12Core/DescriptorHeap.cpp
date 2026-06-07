@@ -35,11 +35,10 @@ namespace Gear::Core::D3D12Core
 	{
 		const uint64_t retIndex = staticIndex.fetch_add(num, std::memory_order_relaxed);
 
-		//这里要加个错误检测
 #ifdef _DEBUG
 		if (retIndex + num > numDescriptors - numDynamicDescriptors)
 		{
-			LOGERROR(L"staticIndex out of boundary");
+			LOGERROR(L"静态索引超出边界！是否分配了过多的静态资源？");
 		}
 #endif // _DEBUG
 
