@@ -33,7 +33,7 @@ namespace Gear::Core
 	}
 
 	/// <summary>
-	/// 注意事项：禁止将UAV用于只读用途，否则你需要手动调用uavBarrier方法！
+	/// 注意事项：禁止将UAV用于只读用途，否则引擎可能会插入多余的UAV屏障
 	/// </summary>
 	class GraphicsContext
 	{
