@@ -16,11 +16,11 @@ namespace Gear::Core::GlobalShader
 		{
 			GlobalShaderImpl();
 
-			UniquePtr<D3D12Core::Shader> fullScreenVS;
+			D3D12Core::ShaderPtr fullScreenVS;
 
-			UniquePtr<D3D12Core::Shader> fullScreenPS;
+			D3D12Core::ShaderPtr fullScreenPS;
 
-			UniquePtr<D3D12Core::Shader> textureCubeVS;
+			D3D12Core::ShaderPtr textureCubeVS;
 
 		};
 

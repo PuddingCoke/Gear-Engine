@@ -9,6 +9,8 @@
 
 namespace Gear::Core::Resource
 {
+	CREATESAFETYPE(DepthTextureView);
+
 	class DepthTextureView :public ResourceBase
 	{
 	public:
@@ -20,7 +22,7 @@ namespace Gear::Core::Resource
 		//R16_TYPELESS 
 		//R32G8X24_TYPELESS 
 		//R24G8_TYPELESS
-		DepthTextureView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent);
+		DepthTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent);
 
 		DepthTextureView(const DepthTextureView&);
 
@@ -60,7 +62,7 @@ namespace Gear::Core::Resource
 
 		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvMipHandles;
 
-		UniquePtr<D3D12Resource::Texture> texture;
+		D3D12Resource::TexturePtr texture;
 	};
 }
 

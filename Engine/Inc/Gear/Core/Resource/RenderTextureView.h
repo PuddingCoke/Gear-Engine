@@ -9,6 +9,8 @@
 
 namespace Gear::Core::Resource
 {
+	CREATESAFETYPE(RenderTextureView);
+
 	//多用途纹理
 	//texturecubearray
 	//texturecube
@@ -21,7 +23,7 @@ namespace Gear::Core::Resource
 
 		RenderTextureView() = delete;
 
-		RenderTextureView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
+		RenderTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
 
 		RenderTextureView(const RenderTextureView&);
 
@@ -63,7 +65,7 @@ namespace Gear::Core::Resource
 
 		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> viewCPUHandles;
 
-		UniquePtr<D3D12Resource::Texture> texture;
+		D3D12Resource::TexturePtr texture;
 	};
 }
 

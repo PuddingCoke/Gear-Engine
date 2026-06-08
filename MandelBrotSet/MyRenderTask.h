@@ -99,11 +99,11 @@ protected:
 
 private:
 
-	UniquePtr<Shader> computeCS;
+	ShaderPtr computeCS;
 
-	UniquePtr<PipelineState> computeState;
+	PipelineStatePtr computeState;
 
-	UniquePtr<RenderTextureView> originTexture;
+	RenderTextureViewPtr originTexture;
 
 	struct SimulationParam
 	{
@@ -120,6 +120,6 @@ private:
 		float floatSeed;
 	} accParam;
 
-	UniquePtr<BloomEffect> effect;
+	BloomEffectPtr effect;
 
 };

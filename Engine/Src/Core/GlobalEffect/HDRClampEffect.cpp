@@ -11,9 +11,9 @@ namespace Gear::Core::GlobalEffect::HDRClampEffect
 		struct HDRClampEffectImpl
 		{
 
-			UniquePtr<D3D12Core::Shader> hdrClampShader;
+			D3D12Core::ShaderPtr hdrClampShader;
 
-			UniquePtr<D3D12Core::PipelineState> hdrClampState;
+			D3D12Core::PipelineStatePtr hdrClampState;
 
 		}impl;
 

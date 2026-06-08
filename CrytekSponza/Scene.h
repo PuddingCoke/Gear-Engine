@@ -197,8 +197,8 @@ private:
 
 	std::vector<UniquePtr<Model>> models;
 
-	UniquePtr<BufferView> modelBuffer;
+	BufferViewPtr modelBuffer;
 
-	UniquePtr<BufferView> indexBuffer;
+	BufferViewPtr indexBuffer;
 
 };

@@ -15,17 +15,17 @@ namespace Gear::Core::GlobalEffect::LatLongMapToCubeMapEffect
 		struct LatLongMapToCubeMapEffectImpl
 		{
 
-			UniquePtr<D3D12Core::Shader> equirectangularVS;
+			D3D12Core::ShaderPtr equirectangularVS;
 
-			UniquePtr<D3D12Core::Shader> equirectangularPS;
+			D3D12Core::ShaderPtr equirectangularPS;
 
-			UniquePtr<D3D12Core::PipelineState> equirectangularR8State;
+			D3D12Core::PipelineStatePtr equirectangularR8State;
 
-			UniquePtr<D3D12Core::PipelineState> equirectangularR16State;
+			D3D12Core::PipelineStatePtr equirectangularR16State;
 
-			UniquePtr<D3D12Core::PipelineState> equirectangularR32State;
+			D3D12Core::PipelineStatePtr equirectangularR32State;
 
-			UniquePtr<Resource::ImmutableCBuffer> matricesBuffer;
+			Resource::ImmutableCBufferPtr matricesBuffer;
 
 		}impl;
 

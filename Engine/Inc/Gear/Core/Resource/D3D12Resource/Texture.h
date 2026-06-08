@@ -11,7 +11,7 @@
 
 namespace Gear::Core::Resource::D3D12Resource
 {
-	class Texture;
+	CREATESAFETYPE(Texture);
 
 	struct PendingTextureBarrier
 	{

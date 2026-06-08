@@ -7,6 +7,8 @@
 
 namespace Gear::Core::D3D12Core
 {
+	CREATESAFETYPE(PipelineState);
+
 	class PipelineState
 	{
 	public:

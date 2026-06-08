@@ -9,6 +9,8 @@
 
 namespace Gear::Core::Resource
 {
+	CREATESAFETYPE(BufferView);
+
 	//多用途缓冲
 	class BufferView :public ResourceBase
 	{
@@ -16,7 +18,7 @@ namespace Gear::Core::Resource
 
 		BufferView() = delete;
 
-		BufferView(UniquePtr<D3D12Resource::Buffer> bufferPtr, const uint32_t structureByteStride, const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent);
+		BufferView(D3D12Resource::BufferPtr bufferPtr, const uint32_t structureByteStride, const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent);
 
 		~BufferView();
 
@@ -50,7 +52,7 @@ namespace Gear::Core::Resource
 
 	private:
 
-		UniquePtr<CounterBufferView> counterBuffer;
+		CounterBufferViewPtr counterBuffer;
 
 		uint32_t srvIndex;
 
@@ -69,7 +71,7 @@ namespace Gear::Core::Resource
 
 		UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeaps;
 
-		UniquePtr<D3D12Resource::Buffer> buffer;
+		D3D12Resource::BufferPtr buffer;
 	};
 }
 

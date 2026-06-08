@@ -114,23 +114,23 @@ protected:
 
 private:
 
-	UniquePtr<PipelineState> pipelineState;
+	PipelineStatePtr pipelineState;
 
-	UniquePtr<Shader> blackHoleShader;
+	ShaderPtr blackHoleShader;
 
-	UniquePtr<PipelineState> colorGradingState;
+	PipelineStatePtr colorGradingState;
 
-	UniquePtr<Shader> colorGradingShader;
+	ShaderPtr colorGradingShader;
 
-	UniquePtr<RenderTextureView> noiseTexture;
+	RenderTextureViewPtr noiseTexture;
 
-	UniquePtr<RenderTextureView> diskTexture;
+	RenderTextureViewPtr diskTexture;
 
-	UniquePtr<RenderTextureView> originTexture;
+	RenderTextureViewPtr originTexture;
 
-	UniquePtr<RenderTextureView> colorGradingTexture;
+	RenderTextureViewPtr colorGradingTexture;
 
-	UniquePtr<BloomEffect> effect;
+	BloomEffectPtr effect;
 
 	struct PerframeData
 	{

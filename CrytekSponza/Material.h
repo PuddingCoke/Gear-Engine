@@ -36,10 +36,10 @@ public:
 
 private:
 
-	UniquePtr<RenderTextureView> diffuse;
+	RenderTextureViewPtr diffuse;
 
-	UniquePtr<RenderTextureView> roughnessMetallic;
+	RenderTextureViewPtr roughnessMetallic;
 
-	UniquePtr<RenderTextureView> normal;
+	RenderTextureViewPtr normal;
 
 };

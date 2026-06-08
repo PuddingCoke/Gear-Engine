@@ -9,11 +9,13 @@
 
 namespace Gear::Core::Effect
 {
+	CREATESAFETYPE(HBAOPlusEffect);
+
 	class HBAOPlusEffect :public EffectBase
 	{
 	public:
 
-		static UniquePtr<HBAOPlusEffect> create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
+		static HBAOPlusEffectPtr create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
 		HBAOPlusEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 

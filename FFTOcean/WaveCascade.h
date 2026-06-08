@@ -162,17 +162,17 @@ public:
 	static RenderTextureView* tildeh0Texture;
 
 	//Dx Dy Dz
-	UniquePtr<RenderTextureView> displacementTexture;
+	RenderTextureViewPtr displacementTexture;
 
 	//dDy/dx dDy/dz dDx/dx dDz/dz
-	UniquePtr<RenderTextureView> derivativeTexture;
+	RenderTextureViewPtr derivativeTexture;
 
 	//J
-	UniquePtr<RenderTextureView> jacobianTexture;
+	RenderTextureViewPtr jacobianTexture;
 
 private:
 
-	static UniquePtr<RenderTextureView> createTexture(const uint32_t& resolution, const DXGI_FORMAT& format)
+	static RenderTextureViewPtr createTexture(const uint32_t& resolution, const DXGI_FORMAT& format)
 	{
 		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false, true);
 	}
@@ -183,23 +183,23 @@ private:
 
 	//k.x 1.0/length(K) k.z angularSpeed
 	//x y z w
-	UniquePtr<RenderTextureView> waveDataTexture;
+	RenderTextureViewPtr waveDataTexture;
 
 	//(tildeh0(k), conj(tildeh0(-k)))
 	//x y z w
-	UniquePtr<RenderTextureView> waveSpectrumTexture;
+	RenderTextureViewPtr waveSpectrumTexture;
 
 	//Dx Dz
-	UniquePtr<RenderTextureView> DxDz;
+	RenderTextureViewPtr DxDz;
 
 	//Dy dDx/dz
-	UniquePtr<RenderTextureView> DyDxz;
+	RenderTextureViewPtr DyDxz;
 
 	//dDy/dx dDy/dz
-	UniquePtr<RenderTextureView> DyxDyz;
+	RenderTextureViewPtr DyxDyz;
 
 	//dDx/dx dDz/dz
-	UniquePtr<RenderTextureView> DxxDzz;
+	RenderTextureViewPtr DxxDzz;
 
 };
 

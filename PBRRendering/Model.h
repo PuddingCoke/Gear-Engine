@@ -75,8 +75,8 @@ public:
 
 private:
 
-	UniquePtr<BufferView> vertexBuffer;
+	BufferViewPtr vertexBuffer;
 
-	UniquePtr<ImmutableCBuffer> materialBuffer;
+	ImmutableCBufferPtr materialBuffer;
 
 };

@@ -6,11 +6,11 @@ class Scene
 {
 public:
 
-	UniquePtr<PipelineState> pipelineState;
+	PipelineStatePtr pipelineState;
 
-	UniquePtr<Shader> vertexShader;
+	ShaderPtr vertexShader;
 
-	UniquePtr<Shader> pixelShader;
+	ShaderPtr pixelShader;
 
 	struct SceneInfo
 	{
@@ -30,7 +30,7 @@ public:
 
 		const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_GenSmoothNormals);
 
-		for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+		for (uint32_t i = 0; i < scene->mNumMeshes; i++)
 		{
 			models.push_back(makeUnique<Model>(scene, scene->mMeshes[i], resManager));
 		}

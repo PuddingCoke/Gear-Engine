@@ -12,11 +12,11 @@ namespace Gear::Core::GlobalEffect::GammaCorrectEffect
 	{
 		struct GammaCorrectEffectImpl
 		{
-			UniquePtr<D3D12Core::Shader> gammaCorrectCS;
+			D3D12Core::ShaderPtr gammaCorrectCS;
 
-			UniquePtr<D3D12Core::PipelineState> gammaCorrectState;
+			D3D12Core::PipelineStatePtr gammaCorrectState;
 
-			UniquePtr<Resource::RenderTextureView> outputTexture;
+			Resource::RenderTextureViewPtr outputTexture;
 		} impl;
 
 		constexpr DXGI_FORMAT outputTextureFormat = FMT::RGBA16UN;

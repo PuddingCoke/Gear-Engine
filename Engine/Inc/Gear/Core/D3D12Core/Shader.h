@@ -9,6 +9,8 @@
 
 namespace Gear::Core::D3D12Core
 {
+	CREATESAFETYPE(Shader);
+
 	class Shader
 	{
 	public:
@@ -21,11 +23,11 @@ namespace Gear::Core::D3D12Core
 
 		D3D12_SHADER_BYTECODE getByteCode() const;
 
-		static UniquePtr<Shader> create(const uint8_t* const bytes, const size_t byteSize);
+		static ShaderPtr create(const uint8_t* const bytes, const size_t byteSize);
 
-		static UniquePtr<Shader> create(const std::wstring& filePath);
+		static ShaderPtr create(const std::wstring& filePath);
 
-		static UniquePtr<Shader> create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
+		static ShaderPtr create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
 
 		//byte code
 		Shader(const uint8_t* const bytes, const size_t byteSize);

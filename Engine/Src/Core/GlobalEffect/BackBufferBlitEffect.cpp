@@ -12,7 +12,7 @@ namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 	{
 		struct BackBufferBlitEffectImpl
 		{
-			UniquePtr<D3D12Core::PipelineState> backBufferBlitState;
+			D3D12Core::PipelineStatePtr backBufferBlitState;
 		}impl;
 
 		void initialize()

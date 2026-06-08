@@ -9,6 +9,9 @@
 
 namespace Gear::Core
 {
+	CREATESAFETYPE(RenderThread);
+	
+	//渲染线程，它会执行与它关联的渲染任务的构造方法和工作循环方法
 	class RenderThread
 	{
 	public:

@@ -7,12 +7,14 @@
 
 namespace Gear::Core::Effect
 {
+	CREATESAFETYPE(SSREffect);
+
 	//返回一个包含UV（RG）采样坐标以及能见度（BA）的纹理
 	class SSREffect :public EffectBase
 	{
 	public:
 
-		static UniquePtr<SSREffect> create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
+		static SSREffectPtr create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
 		SSREffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
@@ -27,19 +29,19 @@ namespace Gear::Core::Effect
 
 	private:
 
-		UniquePtr<Resource::RenderTextureView> hiZTexture;
+		Resource::RenderTextureViewPtr hiZTexture;
 
-		UniquePtr<D3D12Core::Shader> hiZCopyCS;
+		D3D12Core::ShaderPtr hiZCopyCS;
 
-		UniquePtr<D3D12Core::Shader> hiZCreateCS;
+		D3D12Core::ShaderPtr hiZCreateCS;
 
-		UniquePtr<D3D12Core::Shader> hiZProcessPS;
+		D3D12Core::ShaderPtr hiZProcessPS;
 
-		UniquePtr<D3D12Core::PipelineState> hiZCopyState;
+		D3D12Core::PipelineStatePtr hiZCopyState;
 
-		UniquePtr<D3D12Core::PipelineState> hiZCreateState;
+		D3D12Core::PipelineStatePtr hiZCreateState;
 
-		UniquePtr<D3D12Core::PipelineState> hiZProcessState;
+		D3D12Core::PipelineStatePtr hiZProcessState;
 
 		static constexpr uint32_t hiZMiplvel = 4u;
 

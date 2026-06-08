@@ -84,11 +84,11 @@ protected:
 
 private:
 
-	UniquePtr<Shader> accumulateShader;
+	ShaderPtr accumulateShader;
 
-	UniquePtr<RenderTextureView> accumulatedTexture;
+	RenderTextureViewPtr accumulatedTexture;
 
-	UniquePtr<PipelineState> accumulateState;
+	PipelineStatePtr accumulateState;
 
 	struct CameraParam
 	{

@@ -6,7 +6,7 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<FXAAEffect> FXAAEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
+	FXAAEffectPtr FXAAEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
 		return makeUnique<FXAAEffect>(contextRef, width, height);
 	}

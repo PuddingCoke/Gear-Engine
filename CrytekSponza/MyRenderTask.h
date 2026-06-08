@@ -580,86 +580,86 @@ protected:
 		float clipExponent = 0.3f;
 	}clipParameters;
 
-	UniquePtr<StaticCBuffer> irradianceVolumeBuffer;
+	StaticCBufferPtr irradianceVolumeBuffer;
 
-	UniquePtr<ImmutableCBuffer> cubeRenderParamBuffer[probeCount];
+	ImmutableCBufferPtr cubeRenderParamBuffer[probeCount];
 
 	float sunAngle;
 
-	UniquePtr<RenderTextureView> gPositionMetallic;
+	RenderTextureViewPtr gPositionMetallic;
 
-	UniquePtr<RenderTextureView> gNormalRoughness;
+	RenderTextureViewPtr gNormalRoughness;
 
-	UniquePtr<RenderTextureView> gBaseColor;
+	RenderTextureViewPtr gBaseColor;
 
-	UniquePtr<DepthTextureView> depthTexture;
+	DepthTextureViewPtr depthTexture;
 
-	UniquePtr<DepthTextureView> shadowTexture;
+	DepthTextureViewPtr shadowTexture;
 
-	UniquePtr<RenderTextureView> originTexture;
+	RenderTextureViewPtr originTexture;
 
-	UniquePtr<RenderTextureView> ssrCombinedTexture;
+	RenderTextureViewPtr ssrCombinedTexture;
 
-	UniquePtr<RenderTextureView> radianceCube;
+	RenderTextureViewPtr radianceCube;
 
-	UniquePtr<RenderTextureView> distanceCube;
+	RenderTextureViewPtr distanceCube;
 
-	UniquePtr<DepthTextureView> depthCube;
+	DepthTextureViewPtr depthCube;
 
-	UniquePtr<RenderTextureView> irradianceOctahedralMap;
+	RenderTextureViewPtr irradianceOctahedralMap;
 
-	UniquePtr<RenderTextureView> irradianceBounceOctahedralMap;
+	RenderTextureViewPtr irradianceBounceOctahedralMap;
 
-	UniquePtr<RenderTextureView> depthOctahedralMap;
+	RenderTextureViewPtr depthOctahedralMap;
 
-	UniquePtr<RenderTextureView> skybox;
+	RenderTextureViewPtr skybox;
 
-	UniquePtr<PipelineState> shadowPipelineState;
+	PipelineStatePtr shadowPipelineState;
 
-	UniquePtr<PipelineState> deferredPipelineState;
+	PipelineStatePtr deferredPipelineState;
 
-	UniquePtr<PipelineState> deferredFinalPipelineState;
+	PipelineStatePtr deferredFinalPipelineState;
 
-	UniquePtr<PipelineState> probeCapturePipelineState;
+	PipelineStatePtr probeCapturePipelineState;
 
-	UniquePtr<PipelineState> probeCaptureBouncePipelineState;
+	PipelineStatePtr probeCaptureBouncePipelineState;
 
-	UniquePtr<PipelineState> irradianceOctahedralEncodeState;
+	PipelineStatePtr irradianceOctahedralEncodeState;
 
-	UniquePtr<PipelineState> depthOctahedralEncodeState;
+	PipelineStatePtr depthOctahedralEncodeState;
 
-	UniquePtr<PipelineState> skyboxState;
+	PipelineStatePtr skyboxState;
 
-	UniquePtr<PipelineState> ssrCombineState;
+	PipelineStatePtr ssrCombineState;
 
-	UniquePtr<Shader> shadowVS;
+	ShaderPtr shadowVS;
 
-	UniquePtr<Shader> deferredVShader;
+	ShaderPtr deferredVShader;
 
-	UniquePtr<Shader> deferredPShader;
+	ShaderPtr deferredPShader;
 
-	UniquePtr<Shader> deferredFinal;
+	ShaderPtr deferredFinal;
 
-	UniquePtr<Shader> cubeRenderVS;
+	ShaderPtr cubeRenderVS;
 
-	UniquePtr<Shader> cubeRenderPS;
+	ShaderPtr cubeRenderPS;
 
-	UniquePtr<Shader> cubeRenderBouncePS;
+	ShaderPtr cubeRenderBouncePS;
 
-	UniquePtr<Shader> irradianceOctahedralEncode;
+	ShaderPtr irradianceOctahedralEncode;
 
-	UniquePtr<Shader> depthOctahedralEncode;
+	ShaderPtr depthOctahedralEncode;
 
-	UniquePtr<Shader> skyboxPShader;
+	ShaderPtr skyboxPShader;
 
-	UniquePtr<Shader> ssrCombinePS;
+	ShaderPtr ssrCombinePS;
 
-	UniquePtr<HBAOPlusEffect> hbaoPlusEffect;
+	HBAOPlusEffectPtr hbaoPlusEffect;
 
-	UniquePtr<BloomEffect> bloomEffect;
+	BloomEffectPtr bloomEffect;
 
-	UniquePtr<FXAAEffect> fxaaEffect;
+	FXAAEffectPtr fxaaEffect;
 
-	UniquePtr<SSREffect> ssrEffect;
+	SSREffectPtr ssrEffect;
 
 };

@@ -220,7 +220,7 @@ private:
 
 	static constexpr uint32_t gridSize = 128;
 
-	static UniquePtr<RenderTextureView> createTexture(const uint32_t& resolution, const DXGI_FORMAT& format)
+	static RenderTextureViewPtr createTexture(const uint32_t& resolution, const DXGI_FORMAT& format)
 	{
 		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false, true);
 	}
@@ -635,77 +635,77 @@ private:
 		DirectX::XMFLOAT4 padding1[13] = {};
 	} renderParam;
 
-	UniquePtr<BufferView> vertexBuffer;
+	BufferViewPtr vertexBuffer;
 
-	UniquePtr<BufferView> indexBuffer;
+	BufferViewPtr indexBuffer;
 
-	UniquePtr<Shader> textureCubePS;
+	ShaderPtr textureCubePS;
 
-	UniquePtr<PipelineState> textureCubeState;
+	PipelineStatePtr textureCubeState;
 
-	UniquePtr<Shader> gridDebugVS;
+	ShaderPtr gridDebugVS;
 
-	UniquePtr<Shader> gridDebugPS;
+	ShaderPtr gridDebugPS;
 
-	UniquePtr<PipelineState> gridDebugState;
+	PipelineStatePtr gridDebugState;
 
-	UniquePtr<Shader> oceanVS;
+	ShaderPtr oceanVS;
 
-	UniquePtr<Shader> oceanHS;
+	ShaderPtr oceanHS;
 
-	UniquePtr<Shader> oceanDS;
+	ShaderPtr oceanDS;
 
-	UniquePtr<Shader> oceanPS;
+	ShaderPtr oceanPS;
 
-	UniquePtr<PipelineState> oceanState;
+	PipelineStatePtr oceanState;
 
-	UniquePtr<Shader> spectrumCS;
+	ShaderPtr spectrumCS;
 
-	UniquePtr<PipelineState> spectrumState;
+	PipelineStatePtr spectrumState;
 
-	UniquePtr<Shader> conjugateCS;
+	ShaderPtr conjugateCS;
 
-	UniquePtr<PipelineState> conjugateState;
+	PipelineStatePtr conjugateState;
 
-	UniquePtr<Shader> displacementSpectrumCS;
+	ShaderPtr displacementSpectrumCS;
 
-	UniquePtr<PipelineState> displacementSpectrumState;
+	PipelineStatePtr displacementSpectrumState;
 
-	UniquePtr<Shader> ifftCS;
+	ShaderPtr ifftCS;
 
-	UniquePtr<PipelineState> ifftState;
+	PipelineStatePtr ifftState;
 
 	//sign correction
-	UniquePtr<Shader> permutationCS;
+	ShaderPtr permutationCS;
 
-	UniquePtr<PipelineState> permutationState;
+	PipelineStatePtr permutationState;
 
-	UniquePtr<Shader> waveMergeCS;
+	ShaderPtr waveMergeCS;
 
-	UniquePtr<PipelineState> waveMergeState;
+	PipelineStatePtr waveMergeState;
 
-	UniquePtr<RenderTextureView> enviromentCube;
+	RenderTextureViewPtr enviromentCube;
 
 	//4 channel random gaussian distribution texture
 	//mean 0 standard deviation 1
-	UniquePtr<RenderTextureView> randomGaussTexture;
+	RenderTextureViewPtr randomGaussTexture;
 
 	//(tildeh0(k))
 	//x y
-	UniquePtr<RenderTextureView> tildeh0Texture;
+	RenderTextureViewPtr tildeh0Texture;
 
 	//intermediate texture for ifft compute
-	UniquePtr<RenderTextureView> tempTexture;
+	RenderTextureViewPtr tempTexture;
 
-	UniquePtr<RenderTextureView> originTexture;
+	RenderTextureViewPtr originTexture;
 
-	UniquePtr<DepthTextureView> depthTexture;
+	DepthTextureViewPtr depthTexture;
 
-	UniquePtr<BloomEffect> effect;
+	BloomEffectPtr effect;
 
-	UniquePtr<DynamicCBuffer> renderParamBuffer;
+	DynamicCBufferPtr renderParamBuffer;
 
-	UniquePtr<StaticCBuffer> spectrumParamBuffer[cascadeNum];
+	StaticCBufferPtr spectrumParamBuffer[cascadeNum];
 
 	UniquePtr<WaveCascade> cascade[cascadeNum];
 

@@ -362,21 +362,21 @@ public:
 
 private:
 
-	UniquePtr<BloomEffect> effect;
+	BloomEffectPtr effect;
 
-	UniquePtr<SwapTexture> colorTex;
+	SwapTexturePtr colorTex;
 
-	UniquePtr<SwapTexture> velocityTex;
+	SwapTexturePtr velocityTex;
 
-	UniquePtr<RenderTextureView> vorticityTex;
+	RenderTextureViewPtr vorticityTex;
 
-	UniquePtr<RenderTextureView> divergenceTex;
+	RenderTextureViewPtr divergenceTex;
 
-	UniquePtr<SwapTexture> pressureTex;
+	SwapTexturePtr pressureTex;
 
-	UniquePtr<RenderTextureView> phongShadeTexture;
+	RenderTextureViewPtr phongShadeTexture;
 
-	UniquePtr<RenderTextureView> edgeHighlightTexture;
+	RenderTextureViewPtr edgeHighlightTexture;
 
 	struct Configuration
 	{
@@ -386,8 +386,8 @@ private:
 		float vorticityIntensity = 80.f;//涡流强度
 		float splatRadius = 0.25f;//施加颜色的半径
 		float force = 6.f;//施加速度的力度
-		const unsigned int pressureIteraion = 35;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
-		const unsigned int resolutionFactor = 1;//物理模拟分辨率 resolution >> resolutionFactor
+		const uint32_t pressureIteraion = 35;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
+		const uint32_t resolutionFactor = 1;//物理模拟分辨率 resolution >> resolutionFactor
 		float bumpScale = 300.f;
 		bool logicRunning = true;
 		bool phongShading = true;
@@ -417,64 +417,64 @@ private:
 
 	uint64_t kDownEventID;
 
-	UniquePtr<DynamicCBuffer> simulationParamBuffer;
+	DynamicCBufferPtr simulationParamBuffer;
 
 	Utils::Timer colorUpdateTimer;
 
-	UniquePtr<Shader> splatVelocityCS;
+	ShaderPtr splatVelocityCS;
 
-	UniquePtr<PipelineState> splatVelocityState;
+	PipelineStatePtr splatVelocityState;
 
-	UniquePtr<Shader> splatColorCS;
+	ShaderPtr splatColorCS;
 
-	UniquePtr<PipelineState> splatColorState;
+	PipelineStatePtr splatColorState;
 
-	UniquePtr<Shader> vorticityCS;
+	ShaderPtr vorticityCS;
 
-	UniquePtr<PipelineState> vorticityState;
+	PipelineStatePtr vorticityState;
 
-	UniquePtr<Shader> vorticityConfinementCS;
+	ShaderPtr vorticityConfinementCS;
 
-	UniquePtr<PipelineState> vorticityConfinementState;
+	PipelineStatePtr vorticityConfinementState;
 
-	UniquePtr<Shader> divergenceCS;
+	ShaderPtr divergenceCS;
 
-	UniquePtr<PipelineState> divergenceState;
+	PipelineStatePtr divergenceState;
 
-	UniquePtr<Shader> pressureResetCS;
+	ShaderPtr pressureResetCS;
 
-	UniquePtr<PipelineState> pressureResetState;
+	PipelineStatePtr pressureResetState;
 
-	UniquePtr<Shader> pressureCS;
+	ShaderPtr pressureCS;
 
-	UniquePtr<PipelineState> pressureState;
+	PipelineStatePtr pressureState;
 
-	UniquePtr<Shader> gradientSubtractCS;
+	ShaderPtr gradientSubtractCS;
 
-	UniquePtr<PipelineState> gradientSubtractState;
+	PipelineStatePtr gradientSubtractState;
 
-	UniquePtr<Shader> velocityAdvectionCS;
+	ShaderPtr velocityAdvectionCS;
 
-	UniquePtr<PipelineState> velocityAdvectionState;
+	PipelineStatePtr velocityAdvectionState;
 
-	UniquePtr<Shader> colorAdvectionCS;
+	ShaderPtr colorAdvectionCS;
 
-	UniquePtr<PipelineState> colorAdvectionState;
+	PipelineStatePtr colorAdvectionState;
 
-	UniquePtr<Shader> velocityBoundaryCS;
+	ShaderPtr velocityBoundaryCS;
 
-	UniquePtr<PipelineState> velocityBoundaryState;
+	PipelineStatePtr velocityBoundaryState;
 
-	UniquePtr<Shader> pressureBoundaryCS;
+	ShaderPtr pressureBoundaryCS;
 
-	UniquePtr<PipelineState> pressureBoundaryState;
+	PipelineStatePtr pressureBoundaryState;
 
-	UniquePtr<Shader> phongShadeCS;
+	ShaderPtr phongShadeCS;
 
-	UniquePtr<PipelineState> phongShadeState;
+	PipelineStatePtr phongShadeState;
 
-	UniquePtr<Shader> edgeHighlightCS;
+	ShaderPtr edgeHighlightCS;
 
-	UniquePtr<PipelineState> edgeHighlightState;
+	PipelineStatePtr edgeHighlightState;
 
 };

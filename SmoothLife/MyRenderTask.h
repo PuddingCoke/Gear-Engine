@@ -142,21 +142,21 @@ private:
 		float alpha_m = 0.147f;
 	}simulationParam;
 
-	UniquePtr<Shader> whiteNoiseCS;
+	ShaderPtr whiteNoiseCS;
 
-	UniquePtr<PipelineState> whiteNoiseState;
+	PipelineStatePtr whiteNoiseState;
 
-	UniquePtr<Shader> evolveCS;
+	ShaderPtr evolveCS;
 
-	UniquePtr<PipelineState> evolveState;
+	PipelineStatePtr evolveState;
 
-	UniquePtr<Shader> visualizeCS;
+	ShaderPtr visualizeCS;
 
-	UniquePtr<PipelineState> visualizeState;
+	PipelineStatePtr visualizeState;
 
-	UniquePtr<SwapTexture> swapTexture;
+	SwapTexturePtr swapTexture;
 
-	UniquePtr<RenderTextureView> originTexture;
+	RenderTextureViewPtr originTexture;
 
 	Utils::Timer timer;
 

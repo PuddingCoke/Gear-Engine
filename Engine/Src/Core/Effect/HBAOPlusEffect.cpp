@@ -6,7 +6,7 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<HBAOPlusEffect> HBAOPlusEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
+	HBAOPlusEffectPtr HBAOPlusEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
 		return makeUnique<HBAOPlusEffect>(contextRef, width, height);
 	}

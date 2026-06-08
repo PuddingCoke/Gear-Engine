@@ -158,28 +158,28 @@ private:
 		int simulationSteps;
 	} simulationParam;
 
-	UniquePtr<BloomEffect> bloomEffect;
+	BloomEffectPtr bloomEffect;
 
-	UniquePtr<FXAAEffect> fxaaEffect;
+	FXAAEffectPtr fxaaEffect;
 
-	UniquePtr<PipelineState> particleComputeState;
+	PipelineStatePtr particleComputeState;
 
-	UniquePtr<PipelineState> particleRenderState;
+	PipelineStatePtr particleRenderState;
 
-	UniquePtr<Shader> particleVS;
+	ShaderPtr particleVS;
 
-	UniquePtr<Shader> particleGS;
+	ShaderPtr particleGS;
 
-	UniquePtr<Shader> particlePS;
+	ShaderPtr particlePS;
 
-	UniquePtr<Shader> particleCS;
+	ShaderPtr particleCS;
 
-	UniquePtr<RenderTextureView> originTexture;
+	RenderTextureViewPtr originTexture;
 
-	UniquePtr<DepthTextureView> depthTexture;
+	DepthTextureViewPtr depthTexture;
 
-	UniquePtr<BufferView> positionBuffer;
+	BufferViewPtr positionBuffer;
 
-	UniquePtr<BufferView> colorBuffer;
+	BufferViewPtr colorBuffer;
 
 };

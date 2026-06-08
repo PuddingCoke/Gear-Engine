@@ -2,7 +2,7 @@
 
 namespace Gear::Core::Resource
 {
-	ImmutableCBuffer::ImmutableCBuffer(UniquePtr<D3D12Resource::Buffer> bufferPtr, const uint32_t size, const bool persistent) :
+	ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent) :
 		ResourceBase(persistent), gpuAddress(), bufferIndex(), buffer(std::move(bufferPtr))
 	{
 		if (size % 256 != 0)

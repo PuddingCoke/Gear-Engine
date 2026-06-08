@@ -47,10 +47,10 @@ namespace Gear::Core
 
 		PipelineStateBuilder& setDefaultFullScreenState();
 
-		UniquePtr<D3D12Core::PipelineState> build();
+		D3D12Core::PipelineStatePtr build();
 
 		//用于计算管线状态
-		static UniquePtr<D3D12Core::PipelineState> build(const D3D12Core::Shader& cs);
+		static D3D12Core::PipelineStatePtr build(const D3D12Core::Shader& cs);
 
 	private:
 

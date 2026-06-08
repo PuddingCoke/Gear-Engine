@@ -9,7 +9,7 @@
 
 namespace Gear::Core::Resource::D3D12Resource
 {
-	class Buffer;
+	CREATESAFETYPE(Buffer);
 
 	struct PendingBufferBarrier
 	{

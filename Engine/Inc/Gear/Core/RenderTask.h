@@ -36,9 +36,9 @@ namespace Gear::Core
 
 		virtual void recordCommand() = 0;
 
-		UniquePtr<ResourceManager> resManager;
+		ResourceManagerPtr resManager;
 
-		//引用
+		//注意：只是引用
 		GraphicsContext* const context;
 
 	private:

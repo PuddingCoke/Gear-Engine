@@ -32,6 +32,8 @@ namespace Gear::Core
 		constexpr D3D12_CLEAR_FLAGS ALL = D3D12_CLEAR_FLAGS::D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAGS::D3D12_CLEAR_FLAG_STENCIL;
 	}
 
+	CREATESAFETYPE(GraphicsContext);
+
 	/// <summary>
 	/// 注意事项：禁止将UAV用于只读用途，否则引擎可能会插入多余的UAV屏障
 	/// </summary>
@@ -55,7 +57,7 @@ namespace Gear::Core
 
 		//设置用户自定义的全局常量缓冲
 		void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-		
+
 		//以下的方法用于设置每个着色器独享的根常量
 
 		template<size_t N>
@@ -293,7 +295,7 @@ namespace Gear::Core
 
 		D3D12_RECT rt;
 
-		UniquePtr<D3D12Core::CommandList> commandList;
+		D3D12Core::CommandListPtr commandList;
 
 		//以下是内部追踪的状态，用于减少图形API的调用
 		const D3D12Core::PipelineState* currentPipelineState;

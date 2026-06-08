@@ -38,7 +38,7 @@ namespace Gear::Core::Effect
 
 	protected:
 
-		UniquePtr<Resource::RenderTextureView> outputTexture;
+		Resource::RenderTextureViewPtr outputTexture;
 
 		//引用
 		GraphicsContext* const context;

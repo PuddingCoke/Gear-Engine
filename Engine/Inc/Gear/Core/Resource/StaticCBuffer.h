@@ -9,11 +9,13 @@
 
 namespace Gear::Core::Resource
 {
+	CREATESAFETYPE(StaticCBuffer);
+
 	class StaticCBuffer :public ImmutableCBuffer
 	{
 	public:
 
-		StaticCBuffer(UniquePtr<D3D12Resource::Buffer> bufferPtr, const uint32_t size, const bool persistent);
+		StaticCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent);
 
 		~StaticCBuffer();
 

@@ -219,33 +219,33 @@ private:
 
 	Scene scene;
 
-	UniquePtr<RenderTextureView> renderTexture;
+	RenderTextureViewPtr renderTexture;
 
-	UniquePtr<DepthTextureView> depthTexture;
+	DepthTextureViewPtr depthTexture;
 
-	UniquePtr<RenderTextureView> envCube;
+	RenderTextureViewPtr envCube;
 
-	UniquePtr<RenderTextureView> irradianceCube;
+	RenderTextureViewPtr irradianceCube;
 
-	UniquePtr<RenderTextureView> prefilterCube;
+	RenderTextureViewPtr prefilterCube;
 
-	UniquePtr<RenderTextureView> brdfLUTTexture;
+	RenderTextureViewPtr brdfLUTTexture;
 
-	UniquePtr<Shader> skyboxPS;
+	ShaderPtr skyboxPS;
 
-	UniquePtr<PipelineState> skyboxState;
+	PipelineStatePtr skyboxState;
 
-	UniquePtr<Shader> irradiancePS;
+	ShaderPtr irradiancePS;
 
-	UniquePtr<PipelineState> irradianceState;
+	PipelineStatePtr irradianceState;
 
-	UniquePtr<Shader> prefilterVS;
+	ShaderPtr prefilterVS;
 
-	UniquePtr<Shader> prefilterPS;
+	ShaderPtr prefilterPS;
 
-	UniquePtr<PipelineState> prefilterState;
+	PipelineStatePtr prefilterState;
 
 	//使用SV_RenderTargetIndex一次性绘制到六个面上分别需要六个对应的矩阵
-	UniquePtr<ImmutableCBuffer> viewProjMatrixBuffer;
+	ImmutableCBufferPtr viewProjMatrixBuffer;
 
 };

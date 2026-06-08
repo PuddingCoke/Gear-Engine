@@ -20,7 +20,7 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<BloomEffect> BloomEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager)
+	BloomEffectPtr BloomEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager)
 	{
 		return makeUnique<BloomEffect>(contextRef, width, height, resManager);
 	}

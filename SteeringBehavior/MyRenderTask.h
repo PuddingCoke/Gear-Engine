@@ -119,13 +119,13 @@ protected:
 
 private:
 
-	UniquePtr<SwapBuffer> positionVelocity;
+	SwapBufferPtr positionVelocity;
 
-	UniquePtr<BufferView> maxSpeedMaxForce;
+	BufferViewPtr maxSpeedMaxForce;
 
-	UniquePtr<RenderTextureView> renderTexture;
+	RenderTextureViewPtr renderTexture;
 
-	UniquePtr<RenderTextureView> arrowTexture;
+	RenderTextureViewPtr arrowTexture;
 
 	struct SimulationParam
 	{
@@ -137,16 +137,16 @@ private:
 
 	static constexpr uint32_t numVehicle = 1000;
 
-	UniquePtr<PipelineState> stepState;
+	PipelineStatePtr stepState;
 
-	UniquePtr<Shader> stepCS;
+	ShaderPtr stepCS;
 
-	UniquePtr<PipelineState> vehicleRenderState;
+	PipelineStatePtr vehicleRenderState;
 
-	UniquePtr<Shader> vehicleVS;
+	ShaderPtr vehicleVS;
 
-	UniquePtr<Shader> vehicleGS;
+	ShaderPtr vehicleGS;
 
-	UniquePtr<Shader> vehiclePS;
+	ShaderPtr vehiclePS;
 
 };

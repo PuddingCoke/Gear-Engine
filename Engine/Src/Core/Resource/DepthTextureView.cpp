@@ -2,7 +2,7 @@
 
 namespace Gear::Core::Resource
 {
-	DepthTextureView::DepthTextureView(UniquePtr<D3D12Resource::Texture> texturePtr, const bool isTextureCube, const bool persistent) :
+	DepthTextureView::DepthTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent) :
 		ResourceBase(persistent), texture(std::move(texturePtr)), allDepthSRVIndex(0), allStencilSRVIndex(0)
 	{
 		const uint32_t mipLevels = texture->getMipLevels();

@@ -8,7 +8,7 @@
 
 namespace Gear::Core::Effect
 {
-	UniquePtr<SSREffect> SSREffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
+	SSREffectPtr SSREffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
 		return makeUnique<SSREffect>(contextRef, width, height);
 	}

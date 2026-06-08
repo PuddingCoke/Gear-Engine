@@ -12,11 +12,11 @@ namespace Gear::Core::GlobalEffect::ToneMapEffect
 	{
 		struct ToneMapEffectImpl
 		{
-			UniquePtr<D3D12Core::Shader> toneMapCS;
+			D3D12Core::ShaderPtr toneMapCS;
 
-			UniquePtr<D3D12Core::PipelineState> toneMapState;
+			D3D12Core::PipelineStatePtr toneMapState;
 
-			UniquePtr<Resource::RenderTextureView> outputTexture;
+			Resource::RenderTextureViewPtr outputTexture;
 		} impl;
 
 		constexpr DXGI_FORMAT outputTextureFormat = FMT::RGBA16UN;

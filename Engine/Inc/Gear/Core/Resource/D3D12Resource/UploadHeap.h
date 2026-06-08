@@ -7,6 +7,8 @@
 
 namespace Gear::Core::Resource::D3D12Resource
 {
+	CREATESAFETYPE(UploadHeap);
+
 	class UploadHeap :public D3D12ResourceBase
 	{
 	public:

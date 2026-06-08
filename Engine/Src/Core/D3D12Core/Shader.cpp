@@ -4,17 +4,17 @@
 
 namespace Gear::Core::D3D12Core
 {
-	UniquePtr<Shader> Shader::create(const uint8_t* const bytes, const size_t byteSize)
+	ShaderPtr Shader::create(const uint8_t* const bytes, const size_t byteSize)
 	{
 		return makeUnique<Shader>(bytes, byteSize);
 	}
 
-	UniquePtr<Shader> Shader::create(const std::wstring& filePath)
+	ShaderPtr Shader::create(const std::wstring& filePath)
 	{
 		return makeUnique<Shader>(filePath);
 	}
 
-	UniquePtr<Shader> Shader::create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
+	ShaderPtr Shader::create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
 	{
 		return makeUnique<Shader>(filePath, profile);
 	}

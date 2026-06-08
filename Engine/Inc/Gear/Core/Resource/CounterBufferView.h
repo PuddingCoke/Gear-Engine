@@ -9,6 +9,8 @@
 
 namespace Gear::Core::Resource
 {
+	CREATESAFETYPE(CounterBufferView);
+
 	class CounterBufferView :public ResourceBase
 	{
 	public:
@@ -39,7 +41,7 @@ namespace Gear::Core::Resource
 
 		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
 
-		UniquePtr<D3D12Resource::Buffer> buffer;
+		D3D12Resource::BufferPtr buffer;
 	};
 }
 

@@ -40,8 +40,8 @@ protected:
 
 private:
 
-	UniquePtr<PipelineState> pipelineState;
+	PipelineStatePtr pipelineState;
 
-	UniquePtr<Shader> pixelShader;
+	ShaderPtr pixelShader;
 
 };

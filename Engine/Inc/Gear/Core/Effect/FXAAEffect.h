@@ -7,11 +7,13 @@
 
 namespace Gear::Core::Effect
 {
+	CREATESAFETYPE(FXAAEffect);
+
 	class FXAAEffect :public EffectBase
 	{
 	public:
 
-		static UniquePtr<FXAAEffect> create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
+		static FXAAEffectPtr create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
 		FXAAEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height);
 
@@ -29,7 +31,7 @@ namespace Gear::Core::Effect
 
 	private:
 
-		UniquePtr<Resource::RenderTextureView> colorLumaTexture;
+		Resource::RenderTextureViewPtr colorLumaTexture;
 
 		struct FXAAParam
 		{
@@ -39,13 +41,13 @@ namespace Gear::Core::Effect
 			float fxaaQualityEdgeThresholdMin;
 		} fxaaParam;
 
-		UniquePtr<D3D12Core::Shader> colorToColorLumaPS;
+		D3D12Core::ShaderPtr colorToColorLumaPS;
 
-		UniquePtr<D3D12Core::PipelineState> colorToColorLumaState;
+		D3D12Core::PipelineStatePtr colorToColorLumaState;
 
-		UniquePtr<D3D12Core::Shader> fxaaPS;
+		D3D12Core::ShaderPtr fxaaPS;
 
-		UniquePtr<D3D12Core::PipelineState> fxaaState;
+		D3D12Core::PipelineStatePtr fxaaState;
 
 	};
 }

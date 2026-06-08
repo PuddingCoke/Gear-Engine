@@ -10,6 +10,8 @@
 namespace Gear::Core::Resource
 {
 	using SwapBuffer = SwappableBase<BufferView>;
+
+	using SwapBufferPtr = UniquePtr<SwapBuffer>;
 }
 
 #endif // !_GEAR_CORE_RESOURCE_SWAPBUFFER_H_

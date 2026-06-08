@@ -9,6 +9,8 @@
 
 namespace Gear::Core::Resource
 {
+	CREATESAFETYPE(ImmutableCBuffer);
+
 	class ImmutableCBuffer :public ResourceBase
 	{
 	public:
@@ -20,7 +22,7 @@ namespace Gear::Core::Resource
 		void operator=(const ImmutableCBuffer&) = delete;
 
 		//用于一般类型的常量缓冲
-		ImmutableCBuffer(UniquePtr<D3D12Resource::Buffer> bufferPtr, const uint32_t size, const bool persistent);
+		ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent);
 
 		~ImmutableCBuffer();
 
@@ -38,7 +40,7 @@ namespace Gear::Core::Resource
 
 		uint32_t bufferIndex;
 
-		UniquePtr<D3D12Resource::Buffer> buffer;
+		D3D12Resource::BufferPtr buffer;
 
 	};
 }

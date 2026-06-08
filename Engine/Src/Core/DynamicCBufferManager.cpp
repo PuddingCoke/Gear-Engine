@@ -119,7 +119,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 		private:
 
-			UniquePtr<Resource::D3D12Resource::Buffer> buffer;
+			Resource::D3D12Resource::BufferPtr buffer;
 
 			UniquePtr<UniquePtr<DynamicCBufferRegion>[]> bufferRegions;
 

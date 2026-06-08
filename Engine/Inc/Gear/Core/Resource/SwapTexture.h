@@ -9,13 +9,15 @@
 
 namespace Gear::Core::Resource
 {
+	CREATESAFETYPE(SwapTexture);
+
 	class SwapTexture :public SwappableBase<RenderTextureView>
 	{
 	public:
 
 		SwapTexture() = delete;
 
-		SwapTexture(const std::function<UniquePtr<RenderTextureView>(void)>& readTextureFunc, const std::function<UniquePtr<RenderTextureView>(void)>& writeTextureFunc);
+		SwapTexture(const std::function<RenderTextureViewPtr(void)>& readTextureFunc, const std::function<RenderTextureViewPtr(void)>& writeTextureFunc);
 
 		~SwapTexture();
 

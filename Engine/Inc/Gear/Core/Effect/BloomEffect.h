@@ -11,6 +11,8 @@
 
 namespace Gear::Core::Effect
 {
+	CREATESAFETYPE(BloomEffect);
+
 	class BloomEffect :public EffectBase
 	{
 	public:
@@ -21,7 +23,7 @@ namespace Gear::Core::Effect
 
 		static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
 
-		static UniquePtr<BloomEffect> create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager);
+		static BloomEffectPtr create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager);
 
 		BloomEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager);
 
@@ -41,41 +43,41 @@ namespace Gear::Core::Effect
 
 		void updateCurve(const uint32_t index);
 
-		UniquePtr<D3D12Core::Shader> bloomFilter;
+		D3D12Core::ShaderPtr bloomFilter;
 
-		UniquePtr<D3D12Core::PipelineState> bloomFilterState;
+		D3D12Core::PipelineStatePtr bloomFilterState;
 
-		UniquePtr<D3D12Core::Shader> bloomHBlur;
+		D3D12Core::ShaderPtr bloomHBlur;
 
-		UniquePtr<D3D12Core::PipelineState> bloomHBlurState;
+		D3D12Core::PipelineStatePtr bloomHBlurState;
 
-		UniquePtr<D3D12Core::Shader> bloomVBlur;
+		D3D12Core::ShaderPtr bloomVBlur;
 
-		UniquePtr<D3D12Core::PipelineState> bloomVBlurState;
+		D3D12Core::PipelineStatePtr bloomVBlurState;
 
-		UniquePtr<D3D12Core::Shader> bloomFinal;
+		D3D12Core::ShaderPtr bloomFinal;
 
-		UniquePtr<D3D12Core::PipelineState> bloomFinalState;
+		D3D12Core::PipelineStatePtr bloomFinalState;
 
-		UniquePtr<D3D12Core::Shader> bloomDownSample;
+		D3D12Core::ShaderPtr bloomDownSample;
 
-		UniquePtr<D3D12Core::PipelineState> bloomDownSampleState;
+		D3D12Core::PipelineStatePtr bloomDownSampleState;
 
-		UniquePtr<D3D12Core::Shader> bloomKarisAverage;
+		D3D12Core::ShaderPtr bloomKarisAverage;
 
-		UniquePtr<D3D12Core::PipelineState> bloomKarisAverageState;
+		D3D12Core::PipelineStatePtr bloomKarisAverageState;
 
-		UniquePtr<D3D12Core::PipelineState> bloomUpSampleState;
+		D3D12Core::PipelineStatePtr bloomUpSampleState;
 
 		DirectX::XMUINT2 resolutions[blurSteps];
 
-		UniquePtr<Resource::RenderTextureView> lensDirtTexture;
+		Resource::RenderTextureViewPtr lensDirtTexture;
 
-		UniquePtr<Resource::SwapTexture> swapTexture[blurSteps];
+		Resource::SwapTexturePtr swapTexture[blurSteps];
 
-		UniquePtr<Resource::RenderTextureView> filteredTexture;
+		Resource::RenderTextureViewPtr filteredTexture;
 
-		UniquePtr<Resource::StaticCBuffer> blurParamBuffer[blurSteps];
+		Resource::StaticCBufferPtr blurParamBuffer[blurSteps];
 
 		struct BloomParam
 		{

@@ -103,7 +103,7 @@ namespace Gear::Core
 			.setVS(GlobalShader::getFullScreenVS());
 	}
 
-	UniquePtr<D3D12Core::PipelineState> PipelineStateBuilder::build()
+	D3D12Core::PipelineStatePtr PipelineStateBuilder::build()
 	{
 		ComPtr<ID3D12PipelineState> id3d12PipelineState;
 
@@ -154,7 +154,7 @@ namespace Gear::Core
 		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::GRAPHICS);
 	}
 
-	UniquePtr<D3D12Core::PipelineState> PipelineStateBuilder::build(const D3D12Core::Shader& cs)
+	D3D12Core::PipelineStatePtr PipelineStateBuilder::build(const D3D12Core::Shader& cs)
 	{
 		ComPtr<ID3D12PipelineState> id3d12PipelineState;
 

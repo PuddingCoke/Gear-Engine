@@ -11,6 +11,8 @@ using UniquePtr = std::unique_ptr<T, Deleter>;
 template<typename T>
 using SharedPtr = std::shared_ptr<T>;
 
+#define CREATESAFETYPE(x) class x; using x##Ptr = UniquePtr<x>
+
 template<typename T, typename... Args>
 UniquePtr<T> makeUnique(Args&&... args)
 {
