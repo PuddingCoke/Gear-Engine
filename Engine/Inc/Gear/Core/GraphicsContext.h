@@ -47,11 +47,16 @@ namespace Gear::Core
 
 		~GraphicsContext();
 
+		//更新高级缓冲对象
 		void updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const;
 
+		//更新静态常量缓冲
 		void updateBuffer(Resource::StaticCBuffer& staticCBuffer, const void* const data, const uint32_t size) const;
 
+		//设置用户自定义的全局常量缓冲
 		void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+		
+		//以下的方法用于设置每个着色器独享的根常量
 
 		template<size_t N>
 		void setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
@@ -71,23 +76,23 @@ namespace Gear::Core
 		template<size_t N>
 		void setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
-		template<typename T>
-		void setVSConstants(const T& t, uint32_t& offset) const;
+		template<typename StructType>
+		void setVSConstants(const StructType& structVal, uint32_t& offset) const;
 
-		template<typename T>
-		void setHSConstants(const T& t, uint32_t& offset) const;
+		template<typename StructType>
+		void setHSConstants(const StructType& structVal, uint32_t& offset) const;
 
-		template<typename T>
-		void setDSConstants(const T& t, uint32_t& offset) const;
+		template<typename StructType>
+		void setDSConstants(const StructType& structVal, uint32_t& offset) const;
 
-		template<typename T>
-		void setGSConstants(const T& t, uint32_t& offset) const;
+		template<typename StructType>
+		void setGSConstants(const StructType& structVal, uint32_t& offset) const;
 
-		template<typename T>
-		void setPSConstants(const T& t, uint32_t& offset) const;
+		template<typename StructType>
+		void setPSConstants(const StructType& structVal, uint32_t& offset) const;
 
-		template<typename T>
-		void setCSConstants(const T& t, uint32_t& offset) const;
+		template<typename StructType>
+		void setCSConstants(const StructType& structVal, uint32_t& offset) const;
 
 		void constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const;
 
@@ -103,6 +108,8 @@ namespace Gear::Core
 
 		void setCSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
 
+		//以下的方法用于设置每个着色器独享的常量缓冲
+
 		void setVSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
 		void setHSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
@@ -117,13 +124,17 @@ namespace Gear::Core
 
 		void setPipelineState(const D3D12Core::PipelineState& pipelineState);
 
+		//以下的方法用于设置渲染目标
+
 		template<size_t N>
 		void setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil = {});
 
 		void setRenderTargets(const Resource::D3D12Resource::DepthStencilDesc& depthStencil);
 
+		//将后备缓冲设置为渲染目标
 		void setDefRenderTarget() const;
 
+		//清理后备缓冲
 		void clearDefRenderTarget(const float clearValue[4]) const;
 
 		//推迟到draw call清理渲染目标视图
@@ -138,40 +149,50 @@ namespace Gear::Core
 		//立刻清理深度模板视图
 		void clearDepthStencilInstant(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
 
+		//设置顶点缓冲
 		template<size_t N>
 		void setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N]);
 
+		//设置索引缓冲
 		void setIndexBuffer(const Resource::D3D12Resource::IndexBufferDesc& indexBuffers);
 
+		//设置图元拓扑
 		void setPrimitiveTopology(const D3D12_PRIMITIVE_TOPOLOGY topology);
 
+		//设置视口
 		void setViewport(const float width, const float height);
 
+		//设置视口
 		void setViewport(const uint32_t width, const uint32_t height);
 
+		//设置剪刀矩形
 		void setScissorRect(const uint32_t left, const uint32_t top, const uint32_t right, const uint32_t bottom);
 
+		//设置剪刀矩形
 		void setScissorRect(const float left, const float top, const float right, const float bottom);
 
+		//帮手方法，同时设置视口和剪刀矩形
 		void setViewportSimple(const float width, const float height);
 
+		//帮手方法，同时设置视口和剪刀矩形
 		void setViewportSimple(const uint32_t width, const uint32_t height);
 
+		//清理UAV
 		void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const float values[4]);
 
+		//清理UAV
 		void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const uint32_t values[4]);
 
+		//绘制实例
 		void draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation);
 
+		//绘制索引化实例
 		void drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation);
 
+		//分发线程
 		void dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ);
 
-		//根据微软提供的资料，UAV屏障是仅用于UAV的
-		//对于同一UAV来说，如果有先读后写或先写后读两个连续操作，或读写由一个着色器完成，那么请调用这个方法
-		template<size_t N>
-		void uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N]);
-
+		//由RenderTask自动调用
 		void begin();
 
 		//重置内部追踪的状态
@@ -187,8 +208,6 @@ namespace Gear::Core
 		D3D12Core::CommandList* getCommandList() const;
 
 	private:
-
-		static constexpr uint32_t maxPerInvokeUAVBarriers = 32u;
 
 		struct RootConstantBufferDesc
 		{
@@ -308,8 +327,6 @@ namespace Gear::Core
 
 		std::array<D3D12_VERTEX_BUFFER_VIEW, D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT> transientVBViews;
 
-		std::array<D3D12_RESOURCE_BARRIER, maxPerInvokeUAVBarriers> transientUAVBarriers;
-
 	};
 
 	template<size_t N>
@@ -372,64 +389,64 @@ namespace Gear::Core
 		setCSConstants(N, transientResourceIndices.data(), offset);
 	}
 
-	template<typename T>
-	inline void GraphicsContext::setVSConstants(const T& t, uint32_t& offset) const
+	template<typename StructType>
+	inline void GraphicsContext::setVSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
 
-		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
-		setVSConstants(numElements, &t, offset);
+		setVSConstants(numElements, &structVal, offset);
 	}
 
-	template<typename T>
-	inline void GraphicsContext::setHSConstants(const T& t, uint32_t& offset) const
+	template<typename StructType>
+	inline void GraphicsContext::setHSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
 
-		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
-		setHSConstants(numElements, &t, offset);
+		setHSConstants(numElements, &structVal, offset);
 	}
 
-	template<typename T>
-	inline void GraphicsContext::setDSConstants(const T& t, uint32_t& offset) const
+	template<typename StructType>
+	inline void GraphicsContext::setDSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
 
-		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
-		setDSConstants(numElements, &t, offset);
+		setDSConstants(numElements, &structVal, offset);
 	}
 
-	template<typename T>
-	inline void GraphicsContext::setGSConstants(const T& t, uint32_t& offset) const
+	template<typename StructType>
+	inline void GraphicsContext::setGSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
 
-		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
-		setGSConstants(numElements, &t, offset);
+		setGSConstants(numElements, &structVal, offset);
 	}
 
-	template<typename T>
-	inline void GraphicsContext::setPSConstants(const T& t, uint32_t& offset) const
+	template<typename StructType>
+	inline void GraphicsContext::setPSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
 
-		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
-		setPSConstants(numElements, &t, offset);
+		setPSConstants(numElements, &structVal, offset);
 	}
 
-	template<typename T>
-	inline void GraphicsContext::setCSConstants(const T& t, uint32_t& offset) const
+	template<typename StructType>
+	inline void GraphicsContext::setCSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<T>::value, "T must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
 
-		const uint32_t numElements = sizeof(T) / sizeof(uint32_t);
+		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
-		setCSConstants(numElements, &t, offset);
+		setCSConstants(numElements, &structVal, offset);
 	}
 
 	template<size_t N>
@@ -451,6 +468,13 @@ namespace Gear::Core
 	template<size_t N>
 	inline void GraphicsContext::setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
 	{
+#ifdef _DEBUG
+		if (N > D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT)
+		{
+			LOGERROR(L"无法绑定更多的渲染目标");
+		}
+#endif // _DEBUG
+
 		for (uint32_t i = 0; i < N; i++)
 		{
 			transientRTVHandles[i] = renderTargets[i].rtvHandle;
@@ -475,6 +499,13 @@ namespace Gear::Core
 	template<size_t N>
 	inline void GraphicsContext::setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N])
 	{
+#ifdef _DEBUG
+		if (startSlot + N > D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)
+		{
+			LOGERROR(L"无法绑定更多的顶点缓冲");
+		}
+#endif // _DEBUG
+
 		for (uint32_t i = 0; i < N; i++)
 		{
 			transientVBViews[i] = vertexBuffers[i].vbv;
@@ -483,17 +514,6 @@ namespace Gear::Core
 		}
 
 		commandList->setVertexBuffers(startSlot, static_cast<uint32_t>(N), transientVBViews.data());
-	}
-
-	template<size_t N>
-	inline void GraphicsContext::uavBarrier(const Resource::D3D12Resource::D3D12ResourceBase* const(&resources)[N])
-	{
-		for (uint32_t i = 0; i < N; i++)
-		{
-			transientUAVBarriers[i] = CD3DX12_RESOURCE_BARRIER::UAV(resources[i]->getResource());
-		}
-
-		commandList->resourceBarrier(static_cast<uint32_t>(N), transientUAVBarriers.data());
 	}
 
 	template<size_t N>

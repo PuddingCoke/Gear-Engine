@@ -32,6 +32,10 @@ public:
 		derivativeTexture->getTexture()->setName(L"derivativeTexture");
 
 		jacobianTexture->getTexture()->setName(L"jacobianTexture");
+
+		float clearVal[] = { 9999.f,9999.f,9999.f,9999.f };
+
+		context->clearUnorderedAccess(jacobianTexture->getClearUAVMipDesc(0), clearVal);
 	}
 
 	~WaveCascade()

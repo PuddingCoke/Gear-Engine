@@ -10,8 +10,7 @@ public:
 
 	MyRenderTask() :
 		accumulateShader(Shader::create(Utils::File::getRootFolder() + L"AccumulateShader.cso")),
-		displayShader(Shader::create(Utils::File::getRootFolder() + L"DisplayShader.cso")),
-		accumulatedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, false)),
+		accumulatedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, false)),
 		cameraParam{ Utils::Math::pi / 4.f + 0.4f,0.f,3.0f,8.f },
 		accumulateParam{ 0,0.f }
 	{
@@ -20,12 +19,6 @@ public:
 			.setBlendState(PipelineStateHelper::blendDefault)
 			.setRTVFormats({ accumulatedTexture->getTexture()->getFormat() })
 			.setPS(*accumulateShader)
-			.build();
-
-		displayState = PipelineStateBuilder()
-			.setDefaultFullScreenState()
-			.setRTVFormats({ Graphics::backBufferFormat })
-			.setPS(*displayShader)
 			.build();
 
 		Input::Mouse::addMoveEvent([this]()
@@ -72,9 +65,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setViewport(Graphics::getWidth(), Graphics::getHeight());
-
-		context->setScissorRect(0.f, 0.f, static_cast<float>(Graphics::getWidth()), static_cast<float>(Graphics::getHeight()));
+		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
 		context->setPipelineState(*accumulateState);
 
@@ -88,28 +79,16 @@ protected:
 
 		context->draw(3, 1, 0, 0);
 
-		context->setPipelineState(*displayState);
-
-		SETCONSTS({
-		context->setPSConstants({ accumulatedTexture->getAllSRVIndex() }, co);
-			});
-
-		context->setDefRenderTarget();
-
-		context->draw(3, 1, 0, 0);
+		blit(*accumulatedTexture);
 	}
 
 private:
 
 	UniquePtr<Shader> accumulateShader;
 
-	UniquePtr<Shader> displayShader;
-
 	UniquePtr<RenderTextureView> accumulatedTexture;
 
 	UniquePtr<PipelineState> accumulateState;
-
-	UniquePtr<PipelineState> displayState;
 
 	struct CameraParam
 	{

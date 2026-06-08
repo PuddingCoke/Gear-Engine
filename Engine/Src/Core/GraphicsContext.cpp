@@ -364,11 +364,13 @@ namespace Gear::Core
 
 		transitionResources();
 
-		uavBarrier({ resource });
+		const D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource());
+
+		commandList->resourceBarrier(1, &barrier);
 
 		commandList->clearUnorderedAccessFloat(desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
 
-		uavBarrier({ resource });
+		commandList->resourceBarrier(1, &barrier);
 	}
 
 	void GraphicsContext::clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const uint32_t values[4])
@@ -377,11 +379,13 @@ namespace Gear::Core
 
 		transitionResources();
 
-		uavBarrier({ resource });
+		const D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource());
+
+		commandList->resourceBarrier(1, &barrier);
 
 		commandList->clearUnorderedAccessUint(desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
 
-		uavBarrier({ resource });
+		commandList->resourceBarrier(1, &barrier);
 	}
 
 	void GraphicsContext::draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation)

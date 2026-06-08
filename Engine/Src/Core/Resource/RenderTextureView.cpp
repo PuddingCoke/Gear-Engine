@@ -320,7 +320,7 @@ namespace Gear::Core::Resource
 		return desc;
 	}
 
-	D3D12Resource::ClearUAVDesc RenderTextureView::getClearUAVDesc(const uint32_t mipSlice) const
+	D3D12Resource::ClearUAVDesc RenderTextureView::getClearUAVMipDesc(const uint32_t mipSlice) const
 	{
 		D3D12Resource::ClearUAVDesc desc = {};
 		desc.type = D3D12Resource::ClearUAVDesc::TEXTURE;

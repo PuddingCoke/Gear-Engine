@@ -310,9 +310,7 @@ protected:
 
 		context->setRenderTargets(shadowTexture->getDSVMipHandle(0));
 
-		context->setViewport(shadowTextureResolution, shadowTextureResolution);
-
-		context->setScissorRect(0, 0, shadowTextureResolution, shadowTextureResolution);
+		context->setViewportSimple(shadowTextureResolution, shadowTextureResolution);
 
 		context->setVSConstantBuffer(*irradianceVolumeBuffer);
 
@@ -338,9 +336,7 @@ protected:
 	{
 		context->setPipelineState(*probeCapturePipelineState);
 
-		context->setViewport(probeCaptureResolution, probeCaptureResolution);
-
-		context->setScissorRect(0, 0, probeCaptureResolution, probeCaptureResolution);
+		context->setViewportSimple(probeCaptureResolution, probeCaptureResolution);
 
 		context->setRenderTargets({ radianceCube->getRTVMipHandle(0),distanceCube->getRTVMipHandle(0) }, depthCube->getDSVMipHandle(0));
 
@@ -395,9 +391,7 @@ protected:
 	{
 		context->setPipelineState(*probeCaptureBouncePipelineState);
 
-		context->setViewport(probeCaptureResolution, probeCaptureResolution);
-
-		context->setScissorRect(0, 0, probeCaptureResolution, probeCaptureResolution);
+		context->setViewportSimple(probeCaptureResolution, probeCaptureResolution);
 
 		context->setRenderTargets({ radianceCube->getRTVMipHandle(0) }, depthCube->getDSVMipHandle(0));
 
@@ -439,9 +433,7 @@ protected:
 	{
 		context->setPipelineState(*deferredPipelineState);
 
-		context->setViewport(Graphics::getWidth(), Graphics::getHeight());
-
-		context->setScissorRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
+		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
 		context->setRenderTargets({
 			gPositionMetallic->getRTVMipHandle(0),
@@ -468,9 +460,7 @@ protected:
 
 		context->setPipelineState(*deferredFinalPipelineState);
 
-		context->setViewport(Graphics::getWidth(), Graphics::getHeight());
-
-		context->setScissorRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
+		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
@@ -496,9 +486,7 @@ protected:
 
 		context->setPipelineState(*skyboxState);
 
-		context->setViewport(Graphics::getWidth(), Graphics::getHeight());
-
-		context->setScissorRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
+		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 

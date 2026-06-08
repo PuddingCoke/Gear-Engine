@@ -37,7 +37,7 @@ namespace Gear::Core::Resource
 
 		D3D12Resource::RenderTargetDesc getRTVMipHandle(const uint32_t mipSlice) const;
 
-		D3D12Resource::ClearUAVDesc getClearUAVDesc(const uint32_t mipSlice) const;
+		D3D12Resource::ClearUAVDesc getClearUAVMipDesc(const uint32_t mipSlice) const;
 
 		D3D12Resource::Texture* getTexture() const;
 
