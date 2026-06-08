@@ -100,7 +100,7 @@ private:
 
 	struct AccumulateParam
 	{
-		UINT frameIndex;
+		uint32_t frameIndex;
 		float floatSeed;
 	} accumulateParam;
 

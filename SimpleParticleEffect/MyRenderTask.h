@@ -45,11 +45,11 @@ public:
 		depthTexture = ResourceManager::createDepthTextureView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
 
 		{
-			DirectX::XMFLOAT4* const positions = new DirectX::XMFLOAT4[numParticles];
+			UniquePtr<DirectX::XMFLOAT4[]> positions = makeUnique<DirectX::XMFLOAT4[]>(numParticles);
 
-			DirectX::XMFLOAT4* const colors = new DirectX::XMFLOAT4[numParticles];
+			UniquePtr<DirectX::XMFLOAT4[]> colors = makeUnique<DirectX::XMFLOAT4[]>(numParticles);
 
-			for (UINT i = 0; i < numParticles; i++)
+			for (uint32_t i = 0; i < numParticles; i++)
 			{
 				const float radius = 0.3f * Utils::Random::genFloat() + 0.3f;
 
@@ -69,9 +69,9 @@ public:
 				}
 			}
 
-			positionBuffer = resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numParticles, false, true, true, false, false, true, positions);
+			positionBuffer = resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numParticles, false, true, true, false, false, true, positions.get());
 
-			colorBuffer = resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numParticles, false, false, true, false, false, true, colors);
+			colorBuffer = resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numParticles, false, false, true, false, false, true, colors.get());
 		}
 
 		Graphics::setExposure(0.6f);
@@ -150,7 +150,7 @@ protected:
 
 private:
 
-	constexpr static UINT numParticles = 50000;
+	constexpr static uint32_t numParticles = 50000;
 
 	struct SimulationParam
 	{

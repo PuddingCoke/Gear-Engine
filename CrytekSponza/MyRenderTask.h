@@ -140,19 +140,19 @@ public:
 			{
 				DirectX::XMMATRIX viewProj[6];
 				DirectX::XMFLOAT3 probeLocation;
-				UINT probeIndex;
+				uint32_t probeIndex;
 				DirectX::XMFLOAT4 padding[7];
 			} cubeRenderParam{};
 
-			for (UINT x = 0; x < irradianceVolume.count.x; x++)
+			for (uint32_t x = 0; x < irradianceVolume.count.x; x++)
 			{
-				for (UINT z = 0; z < irradianceVolume.count.z; z++)
+				for (uint32_t z = 0; z < irradianceVolume.count.z; z++)
 				{
-					for (UINT y = 0; y < irradianceVolume.count.y; y++)
+					for (uint32_t y = 0; y < irradianceVolume.count.y; y++)
 					{
 						const DirectX::XMFLOAT3 location = ProbeGridPosToLoc({ x,y,z });
 
-						const UINT probeIndex = ProbeGridPosToIndex({ x,y,z });
+						const uint32_t probeIndex = ProbeGridPosToIndex({ x,y,z });
 
 						const DirectX::XMVECTOR focusPoints[6] =
 						{
@@ -269,9 +269,9 @@ public:
 
 protected:
 
-	static constexpr UINT shadowTextureResolution = 4096;
+	static constexpr uint32_t shadowTextureResolution = 4096;
 
-	static constexpr UINT probeCaptureResolution = 64;
+	static constexpr uint32_t probeCaptureResolution = 64;
 
 	static constexpr float radianceCubeClearColor[4] = { 0.f,0.f,0.f,1.f };
 
@@ -321,12 +321,12 @@ protected:
 
 	void updateLightProbe()
 	{
-		for (UINT i = 0; i < probeCount; i++)
+		for (uint32_t i = 0; i < probeCount; i++)
 		{
 			renderCubeAt(*cubeRenderParamBuffer[i]);
 		}
 
-		for (UINT i = 0; i < probeCount; i++)
+		for (uint32_t i = 0; i < probeCount; i++)
 		{
 			renderCubeBounceAt(*cubeRenderParamBuffer[i]);
 		}
@@ -529,7 +529,7 @@ protected:
 		blit(*gammaCorrectedTexture);
 	}
 
-	UINT ProbeGridPosToIndex(const DirectX::XMUINT3& probeGridPos)
+	uint32_t ProbeGridPosToIndex(const DirectX::XMUINT3& probeGridPos)
 	{
 		return probeGridPos.x + probeGridPos.z * irradianceVolume.count.x + probeGridPos.y * irradianceVolume.count.x * irradianceVolume.count.z;
 	}
@@ -545,13 +545,13 @@ protected:
 
 	UniquePtr<Scene> scene;
 
-	static constexpr UINT probeCountX = 17;
+	static constexpr uint32_t probeCountX = 17;
 
-	static constexpr UINT probeCountY = 9;
+	static constexpr uint32_t probeCountY = 9;
 
-	static constexpr UINT probeCountZ = 12;
+	static constexpr uint32_t probeCountZ = 12;
 
-	static constexpr UINT probeCount = probeCountX * probeCountY * probeCountZ;
+	static constexpr uint32_t probeCount = probeCountX * probeCountY * probeCountZ;
 
 	struct IrradianceVolume
 	{

@@ -206,7 +206,7 @@ public:
 		pressureTex->swap();
 
 		//calculate pressure
-		for (UINT i = 0; i < config.pressureIteraion; i++)
+		for (uint32_t i = 0; i < config.pressureIteraion; i++)
 		{
 			context->setPipelineState(*pressureState);
 			SETCONSTS({

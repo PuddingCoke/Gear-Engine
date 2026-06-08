@@ -24,7 +24,7 @@ class Model
 {
 public:
 
-	Model(const UINT materialIndex, const UINT indexCount, const UINT startIndexLocation, const UINT startVertexLocation) :
+	Model(const uint32_t materialIndex, const uint32_t indexCount, const uint32_t startIndexLocation, const uint32_t startVertexLocation) :
 		materialIndex(materialIndex),
 		indexCount(indexCount),
 		startIndexLocation(startIndexLocation),
@@ -43,12 +43,12 @@ public:
 		context->drawIndexed(indexCount, 6, startIndexLocation, startVertexLocation, 0);
 	}
 
-	const UINT materialIndex;
+	const uint32_t materialIndex;
 
-	const UINT indexCount;
+	const uint32_t indexCount;
 
-	const UINT startIndexLocation;
+	const uint32_t startIndexLocation;
 
-	const UINT startVertexLocation;
+	const uint32_t startVertexLocation;
 
 };

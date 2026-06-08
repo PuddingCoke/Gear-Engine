@@ -6,7 +6,7 @@ class WaveCascade
 {
 public:
 
-	WaveCascade(const UINT size, GraphicsContext* const context) :
+	WaveCascade(const uint32_t size, GraphicsContext* const context) :
 		size(size), context(context)
 	{
 		waveDataTexture = createTexture(size, FMT::RGBA32F);
@@ -172,12 +172,12 @@ public:
 
 private:
 
-	static UniquePtr<RenderTextureView> createTexture(const UINT& resolution, const DXGI_FORMAT& format)
+	static UniquePtr<RenderTextureView> createTexture(const uint32_t& resolution, const DXGI_FORMAT& format)
 	{
 		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false, true);
 	}
 
-	const UINT size;
+	const uint32_t size;
 
 	GraphicsContext* const context;
 

@@ -21,7 +21,7 @@ public:
 
 		const aiScene* const scene = importer.ReadFile(filePath, aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_ConvertToLeftHanded);
 
-		for (UINT materialIdx = 0; materialIdx < scene->mNumMaterials; materialIdx++)
+		for (uint32_t materialIdx = 0; materialIdx < scene->mNumMaterials; materialIdx++)
 		{
 			const aiMaterial* const material = scene->mMaterials[materialIdx];
 
@@ -65,13 +65,13 @@ public:
 
 		std::vector<Vertex> vertices;
 
-		std::vector<UINT> indices;
+		std::vector<uint32_t> indices;
 
-		UINT startVertexLocation = 0;
+		uint32_t startVertexLocation = 0;
 
-		UINT startIndexLocation = 0;
+		uint32_t startIndexLocation = 0;
 
-		for (UINT meshIdx = 0; meshIdx < scene->mNumMeshes; meshIdx++)
+		for (uint32_t meshIdx = 0; meshIdx < scene->mNumMeshes; meshIdx++)
 		{
 			const aiMesh* const mesh = scene->mMeshes[meshIdx];
 
@@ -79,9 +79,9 @@ public:
 
 			const bool hasTangent = mesh->HasTangentsAndBitangents();
 
-			const UINT vertexCount = mesh->mNumVertices;
+			const uint32_t vertexCount = mesh->mNumVertices;
 
-			for (UINT vertIdx = 0; vertIdx < mesh->mNumVertices; vertIdx++)
+			for (uint32_t vertIdx = 0; vertIdx < mesh->mNumVertices; vertIdx++)
 			{
 				Vertex vert = {};
 
@@ -136,13 +136,13 @@ public:
 				vertices.push_back(vert);
 			}
 
-			const UINT indexCount = mesh->mNumFaces * 3;
+			const uint32_t indexCount = mesh->mNumFaces * 3;
 
-			for (UINT faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++)
+			for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++)
 			{
 				const aiFace& face = mesh->mFaces[faceIndex];
 
-				for (UINT index = 0; index < face.mNumIndices; index++)
+				for (uint32_t index = 0; index < face.mNumIndices; index++)
 				{
 					indices.push_back(face.mIndices[index]);
 				}
@@ -157,7 +157,7 @@ public:
 
 		modelBuffer = resManager.createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertices.size(), true, false, true, false, true, vertices.data());
 
-		indexBuffer = resManager.createTypedBufferView(FMT::R32UI, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
+		indexBuffer = resManager.createTypedBufferView(FMT::R32UI, sizeof(uint32_t) * indices.size(), false, false, false, true, false, true, indices.data());
 	}
 
 	~Scene()
@@ -170,7 +170,7 @@ public:
 		context->setVertexBuffers(0, { modelBuffer->getVertexBuffer() });
 		context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
-		for (UINT i = 0; i < models.size(); i++)
+		for (uint32_t i = 0; i < models.size(); i++)
 		{
 			materials[models[i]->materialIndex]->bind(context);
 			models[i]->draw(context);
@@ -184,7 +184,7 @@ public:
 		context->setVertexBuffers(0, { modelBuffer->getVertexBuffer() });
 		context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
-		for (UINT i = 0; i < models.size(); i++)
+		for (uint32_t i = 0; i < models.size(); i++)
 		{
 			materials[models[i]->materialIndex]->bind(context);
 			models[i]->drawCube(context);

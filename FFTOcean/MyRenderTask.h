@@ -109,20 +109,20 @@ public:
 
 		effect = BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
 
-		vertexBuffer = resManager->createStructuredBufferView(sizeof(DirectX::XMFLOAT3), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * vertices.size()), false, false, true, true, true, vertices.data());
+		vertexBuffer = resManager->createStructuredBufferView(sizeof(DirectX::XMFLOAT3), static_cast<uint32_t>(sizeof(DirectX::XMFLOAT3) * vertices.size()), false, false, true, true, true, vertices.data());
 
 		{
-			for (UINT y = 0; y < gridSize; y++)
+			for (uint32_t y = 0; y < gridSize; y++)
 			{
-				for (UINT x = 0; x < gridSize; x++)
+				for (uint32_t x = 0; x < gridSize; x++)
 				{
-					const UINT bottomLeft = y * (gridSize + 1) + x;
+					const uint32_t bottomLeft = y * (gridSize + 1) + x;
 
-					const UINT bottomRight = bottomLeft + 1;
+					const uint32_t bottomRight = bottomLeft + 1;
 
-					const UINT topLeft = (y + 1) * (gridSize + 1) + x;
+					const uint32_t topLeft = (y + 1) * (gridSize + 1) + x;
 
-					const UINT topRight = topLeft + 1;
+					const uint32_t topRight = topLeft + 1;
 
 					indices.push_back(bottomRight);
 
@@ -138,7 +138,7 @@ public:
 				}
 			}
 
-			indexBuffer = resManager->createTypedBufferView(FMT::R32UI, sizeof(UINT) * indices.size(), false, false, false, true, false, true, indices.data());
+			indexBuffer = resManager->createTypedBufferView(FMT::R32UI, sizeof(uint32_t) * indices.size(), false, false, false, true, false, true, indices.data());
 		}
 
 		randomGaussTexture = resManager->createRenderTextureView(textureResolution, textureResolution, RandomDataType::GAUSS, true);
@@ -207,7 +207,7 @@ protected:
 private:
 
 	//不要改动这个值
-	static constexpr UINT cascadeNum = 3;
+	static constexpr uint32_t cascadeNum = 3;
 
 	static constexpr float lengthScale0 = 250.f;
 
@@ -216,11 +216,11 @@ private:
 	static constexpr float lengthScale2 = 5.f;
 
 	//不要改动这个值
-	static constexpr UINT textureResolution = 512;
+	static constexpr uint32_t textureResolution = 512;
 
-	static constexpr UINT gridSize = 128;
+	static constexpr uint32_t gridSize = 128;
 
-	static UniquePtr<RenderTextureView> createTexture(const UINT& resolution, const DXGI_FORMAT& format)
+	static UniquePtr<RenderTextureView> createTexture(const uint32_t& resolution, const DXGI_FORMAT& format)
 	{
 		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false, true);
 	}
@@ -249,7 +249,7 @@ private:
 			spectrumParam[2].cutoffHigh = 9999.f;
 		}
 
-		for (UINT i = 0; i < cascadeNum; i++)
+		for (uint32_t i = 0; i < cascadeNum; i++)
 		{
 			context->updateBuffer(*spectrumParamBuffer[i], &spectrumParam[i], sizeof(SpectrumParam));
 
@@ -259,7 +259,7 @@ private:
 
 	void calculateDisplacementAndDerivative()
 	{
-		for (UINT i = 0; i < cascadeNum; i++)
+		for (uint32_t i = 0; i < cascadeNum; i++)
 		{
 			cascade[i]->calculateTimeDependentSpectrum();
 
@@ -369,7 +369,7 @@ private:
 			{1.f,-1.f,1.f,1.f},
 		};
 
-		const UINT edges[12][2] = {
+		const uint32_t edges[12][2] = {
 			{0,1},{1,2},{2,3},{3,0},
 			{2,6},{3,7},{1,5},{0,4},
 			{4,5},{5,6},{6,7},{7,4}
@@ -379,7 +379,7 @@ private:
 			const DirectX::XMMATRIX invViewProj = DirectX::XMMatrixInverse(nullptr, MainCamera::getView() * MainCamera::getProj());
 
 			//transform corner point to world space
-			for (UINT i = 0; i < 8; i++)
+			for (uint32_t i = 0; i < 8; i++)
 			{
 				corners[i] = DirectX::XMVector3TransformCoord(corners[i], invViewProj);
 			}
@@ -394,7 +394,7 @@ private:
 		{
 			const float a0 = bound;
 
-			for (UINT i = 0; i < 12; i++)
+			for (uint32_t i = 0; i < 12; i++)
 			{
 				const DirectX::XMVECTOR p0 = corners[edges[i][0]];
 
@@ -418,7 +418,7 @@ private:
 		{
 			const float a0 = -bound;
 
-			for (UINT i = 0; i < 12; i++)
+			for (uint32_t i = 0; i < 12; i++)
 			{
 				const DirectX::XMVECTOR p0 = corners[edges[i][0]];
 
@@ -440,7 +440,7 @@ private:
 		}
 
 		//add interior point to intersections too
-		for (UINT i = 0; i < 8; i++)
+		for (uint32_t i = 0; i < 8; i++)
 		{
 			const DirectX::XMVECTOR p0 = corners[i];
 
@@ -453,7 +453,7 @@ private:
 		}
 
 		//project all points to y=0 plane
-		for (UINT i = 0; i < intersections.size(); i++)
+		for (uint32_t i = 0; i < intersections.size(); i++)
 		{
 			intersections[i] = DirectX::XMVectorSetY(intersections[i], 0.f);
 		}
@@ -498,7 +498,7 @@ private:
 		{
 			const DirectX::XMMATRIX viewProj = viewMatrix * MainCamera::getProj();
 
-			for (UINT i = 0; i < intersections.size(); i++)
+			for (uint32_t i = 0; i < intersections.size(); i++)
 			{
 				intersections[i] = DirectX::XMVector3TransformCoord(intersections[i], viewProj);
 			}
@@ -512,7 +512,7 @@ private:
 
 		float y_max = DirectX::XMVectorGetY(intersections[0]);
 
-		for (UINT i = 1; i < intersections.size(); i++)
+		for (uint32_t i = 1; i < intersections.size(); i++)
 		{
 			const float x = DirectX::XMVectorGetX(intersections[i]);
 
@@ -577,9 +577,9 @@ private:
 		//right top
 		const DirectX::XMFLOAT4 corners3 = getWorldPos(1.f, 1.f, range);
 
-		for (UINT y = 0; y < gridSize + 1; y++)
+		for (uint32_t y = 0; y < gridSize + 1; y++)
 		{
-			for (UINT x = 0; x < gridSize + 1; x++)
+			for (uint32_t x = 0; x < gridSize + 1; x++)
 			{
 				const float u = (float)x / (float)gridSize;
 
@@ -597,18 +597,18 @@ private:
 
 				result.z *= divide;
 
-				const UINT writeCoord = y * (gridSize + 1) + x;
+				const uint32_t writeCoord = y * (gridSize + 1) + x;
 
 				vertices[writeCoord] = { result.x,0.f,result.z };
 			}
 		}
 
-		context->updateBuffer(*vertexBuffer, vertices.data(), static_cast<UINT>(sizeof(DirectX::XMFLOAT3) * vertices.size()));
+		context->updateBuffer(*vertexBuffer, vertices.data(), static_cast<uint32_t>(sizeof(DirectX::XMFLOAT3) * vertices.size()));
 	}
 
 	struct SpectrumParam
 	{
-		const UINT mapResolution = textureResolution;
+		const uint32_t mapResolution = textureResolution;
 		float mapLength;
 		const DirectX::XMFLOAT2 wind = { 12.f * cosf(0.93f + Utils::Math::halfPi),12.f * sinf(0.93f + Utils::Math::halfPi) };
 		const float amplitude = 0.000002f;
@@ -713,5 +713,5 @@ private:
 
 	std::vector<DirectX::XMFLOAT3> vertices;
 
-	std::vector<UINT> indices;
+	std::vector<uint32_t> indices;
 };
