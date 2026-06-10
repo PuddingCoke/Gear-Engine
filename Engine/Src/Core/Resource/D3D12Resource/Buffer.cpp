@@ -6,7 +6,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, CD3DX12_RESOURCE_DESC::Buffer(size, resFlags), stateTracking, static_cast<D3D12_RESOURCE_STATES>(initialState), nullptr),
 		globalState(makeShared<uint32_t>(initialState)),
 		internalState(initialState),
-		transitionState(D3D12_RESOURCE_STATE_UNKNOWN)
+		transitionState(D3D12_RESOURCE_STATE_UNKNOWN),
+		pendingState(D3D12_RESOURCE_STATE_UNKNOWN)
 	{
 	}
 
@@ -14,7 +15,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		D3D12ResourceBase(buffer, stateTracking),
 		globalState(makeShared<uint32_t>(initialState)),
 		internalState(initialState),
-		transitionState(D3D12_RESOURCE_STATE_UNKNOWN)
+		transitionState(D3D12_RESOURCE_STATE_UNKNOWN),
+		pendingState(D3D12_RESOURCE_STATE_UNKNOWN)
 	{
 	}
 
@@ -22,9 +24,10 @@ namespace Gear::Core::Resource::D3D12Resource
 		D3D12ResourceBase(buff),
 		globalState(buff.globalState),
 		internalState(D3D12_RESOURCE_STATE_UNKNOWN),
-		transitionState(D3D12_RESOURCE_STATE_UNKNOWN)
+		transitionState(D3D12_RESOURCE_STATE_UNKNOWN),
+		pendingState(D3D12_RESOURCE_STATE_UNKNOWN)
 	{
-		buff.resetInternalStates();
+		buff.resetInternalState();
 	}
 
 	Buffer::~Buffer()
@@ -39,27 +42,15 @@ namespace Gear::Core::Resource::D3D12Resource
 		}
 	}
 
-	void Buffer::resetInternalStates()
-	{
-		internalState = D3D12_RESOURCE_STATE_UNKNOWN;
-	}
-
-	void Buffer::resetTransitionStates()
-	{
-		transitionState = D3D12_RESOURCE_STATE_UNKNOWN;
-	}
-
-	void Buffer::transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<PendingBufferBarrier>& pendingBarriers)
+	void Buffer::transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources)
 	{
 		if (internalState == D3D12_RESOURCE_STATE_UNKNOWN)
 		{
-			PendingBufferBarrier barrier = {};
-			barrier.buffer = this;
-			barrier.afterState = transitionState;
-
-			pendingBarriers.push_back(barrier);
+			pendingState = transitionState;
 
 			internalState = transitionState;
+
+			pushToPendingList(pendingResources);
 		}
 		else if (!bitFlagSubset(internalState, transitionState))
 		{
@@ -79,28 +70,41 @@ namespace Gear::Core::Resource::D3D12Resource
 		{
 			transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 		}
-
-		resetTransitionStates();
 	}
 
-	void Buffer::solvePendingBarrier(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, const uint32_t targetState)
+	void Buffer::resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers)
 	{
-		if (*globalState != targetState)
+		if (*globalState != pendingState)
 		{
 			D3D12_RESOURCE_BARRIER barrier = {};
 			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 			barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 			barrier.Transition.pResource = getResource();
 			barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(*globalState);
-			barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(targetState);
+			barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState);
 			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
 			transitionBarriers.push_back(barrier);
 		}
-		else if (*globalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+		else if (*globalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 		{
 			transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 		}
+	}
+
+	void Buffer::resetInternalState()
+	{
+		internalState = D3D12_RESOURCE_STATE_UNKNOWN;
+	}
+
+	void Buffer::resetTransitionState()
+	{
+		transitionState = D3D12_RESOURCE_STATE_UNKNOWN;
+	}
+
+	void Buffer::resetPendingState()
+	{
+		pendingState = D3D12_RESOURCE_STATE_UNKNOWN;
 	}
 
 	void Buffer::setState(const uint32_t state)
@@ -118,15 +122,5 @@ namespace Gear::Core::Resource::D3D12Resource
 	uint32_t Buffer::getState() const
 	{
 		return internalState;
-	}
-
-	void Buffer::pushToTrackingList(std::vector<Buffer*>& trackingList)
-	{
-		if (!getInTrackingList())
-		{
-			trackingList.push_back(this);
-
-			D3D12ResourceBase::pushToTrackingList();
-		}
 	}
 }

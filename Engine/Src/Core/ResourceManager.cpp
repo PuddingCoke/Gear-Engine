@@ -77,6 +77,11 @@ namespace Gear::Core
 
 	Resource::D3D12Resource::TexturePtr ResourceManager::createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube)
 	{
+		if (!Utils::File::exist(filePath))
+		{
+			LOGERROR(filePath, L"指定路径下未找到文件");
+		}
+
 		Resource::D3D12Resource::TexturePtr texture;
 
 		const std::wstring fileExtension = Utils::File::getExtension(filePath);

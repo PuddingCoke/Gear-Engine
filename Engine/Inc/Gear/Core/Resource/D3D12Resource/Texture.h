@@ -13,15 +13,6 @@ namespace Gear::Core::Resource::D3D12Resource
 {
 	CREATESAFETYPE(Texture);
 
-	struct PendingTextureBarrier
-	{
-		Texture* texture;
-
-		uint32_t mipSlice;
-
-		uint32_t afterState;
-	};
-
 	class Texture :public D3D12ResourceBase
 	{
 	public:
@@ -42,11 +33,15 @@ namespace Gear::Core::Resource::D3D12Resource
 
 		void updateGlobalStates() override;
 
-		void resetInternalStates() override;
+		void transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources) override;
 
-		void transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<PendingTextureBarrier>& pendingBarriers);
+		void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers) override;
 
-		void solvePendingBarrier(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, const uint32_t targetMipSlice, const uint32_t targetState);
+		void resetInternalState() override;
+
+		void resetTransitionState() override;
+
+		void resetPendingState() override;
 
 		uint32_t getWidth() const;
 
@@ -65,12 +60,6 @@ namespace Gear::Core::Resource::D3D12Resource
 		uint32_t getAllState() const;
 
 		uint32_t getMipSliceState(const uint32_t mipSlice) const;
-
-		void pushToTrackingList(std::vector<Texture*>& trackingList);
-
-	protected:
-
-		void resetTransitionStates() override;
 
 	private:
 
@@ -119,6 +108,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		UniquePtr<States> internalState;
 
 		UniquePtr<States> transitionState;
+
+		UniquePtr<States> pendingState;
 
 	};
 

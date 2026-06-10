@@ -29,70 +29,54 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::solvePendingBarriers(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers)
+	void ResourceStateTracker::resolvePendingResourceStates(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers)
 	{
-		if (pendingBufferBarrier.size())
+		if (pendingResources.size())
 		{
-			for (const Resource::D3D12Resource::PendingBufferBarrier& pendingBarrier : pendingBufferBarrier)
+			for (Resource::D3D12Resource::D3D12ResourceBase* const resource : pendingResources)
 			{
-				pendingBarrier.buffer->solvePendingBarrier(outBarriers, pendingBarrier.afterState);
+				resource->resolvePendingState(outBarriers);
+
+				resource->resetPendingState();
+
+				resource->popFromPendingList();
 			}
 
-			pendingBufferBarrier.clear();
-		}
-
-		if (pendingTextureBarrier.size())
-		{
-			for (const Resource::D3D12Resource::PendingTextureBarrier& pendingBarrier : pendingTextureBarrier)
-			{
-				pendingBarrier.texture->solvePendingBarrier(outBarriers, pendingBarrier.mipSlice, pendingBarrier.afterState);
-			}
-
-			pendingTextureBarrier.clear();
+			pendingResources.clear();
 		}
 	}
 
-	void ResourceStateTracker::updateReferredSharedResourceStates()
+	void ResourceStateTracker::updateReferredResourceStates()
 	{
 		if (referredResources.size())
 		{
-			for (Resource::D3D12Resource::D3D12ResourceBase* const res : referredResources)
+			for (Resource::D3D12Resource::D3D12ResourceBase* const resource : referredResources)
 			{
-				res->updateGlobalStates();
+				resource->updateGlobalStates();
 
-				res->resetInternalStates();
+				resource->resetInternalState();
 
-				res->popFromReferredList();
+				resource->popFromReferredList();
 			}
 
 			referredResources.clear();
 		}
 	}
 
-	void ResourceStateTracker::transitionResources(ID3D12GraphicsCommandList6* const commandList)
+	void ResourceStateTracker::transitionResourceStates(ID3D12GraphicsCommandList6* const commandList)
 	{
-		if (transitionBuffers.size())
+		if (transitionResources.size())
 		{
-			for (Resource::D3D12Resource::Buffer* const buff : transitionBuffers)
+			for (Resource::D3D12Resource::D3D12ResourceBase* const resource : transitionResources)
 			{
-				buff->transition(transitionBarriers, pendingBufferBarrier);
+				resource->transition(transitionBarriers, pendingResources);
 
-				buff->popFromTrackingList();
+				resource->resetTransitionState();
+
+				resource->popFromTrackingList();
 			}
 
-			transitionBuffers.clear();
-		}
-
-		if (transitionTextures.size())
-		{
-			for (Resource::D3D12Resource::Texture* const tex : transitionTextures)
-			{
-				tex->transition(transitionBarriers, pendingTextureBarrier);
-
-				tex->popFromTrackingList();
-			}
-
-			transitionTextures.clear();
+			transitionResources.clear();
 		}
 
 		if (transitionBarriers.size())
@@ -103,17 +87,10 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::Texture* const texture)
+	void ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::D3D12ResourceBase* const resource)
 	{
-		texture->pushToReferredList(referredResources);
+		resource->pushToReferredList(referredResources);
 
-		texture->pushToTrackingList(transitionTextures);
-	}
-
-	void ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::Buffer* const buffer)
-	{
-		buffer->pushToReferredList(referredResources);
-
-		buffer->pushToTrackingList(transitionBuffers);
+		resource->pushToTrackingList(transitionResources);
 	}
 }

@@ -11,13 +11,6 @@ namespace Gear::Core::Resource::D3D12Resource
 {
 	CREATESAFETYPE(Buffer);
 
-	struct PendingBufferBarrier
-	{
-		Buffer* buffer;
-
-		uint32_t afterState;
-	};
-
 	class Buffer :public D3D12ResourceBase
 	{
 	public:
@@ -38,21 +31,19 @@ namespace Gear::Core::Resource::D3D12Resource
 
 		void updateGlobalStates() override;
 
-		void resetInternalStates() override;
+		void transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources) override;
 
-		void transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<PendingBufferBarrier>& pendingBarriers);
+		void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers) override;
 
-		void solvePendingBarrier(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, const uint32_t targetState);
+		void resetInternalState() override;
+
+		void resetTransitionState() override;
+
+		void resetPendingState() override;
 
 		void setState(const uint32_t state);
 
 		uint32_t getState() const;
-
-		void pushToTrackingList(std::vector<Buffer*>& trackingList);
-
-	protected:
-
-		void resetTransitionStates() override;
 
 	private:
 
@@ -61,6 +52,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		uint32_t internalState;
 
 		uint32_t transitionState;
+
+		uint32_t pendingState;
 
 	};
 }

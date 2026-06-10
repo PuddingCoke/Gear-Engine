@@ -31,14 +31,6 @@ namespace Gear::Core::Resource::D3D12Resource
 
 		void update(const void* const data, const uint64_t size) const;
 
-		void updateGlobalStates() override;
-
-		void resetInternalStates() override;
-
-	protected:
-
-		void resetTransitionStates() override;
-
 	};
 }
 

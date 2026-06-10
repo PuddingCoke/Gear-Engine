@@ -11,23 +11,27 @@ namespace Gear::Core::Resource::D3D12Resource
 	{
 	}
 
+	void D3D12ResourceBase::updateGlobalStates()
+	{
+	}
+
 	D3D12ResourceBase::D3D12ResourceBase(const ComPtr<ID3D12Resource>& resource, const bool stateTracking) :
 		resource(resource), stateTracking(makeShared<bool>(stateTracking)), sharedResource(makeShared<bool>(false)),
-		inReferredList(false), inTrackingList(false)
+		inReferredList(false), inTrackingList(false), inPendingList(false)
 	{
 	}
 
 	D3D12ResourceBase::D3D12ResourceBase(const D3D12_HEAP_PROPERTIES properties, const D3D12_HEAP_FLAGS flags, const D3D12_RESOURCE_DESC desc,
 		const bool stateTracking, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValues) :
 		stateTracking(makeShared<bool>(stateTracking)), sharedResource(makeShared<bool>(false)),
-		inReferredList(false), inTrackingList(false)
+		inReferredList(false), inTrackingList(false), inPendingList(false)
 	{
 		GraphicsDevice::get()->CreateCommittedResource(&properties, flags, &desc, initialState, clearValues, IID_PPV_ARGS(&resource));
 	}
 
 	D3D12ResourceBase::D3D12ResourceBase(D3D12ResourceBase& res) :
 		resource(res.resource), stateTracking(res.stateTracking), sharedResource(res.sharedResource),
-		inReferredList(false), inTrackingList(false)
+		inReferredList(false), inTrackingList(false), inPendingList(false)
 	{
 		*sharedResource = true;
 	}
@@ -67,6 +71,36 @@ namespace Gear::Core::Resource::D3D12Resource
 		return inTrackingList;
 	}
 
+	bool D3D12ResourceBase::getInPendingList() const
+	{
+		return inPendingList;
+	}
+
+	void D3D12ResourceBase::popFromReferredList()
+	{
+		inReferredList = false;
+	}
+
+	void D3D12ResourceBase::popFromTrackingList()
+	{
+		inTrackingList = false;
+	}
+
+	void D3D12ResourceBase::popFromPendingList()
+	{
+		inPendingList = false;
+	}
+
+	void D3D12ResourceBase::pushToPendingList(std::vector<D3D12ResourceBase*>& pendingList)
+	{
+		if (!getInPendingList())
+		{
+			pendingList.push_back(this);
+
+			inPendingList = true;
+		}
+	}
+
 	void D3D12ResourceBase::pushToReferredList(std::vector<D3D12ResourceBase*>& referredList)
 	{
 		//只为需要状态追踪的共享资源更新它的全局状态
@@ -78,18 +112,33 @@ namespace Gear::Core::Resource::D3D12Resource
 		}
 	}
 
-	void D3D12ResourceBase::popFromReferredList()
+	void D3D12ResourceBase::pushToTrackingList(std::vector<D3D12ResourceBase*>& trackingList)
 	{
-		inReferredList = false;
+		if (!getInTrackingList())
+		{
+			trackingList.push_back(this);
+
+			inTrackingList = true;
+		}
 	}
 
-	void D3D12ResourceBase::pushToTrackingList()
+	void D3D12ResourceBase::transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources)
 	{
-		inTrackingList = true;
 	}
 
-	void D3D12ResourceBase::popFromTrackingList()
+	void D3D12ResourceBase::resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers)
 	{
-		inTrackingList = false;
+	}
+
+	void D3D12ResourceBase::resetInternalState()
+	{
+	}
+
+	void D3D12ResourceBase::resetTransitionState()
+	{
+	}
+
+	void D3D12ResourceBase::resetPendingState()
+	{
 	}
 }

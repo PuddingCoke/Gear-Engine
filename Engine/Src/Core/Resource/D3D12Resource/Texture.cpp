@@ -11,7 +11,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		format(format),
 		globalState(makeShared<States>(D3D12_RESOURCE_STATE_COPY_DEST, mipLevels)),
 		internalState(makeUnique<States>(D3D12_RESOURCE_STATE_COPY_DEST, mipLevels)),
-		transitionState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
+		transitionState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels)),
+		pendingState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
 	{
 
 	}
@@ -29,6 +30,7 @@ namespace Gear::Core::Resource::D3D12Resource
 		globalState = makeShared<States>(initialState, mipLevels);
 		internalState = makeUnique<States>(initialState, mipLevels);
 		transitionState = makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels);
+		pendingState = makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels);
 	}
 
 	Texture::Texture(Texture& tex) :
@@ -40,9 +42,10 @@ namespace Gear::Core::Resource::D3D12Resource
 		format(tex.format),
 		globalState(tex.globalState),
 		internalState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels)),
-		transitionState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
+		transitionState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels)),
+		pendingState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
 	{
-		tex.resetInternalStates();
+		tex.resetInternalState();
 	}
 
 	Texture::~Texture()
@@ -80,17 +83,7 @@ namespace Gear::Core::Resource::D3D12Resource
 		}
 	}
 
-	void Texture::resetInternalStates()
-	{
-		internalState->reset();
-	}
-
-	void Texture::resetTransitionStates()
-	{
-		transitionState->reset();
-	}
-
-	void Texture::transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<PendingTextureBarrier>& pendingBarriers)
+	void Texture::transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources)
 	{
 		//检查transitionState的每个mipslice的状态
 		//如果它们都是相同的，那么把allState设置为那个状态
@@ -145,21 +138,18 @@ namespace Gear::Core::Resource::D3D12Resource
 					//如果internalState的所有mipslice的状态都是未知的，那么我们需要待定资源屏障
 					if (allStatesUnknown)
 					{
-						PendingTextureBarrier barrier = {};
-						barrier.texture = this;
-						barrier.mipSlice = D3D12_TRANSITION_ALL_MIPLEVELS;
-						barrier.afterState = transitionState->allState;
-
-						pendingBarriers.push_back(barrier);
+						pendingState->set(transitionState->allState);
 
 						internalState->set(transitionState->allState);
+
+						pushToPendingList(pendingResources);
 					}
 					//internalState的有些mipslice的状态是已知的
 					else
 					{
 						bool insertUAVBarrier = false;
 
-						//对于未知的内部状态我们需要PendingTextureBarrier
+						//对于未知的内部状态我们需要设置Pending State
 						//对于已知的内部状态我们需要D3D12_RESOURCE_BARRIER
 						for (uint32_t mipSlice = 0; mipSlice < mipLevels; mipSlice++)
 						{
@@ -168,14 +158,11 @@ namespace Gear::Core::Resource::D3D12Resource
 							{
 								finalStateChecking = true;
 
-								PendingTextureBarrier barrier = {};
-								barrier.texture = this;
-								barrier.mipSlice = mipSlice;
-								barrier.afterState = transitionState->mipLevelStates[mipSlice];
-
-								pendingBarriers.push_back(barrier);
+								pendingState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
 
 								internalState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+
+								pushToPendingList(pendingResources);
 							}
 							//已知
 							else
@@ -213,16 +200,14 @@ namespace Gear::Core::Resource::D3D12Resource
 			//如果纹理只有一个mipslice
 			else
 			{
+				//未知
 				if (internalState->allState == D3D12_RESOURCE_STATE_UNKNOWN)
 				{
-					PendingTextureBarrier barrier = {};
-					barrier.texture = this;
-					barrier.mipSlice = D3D12_TRANSITION_ALL_MIPLEVELS;
-					barrier.afterState = transitionState->allState;
-
-					pendingBarriers.push_back(barrier);
+					pendingState->set(transitionState->allState);
 
 					internalState->set(transitionState->allState);
+
+					pushToPendingList(pendingResources);
 				}
 				else
 				{
@@ -265,14 +250,11 @@ namespace Gear::Core::Resource::D3D12Resource
 						{
 							finalStateChecking = true;
 
-							PendingTextureBarrier barrier = {};
-							barrier.texture = this;
-							barrier.mipSlice = mipSlice;
-							barrier.afterState = transitionState->mipLevelStates[mipSlice];
-
-							pendingBarriers.push_back(barrier);
+							pendingState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
 
 							internalState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+
+							pushToPendingList(pendingResources);
 						}
 						//已知
 						else
@@ -329,20 +311,34 @@ namespace Gear::Core::Resource::D3D12Resource
 				internalState->allState = D3D12_RESOURCE_STATE_UNKNOWN;
 			}
 		}
-
-		//最后要重置transitionState用于后续的使用
-		resetTransitionStates();
 	}
 
-	void Texture::solvePendingBarrier(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, const uint32_t targetMipSlice, const uint32_t targetState)
+	void Texture::resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers)
 	{
-		if (targetMipSlice == D3D12_TRANSITION_ALL_MIPLEVELS)
+		//检查pendingState的每个mipslice的状态
+		//如果它们都是相同的，那么把allState设置为那个状态
+		if (pendingState->allState == D3D12_RESOURCE_STATE_UNKNOWN)
 		{
+			const uint32_t tempState = pendingState->mipLevelStates[0];
+
+			const bool uniformState = pendingState->allOfEqual(tempState);
+
+			if (uniformState)
+			{
+				pendingState->allState = tempState;
+			}
+		}
+
+		//如果pendingState的allState是已知的
+		if (pendingState->allState != D3D12_RESOURCE_STATE_UNKNOWN)
+		{
+			//如果纹理有多个mipslice
 			if (mipLevels > 1)
 			{
+				//这是最好的情况，pendingState和globalState的allState都是已知的
 				if (globalState->allState != D3D12_RESOURCE_STATE_UNKNOWN)
 				{
-					if (globalState->allState != targetState)
+					if (globalState->allState != pendingState->allState)
 					{
 						D3D12_RESOURCE_BARRIER barrier = {};
 						barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -350,22 +346,24 @@ namespace Gear::Core::Resource::D3D12Resource
 						barrier.Transition.pResource = getResource();
 						barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 						barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->allState);
-						barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(targetState);
+						barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState->allState);
 
 						transitionBarriers.push_back(barrier);
 					}
-					else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+					else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 					{
 						transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 					}
 				}
+				//globalState的allState是未知的，那么需要进一步检查
 				else
 				{
 					bool insertUAVBarrier = false;
 
 					for (uint32_t mipSlice = 0; mipSlice < mipLevels; mipSlice++)
 					{
-						if (globalState->mipLevelStates[mipSlice] != targetState)
+						//未知
+						if (globalState->mipLevelStates[mipSlice] != pendingState->mipLevelStates[mipSlice])
 						{
 							for (uint32_t arraySlice = 0; arraySlice < arraySize; arraySlice++)
 							{
@@ -375,12 +373,71 @@ namespace Gear::Core::Resource::D3D12Resource
 								barrier.Transition.pResource = getResource();
 								barrier.Transition.Subresource = D3D12CalcSubresource(mipSlice, arraySlice, 0, mipLevels, arraySize);
 								barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->mipLevelStates[mipSlice]);
-								barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(targetState);
+								barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState->mipLevelStates[mipSlice]);
 
 								transitionBarriers.push_back(barrier);
 							}
 						}
-						else if (!insertUAVBarrier && globalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+						else if (!insertUAVBarrier && globalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+						{
+							transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+
+							insertUAVBarrier = true;
+						}
+
+					}
+				}
+			}
+			//如果纹理只有一个mipslice
+			else
+			{
+				if (globalState->allState != pendingState->allState)
+				{
+					D3D12_RESOURCE_BARRIER barrier = {};
+					barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+					barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+					barrier.Transition.pResource = getResource();
+					barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+					barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->allState);
+					barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState->allState);
+
+					transitionBarriers.push_back(barrier);
+				}
+				else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+				{
+					transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+				}
+			}
+		}
+		//如果pendingState的allState是未知的
+		//在这种情况下我们需要检查pendingState的各个mipslice的状态
+		else
+		{
+			if (mipLevels > 1)
+			{
+				bool insertUAVBarrier = false;
+
+				for (uint32_t mipSlice = 0; mipSlice < mipLevels; mipSlice++)
+				{
+					//检查pendingState的每个mipslice的状态，只有已知情况才进行状态转变
+					if (pendingState->mipLevelStates[mipSlice] != D3D12_RESOURCE_STATE_UNKNOWN)
+					{
+						if (globalState->mipLevelStates[mipSlice] != pendingState->mipLevelStates[mipSlice])
+						{
+							for (uint32_t arraySlice = 0; arraySlice < arraySize; arraySlice++)
+							{
+								D3D12_RESOURCE_BARRIER barrier = {};
+								barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+								barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+								barrier.Transition.pResource = getResource();
+								barrier.Transition.Subresource = D3D12CalcSubresource(mipSlice, arraySlice, 0, mipLevels, arraySize);
+								barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->mipLevelStates[mipSlice]);
+								barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState->mipLevelStates[mipSlice]);
+
+								transitionBarriers.push_back(barrier);
+							}
+						}
+						else if (!insertUAVBarrier && globalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 						{
 							transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 
@@ -391,53 +448,24 @@ namespace Gear::Core::Resource::D3D12Resource
 			}
 			else
 			{
-				if (globalState->allState != targetState)
-				{
-					D3D12_RESOURCE_BARRIER barrier = {};
-					barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-					barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-					barrier.Transition.pResource = getResource();
-					barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-					barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->allState);
-					barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(targetState);
-
-					transitionBarriers.push_back(barrier);
-				}
-				else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
-				{
-					transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
-				}
+				LOGERROR(L"当转变只有一个miplevel的纹理时，它的allState必须是已知的！");
 			}
 		}
-		else
-		{
-			if (mipLevels > 1)
-			{
-				if (globalState->mipLevelStates[targetMipSlice] != targetState)
-				{
-					for (uint32_t arraySlice = 0; arraySlice < arraySize; arraySlice++)
-					{
-						D3D12_RESOURCE_BARRIER barrier = {};
-						barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-						barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-						barrier.Transition.pResource = getResource();
-						barrier.Transition.Subresource = D3D12CalcSubresource(targetMipSlice, arraySlice, 0, mipLevels, arraySize);
-						barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->mipLevelStates[targetMipSlice]);
-						barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(targetState);
+	}
 
-						transitionBarriers.push_back(barrier);
-					}
-				}
-				else if (globalState->mipLevelStates[targetMipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && targetState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
-				{
-					transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
-				}
-			}
-			else
-			{
-				LOGERROR(L"当转变只有一个miplevel的纹理时，待定的mipslice必须为", TOWSTRING(D3D12_TRANSITION_ALL_MIPLEVELS));
-			}
-		}
+	void Texture::resetInternalState()
+	{
+		internalState->reset();
+	}
+
+	void Texture::resetTransitionState()
+	{
+		transitionState->reset();
+	}
+
+	void Texture::resetPendingState()
+	{
+		pendingState->reset();
 	}
 
 	uint32_t Texture::getWidth() const
@@ -532,16 +560,6 @@ namespace Gear::Core::Resource::D3D12Resource
 	uint32_t Texture::getMipSliceState(const uint32_t mipSlice) const
 	{
 		return internalState->mipLevelStates[mipSlice];
-	}
-
-	void Texture::pushToTrackingList(std::vector<Texture*>& trackingList)
-	{
-		if (!getInTrackingList())
-		{
-			trackingList.push_back(this);
-
-			D3D12ResourceBase::pushToTrackingList();
-		}
 	}
 
 	Texture::States::States(const uint32_t initialState, const uint32_t mipLevels) :

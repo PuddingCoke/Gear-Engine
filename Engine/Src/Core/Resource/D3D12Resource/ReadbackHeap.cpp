@@ -26,18 +26,6 @@ namespace Gear::Core::Resource::D3D12Resource
 		getResource()->Unmap(0, nullptr);
 	}
 
-	void ReadbackHeap::updateGlobalStates()
-	{
-	}
-
-	void ReadbackHeap::resetInternalStates()
-	{
-	}
-
-	void ReadbackHeap::resetTransitionStates()
-	{
-	}
-
 	ReadbackHeap::~ReadbackHeap()
 	{
 	}

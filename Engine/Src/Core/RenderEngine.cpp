@@ -383,7 +383,7 @@ namespace Gear::Core::RenderEngine
 
 			std::vector<D3D12_RESOURCE_BARRIER> barriers;
 
-			commandList->solvePendingBarriers(barriers);
+			commandList->resolvePendingResourceStates(barriers);
 
 			D3D12Core::CommandList* const helperCommandList = recordCommandLists.back();
 
@@ -400,7 +400,7 @@ namespace Gear::Core::RenderEngine
 
 			recordCommandLists.push_back(commandList);
 
-			commandList->updateReferredSharedResourceStates();
+			commandList->updateReferredResourceStates();
 		}
 
 		GPUVendor RenderEngineImpl::getVendor() const

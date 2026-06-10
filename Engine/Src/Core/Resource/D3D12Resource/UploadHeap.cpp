@@ -35,16 +35,4 @@ namespace Gear::Core::Resource::D3D12Resource
 		memcpy(dataPtr, data, size);
 		unmap();
 	}
-
-	void UploadHeap::updateGlobalStates()
-	{
-	}
-
-	void UploadHeap::resetInternalStates()
-	{
-	}
-
-	void UploadHeap::resetTransitionStates()
-	{
-	}
 }

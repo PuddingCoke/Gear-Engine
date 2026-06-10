@@ -160,7 +160,7 @@ namespace Gear::Core::D3D12Core
 
 	void CommandList::transitionResources()
 	{
-		ResourceStateTracker::transitionResources(commandList.Get());
+		ResourceStateTracker::transitionResourceStates(commandList.Get());
 	}
 
 	void CommandList::copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes)

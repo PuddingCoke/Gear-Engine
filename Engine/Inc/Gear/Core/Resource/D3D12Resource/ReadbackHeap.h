@@ -29,14 +29,6 @@ namespace Gear::Core::Resource::D3D12Resource
 
 		void unmap() const;
 
-		void updateGlobalStates() override;
-
-		void resetInternalStates() override;
-
-	protected:
-
-		void resetTransitionStates() override;
-
 	};
 }
 

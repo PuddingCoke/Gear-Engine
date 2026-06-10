@@ -28,6 +28,11 @@ namespace Gear::Core::D3D12Core
 
 	Shader::Shader(const std::wstring& filePath)
 	{
+		if (!Utils::File::exist(filePath))
+		{
+			LOGERROR(filePath, L"指定路径下未找到文件");
+		}
+
 		if (Utils::File::getExtension(filePath) == L"cso")
 		{
 			shaderBlob = DXCCompiler::read(filePath);
@@ -46,6 +51,11 @@ namespace Gear::Core::D3D12Core
 
 	Shader::Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
 	{
+		if (!Utils::File::exist(filePath))
+		{
+			LOGERROR(filePath, L"指定路径下未找到文件");
+		}
+
 		if (Utils::File::getExtension(filePath) == L"hlsl")
 		{
 			shaderBlob = DXCCompiler::compile(filePath, profile);

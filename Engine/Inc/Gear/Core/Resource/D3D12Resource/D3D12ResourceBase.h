@@ -42,9 +42,7 @@ namespace Gear::Core::Resource::D3D12Resource
 
 		virtual ~D3D12ResourceBase();
 
-		virtual void updateGlobalStates() = 0;
-
-		virtual void resetInternalStates() = 0;
+		virtual void updateGlobalStates();
 
 		ID3D12Resource* getResource() const;
 
@@ -62,17 +60,29 @@ namespace Gear::Core::Resource::D3D12Resource
 
 		bool getInTrackingList() const;
 
-		void pushToReferredList(std::vector<D3D12ResourceBase*>& referredList);
+		bool getInPendingList() const;
 
 		void popFromReferredList();
 
-		void pushToTrackingList();
-
 		void popFromTrackingList();
 
-	protected:
+		void popFromPendingList();
 
-		virtual void resetTransitionStates() = 0;
+		void pushToPendingList(std::vector<D3D12ResourceBase*>& pendingList);
+
+		void pushToReferredList(std::vector<D3D12ResourceBase*>& referredList);
+
+		void pushToTrackingList(std::vector<D3D12ResourceBase*>& trackingList);
+
+		virtual void transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources);
+
+		virtual void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers);
+
+		virtual void resetInternalState();
+
+		virtual void resetTransitionState();
+
+		virtual void resetPendingState();
 
 	private:
 
@@ -85,6 +95,8 @@ namespace Gear::Core::Resource::D3D12Resource
 		bool inReferredList;
 
 		bool inTrackingList;
+
+		bool inPendingList;
 
 	};
 }

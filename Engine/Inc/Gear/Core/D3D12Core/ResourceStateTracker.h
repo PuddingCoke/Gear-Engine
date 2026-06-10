@@ -17,38 +17,29 @@ namespace Gear::Core::D3D12Core
 
 		void trackAndSetResourceState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state);
 
-		void solvePendingBarriers(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers);
+		void resolvePendingResourceStates(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers);
 
-		void updateReferredSharedResourceStates();
+		void updateReferredResourceStates();
 
 	protected:
 
-		void transitionResources(ID3D12GraphicsCommandList6* const commandList);
+		void transitionResourceStates(ID3D12GraphicsCommandList6* const commandList);
 
 	private:
 
-		void pushResourceToTrackList(Resource::D3D12Resource::Texture* const texture);
+		void pushResourceToTrackList(Resource::D3D12Resource::D3D12ResourceBase* const resource);
 
-		void pushResourceToTrackList(Resource::D3D12Resource::Buffer* const buffer);
-
-		//记录使用过的共享且需要状态追踪的资源
+		//暂存使用过的共享且需要状态追踪的资源
 		std::vector<Resource::D3D12Resource::D3D12ResourceBase*> referredResources;
 
-		//暂存需要状态转变的缓冲
-		std::vector<Resource::D3D12Resource::Buffer*> transitionBuffers;
+		//暂存需要状态转变的资源
+		std::vector<Resource::D3D12Resource::D3D12ResourceBase*> transitionResources;
 
-		//暂存需要状态转变的纹理
-		std::vector<Resource::D3D12Resource::Texture*> transitionTextures;
+		//暂存BEFORE STATE待定的资源，需要主渲染线程帮忙解决
+		std::vector<Resource::D3D12Resource::D3D12ResourceBase*> pendingResources;
 
 		//暂存资源屏障
 		std::vector<D3D12_RESOURCE_BARRIER> transitionBarriers;
-
-		//以下是待定资源屏障，对于共享且需要状态追踪的资源来说它的内部状态是未知的，即STATE_BEFORE是未知的
-		//因此需要待定资源屏障，并让主渲染线程解决这个问题
-
-		std::vector<Resource::D3D12Resource::PendingBufferBarrier> pendingBufferBarrier;
-
-		std::vector<Resource::D3D12Resource::PendingTextureBarrier> pendingTextureBarrier;
 
 	};
 }
