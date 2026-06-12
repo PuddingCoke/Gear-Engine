@@ -17,7 +17,11 @@ namespace Gear::Core::Resource
 
 		ResourceBase() = delete;
 
+		//初始化
 		ResourceBase(const bool persistent);
+
+		//深拷贝
+		ResourceBase(const ResourceBase&);
 
 		virtual ~ResourceBase();
 

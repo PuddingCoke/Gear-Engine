@@ -15,6 +15,8 @@ namespace Gear::Core
 		UNKNOWN
 	};
 
+	struct CoInitializeToken { CoInitializeToken() { CHECKERROR(CoInitializeEx(0, COINIT_MULTITHREADED)); } ~CoInitializeToken() { CoUninitialize(); } };
+
 	namespace RenderEngine
 	{
 		void submitCommandList(D3D12Core::CommandList* const commandList);

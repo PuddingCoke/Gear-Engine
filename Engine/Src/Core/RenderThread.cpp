@@ -37,7 +37,9 @@ namespace Gear::Core
 	void RenderThread::workerLoop()
 	{
 		//申请每个渲染线程独享的描述符堆
-		LocalDescriptorHeap::Internal::InitializeToken token;
+		LocalDescriptorHeap::Internal::InitializeToken localDescriptorHeapToken;
+
+		CoInitializeToken coInitializeToken;
 
 #ifdef _DEBUG
 		try

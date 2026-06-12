@@ -3,17 +3,23 @@
 namespace Gear::Core::Resource
 {
 	DepthTextureView::DepthTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent) :
-		ResourceBase(persistent), texture(std::move(texturePtr)), allDepthSRVIndex(0), allStencilSRVIndex(0)
+		ResourceBase(persistent),
+		depthSRVFormat(FMT::UNKNOWN),
+		stencilSRVFormat(FMT::UNKNOWN),
+		dsvFormat(FMT::UNKNOWN),
+		allDepthSRVIndex(makeShared<uint32_t>()),
+		allStencilSRVIndex(makeShared<uint32_t>()),
+		depthSRVMipIndices(makeShared<std::vector<uint32_t>>()),
+		depthSRVMipGPUHandles(makeShared<std::vector<D3D12_GPU_DESCRIPTOR_HANDLE>>()),
+		stencilSRVMipIndices(makeShared<std::vector<uint32_t>>()),
+		dsvMipHandles(makeShared<std::vector<D3D12_CPU_DESCRIPTOR_HANDLE>>()),
+		texture(std::move(texturePtr))
 	{
 		const uint32_t mipLevels = texture->getMipLevels();
+
 		const uint32_t arraySize = texture->getArraySize();
-		const DXGI_FORMAT resFormat = texture->getFormat();
 
-		DXGI_FORMAT depthSRVFormat = FMT::UNKNOWN;
-		DXGI_FORMAT stencilSRVFormat = FMT::UNKNOWN;
-		DXGI_FORMAT dsvFormat = FMT::UNKNOWN;
-
-		switch (resFormat)
+		switch (texture->getFormat())
 		{
 		case FMT::D32F:
 			dsvFormat = FMT::D32F;
@@ -50,9 +56,9 @@ namespace Gear::Core::Resource
 			break;
 		}
 
-		hasDepthSRV = (depthSRVFormat != FMT::UNKNOWN);
+		const bool hasDepthSRV = (FMT::UNKNOWN != depthSRVFormat);
 
-		hasStencilSRV = (stencilSRVFormat != FMT::UNKNOWN);
+		const bool hasStencilSRV = (FMT::UNKNOWN != stencilSRVFormat);
 
 		//创建DSV
 		{
@@ -67,11 +73,11 @@ namespace Gear::Core::Resource
 				descriptorHandle = LocalDescriptorHeap::getDepthStencilHeap()->allocDynamicDescriptor(mipLevels);
 			}
 
-			dsvMipHandles.resize(mipLevels);
+			(*dsvMipHandles).resize(mipLevels);
 
 			for (uint32_t i = 0; i < mipLevels; i++)
 			{
-				dsvMipHandles[i] = descriptorHandle.getCurrentCPUHandle();
+				(*dsvMipHandles)[i] = descriptorHandle.getCurrentCPUHandle();
 
 				D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 
@@ -106,7 +112,7 @@ namespace Gear::Core::Resource
 			{
 				//创建能访问所有mipslice的SRV
 				{
-					allDepthSRVIndex = descriptorHandle.getCurrentIndex();
+					*allDepthSRVIndex = descriptorHandle.getCurrentIndex();
 
 					D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 
@@ -166,15 +172,15 @@ namespace Gear::Core::Resource
 					descriptorHandle.move();
 				}
 
-				depthSRVMipIndices.resize(mipLevels);
+				(*depthSRVMipIndices).resize(mipLevels);
 
-				depthSRVMipGPUHandles.resize(mipLevels);
+				(*depthSRVMipGPUHandles).resize(mipLevels);
 
 				for (uint32_t i = 0; i < texture->getMipLevels(); i++)
 				{
-					depthSRVMipIndices[i] = descriptorHandle.getCurrentIndex();
+					(*depthSRVMipIndices)[i] = descriptorHandle.getCurrentIndex();
 
-					depthSRVMipGPUHandles[i] = descriptorHandle.getCurrentGPUHandle();
+					(*depthSRVMipGPUHandles)[i] = descriptorHandle.getCurrentGPUHandle();
 
 					D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 
@@ -239,7 +245,7 @@ namespace Gear::Core::Resource
 			{
 				//创建能访问所有mipslice的SRV
 				{
-					allStencilSRVIndex = descriptorHandle.getCurrentIndex();
+					*allStencilSRVIndex = descriptorHandle.getCurrentIndex();
 
 					D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 
@@ -299,11 +305,11 @@ namespace Gear::Core::Resource
 					descriptorHandle.move();
 				}
 
-				stencilSRVMipIndices.resize(mipLevels);
+				(*stencilSRVMipIndices).resize(mipLevels);
 
 				for (uint32_t i = 0; i < texture->getMipLevels(); i++)
 				{
-					stencilSRVMipIndices[i] = descriptorHandle.getCurrentIndex();
+					(*stencilSRVMipIndices)[i] = descriptorHandle.getCurrentIndex();
 
 					D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 
@@ -366,16 +372,18 @@ namespace Gear::Core::Resource
 		}
 	}
 
-	DepthTextureView::DepthTextureView(const DepthTextureView& tdv) :
-		ResourceBase(tdv.persistent),
-		hasDepthSRV(tdv.hasDepthSRV),
-		hasStencilSRV(tdv.hasStencilSRV),
-		allDepthSRVIndex(tdv.allDepthSRVIndex),
-		allStencilSRVIndex(tdv.allStencilSRVIndex),
-		depthSRVMipIndices(tdv.depthSRVMipIndices),
-		stencilSRVMipIndices(tdv.stencilSRVMipIndices),
-		dsvMipHandles(tdv.dsvMipHandles),
-		texture(makeUnique<D3D12Resource::Texture>(*tdv.texture))
+	DepthTextureView::DepthTextureView(const DepthTextureView& dtv) :
+		ResourceBase(dtv),
+		depthSRVFormat(dtv.depthSRVFormat),
+		stencilSRVFormat(dtv.stencilSRVFormat),
+		dsvFormat(dtv.dsvFormat),
+		allDepthSRVIndex(dtv.allDepthSRVIndex),
+		allStencilSRVIndex(dtv.allStencilSRVIndex),
+		depthSRVMipIndices(dtv.depthSRVMipIndices),
+		depthSRVMipGPUHandles(dtv.depthSRVMipGPUHandles),
+		stencilSRVMipIndices(dtv.stencilSRVMipIndices),
+		dsvMipHandles(dtv.dsvMipHandles),
+		texture(makeUnique<D3D12Resource::Texture>(*dtv.texture))
 	{
 	}
 
@@ -388,7 +396,7 @@ namespace Gear::Core::Resource
 		D3D12Resource::ShaderResourceDesc desc = {};
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
-		desc.resourceIndex = allDepthSRVIndex;
+		desc.resourceIndex = *allDepthSRVIndex;
 		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS;
 
@@ -400,7 +408,7 @@ namespace Gear::Core::Resource
 		D3D12Resource::ShaderResourceDesc desc = {};
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
-		desc.resourceIndex = allStencilSRVIndex;
+		desc.resourceIndex = *allStencilSRVIndex;
 		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS;
 
@@ -412,7 +420,7 @@ namespace Gear::Core::Resource
 		D3D12Resource::ShaderResourceDesc desc = {};
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
-		desc.resourceIndex = depthSRVMipIndices[mipSlice];
+		desc.resourceIndex = (*depthSRVMipIndices)[mipSlice];
 		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = mipSlice;
 
@@ -421,7 +429,7 @@ namespace Gear::Core::Resource
 
 	D3D12_GPU_DESCRIPTOR_HANDLE DepthTextureView::getDepthMipGPUHandle(const uint32_t mipSlice) const
 	{
-		return depthSRVMipGPUHandles[mipSlice];
+		return (*depthSRVMipGPUHandles)[mipSlice];
 	}
 
 	D3D12Resource::ShaderResourceDesc DepthTextureView::getStencilMipIndex(const uint32_t mipSlice) const
@@ -429,7 +437,7 @@ namespace Gear::Core::Resource
 		D3D12Resource::ShaderResourceDesc desc = {};
 		desc.type = D3D12Resource::ShaderResourceDesc::TEXTURE;
 		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
-		desc.resourceIndex = stencilSRVMipIndices[mipSlice];
+		desc.resourceIndex = (*stencilSRVMipIndices)[mipSlice];
 		desc.textureDesc.texture = texture.get();
 		desc.textureDesc.mipSlice = mipSlice;
 
@@ -441,7 +449,7 @@ namespace Gear::Core::Resource
 		D3D12Resource::DepthStencilDesc desc = {};
 		desc.texture = texture.get();
 		desc.mipSlice = mipSlice;
-		desc.dsvHandle = dsvMipHandles[mipSlice];
+		desc.dsvHandle = (*dsvMipHandles)[mipSlice];
 
 		return desc;
 	}
@@ -455,29 +463,29 @@ namespace Gear::Core::Resource
 	{
 		D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
 
-		if (hasDepthSRV)
+		if (FMT::UNKNOWN != depthSRVFormat)
 		{
-			allDepthSRVIndex = shaderVisibleHandle.getCurrentIndex();
+			*allDepthSRVIndex = shaderVisibleHandle.getCurrentIndex();
 
 			shaderVisibleHandle.move();
 
 			for (uint32_t i = 0; i < texture->getMipLevels(); i++)
 			{
-				depthSRVMipIndices[i] = shaderVisibleHandle.getCurrentIndex();
+				(*depthSRVMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
 
 				shaderVisibleHandle.move();
 			}
 		}
 
-		if (hasStencilSRV)
+		if (FMT::UNKNOWN != stencilSRVFormat)
 		{
-			allStencilSRVIndex = shaderVisibleHandle.getCurrentIndex();
+			*allStencilSRVIndex = shaderVisibleHandle.getCurrentIndex();
 
 			shaderVisibleHandle.move();
 
 			for (uint32_t i = 0; i < texture->getMipLevels(); i++)
 			{
-				stencilSRVMipIndices[i] = shaderVisibleHandle.getCurrentIndex();
+				(*stencilSRVMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
 
 				shaderVisibleHandle.move();
 			}

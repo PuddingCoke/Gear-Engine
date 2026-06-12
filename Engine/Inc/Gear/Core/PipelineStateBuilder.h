@@ -7,6 +7,8 @@
 
 #include<Gear/Core/D3D12Core/Shader.h>
 
+#include<Gear/Core/Resource/RenderTextureView.h>
+
 namespace Gear::Core
 {
 	class PipelineStateBuilder

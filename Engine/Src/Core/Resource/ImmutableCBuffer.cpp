@@ -3,7 +3,10 @@
 namespace Gear::Core::Resource
 {
 	ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent) :
-		ResourceBase(persistent), gpuAddress(), bufferIndex(), buffer(std::move(bufferPtr))
+		ResourceBase(persistent),
+		gpuAddress(makeShared<D3D12_GPU_VIRTUAL_ADDRESS>()),
+		bufferIndex(makeShared<uint32_t>()),
+		buffer(std::move(bufferPtr))
 	{
 		if (size % 256 != 0)
 		{
@@ -22,10 +25,18 @@ namespace Gear::Core::Resource
 
 			GraphicsDevice::get()->CreateConstantBufferView(&desc, descriptorHandle.getCurrentCPUHandle());
 
-			gpuAddress = buffer->getGPUAddress();
+			*gpuAddress = buffer->getGPUAddress();
 
-			bufferIndex = descriptorHandle.getCurrentIndex();
+			*bufferIndex = descriptorHandle.getCurrentIndex();
 		}
+	}
+
+	ImmutableCBuffer::ImmutableCBuffer(const ImmutableCBuffer& icb) :
+		ResourceBase(icb),
+		gpuAddress(icb.gpuAddress),
+		bufferIndex(icb.bufferIndex),
+		buffer(icb.buffer ? makeUnique<D3D12Resource::Buffer>(*icb.buffer) : nullptr)
+	{
 	}
 
 	ImmutableCBuffer::~ImmutableCBuffer()
@@ -37,7 +48,7 @@ namespace Gear::Core::Resource
 		D3D12Resource::ShaderResourceDesc desc = {};
 		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
 		desc.state = D3D12Resource::ShaderResourceDesc::CBV;
-		desc.resourceIndex = bufferIndex;
+		desc.resourceIndex = *bufferIndex;
 		desc.bufferDesc.buffer = buffer.get();
 
 		return desc;
@@ -45,7 +56,7 @@ namespace Gear::Core::Resource
 
 	D3D12_GPU_VIRTUAL_ADDRESS ImmutableCBuffer::getGPUAddress() const
 	{
-		return gpuAddress;
+		return *gpuAddress;
 	}
 
 	D3D12Resource::Buffer* ImmutableCBuffer::getBuffer() const
@@ -57,6 +68,6 @@ namespace Gear::Core::Resource
 	{
 		const D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
 
-		bufferIndex = shaderVisibleHandle.getCurrentIndex();
+		*bufferIndex = shaderVisibleHandle.getCurrentIndex();
 	}
 }

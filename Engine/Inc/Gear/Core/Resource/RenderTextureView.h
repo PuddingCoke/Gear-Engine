@@ -45,25 +45,29 @@ namespace Gear::Core::Resource
 
 		void copyDescriptors() override;
 
-		const bool hasRTV;
+		DXGI_FORMAT getRTVFormat() const;
 
-		const bool hasUAV;
+		DXGI_FORMAT getUAVFormat() const;
 
 	private:
 
-		uint32_t allSRVIndex;
+		const DXGI_FORMAT rtvFormat;
 
-		std::vector<uint32_t> srvMipIndices;
+		const DXGI_FORMAT uavFormat;
 
-		std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> srvMipGPUHandles;
+		SharedPtr<uint32_t> allSRVIndex;
 
-		std::vector<uint32_t> uavMipIndices;
+		SharedPtr<std::vector<uint32_t>> srvMipIndices;
 
-		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvMipHandles;
+		SharedPtr<std::vector<D3D12_GPU_DESCRIPTOR_HANDLE>> srvMipGPUHandles;
 
-		std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> viewGPUHandles;
+		SharedPtr<std::vector<uint32_t>> uavMipIndices;
 
-		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> viewCPUHandles;
+		SharedPtr<std::vector<D3D12_CPU_DESCRIPTOR_HANDLE>> rtvMipHandles;
+
+		SharedPtr<std::vector<D3D12_GPU_DESCRIPTOR_HANDLE>> viewGPUHandles;
+
+		SharedPtr<std::vector<D3D12_CPU_DESCRIPTOR_HANDLE>> viewCPUHandles;
 
 		D3D12Resource::TexturePtr texture;
 	};

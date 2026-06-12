@@ -16,6 +16,8 @@ namespace Gear::Core::Resource
 
 		DynamicCBuffer(const uint32_t size);
 
+		DynamicCBuffer(const DynamicCBuffer&);
+
 		//获取可用的数据指针
 		void acquireDataPtr();
 
@@ -29,11 +31,11 @@ namespace Gear::Core::Resource
 
 		const uint32_t regionIndex;
 
-		void* dataPtr;
+		SharedPtr<void*> dataPtr;
 
-		uint64_t acquireFrameIndex;
+		SharedPtr<uint64_t> acquireFrameIndex;
 
-		uint64_t updateFrameIndex;
+		SharedPtr<uint64_t> updateFrameIndex;
 
 	};
 }

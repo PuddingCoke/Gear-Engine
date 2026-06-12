@@ -6,7 +6,9 @@
 
 #include<Gear/Game.h>
 
-#include"MyRenderTask.h"
+#include"SceneRenderTask.h"
+
+#include"PostProcessTask.h"
 
 using namespace Gear;
 
@@ -16,12 +18,20 @@ public:
 
 	FPSCamera camera;
 
-	MyGame():
+	MyGame() :
+		ssrCombinedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
+			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black)),
 		camera({ 0.f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 70.f)
 	{
 		MainCamera::setProj(Utils::Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 
-		pushCreateAsync(createRenderTaskAsync(renderTask));
+		Graphics::setExposure(0.6f);
+
+		Graphics::setGamma(2.2f);
+
+		pushCreateAsync(createRenderTaskAsync(sceneRenderTask, *ssrCombinedTexture));
+
+		pushCreateAsync(createRenderTaskAsync(postProcessTask, *ssrCombinedTexture));
 
 		scheduleAllTasks();
 	}
@@ -37,11 +47,17 @@ public:
 
 	void render()
 	{
-		beginRenderTask(*renderTask);
+		beginRenderTask(*sceneRenderTask);
+
+		beginRenderTask(*postProcessTask);
 
 		scheduleAllTasks();
 	}
 
-	UniquePtr<MyRenderTask> renderTask;
-	
+	RenderTextureViewPtr ssrCombinedTexture;
+
+	UniquePtr<SceneRenderTask> sceneRenderTask;
+
+	UniquePtr<PostProcessTask> postProcessTask;
+
 };

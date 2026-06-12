@@ -20,6 +20,8 @@ namespace Gear::Core::Resource
 
 		BufferView(D3D12Resource::BufferPtr bufferPtr, const uint32_t structureByteStride, const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent);
 
+		BufferView(const BufferView&);
+
 		~BufferView();
 
 		D3D12Resource::VertexBufferDesc getVertexBuffer() const;
@@ -46,28 +48,34 @@ namespace Gear::Core::Resource
 
 		UpdateStruct getUpdateStruct(const void* const data, const uint64_t size);
 
+	private:
+
 		const bool hasSRV;
 
 		const bool hasUAV;
 
-	private:
+		DXGI_FORMAT srvFormat;
+
+		DXGI_FORMAT uavFormat;
 
 		CounterBufferViewPtr counterBuffer;
 
-		uint32_t srvIndex;
+		SharedPtr<uint32_t> srvIndex;
 
-		uint32_t uavIndex;
+		SharedPtr<uint32_t> uavIndex;
 
-		D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
+		SharedPtr<D3D12_GPU_DESCRIPTOR_HANDLE> viewGPUHandle;
 
-		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
+		SharedPtr<D3D12_CPU_DESCRIPTOR_HANDLE> viewCPUHandle;
 
-		union
+		union BufferViewStruct
 		{
 			D3D12_VERTEX_BUFFER_VIEW vbv;
 
 			D3D12_INDEX_BUFFER_VIEW ibv;
 		};
+
+		SharedPtr<BufferViewStruct> bufferViewStruct;
 
 		UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeaps;
 

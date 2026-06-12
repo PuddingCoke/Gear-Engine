@@ -19,6 +19,8 @@ namespace Gear::Core::Resource
 
 		CounterBufferView(const bool persistent);
 
+		CounterBufferView(const CounterBufferView&);
+
 		~CounterBufferView();
 
 		D3D12Resource::ShaderResourceDesc getSRVIndex() const;
@@ -33,13 +35,13 @@ namespace Gear::Core::Resource
 
 	private:
 
-		uint32_t srvIndex;
+		SharedPtr<uint32_t> srvIndex;
 
-		uint32_t uavIndex;
+		SharedPtr<uint32_t> uavIndex;
 
-		D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
+		SharedPtr<D3D12_GPU_DESCRIPTOR_HANDLE> viewGPUHandle;
 
-		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
+		SharedPtr<D3D12_CPU_DESCRIPTOR_HANDLE> viewCPUHandle;
 
 		D3D12Resource::BufferPtr buffer;
 	};

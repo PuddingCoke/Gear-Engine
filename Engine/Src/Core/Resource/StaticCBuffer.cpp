@@ -5,18 +5,23 @@
 namespace Gear::Core::Resource
 {
 	StaticCBuffer::StaticCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent) :
-		ImmutableCBuffer(std::move(bufferPtr), size, persistent)
+		ImmutableCBuffer(std::move(bufferPtr), size, persistent),
+		uploadHeaps(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
+		dataPtrs(makeShared<void* []>(Graphics::getFrameBufferCount()))
 	{
-		uploadHeaps = makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount());
-
-		dataPtrs = makeUnique<void* []>(Graphics::getFrameBufferCount());
-
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
 			uploadHeaps[i] = makeUnique<D3D12Resource::UploadHeap>(size);
 
 			dataPtrs[i] = uploadHeaps[i]->map();
 		}
+	}
+
+	StaticCBuffer::StaticCBuffer(const StaticCBuffer& scb) :
+		ImmutableCBuffer(scb),
+		uploadHeaps(nullptr),
+		dataPtrs(scb.dataPtrs)
+	{
 	}
 
 	StaticCBuffer::~StaticCBuffer()

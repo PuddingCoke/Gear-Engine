@@ -145,6 +145,8 @@ namespace Gear::Core::RenderEngine
 
 			void drawImGuiFrame(D3D12Core::CommandList* const targetCommandList);
 
+			CoInitializeToken coInitializeToken;
+
 			UniquePtr<GraphicsDevice::Internal::InitializeToken> graphicsDeviceToken;
 
 			ComPtr<ID3D12CommandQueue> commandQueue;
@@ -199,8 +201,6 @@ namespace Gear::Core::RenderEngine
 			resManager(nullptr),
 			perframeResource{}
 		{
-			CHECKERROR(CoInitializeEx(0, COINIT_MULTITHREADED));
-
 			//初始化一些渲染需要的信息，如width、height、frameIndex等
 			Graphics::Internal::initialize(useSwapChainBuffer ? 3 : 1, width, height);
 
@@ -373,8 +373,6 @@ namespace Gear::Core::RenderEngine
 			{
 				CloseHandle(fenceEvent);
 			}
-
-			CoUninitialize();
 		}
 
 		void RenderEngineImpl::submitCommandList(D3D12Core::CommandList* const commandList)

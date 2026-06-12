@@ -7,6 +7,15 @@ namespace Gear::Core::Resource
 	{
 	}
 
+	//拷贝时persistent无论如何都要被设置为false，因为每个渲染线程都有着独享的LocalDescriptorHeap
+	//这意味着只能是创建那个资源的渲染线程调用资源的copyDescriptors方法
+	ResourceBase::ResourceBase(const ResourceBase& resource) :
+		persistent(false),
+		numCBVSRVUAVDescriptors(resource.numCBVSRVUAVDescriptors),
+		copySrcDescriptorHandle()
+	{
+	}
+
 	ResourceBase::~ResourceBase()
 	{
 	}
@@ -39,7 +48,7 @@ namespace Gear::Core::Resource
 		}
 #endif // _DEBUG
 
-		if (persistent)
+		if (getPersistent())
 		{
 			copySrcDescriptorHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(getNumCBVSRVUAVDescriptors());
 		}
@@ -54,7 +63,7 @@ namespace Gear::Core::Resource
 	D3D12Core::DescriptorHandle ResourceBase::copyToResourceHeap() const
 	{
 #ifdef _DEBUG
-		if (persistent)
+		if (getPersistent())
 		{
 			LOGERROR(L"对于持久性资源来说，调用", TOWSTRING(copyToResourceHeap), L"是非法的！");
 		}

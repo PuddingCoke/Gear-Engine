@@ -46,21 +46,23 @@ namespace Gear::Core::Resource
 
 	private:
 
-		bool hasDepthSRV;
+		DXGI_FORMAT depthSRVFormat;
 
-		bool hasStencilSRV;
+		DXGI_FORMAT stencilSRVFormat;
 
-		uint32_t allDepthSRVIndex;
+		DXGI_FORMAT dsvFormat;
 
-		uint32_t allStencilSRVIndex;
+		SharedPtr<uint32_t> allDepthSRVIndex;
 
-		std::vector<uint32_t> depthSRVMipIndices;
+		SharedPtr<uint32_t> allStencilSRVIndex;
 
-		std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> depthSRVMipGPUHandles;
+		SharedPtr<std::vector<uint32_t>> depthSRVMipIndices;
 
-		std::vector<uint32_t> stencilSRVMipIndices;
+		SharedPtr<std::vector<D3D12_GPU_DESCRIPTOR_HANDLE>> depthSRVMipGPUHandles;
 
-		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvMipHandles;
+		SharedPtr<std::vector<uint32_t>> stencilSRVMipIndices;
+
+		SharedPtr<std::vector<D3D12_CPU_DESCRIPTOR_HANDLE>> dsvMipHandles;
 
 		D3D12Resource::TexturePtr texture;
 	};

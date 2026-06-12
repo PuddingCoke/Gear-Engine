@@ -11,7 +11,11 @@
 namespace Gear::Core::Resource
 {
 	DynamicCBuffer::DynamicCBuffer(const uint32_t size) :
-		ImmutableCBuffer(nullptr, size, true), regionIndex(Utils::Math::log2(size / 256u)), dataPtr(nullptr), acquireFrameIndex(UINT64_MAX), updateFrameIndex(UINT64_MAX)
+		ImmutableCBuffer(nullptr, size, true),
+		regionIndex(Utils::Math::log2(size / 256u)),
+		dataPtr(makeShared<void*>(nullptr)),
+		acquireFrameIndex(makeShared<uint64_t>(UINT64_MAX)),
+		updateFrameIndex(makeShared<uint64_t>(UINT64_MAX))
 	{
 		if (regionIndex >= DynamicCBufferManager::getNumRegion())
 		{
@@ -30,43 +34,58 @@ namespace Gear::Core::Resource
 		}
 	}
 
+	//只持有使用权
+	DynamicCBuffer::DynamicCBuffer(const DynamicCBuffer& dcb) :
+		ImmutableCBuffer(dcb),
+		regionIndex(dcb.regionIndex),
+		dataPtr(dcb.dataPtr),
+		acquireFrameIndex(dcb.acquireFrameIndex),
+		updateFrameIndex(dcb.updateFrameIndex)
+	{
+	}
+
 	void DynamicCBuffer::acquireDataPtr()
 	{
 #ifdef _DEBUG
-		if (acquireFrameIndex == Graphics::getRenderedFrameCount())
+		if (Graphics::getRenderedFrameCount() == *acquireFrameIndex)
 		{
 			LOGERROR(L"对于动态常量缓冲来说，每帧的数据指针获取只能有一次！");
 		}
+
+		if (regionIndex >= DynamicCBufferManager::getNumRegion())
+		{
+			LOGERROR(L"这个动态常量缓冲没有被分配位置");
+		}
 #endif // _DEBUG
 
-		acquireFrameIndex = Graphics::getRenderedFrameCount();
+		* acquireFrameIndex = Graphics::getRenderedFrameCount();
 
 		const DynamicCBufferManager::AvailableLocation& location = DynamicCBufferManager::requestLocation(regionIndex);
 
-		dataPtr = location.dataPtr;
+		*dataPtr = location.dataPtr;
 
-		gpuAddress = location.gpuAddress;
+		*gpuAddress = location.gpuAddress;
 
-		bufferIndex = location.descriptorIndex;
+		*bufferIndex = location.descriptorIndex;
 	}
 
 	void DynamicCBuffer::updateData(const void* const data)
 	{
 #ifdef _DEBUG
-		if (acquireFrameIndex != Graphics::getRenderedFrameCount())
+		if (Graphics::getRenderedFrameCount() != *acquireFrameIndex)
 		{
 			LOGERROR(L"你还没有为这个动态常量缓冲获取这一帧可用的数据指针！");
 		}
 
-		if (updateFrameIndex == Graphics::getRenderedFrameCount())
+		if (Graphics::getRenderedFrameCount() == *updateFrameIndex)
 		{
 			LOGERROR(L"一个动态常量缓冲每帧只能更新一次！");
 		}
 #endif // _DEBUG
 
-		updateFrameIndex = Graphics::getRenderedFrameCount();
+		* updateFrameIndex = Graphics::getRenderedFrameCount();
 
-		memcpy(dataPtr, data, 256ull << regionIndex);
+		memcpy(*dataPtr, data, 256ull << regionIndex);
 	}
 
 	void DynamicCBuffer::simpleUpdate(const void* const data)

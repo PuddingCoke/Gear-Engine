@@ -17,7 +17,7 @@ public:
 		accumulateState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
 			.setBlendState(PipelineStateHelper::blendDefault)
-			.setRTVFormats({ accumulatedTexture->getTexture()->getFormat() })
+			.setRTVFormats({ accumulatedTexture->getRTVFormat() })
 			.setPS(*accumulateShader)
 			.build();
 

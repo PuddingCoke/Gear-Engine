@@ -6,11 +6,11 @@
 
 #include"Scene.h"
 
-class MyRenderTask :public RenderTask
+class SceneRenderTask :public RenderTask
 {
 public:
 
-	MyRenderTask() :
+	SceneRenderTask(const RenderTextureView& ssrCombinedTexture) :
 		gPositionMetallic(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
 			FMT::RGBA32F, 1, 1, false, true, DirectX::g_XMHalfPi)),
 		gNormalRoughness(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
@@ -23,8 +23,7 @@ public:
 			FMT::R32TL, 1, 1, false, true)),
 		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
 			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black)),
-		ssrCombinedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
-			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black)),
+		ssrCombinedTexture(makeUnique<RenderTextureView>(ssrCombinedTexture)),
 		radianceCube(ResourceManager::createGraphicsTexture(probeCaptureResolution, probeCaptureResolution,
 			FMT::RGBA16F, 6, 1, true, true, radianceCubeClearColor)),
 		distanceCube(ResourceManager::createGraphicsTexture(probeCaptureResolution, probeCaptureResolution,
@@ -45,6 +44,7 @@ public:
 		ssrCombinePS(Shader::create(Utils::File::getRootFolder() + L"SSRCombinePS.cso")),
 		sunAngle(Utils::Math::halfPi - 0.01f)
 	{
+
 		shadowTexture->getTexture()->setName(L"Shadow Texture");
 
 		radianceCube->getTexture()->setName(L"Radiance Cube");
@@ -52,8 +52,6 @@ public:
 		distanceCube->getTexture()->setName(L"Distance Cube");
 
 		originTexture->getTexture()->setName(L"Origin Texture");
-
-		ssrCombinedTexture->getTexture()->setName(L"SSR Combined Texture");
 
 		shadowPipelineState = PipelineStateBuilder()
 			.setInputElements(inputDesc)
@@ -192,25 +190,9 @@ public:
 
 		hbaoPlusEffect = HBAOPlusEffect::create(*context, Graphics::getWidth(), Graphics::getHeight());
 
-		bloomEffect = BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
-
-		bloomEffect->setIntensity(0.5f);
-
-		fxaaEffect = FXAAEffect::create(*context, Graphics::getWidth(), Graphics::getHeight());
-
 		ssrEffect = SSREffect::create(*context, Graphics::getWidth(), Graphics::getHeight());
 
 		scene = makeUnique<Scene>(assetPath + "Sponza.gltf", *resManager);
-
-		Graphics::setExposure(0.6f);
-
-		Graphics::setGamma(2.2f);
-
-		bloomEffect->setThreshold(0.f);
-
-		bloomEffect->setSoftThreshold(0.f);
-
-		bloomEffect->setIntensity(0.17f);
 
 		irradianceOctahedralMap = ResourceManager::createComputeTexture(6, 6, FMT::RG11B10F, probeCount, 1, false, true);
 
@@ -244,17 +226,13 @@ public:
 		}
 	}
 
-	~MyRenderTask()
+	~SceneRenderTask()
 	{
 	}
 
 	void imGUICall() override
 	{
 		hbaoPlusEffect->imGUICall();
-
-		bloomEffect->imGUICall();
-
-		fxaaEffect->imGUICall();
 
 		ImGui::Begin("SSR Parameters");
 		ImGui::SliderFloat("ExponentA", &ssrParameters.exponentA, 0.f, 5.f);
@@ -517,16 +495,6 @@ protected:
 		context->clearRenderTarget(ssrCombinedTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 
 		context->draw(3, 1, 0, 0);
-
-		RenderTextureView* const bloomTexture = bloomEffect->process(*ssrCombinedTexture);
-
-		RenderTextureView* const toneMappedTexture = ToneMapEffect::process(*context, *bloomTexture);
-
-		RenderTextureView* const fxaaTexture = fxaaEffect->process(*toneMappedTexture);
-
-		RenderTextureView* const gammaCorrectedTexture = GammaCorrectEffect::process(*context, *fxaaTexture);
-
-		blit(*gammaCorrectedTexture);
 	}
 
 	uint32_t ProbeGridPosToIndex(const DirectX::XMUINT3& probeGridPos)
@@ -655,10 +623,6 @@ protected:
 	ShaderPtr ssrCombinePS;
 
 	HBAOPlusEffectPtr hbaoPlusEffect;
-
-	BloomEffectPtr bloomEffect;
-
-	FXAAEffectPtr fxaaEffect;
 
 	SSREffectPtr ssrEffect;
 

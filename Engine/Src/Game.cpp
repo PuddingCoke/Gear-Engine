@@ -8,6 +8,12 @@ namespace Gear
 
 	Game::~Game()
 	{
+		while (recordQueue.size())
+		{
+			recordQueue.front()->waitTask();
+
+			recordQueue.pop();
+		}
 	}
 
 	void Game::imGUICall()
@@ -16,14 +22,14 @@ namespace Gear
 
 	void Game::beginRenderTask(Core::RenderTask& renderTask)
 	{
-		renderTask.beginTask();
-
-		recordQueue.push(&renderTask);
-
 		if (Core::RenderEngine::getDisplayImGuiSurface())
 		{
 			renderTask.imGUICall();
 		}
+
+		renderTask.beginTask();
+
+		recordQueue.push(&renderTask);
 	}
 
 	void Game::pushCreateAsync(UniquePtr<Core::RenderThread> renderThread)

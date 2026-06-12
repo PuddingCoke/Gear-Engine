@@ -32,7 +32,10 @@
     <ClInclude Include="Model.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MyRenderTask.h">
+    <ClInclude Include="SceneRenderTask.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessTask.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

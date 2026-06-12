@@ -17,12 +17,9 @@ namespace Gear::Core::Resource
 
 		ImmutableCBuffer() = delete;
 
-		ImmutableCBuffer(const ImmutableCBuffer&) = delete;
-
-		void operator=(const ImmutableCBuffer&) = delete;
-
-		//用于一般类型的常量缓冲
 		ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent);
+
+		ImmutableCBuffer(const ImmutableCBuffer&);
 
 		~ImmutableCBuffer();
 
@@ -36,9 +33,9 @@ namespace Gear::Core::Resource
 
 	protected:
 
-		D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
+		SharedPtr<D3D12_GPU_VIRTUAL_ADDRESS> gpuAddress;
 
-		uint32_t bufferIndex;
+		SharedPtr<uint32_t> bufferIndex;
 
 		D3D12Resource::BufferPtr buffer;
 

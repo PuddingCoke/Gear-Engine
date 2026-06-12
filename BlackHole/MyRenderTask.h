@@ -19,7 +19,7 @@ public:
 	{
 		pipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
-			.setRTVFormats({ originTexture->getTexture()->getFormat() })
+			.setRTVFormats({ originTexture->getRTVFormat() })
 			.setPS(*blackHoleShader)
 			.build();
 

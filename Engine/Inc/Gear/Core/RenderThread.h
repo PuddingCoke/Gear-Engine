@@ -50,13 +50,13 @@ namespace Gear::Core
 	//先把RenderThread所有权移交给Game
 	//待RenderTask初始化完毕后，Game调用RenderThread的transferOwnerShip把所有权移交给RenderTask
 	template <typename First, typename... Rest>
-	UniquePtr<RenderThread> createRenderTaskAsync(First& first, const Rest&... args)
+	UniquePtr<RenderThread> createRenderTaskAsync(First& first, Rest&&... args)
 	{
 		using RenderTaskType = typename First::element_type;
 
 		auto createFunc = [&](RenderTask** renderTask)
 			{
-				first = makeUnique<RenderTaskType>(args...);
+				first = makeUnique<RenderTaskType>(std::forward<Rest>(args)...);
 
 				*renderTask = first.get();
 			};
