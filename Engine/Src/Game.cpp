@@ -14,6 +14,17 @@ namespace Gear
 
 			recordQueue.pop();
 		}
+
+		while (createQueue.size())
+		{
+			createQueue.front()->waitInitialized();
+
+			Core::RenderThread* const renderThread = createQueue.front().get();
+
+			renderThread->transferOwnerShip(std::move(createQueue.front()));
+
+			createQueue.pop();
+		}
 	}
 
 	void Game::imGUICall()
