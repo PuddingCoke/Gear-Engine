@@ -28,9 +28,9 @@ namespace Gear::Core::RenderEngine::Internal
 
 	void waitForNextFrame();
 
-	void begin();
+	void beginFrame();
 
-	void end();
+	void endFrame();
 
 	void present();
 

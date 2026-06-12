@@ -50,8 +50,6 @@ namespace Gear::Core::VideoEncoder
 		//不要修改这个值
 		static constexpr uint32_t progressBarWidth = 32;
 
-		uint32_t frameEncoded;
-
 		const uint32_t frameToEncode;
 
 		std::chrono::steady_clock::time_point startPoint;

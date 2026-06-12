@@ -113,9 +113,9 @@ namespace Gear::Core::RenderEngine
 
 			void waitForNextFrame();
 
-			void begin();
+			void beginFrame();
 
-			void end();
+			void endFrame();
 
 			void present() const;
 
@@ -137,7 +137,7 @@ namespace Gear::Core::RenderEngine
 
 			void processCommandLists();
 
-			void updateConstantBuffer() const;
+			void updateDynamicCBuffers() const;
 
 			void toggleImGuiSurface();
 
@@ -268,7 +268,9 @@ namespace Gear::Core::RenderEngine
 
 			//把准备命令列表推入容器中，因为资源的初始化可能需要动态常量缓冲
 			//而动态常量缓冲更新的指令记录是由prepareCommandList负责的
-			begin();
+			prepareCommandList->open();
+
+			recordCommandLists.push_back(prepareCommandList.get());
 
 			resManager = makeUnique<ResourceManager>();
 
@@ -450,7 +452,7 @@ namespace Gear::Core::RenderEngine
 			fenceValues[Graphics::getFrameIndex()] = currentFenceValue + 1;
 		}
 
-		void RenderEngineImpl::begin()
+		void RenderEngineImpl::beginFrame()
 		{
 			beginImGuiFrame();
 
@@ -458,12 +460,10 @@ namespace Gear::Core::RenderEngine
 
 			recordCommandLists.push_back(prepareCommandList.get());
 
-			Graphics::Internal::renderedFrameCountInc();
-
 			engineDefinedGlobalCBuffer->acquireDataPtr();
 		}
 
-		void RenderEngineImpl::end()
+		void RenderEngineImpl::endFrame()
 		{
 			if (displayImGUISurface)
 			{
@@ -481,7 +481,7 @@ namespace Gear::Core::RenderEngine
 			{
 				prepareCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-				updateConstantBuffer();
+				updateDynamicCBuffers();
 
 				//一些比较基础的信息的设置
 				{
@@ -542,6 +542,8 @@ namespace Gear::Core::RenderEngine
 			}
 
 			processCommandLists();
+
+			Graphics::Internal::renderedFrameCountInc();
 		}
 
 		void RenderEngineImpl::present() const
@@ -579,7 +581,7 @@ namespace Gear::Core::RenderEngine
 			toggleImGuiSurface();
 
 			//更新动态常量缓冲，因为资源创建可能会需要动态常量缓冲
-			updateConstantBuffer();
+			updateDynamicCBuffers();
 
 			processCommandLists();
 
@@ -710,7 +712,7 @@ namespace Gear::Core::RenderEngine
 			commandQueue->ExecuteCommandLists(static_cast<uint32_t>(commandLists.size()), commandLists.data());
 		}
 
-		void RenderEngineImpl::updateConstantBuffer() const
+		void RenderEngineImpl::updateDynamicCBuffers() const
 		{
 			DynamicCBufferManager::Internal::recordCommands(prepareCommandList.get());
 		}
@@ -769,14 +771,14 @@ namespace Gear::Core::RenderEngine
 			impl->waitForNextFrame();
 		}
 
-		void begin()
+		void beginFrame()
 		{
-			impl->begin();
+			impl->beginFrame();
 		}
 
-		void end()
+		void endFrame()
 		{
-			impl->end();
+			impl->endFrame();
 		}
 
 		void present()

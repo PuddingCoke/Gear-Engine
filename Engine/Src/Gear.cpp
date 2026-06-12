@@ -215,7 +215,7 @@ namespace Gear
 
 			Core::RenderEngine::Internal::setDefRenderTexture();
 
-			Core::RenderEngine::Internal::begin();
+			Core::RenderEngine::Internal::beginFrame();
 
 			game->update(Core::Graphics::getDeltaTime());
 
@@ -228,7 +228,7 @@ namespace Gear
 				Core::RenderEngine::Internal::saveBackBuffer(backBufferHeap.get());
 			}
 
-			Core::RenderEngine::Internal::end();
+			Core::RenderEngine::Internal::endFrame();
 
 			Core::RenderEngine::Internal::present();
 
@@ -339,13 +339,13 @@ namespace Gear
 			{
 				Core::RenderEngine::Internal::setRenderTexture(renderTextures[index].get(), textureHandles[index]);
 
-				Core::RenderEngine::Internal::begin();
+				Core::RenderEngine::Internal::beginFrame();
 
 				game->update(Core::Graphics::getDeltaTime());
 
 				game->render();
 
-				Core::RenderEngine::Internal::end();
+				Core::RenderEngine::Internal::endFrame();
 
 				Core::RenderEngine::Internal::waitForCurrentFrame();
 
@@ -371,13 +371,13 @@ namespace Gear
 
 			Core::RenderEngine::Internal::setDefRenderTexture();
 
-			Core::RenderEngine::Internal::begin();
+			Core::RenderEngine::Internal::beginFrame();
 
 			game->update(Core::Graphics::getDeltaTime());
 
 			game->render();
 
-			Core::RenderEngine::Internal::end();
+			Core::RenderEngine::Internal::endFrame();
 
 			Core::RenderEngine::Internal::present();
 

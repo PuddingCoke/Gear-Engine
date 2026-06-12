@@ -3,7 +3,7 @@
 namespace Gear::Core::VideoEncoder
 {
 	Encoder::Encoder(const uint32_t frameToEncode, const OutputVideoFormat format) :
-		frameToEncode(frameToEncode), frameEncoded(0), encodeTime(0.f), streamIndex(0), sampleDuration(10000000u / frameRate), sampleTime(0)
+		frameToEncode(frameToEncode), encodeTime(0.f), streamIndex(0), sampleDuration(10000000u / frameRate), sampleTime(0)
 	{
 		CHECKERROR(MFStartup(MF_VERSION));
 
@@ -58,8 +58,6 @@ namespace Gear::Core::VideoEncoder
 
 	bool Encoder::writeFrame(const void* const bitstreamPtr, const uint32_t bitstreamSize, const bool cleanPoint)
 	{
-		frameEncoded++;
-
 		sampleTime += sampleDuration;
 
 		ComPtr<IMFMediaBuffer> buffer;
@@ -95,14 +93,14 @@ namespace Gear::Core::VideoEncoder
 
 		displayProgress();
 
-		return !(frameEncoded == frameToEncode);
+		return !(Graphics::getRenderedFrameCount() == frameToEncode);
 	}
 
 	void Encoder::displayProgress() const
 	{
-		if ((frameEncoded % (frameRate / 4)) == 0)
+		if ((Graphics::getRenderedFrameCount() % (frameRate / 4)) == 0)
 		{
-			const uint32_t num = progressBarWidth * frameEncoded / frameToEncode;
+			const uint32_t num = progressBarWidth * static_cast<uint32_t>(Graphics::getRenderedFrameCount()) / frameToEncode;
 
 			const uint32_t buffLength = 12 + 2 + progressBarWidth + 1 + 6 + 1 + 1;
 
@@ -111,7 +109,7 @@ namespace Gear::Core::VideoEncoder
 			swprintf_s(str, buffLength, L"Encoding... [%.*s%.*s] %.2f%%",
 				num, L"********************************",
 				progressBarWidth - num, L"////////////////////////////////",
-				100.f * static_cast<float>(frameEncoded) / static_cast<float>(frameToEncode));
+				100.f * static_cast<float>(Graphics::getRenderedFrameCount()) / static_cast<float>(frameToEncode));
 
 			LOGENGINE(str);
 		}
