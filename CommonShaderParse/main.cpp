@@ -348,13 +348,13 @@ int wmain(int argc, const wchar_t* argv[])
 
 			std::getline(inputStream, str);
 
-			//先用空格分割
-			const std::vector<std::wstring> splitResult = split(str, L' ');
-
-			if (splitResult.back()[0] != L'b')
+			if (str.find(L"#define") == std::wstring::npos)
 			{
 				break;
 			}
+
+			//先用空格分割
+			const std::vector<std::wstring> splitResult = split(str, L' ');
 
 			const std::wstring name = splitResult[1];
 
