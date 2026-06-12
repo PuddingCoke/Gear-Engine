@@ -7,6 +7,8 @@
 
 #include<dxccompiler/dxcapi.h>
 
+#include<D3D12Headers/d3d12shader.h>
+
 namespace Gear::Core::D3D12Core::DXCCompiler
 {
 
@@ -23,11 +25,16 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		LIBRARY
 	};
 
+	//raw bytes
+	ComPtr<IDxcBlob> load(const uint8_t* const bytes, const size_t byteSize);
+
 	//hlsl
 	ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderProfile profile);
 
 	//cso
 	ComPtr<IDxcBlob> read(const std::wstring& filePath);
+
+	ComPtr<ID3D12ShaderReflection> createReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob);
 
 }
 

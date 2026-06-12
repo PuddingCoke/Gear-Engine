@@ -44,11 +44,10 @@ public:
 		ssrCombinePS(Shader::create(Utils::File::getRootFolder() + L"SSRCombinePS.cso")),
 		sunAngle(Utils::Math::halfPi - 0.01f)
 	{
-
 		shadowTexture->getTexture()->setName(L"Shadow Texture");
 
 		radianceCube->getTexture()->setName(L"Radiance Cube");
-
+		
 		distanceCube->getTexture()->setName(L"Distance Cube");
 
 		originTexture->getTexture()->setName(L"Origin Texture");

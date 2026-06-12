@@ -4,6 +4,8 @@
 
 #include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
 
+#include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
+
 namespace Gear::Core
 {
 	RenderThread::RenderThread(const std::function<void(RenderTask**)>& createFunc) :
@@ -36,10 +38,12 @@ namespace Gear::Core
 
 	void RenderThread::workerLoop()
 	{
+		CoInitializeToken coInitializeToken;
+
+		D3D12Core::DXCCompiler::Internal::InitializeToken dxcCompilerToken;
+
 		//申请每个渲染线程独享的描述符堆
 		LocalDescriptorHeap::Internal::InitializeToken localDescriptorHeapToken;
-
-		CoInitializeToken coInitializeToken;
 
 #ifdef _DEBUG
 		try

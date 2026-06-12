@@ -29,7 +29,7 @@ namespace Gear::Core::D3D12Core
 
 		static ShaderPtr create(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
 
-		//byte code
+		//raw bytes
 		Shader(const uint8_t* const bytes, const size_t byteSize);
 
 		//cso
@@ -37,6 +37,8 @@ namespace Gear::Core::D3D12Core
 
 		//hlsl
 		Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
+
+		ComPtr<ID3D12ShaderReflection> getReflectionBlob() const;
 
 	private:
 

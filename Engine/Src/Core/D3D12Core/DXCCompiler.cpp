@@ -20,11 +20,16 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 
 			~DXCCompilerImpl();
 
+			//raw bytes
+			ComPtr<IDxcBlob> load(const uint8_t* const bytes, const size_t byteSize);
+
 			//hlsl
 			ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderProfile profile) const;
 
 			//cso
 			ComPtr<IDxcBlob> read(const std::wstring& filePath) const;
+
+			ComPtr<ID3D12ShaderReflection> createReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob) const;
 
 		private:
 
@@ -36,6 +41,8 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 
 			ComPtr<IDxcIncludeHandler> dxcIncludeHanlder;
 
+			ComPtr<IDxcContainerReflection> dxcContainerReflection;
+
 		};
 
 		DXCCompilerImpl::DXCCompilerImpl()
@@ -45,10 +52,23 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 			CHECKERROR(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils)));
 
 			CHECKERROR(dxcUtils->CreateDefaultIncludeHandler(&dxcIncludeHanlder));
+
+			CHECKERROR(DxcCreateInstance(CLSID_DxcContainerReflection, IID_PPV_ARGS(&dxcContainerReflection)));
 		}
 
 		DXCCompilerImpl::~DXCCompilerImpl()
 		{
+		}
+
+		ComPtr<IDxcBlob> DXCCompilerImpl::load(const uint8_t* const bytes, const size_t byteSize)
+		{
+			ComPtr<IDxcBlobEncoding> textBlob;
+
+			CHECKERROR(dxcUtils->CreateBlobFromPinned(bytes, static_cast<uint32_t>(byteSize), CP_NONE, &textBlob));
+
+			ComPtr<IDxcBlob> shaderBlob = textBlob;
+
+			return shaderBlob;
 		}
 
 		ComPtr<IDxcBlob> DXCCompilerImpl::compile(const std::wstring& filePath, const ShaderProfile profile) const
@@ -124,7 +144,29 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 			return shaderBlob;
 		}
 
-		UniquePtr<DXCCompilerImpl> impl;
+		ComPtr<ID3D12ShaderReflection> DXCCompilerImpl::createReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob) const
+		{
+			dxcContainerReflection->Load(shaderBlob.Get());
+
+			uint32_t partIndex;
+
+			ComPtr<ID3D12ShaderReflection> shaderReflection;
+
+			if (SUCCEEDED(dxcContainerReflection->FindFirstPartKind(DXC_PART_REFLECTION_DATA, &partIndex)))
+			{
+				ComPtr<IDxcBlob> reflectionBlob;
+
+				dxcContainerReflection->GetPartContent(partIndex, &reflectionBlob);
+
+				DxcBuffer reflectionBuffer = { reflectionBlob->GetBufferPointer(),reflectionBlob->GetBufferSize(),0 };
+
+				dxcUtils->CreateReflection(&reflectionBuffer, IID_PPV_ARGS(&shaderReflection));
+			}
+
+			return shaderReflection;
+		}
+
+		thread_local UniquePtr<DXCCompilerImpl> impl;
 
 		void initialize()
 		{
@@ -137,6 +179,11 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		}
 	}
 
+	ComPtr<IDxcBlob> load(const uint8_t* const bytes, const size_t byteSize)
+	{
+		return Internal::impl->load(bytes, byteSize);
+	}
+
 	ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderProfile profile)
 	{
 		return Internal::impl->compile(filePath, profile);
@@ -145,5 +192,10 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 	ComPtr<IDxcBlob> read(const std::wstring& filePath)
 	{
 		return Internal::impl->read(filePath);
+	}
+
+	ComPtr<ID3D12ShaderReflection> createReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob)
+	{
+		return Internal::impl->createReflectionBlob(shaderBlob);
 	}
 }

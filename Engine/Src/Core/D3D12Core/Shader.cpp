@@ -21,9 +21,11 @@ namespace Gear::Core::D3D12Core
 
 	Shader::Shader(const uint8_t* const bytes, const size_t byteSize)
 	{
-		shaderByteCode.pShaderBytecode = bytes;
+		shaderBlob = DXCCompiler::load(bytes, byteSize);
 
-		shaderByteCode.BytecodeLength = byteSize;
+		shaderByteCode.pShaderBytecode = shaderBlob->GetBufferPointer();
+
+		shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
 	}
 
 	Shader::Shader(const std::wstring& filePath)
@@ -70,6 +72,11 @@ namespace Gear::Core::D3D12Core
 		{
 			LOGERROR(L"文件的扩展名必须为.hlsl");
 		}
+	}
+
+	ComPtr<ID3D12ShaderReflection> Shader::getReflectionBlob() const
+	{
+		return DXCCompiler::createReflectionBlob(shaderBlob);
 	}
 
 	D3D12_SHADER_BYTECODE Shader::getByteCode() const
