@@ -59,10 +59,7 @@ namespace Gear::Core::Effect
 		context->setCSConstants({ depthTexture.getDepthMipIndex(0),hiZTexture->getUAVMipIndex(0) }, co);
 			});
 
-		context->dispatch(
-			dispatchCeil(hiZTexture->getTexture()->getWidth(), 16u),
-			dispatchCeil(hiZTexture->getTexture()->getHeight(), 16u),
-			1u);
+		context->dispatchDim(hiZTexture->get3Dimension());
 
 		context->setPipelineState(*hiZCreateState);
 
@@ -73,10 +70,7 @@ namespace Gear::Core::Effect
 				});
 
 
-			context->dispatch(
-				dispatchCeil(hiZTexture->getTexture()->getWidth() >> (i + 1u), 16u),
-				dispatchCeil(hiZTexture->getTexture()->getHeight() >> (i + 1u), 16u),
-				1u);
+			context->dispatchDim(hiZTexture->get3Dimension(i + 1u));
 		}
 
 		context->setPipelineState(*hiZProcessState);

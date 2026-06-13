@@ -44,15 +44,15 @@ namespace Gear::Core::Effect
 
 			for (uint32_t i = 0; i < blurSteps; i++)
 			{
-				resolutions[i] = DirectX::XMUINT2(width >> (i + 1), height >> (i + 1));
+				const DirectX::XMUINT2 resolutions = DirectX::XMUINT2(width >> (i + 1), height >> (i + 1));
 
 				swapTexture[i] = ResourceManager::createSwapTexture(
 					[=] {
-						return ResourceManager::createRenderTextureView(resolutions[i].x, resolutions[i].y, FMT::RGBA16F, 1, 1, false, true);
+						return ResourceManager::createRenderTextureView(resolutions.x, resolutions.y, FMT::RGBA16F, 1, 1, false, true);
 					}
 				);
 
-				blurParam[i].texelSize = DirectX::XMFLOAT2(1.f / resolutions[i].x, 1.f / resolutions[i].y);
+				blurParam[i].texelSize = DirectX::XMFLOAT2(1.f / resolutions.x, 1.f / resolutions.y);
 				blurParam[i].iteration = iteration[i];
 				blurParam[i].sigma = sigma[i];
 
@@ -121,7 +121,7 @@ namespace Gear::Core::Effect
 			});
 		context->draw(3, 1, 0, 0);
 
-		context->setViewportSimple(resolutions[0].x, resolutions[0].y);
+		context->setViewportSimple(swapTexture[0]->write()->get2Dimension());
 		context->setPipelineState(*bloomKarisAverageState);
 		context->setRenderTargets({ swapTexture[0]->write()->getRTVMipHandle(0) }, {});
 		SETCONSTS({
@@ -135,7 +135,7 @@ namespace Gear::Core::Effect
 
 		for (uint32_t i = 0; i < blurSteps - 1; i++)
 		{
-			context->setViewportSimple(resolutions[i + 1].x, resolutions[i + 1].y);
+			context->setViewportSimple(swapTexture[i + 1]->write()->get2Dimension());
 			context->setRenderTargets({ swapTexture[i + 1]->write()->getRTVMipHandle(0) }, {});
 			SETCONSTS({
 			context->setPSConstants({ swapTexture[i]->read()->getAllSRVIndex() }, co);
@@ -154,7 +154,7 @@ namespace Gear::Core::Effect
 
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
-		context->dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
+		context->dispatchDim(swapTexture[blurSteps - 1]->write()->get3Dimension());
 		swapTexture[blurSteps - 1]->swap();
 
 		context->setPipelineState(*bloomVBlurState);
@@ -167,7 +167,7 @@ namespace Gear::Core::Effect
 
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
-		context->dispatch(resolutions[blurSteps - 1].x / workGroupSize.x, resolutions[blurSteps - 1].y / workGroupSize.y + 1, 1);
+		context->dispatchDim(swapTexture[blurSteps - 1]->write()->get3Dimension());
 		swapTexture[blurSteps - 1]->swap();
 
 		for (uint32_t i = 0; i < blurSteps - 1; i++)
@@ -182,7 +182,7 @@ namespace Gear::Core::Effect
 
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
-			context->dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
+			context->dispatchDim(swapTexture[blurSteps - 2 - i]->write()->get3Dimension());
 			swapTexture[blurSteps - 2 - i]->swap();
 
 			context->setPipelineState(*bloomVBlurState);
@@ -195,9 +195,9 @@ namespace Gear::Core::Effect
 
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
-			context->dispatch(resolutions[blurSteps - 2 - i].x / workGroupSize.x, resolutions[blurSteps - 2 - i].y / workGroupSize.y + 1, 1);
+			context->dispatchDim(swapTexture[blurSteps - 2 - i]->write()->get3Dimension());
 
-			context->setViewportSimple(resolutions[blurSteps - 2 - i].x, resolutions[blurSteps - 2 - i].y);
+			context->setViewportSimple(swapTexture[blurSteps - 2 - i]->write()->get2Dimension());
 			context->setPipelineState(*bloomUpSampleState);
 			context->setRenderTargets({ swapTexture[blurSteps - 2 - i]->write()->getRTVMipHandle(0) }, {});
 			SETCONSTS({

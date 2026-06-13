@@ -52,7 +52,7 @@ public:
 			inputTexture.getAllSRVIndex() }, co);
 			});
 
-		context->dispatch(size, 1, 1);
+		context->dispatchDim(size* size, 1, 1);
 
 		SETCONSTS({
 		context->setCSConstants({
@@ -60,7 +60,7 @@ public:
 			tempTexture->getAllSRVIndex() }, co);
 			});
 
-		context->dispatch(size, 1, 1);
+		context->dispatchDim(size* size, 1, 1);
 
 		context->setPipelineState(*permutationState);
 
@@ -69,7 +69,7 @@ public:
 			inputTexture.getUAVMipIndex(0) }, co);
 			});
 
-		context->dispatch(size / 8, size / 8, 1);
+		context->dispatchDim(size, size, 1);
 	}
 
 	void calculateInitialSpectrum(ImmutableCBuffer& spectrumParamBuffer)
@@ -85,7 +85,7 @@ public:
 
 		context->setCSConstantBuffer(spectrumParamBuffer);
 
-		context->dispatch(size / 8, size / 8, 1);
+		context->dispatchDim(size, size, 1);
 
 		context->setPipelineState(*conjugateState);
 
@@ -95,7 +95,7 @@ public:
 			tildeh0Texture->getAllSRVIndex() }, co);
 			});
 
-		context->dispatch(size / 8, size / 8, 1);
+		context->dispatchDim(size, size, 1);
 	}
 
 	void calculateTimeDependentSpectrum()
@@ -112,7 +112,7 @@ public:
 			waveSpectrumTexture->getAllSRVIndex() }, co);
 			});
 
-		context->dispatch(size / 8, size / 8, 1);
+		context->dispatchDim(size, size, 1);
 	}
 
 	void calculateDisplacementAndDerivative()
@@ -138,7 +138,7 @@ public:
 			DxxDzz->getAllSRVIndex() }, co);
 			});
 
-		context->dispatch(size / 8, size / 8, 1);
+		context->dispatchDim(size, size, 1);
 	}
 
 	static PipelineState* spectrumState;

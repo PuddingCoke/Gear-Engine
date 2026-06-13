@@ -42,9 +42,9 @@ namespace Gear::Core::D3D12Core
 
 	private:
 
-		D3D12_SHADER_BYTECODE shaderByteCode;
-
 		ComPtr<IDxcBlob> shaderBlob;
+
+		ComPtr<ID3D12ShaderReflection> shaderReflection;
 
 	};
 }

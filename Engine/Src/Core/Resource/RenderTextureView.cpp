@@ -383,4 +383,24 @@ namespace Gear::Core::Resource
 	{
 		return uavFormat;
 	}
+
+	DirectX::XMUINT3 RenderTextureView::get3Dimension(const uint32_t mipSlice) const
+	{
+		const DirectX::XMUINT2 dimension = get2Dimension(mipSlice);
+
+		return DirectX::XMUINT3{ dimension.x,dimension.y,1u };
+	}
+
+	DirectX::XMUINT2 RenderTextureView::get2Dimension(const uint32_t mipSlice) const
+	{
+#ifdef _DEBUG
+		if (mipSlice >= texture->getMipLevels())
+		{
+			LOGERROR(L"纹理没有这么多的mipLevel");
+		}
+#endif // _DEBUG
+
+		return DirectX::XMUINT2{ texture->getWidth() >> mipSlice,texture->getHeight() >> mipSlice };
+	}
+
 }

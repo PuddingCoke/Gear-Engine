@@ -19,7 +19,20 @@ namespace Gear::Core::D3D12Core
 			COMPUTE
 		};
 
-		PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType);
+		union PipelineStateData
+		{
+			struct ComputeData
+			{
+				DirectX::XMUINT3 groupDimension;
+			} computeData;
+
+			struct GraphicsData
+			{
+
+			}graphicsData;
+		};
+
+		PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType, const PipelineStateData pipelineStateData);
 
 		~PipelineState();
 
@@ -29,6 +42,8 @@ namespace Gear::Core::D3D12Core
 
 		PipelineStateType getPipelineStateType() const;
 
+		PipelineStateData getPipelineStateData() const;
+
 	private:
 
 		ComPtr<ID3D12PipelineState> pipelineState;
@@ -37,6 +52,8 @@ namespace Gear::Core::D3D12Core
 		const RootSignature* const rootSignature;
 
 		const PipelineStateType pipelineStateType;
+
+		const PipelineStateData pipelineStateData;
 
 	};
 }

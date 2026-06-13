@@ -58,7 +58,7 @@ namespace Gear::Core::GlobalEffect::ToneMapEffect
 		context->setCSConstants(1, &exposure, co);
 			});
 
-		context->dispatch(Graphics::getWidth() / 16 + 1, Graphics::getHeight() / 16 + 1, 1);
+		context->dispatchDim(Graphics::getWidth(), Graphics::getHeight(), 1);
 
 		return Internal::impl.outputTexture.get();
 	}

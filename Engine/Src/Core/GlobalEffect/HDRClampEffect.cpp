@@ -46,7 +46,7 @@ namespace Gear::Core::GlobalEffect::HDRClampEffect
 			context->setCSConstants({ inOutTexture.getUAVMipIndex(0) }, co);
 				});
 
-			context->dispatch(inOutTexture.getTexture()->getWidth() / 16 + 1, inOutTexture.getTexture()->getHeight() / 16 + 1, 1);
+			context->dispatchDim(inOutTexture.get3Dimension());
 		}
 	}
 }

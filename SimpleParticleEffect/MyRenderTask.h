@@ -114,7 +114,7 @@ protected:
 		context->setCSConstants(simulationParam, co);
 			});
 
-		context->dispatch(numParticles / 100, 1, 1);
+		context->dispatchDim(numParticles, 1, 1);
 
 		context->setPipelineState(*particleRenderState);
 

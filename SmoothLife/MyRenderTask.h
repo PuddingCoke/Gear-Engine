@@ -66,7 +66,7 @@ protected:
 		context->setCSConstants(1, &uintSeed, co);
 			});
 
-		context->dispatch(swapTexture.width / 16, swapTexture.height / 9, 1);
+		context->dispatchDim(swapTexture.write()->get3Dimension());
 
 		swapTexture.swap();
 	}
@@ -82,7 +82,7 @@ protected:
 		context->setCSConstants(simulationParam, co);
 			});
 
-		context->dispatch(swapTexture.width / 16, swapTexture.height / 9, 1);
+		context->dispatchDim(swapTexture.write()->get3Dimension());
 
 		swapTexture.swap();
 	}
@@ -109,7 +109,7 @@ protected:
 			swapTexture->read()->getAllSRVIndex() }, co);
 			});
 
-		context->dispatch(swapTexture->width / 16, swapTexture->height / 9, 1);
+		context->dispatchDim(swapTexture->write()->get3Dimension());
 
 		blit(*originTexture);
 	}

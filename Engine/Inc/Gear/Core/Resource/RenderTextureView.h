@@ -49,6 +49,10 @@ namespace Gear::Core::Resource
 
 		DXGI_FORMAT getUAVFormat() const;
 
+		DirectX::XMUINT3 get3Dimension(const uint32_t mipSlice = 0u) const;
+
+		DirectX::XMUINT2 get2Dimension(const uint32_t mipSlice = 0u) const;
+
 	private:
 
 		const DXGI_FORMAT rtvFormat;

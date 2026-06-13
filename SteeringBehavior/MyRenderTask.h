@@ -92,7 +92,7 @@ protected:
 		context->setCSConstants(simulationParam, co);
 			});
 
-		context->dispatch(dispatchCeil(numVehicle, 32), 1, 1);
+		context->dispatchDim(numVehicle, 1, 1);
 
 		positionVelocity->swap();
 

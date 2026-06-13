@@ -109,6 +109,8 @@ namespace Gear::Core
 
 		const D3D12Core::RootSignature* selectedRootSignature = nullptr;
 
+		D3D12Core::PipelineState::PipelineStateData pipelineStateData = {};
+
 		const bool hasVertexShader = graphicsDesc.VS.BytecodeLength;
 
 		const bool hasHullShader = graphicsDesc.HS.BytecodeLength;
@@ -151,12 +153,14 @@ namespace Gear::Core
 
 		CHECKERROR(GraphicsDevice::get()->CreateGraphicsPipelineState(&graphicsDesc, IID_PPV_ARGS(&id3d12PipelineState)));
 
-		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::GRAPHICS);
+		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::GRAPHICS, pipelineStateData);
 	}
 
 	D3D12Core::PipelineStatePtr PipelineStateBuilder::build(const D3D12Core::Shader& cs)
 	{
 		ComPtr<ID3D12PipelineState> id3d12PipelineState;
+
+		D3D12Core::PipelineState::PipelineStateData pipelineStateData = {};
 
 		const D3D12Core::RootSignature* selectedRootSignature = GlobalRootSignature::getComputeShaderRootSignature();
 
@@ -166,6 +170,17 @@ namespace Gear::Core
 
 		CHECKERROR(GraphicsDevice::get()->CreateComputePipelineState(&computeDesc, IID_PPV_ARGS(&id3d12PipelineState)));
 
-		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE);
+		DirectX::XMUINT3 groupDimension = { 0,0,0 };
+
+		auto reflection = cs.getReflectionBlob();
+
+		if (reflection.Get())
+		{
+			reflection->GetThreadGroupSize(&groupDimension.x, &groupDimension.y, &groupDimension.z);
+
+			pipelineStateData.computeData.groupDimension = groupDimension;
+		}
+
+		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE, pipelineStateData);
 	}
 }

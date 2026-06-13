@@ -21,8 +21,6 @@ namespace Gear::Core::Effect
 
 		static constexpr uint32_t iteration[blurSteps] = { 2,3,4,5,6 };
 
-		static constexpr DirectX::XMUINT2 workGroupSize = { 60,16 };
-
 		static BloomEffectPtr create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager);
 
 		BloomEffect(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager);
@@ -68,8 +66,6 @@ namespace Gear::Core::Effect
 		D3D12Core::PipelineStatePtr bloomKarisAverageState;
 
 		D3D12Core::PipelineStatePtr bloomUpSampleState;
-
-		DirectX::XMUINT2 resolutions[blurSteps];
 
 		Resource::RenderTextureViewPtr lensDirtTexture;
 

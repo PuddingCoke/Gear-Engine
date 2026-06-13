@@ -331,7 +331,12 @@ namespace Gear::Core
 		setViewport(static_cast<float>(width), static_cast<float>(height));
 	}
 
-	void GraphicsContext::setScissorRect(const uint32_t left, const uint32_t top, const uint32_t right, const uint32_t bottom)
+	void GraphicsContext::setViewport(const DirectX::XMUINT2 dimension)
+	{
+		setViewport(dimension.x, dimension.y);
+	}
+
+	void GraphicsContext::setScissorRect(const int32_t left, const int32_t top, const int32_t right, const int32_t bottom)
 	{
 		rt.left = left;
 		rt.top = top;
@@ -343,19 +348,28 @@ namespace Gear::Core
 
 	void GraphicsContext::setScissorRect(const float left, const float top, const float right, const float bottom)
 	{
-		setScissorRect(static_cast<uint32_t>(left), static_cast<uint32_t>(top), static_cast<uint32_t>(right), static_cast<uint32_t>(bottom));
+		setScissorRect(static_cast<int32_t>(left), static_cast<int32_t>(top), static_cast<int32_t>(right), static_cast<int32_t>(bottom));
 	}
 
 	void GraphicsContext::setViewportSimple(const float width, const float height)
 	{
 		setViewport(width, height);
-		setScissorRect(0, 0, width, height);
+
+		setScissorRect(0.f, 0.f, width, height);
 	}
 
 	void GraphicsContext::setViewportSimple(const uint32_t width, const uint32_t height)
 	{
 		setViewport(width, height);
-		setScissorRect(0, 0, width, height);
+
+		setScissorRect(0, 0, static_cast<int32_t>(width), static_cast<int32_t>(height));
+	}
+
+	void GraphicsContext::setViewportSimple(const DirectX::XMUINT2 dimension)
+	{
+		setViewport(dimension);
+
+		setScissorRect(0, 0, static_cast<int32_t>(dimension.x), static_cast<int32_t>(dimension.y));
 	}
 
 	void GraphicsContext::clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const float values[4])
@@ -414,13 +428,36 @@ namespace Gear::Core
 		commandList->drawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 	}
 
-	void GraphicsContext::dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ)
+	void GraphicsContext::dispatchGrp(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ)
 	{
 		transitionResources();
 
 		flushRootConstantBufferDescs(false);
 
 		commandList->dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
+	}
+
+	void GraphicsContext::dispatchDim(const uint32_t dispatchThreadCountX, const uint32_t dispatchThreadCountY, const uint32_t dispatchThreadCountZ)
+	{
+		const DirectX::XMUINT3 groupDimension = currentPipelineState->getPipelineStateData().computeData.groupDimension;
+
+#ifdef _DEBUG
+		if (groupDimension.x == 0 || groupDimension.y == 0 || groupDimension.z == 0)
+		{
+			LOGERROR(L"无法获取计算着色器的线程组维度信息");
+		}
+#endif // _DEBUG
+
+		dispatchGrp(
+			dispatchCeil(dispatchThreadCountX, groupDimension.x),
+			dispatchCeil(dispatchThreadCountY, groupDimension.y),
+			dispatchCeil(dispatchThreadCountZ, groupDimension.z)
+		);
+	}
+
+	void GraphicsContext::dispatchDim(const DirectX::XMUINT3 dispatchThreadCount)
+	{
+		dispatchDim(dispatchThreadCount.x, dispatchThreadCount.y, dispatchThreadCount.z);
 	}
 
 	void GraphicsContext::begin()

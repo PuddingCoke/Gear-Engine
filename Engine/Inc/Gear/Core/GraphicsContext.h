@@ -167,17 +167,22 @@ namespace Gear::Core
 		//设置视口
 		void setViewport(const uint32_t width, const uint32_t height);
 
+		//设置视口
+		void setViewport(const DirectX::XMUINT2 dimension);
+
 		//设置剪刀矩形
-		void setScissorRect(const uint32_t left, const uint32_t top, const uint32_t right, const uint32_t bottom);
+		void setScissorRect(const int32_t left, const int32_t top, const int32_t right, const int32_t bottom);
 
 		//设置剪刀矩形
 		void setScissorRect(const float left, const float top, const float right, const float bottom);
 
-		//帮手方法，同时设置视口和剪刀矩形
+		//以下是帮手方法，同时设置视口和剪刀矩形
+
 		void setViewportSimple(const float width, const float height);
 
-		//帮手方法，同时设置视口和剪刀矩形
 		void setViewportSimple(const uint32_t width, const uint32_t height);
+
+		void setViewportSimple(const DirectX::XMUINT2 dimension);
 
 		//清理UAV
 		void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const float values[4]);
@@ -191,8 +196,14 @@ namespace Gear::Core
 		//绘制索引化实例
 		void drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation);
 
-		//分发线程
-		void dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ);
+		//分发线程（设置线程组维度）
+		void dispatchGrp(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ);
+
+		//分发线程（设置线程维度）
+		void dispatchDim(const uint32_t dispatchThreadCountX, const uint32_t dispatchThreadCountY, const uint32_t dispatchThreadCountZ);
+
+		//分发线程（设置线程维度）
+		void dispatchDim(const DirectX::XMUINT3 dispatchThreadCount);
 
 		//由RenderTask自动调用
 		void begin();

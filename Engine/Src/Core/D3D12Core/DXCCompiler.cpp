@@ -29,7 +29,7 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 			//cso
 			ComPtr<IDxcBlob> read(const std::wstring& filePath) const;
 
-			ComPtr<ID3D12ShaderReflection> createReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob) const;
+			ComPtr<ID3D12ShaderReflection> getReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob) const;
 
 		private:
 
@@ -144,7 +144,7 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 			return shaderBlob;
 		}
 
-		ComPtr<ID3D12ShaderReflection> DXCCompilerImpl::createReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob) const
+		ComPtr<ID3D12ShaderReflection> DXCCompilerImpl::getReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob) const
 		{
 			dxcContainerReflection->Load(shaderBlob.Get());
 
@@ -194,8 +194,8 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		return Internal::impl->read(filePath);
 	}
 
-	ComPtr<ID3D12ShaderReflection> createReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob)
+	ComPtr<ID3D12ShaderReflection> getReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob)
 	{
-		return Internal::impl->createReflectionBlob(shaderBlob);
+		return Internal::impl->getReflectionBlob(shaderBlob);
 	}
 }

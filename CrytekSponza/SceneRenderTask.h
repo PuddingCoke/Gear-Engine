@@ -47,7 +47,7 @@ public:
 		shadowTexture->getTexture()->setName(L"Shadow Texture");
 
 		radianceCube->getTexture()->setName(L"Radiance Cube");
-		
+
 		distanceCube->getTexture()->setName(L"Distance Cube");
 
 		originTexture->getTexture()->setName(L"Origin Texture");
@@ -348,7 +348,7 @@ protected:
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
-		context->dispatch(1, 1, 1);
+		context->dispatchDim(irradianceOctahedralMap->get3Dimension());
 
 		context->setPipelineState(*depthOctahedralEncodeState);
 
@@ -361,7 +361,7 @@ protected:
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
-		context->dispatch(1, 1, 1);
+		context->dispatchDim(depthOctahedralMap->get3Dimension());
 	}
 
 	void renderCubeBounceAt(const ImmutableCBuffer& cubeRenderBuffer)
@@ -403,7 +403,7 @@ protected:
 
 		context->setCSConstantBuffer(cubeRenderBuffer);
 
-		context->dispatch(1, 1, 1);
+		context->dispatchDim(irradianceBounceOctahedralMap->get3Dimension());
 	}
 
 	void recordCommand() override

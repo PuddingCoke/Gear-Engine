@@ -86,7 +86,7 @@ protected:
 		context->setCSConstants(accParam, co);
 			});
 
-		context->dispatch(Graphics::getWidth() / 16, Graphics::getHeight() / 9, 1);
+		context->dispatchDim(Graphics::getWidth(), Graphics::getHeight(), 1);
 
 		auto bloomTexture = effect->process(*originTexture);
 

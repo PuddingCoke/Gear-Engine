@@ -23,9 +23,7 @@ namespace Gear::Core::D3D12Core
 	{
 		shaderBlob = DXCCompiler::load(bytes, byteSize);
 
-		shaderByteCode.pShaderBytecode = shaderBlob->GetBufferPointer();
-
-		shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
+		shaderReflection = DXCCompiler::getReflectionBlob(shaderBlob);
 	}
 
 	Shader::Shader(const std::wstring& filePath)
@@ -39,16 +37,14 @@ namespace Gear::Core::D3D12Core
 		{
 			shaderBlob = DXCCompiler::read(filePath);
 
-			shaderByteCode.pShaderBytecode = shaderBlob->GetBufferPointer();
-
-			shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
-
 			LOGSUCCESS(L"读取", LogColor::brightBlue, filePath);
 		}
 		else
 		{
 			LOGERROR(L"文件的扩展名必须为.cso");
 		}
+
+		shaderReflection = DXCCompiler::getReflectionBlob(shaderBlob);
 	}
 
 	Shader::Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile)
@@ -62,25 +58,23 @@ namespace Gear::Core::D3D12Core
 		{
 			shaderBlob = DXCCompiler::compile(filePath, profile);
 
-			shaderByteCode.pShaderBytecode = shaderBlob->GetBufferPointer();
-
-			shaderByteCode.BytecodeLength = shaderBlob->GetBufferSize();
-
 			LOGSUCCESS(L"编译", LogColor::brightBlue, filePath);
 		}
 		else
 		{
 			LOGERROR(L"文件的扩展名必须为.hlsl");
 		}
+
+		shaderReflection = DXCCompiler::getReflectionBlob(shaderBlob);
 	}
 
 	ComPtr<ID3D12ShaderReflection> Shader::getReflectionBlob() const
 	{
-		return DXCCompiler::createReflectionBlob(shaderBlob);
+		return shaderReflection;
 	}
 
 	D3D12_SHADER_BYTECODE Shader::getByteCode() const
 	{
-		return shaderByteCode;
+		return D3D12_SHADER_BYTECODE{ shaderBlob->GetBufferPointer(),shaderBlob->GetBufferSize() };
 	}
 }

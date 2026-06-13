@@ -7,11 +7,15 @@
 
 #include<Gear/Core/Resource/D3D12Resource/UploadHeap.h>
 
-//向上取整，用于dispatch
+//向上取整，用于dispatchGrp
 constexpr uint32_t dispatchCeil(const uint32_t a, const uint32_t b)
 {
-	return a / b + static_cast<bool>(a % b);
+	return (a + b - 1u) / b;
 }
+
+//a%b+b-1必定小于2b
+//有余数时(a+b-1)/b = a/b + 1
+//无余数时(a+b-1)/b = a/b
 
 namespace Gear::Core::D3D12Core
 {

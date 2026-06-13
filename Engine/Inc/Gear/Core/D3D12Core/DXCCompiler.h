@@ -34,7 +34,7 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 	//cso
 	ComPtr<IDxcBlob> read(const std::wstring& filePath);
 
-	ComPtr<ID3D12ShaderReflection> createReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob);
+	ComPtr<ID3D12ShaderReflection> getReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob);
 
 }
 
