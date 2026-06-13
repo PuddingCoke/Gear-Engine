@@ -172,13 +172,17 @@ namespace Gear::Core
 
 		DirectX::XMUINT3 groupDimension = { 0,0,0 };
 
-		auto reflection = cs.getReflectionBlob();
+		ComPtr<ID3D12ShaderReflection> reflection = cs.getReflectionBlob();
 
 		if (reflection.Get())
 		{
 			reflection->GetThreadGroupSize(&groupDimension.x, &groupDimension.y, &groupDimension.z);
 
 			pipelineStateData.computeData.groupDimension = groupDimension;
+		}
+		else
+		{
+			LOGERROR(L"无法获取计算着色器的反射信息");
 		}
 
 		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE, pipelineStateData);
