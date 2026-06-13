@@ -193,6 +193,9 @@ namespace Gear::Core
 		//绘制实例
 		void draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation);
 
+		//绘制全屏三角形
+		void drawQuad();
+
 		//绘制索引化实例
 		void drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation);
 

@@ -35,7 +35,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 	}
 
 private:

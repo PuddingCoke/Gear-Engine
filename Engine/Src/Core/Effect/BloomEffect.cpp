@@ -119,7 +119,7 @@ namespace Gear::Core::Effect
 		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
 		context->setPSConstants(5, &bloomParam, co);
 			});
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 
 		context->setViewportSimple(swapTexture[0]->write()->get2Dimension());
 		context->setPipelineState(*bloomKarisAverageState);
@@ -128,7 +128,7 @@ namespace Gear::Core::Effect
 		context->setPSConstants({ filteredTexture->getAllSRVIndex() }, co);
 		context->setPSConstants(4, &bloomParam, co);
 			});
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 		swapTexture[0]->swap();
 
 		context->setPipelineState(*bloomDownSampleState);
@@ -140,7 +140,7 @@ namespace Gear::Core::Effect
 			SETCONSTS({
 			context->setPSConstants({ swapTexture[i]->read()->getAllSRVIndex() }, co);
 				});
-			context->draw(3, 1, 0, 0);
+			context->drawQuad();
 			swapTexture[i + 1]->swap();
 		}
 
@@ -203,7 +203,7 @@ namespace Gear::Core::Effect
 			SETCONSTS({
 			context->setPSConstants({ swapTexture[blurSteps - 1 - i]->read()->getAllSRVIndex() }, co);
 				});
-			context->draw(3, 1, 0, 0);
+			context->drawQuad();
 			swapTexture[blurSteps - 2 - i]->swap();
 		}
 
@@ -217,7 +217,7 @@ namespace Gear::Core::Effect
 			lensDirtTexture->getAllSRVIndex() }, co);
 		context->setPSConstants(6, &bloomParam, co);
 			});
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 
 		return outputTexture.get();
 	}

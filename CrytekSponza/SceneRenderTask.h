@@ -459,7 +459,7 @@ protected:
 
 		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 
 		context->setPipelineState(*skyboxState);
 
@@ -493,7 +493,7 @@ protected:
 
 		context->clearRenderTarget(ssrCombinedTexture->getRTVMipHandle(0), DirectX::Colors::Black);
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 	}
 
 	uint32_t ProbeGridPosToIndex(const DirectX::XMUINT3& probeGridPos)

@@ -48,6 +48,6 @@ namespace Gear::Core::GlobalEffect::BackBufferBlitEffect
 		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
 			});
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 	}
 }

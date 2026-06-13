@@ -44,7 +44,7 @@ namespace Gear::Core::Effect
 		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
 			});
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 
 		context->setPipelineState(*fxaaState);
 
@@ -60,7 +60,7 @@ namespace Gear::Core::Effect
 		context->setPSConstants(fxaaParam, co);
 			});
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 
 		return outputTexture.get();
 	}

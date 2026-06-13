@@ -87,7 +87,7 @@ protected:
 		context->setPSConstants(perframeData, co);
 			});
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 
 		auto bloomTexture = effect->process(*originTexture);
 
@@ -105,7 +105,7 @@ protected:
 		context->setPSConstants({toneMappedTexture->getAllSRVIndex()},co);
 			});
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 
 		auto gammaCorrectedTexture = GammaCorrectEffect::process(*context, *colorGradingTexture);
 

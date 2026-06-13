@@ -415,6 +415,11 @@ namespace Gear::Core
 		commandList->drawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 	}
 
+	void GraphicsContext::drawQuad()
+	{
+		draw(3, 1, 0, 0);
+	}
+
 	void GraphicsContext::drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation)
 	{
 		transitionResources();

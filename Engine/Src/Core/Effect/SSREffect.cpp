@@ -89,7 +89,7 @@ namespace Gear::Core::Effect
 		context->setPSConstants(1, &maxLevel, co);
 			});
 
-		context->draw(3, 1, 0, 0);
+		context->drawQuad();
 
 		return outputTexture.get();
 	}
