@@ -8,72 +8,74 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcx
 		{077076E7-F2C7-4458-9A85-B9C412CDDC3B} = {077076E7-F2C7-4458-9A85-B9C412CDDC3B}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleProject", "SampleProject\SampleProject.vcxproj", "{A13675B6-58B4-444D-877F-46BD07D9FC93}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleProject", "Demos\SampleProject\SampleProject.vcxproj", "{A13675B6-58B4-444D-877F-46BD07D9FC93}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EncodeTest", "EncodeTest\EncodeTest.vcxproj", "{B3A539E2-A69A-41B3-9D3D-BF7DF8428561}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EncodeTest", "Demos\EncodeTest\EncodeTest.vcxproj", "{B3A539E2-A69A-41B3-9D3D-BF7DF8428561}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FluidSimulation", "FluidSimulation\FluidSimulation.vcxproj", "{57BF9851-07E7-4C24-8C3F-A28F18F41942}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FluidSimulation", "Demos\FluidSimulation\FluidSimulation.vcxproj", "{57BF9851-07E7-4C24-8C3F-A28F18F41942}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MandelBulb", "MandelBulb\MandelBulb.vcxproj", "{018B5D19-926B-45C3-BD59-30040FB50409}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MandelBulb", "Demos\MandelBulb\MandelBulb.vcxproj", "{018B5D19-926B-45C3-BD59-30040FB50409}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrytekSponza", "CrytekSponza\CrytekSponza.vcxproj", "{1DD61E0C-2055-4C30-B744-9923A093949F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrytekSponza", "Demos\CrytekSponza\CrytekSponza.vcxproj", "{1DD61E0C-2055-4C30-B744-9923A093949F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleParticleEffect", "SimpleParticleEffect\SimpleParticleEffect.vcxproj", "{BEF2256D-25B7-44CB-A6E4-CF6F4B4074E6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleParticleEffect", "Demos\SimpleParticleEffect\SimpleParticleEffect.vcxproj", "{BEF2256D-25B7-44CB-A6E4-CF6F4B4074E6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FFTOcean", "FFTOcean\FFTOcean.vcxproj", "{A31E940D-A3E0-4ACD-81FF-008F5CB388B9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FFTOcean", "Demos\FFTOcean\FFTOcean.vcxproj", "{A31E940D-A3E0-4ACD-81FF-008F5CB388B9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmoothLife", "SmoothLife\SmoothLife.vcxproj", "{AD086B5C-2421-47EF-B57F-8389A2075391}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SmoothLife", "Demos\SmoothLife\SmoothLife.vcxproj", "{AD086B5C-2421-47EF-B57F-8389A2075391}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MandelBrotSet", "MandelBrotSet\MandelBrotSet.vcxproj", "{81BE774F-99B5-4B2C-9887-E4BE4911E48E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MandelBrotSet", "Demos\MandelBrotSet\MandelBrotSet.vcxproj", "{81BE774F-99B5-4B2C-9887-E4BE4911E48E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoggerTest", "LoggerTest\LoggerTest.vcxproj", "{1969F40F-0A40-450C-B292-63454C2E710B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoggerTest", "Demos\LoggerTest\LoggerTest.vcxproj", "{1969F40F-0A40-450C-B292-63454C2E710B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlackHole", "BlackHole\BlackHole.vcxproj", "{98B3385F-A33C-43E1-AC92-E5A8798726A0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlackHole", "Demos\BlackHole\BlackHole.vcxproj", "{98B3385F-A33C-43E1-AC92-E5A8798726A0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PBRRendering", "PBRRendering\PBRRendering.vcxproj", "{B4514BF1-4A83-4810-8C0C-C086343FDFCD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PBRRendering", "Demos\PBRRendering\PBRRendering.vcxproj", "{B4514BF1-4A83-4810-8C0C-C086343FDFCD}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SteeringBehavior", "SteeringBehavior\SteeringBehavior.vcxproj", "{09DB6183-84B7-416F-852A-5FB04C0BB9FB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SteeringBehavior", "Demos\SteeringBehavior\SteeringBehavior.vcxproj", "{09DB6183-84B7-416F-852A-5FB04C0BB9FB}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommonShaderParse", "CommonShaderParse\CommonShaderParse.vcxproj", "{077076E7-F2C7-4458-9A85-B9C412CDDC3B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{16963009-8BB7-4D5A-B2A4-74CC44BE3873}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -144,6 +146,21 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A13675B6-58B4-444D-877F-46BD07D9FC93} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{B3A539E2-A69A-41B3-9D3D-BF7DF8428561} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{57BF9851-07E7-4C24-8C3F-A28F18F41942} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{018B5D19-926B-45C3-BD59-30040FB50409} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{1DD61E0C-2055-4C30-B744-9923A093949F} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{BEF2256D-25B7-44CB-A6E4-CF6F4B4074E6} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{A31E940D-A3E0-4ACD-81FF-008F5CB388B9} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{AD086B5C-2421-47EF-B57F-8389A2075391} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{81BE774F-99B5-4B2C-9887-E4BE4911E48E} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{1969F40F-0A40-450C-B292-63454C2E710B} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{98B3385F-A33C-43E1-AC92-E5A8798726A0} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{B4514BF1-4A83-4810-8C0C-C086343FDFCD} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{09DB6183-84B7-416F-852A-5FB04C0BB9FB} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {919656DB-E614-40B0-8F9E-1EF4B422FFE5}
