@@ -77,6 +77,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommonShaderParse", "Common
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{16963009-8BB7-4D5A-B2A4-74CC44BE3873}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DigitalRain", "Demos\DigitalRain\DigitalRain.vcxproj", "{360B1046-DA32-4025-8463-16A4042C50EF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5} = {0156D2EC-A542-46A9-97F6-8BB9CE5EC3D5}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -143,6 +148,10 @@ Global
 		{077076E7-F2C7-4458-9A85-B9C412CDDC3B}.Debug|x64.Build.0 = Debug|x64
 		{077076E7-F2C7-4458-9A85-B9C412CDDC3B}.Release|x64.ActiveCfg = Release|x64
 		{077076E7-F2C7-4458-9A85-B9C412CDDC3B}.Release|x64.Build.0 = Release|x64
+		{360B1046-DA32-4025-8463-16A4042C50EF}.Debug|x64.ActiveCfg = Debug|x64
+		{360B1046-DA32-4025-8463-16A4042C50EF}.Debug|x64.Build.0 = Debug|x64
+		{360B1046-DA32-4025-8463-16A4042C50EF}.Release|x64.ActiveCfg = Release|x64
+		{360B1046-DA32-4025-8463-16A4042C50EF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -161,6 +170,7 @@ Global
 		{98B3385F-A33C-43E1-AC92-E5A8798726A0} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
 		{B4514BF1-4A83-4810-8C0C-C086343FDFCD} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
 		{09DB6183-84B7-416F-852A-5FB04C0BB9FB} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
+		{360B1046-DA32-4025-8463-16A4042C50EF} = {16963009-8BB7-4D5A-B2A4-74CC44BE3873}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {919656DB-E614-40B0-8F9E-1EF4B422FFE5}

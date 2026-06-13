@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_EFFECT_EFFECTBASE_H_
-#define _GEAR_CORE_EFFECT_EFFECTBASE_H_
+#ifndef _GEAR_EFFECT_EFFECTBASE_H_
+#define _GEAR_EFFECT_EFFECTBASE_H_
 
 #include<Gear/Core/ResourceManager.h>
 
@@ -15,8 +15,14 @@
 
 #include<ImGUI/imgui.h>
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
+	using namespace Core;
+
+	using namespace Core::Resource;
+
+	using namespace Core::D3D12Core;
+
 	class EffectBase
 	{
 	public:
@@ -38,7 +44,7 @@ namespace Gear::Core::Effect
 
 	protected:
 
-		Resource::RenderTextureViewPtr outputTexture;
+		RenderTextureViewPtr outputTexture;
 
 		//引用
 		GraphicsContext* const context;
@@ -50,4 +56,4 @@ namespace Gear::Core::Effect
 	};
 }
 
-#endif // !_GEAR_CORE_EFFECT_EFFECTBASE_H_
+#endif // !_GEAR_EFFECT_EFFECTBASE_H_

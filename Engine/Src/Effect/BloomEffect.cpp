@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/Effect/BloomEffect.h>
+﻿#include<Gear/Effect/BloomEffect.h>
 
 #include<Gear/Core/GlobalShader.h>
 
@@ -18,7 +18,7 @@
 
 #include<Gear/CompiledShaders/BloomKarisAveragePS.h>
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	BloomEffectPtr BloomEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, ResourceManager& resManager)
 	{
@@ -32,12 +32,12 @@ namespace Gear::Core::Effect
 	{
 		filteredTexture->getTexture()->setName(L"Bloom Effect Filtered Texture");
 
-		bloomFilter = D3D12Core::Shader::create(g_BloomFilterPSBytes, sizeof(g_BloomFilterPSBytes));
-		bloomFinal = D3D12Core::Shader::create(g_BloomFinalPSBytes, sizeof(g_BloomFinalPSBytes));
-		bloomVBlur = D3D12Core::Shader::create(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes));
-		bloomHBlur = D3D12Core::Shader::create(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes));
-		bloomDownSample = D3D12Core::Shader::create(g_BloomDownSamplePSBytes, sizeof(g_BloomDownSamplePSBytes));
-		bloomKarisAverage = D3D12Core::Shader::create(g_BloomKarisAveragePSBytes, sizeof(g_BloomKarisAveragePSBytes));
+		bloomFilter = Shader::create(g_BloomFilterPSBytes, sizeof(g_BloomFilterPSBytes));
+		bloomFinal = Shader::create(g_BloomFinalPSBytes, sizeof(g_BloomFinalPSBytes));
+		bloomVBlur = Shader::create(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes));
+		bloomHBlur = Shader::create(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes));
+		bloomDownSample = Shader::create(g_BloomDownSamplePSBytes, sizeof(g_BloomDownSamplePSBytes));
+		bloomKarisAverage = Shader::create(g_BloomKarisAveragePSBytes, sizeof(g_BloomKarisAveragePSBytes));
 
 		{
 			const float sigma[blurSteps] = { 0.44f,0.57f,0.8f,1.32f,3.3f };
@@ -104,7 +104,7 @@ namespace Gear::Core::Effect
 	{
 	}
 
-	Resource::RenderTextureView* BloomEffect::process(Resource::RenderTextureView& inputTexture)
+	RenderTextureView* BloomEffect::process(RenderTextureView& inputTexture)
 	{
 		bloomParam.exposure = Graphics::getExposure();
 

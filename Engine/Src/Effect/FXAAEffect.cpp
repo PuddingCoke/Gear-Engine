@@ -1,10 +1,10 @@
-﻿#include<Gear/Core/Effect/FXAAEffect.h>
+﻿#include<Gear/Effect/FXAAEffect.h>
 
 #include<Gear/CompiledShaders/ColorToColorLuma.h>
 
 #include<Gear/CompiledShaders/FXAA.h>
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	FXAAEffectPtr FXAAEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
@@ -15,9 +15,9 @@ namespace Gear::Core::Effect
 		EffectBase(contextRef, width, height, FMT::RGBA16UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
 		colorLumaTexture(ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16UN, 1, 1, false, true))
 	{
-		colorToColorLumaPS = D3D12Core::Shader::create(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
+		colorToColorLumaPS = Shader::create(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
 
-		fxaaPS = D3D12Core::Shader::create(g_FXAABytes, sizeof(g_FXAABytes));
+		fxaaPS = Shader::create(g_FXAABytes, sizeof(g_FXAABytes));
 
 		colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*colorToColorLumaPS).setRTVFormats({ FMT::RGBA16UN }).build();
 
@@ -30,7 +30,7 @@ namespace Gear::Core::Effect
 	{
 	}
 
-	Resource::RenderTextureView* FXAAEffect::process(Resource::RenderTextureView& inputTexture) const
+	RenderTextureView* FXAAEffect::process(RenderTextureView& inputTexture) const
 	{
 		context->setPipelineState(*colorToColorLumaState);
 

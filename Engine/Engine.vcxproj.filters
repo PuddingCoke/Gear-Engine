@@ -156,13 +156,13 @@
     <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\UploadHeap.h">
       <Filter>Header\Core\DX</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Effect\BloomEffect.h">
+    <ClInclude Include="Inc\Gear\Effect\BloomEffect.h">
       <Filter>Header\Core\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Effect\EffectBase.h">
+    <ClInclude Include="Inc\Gear\Effect\EffectBase.h">
       <Filter>Header\Core\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Effect\FXAAEffect.h">
+    <ClInclude Include="Inc\Gear\Effect\FXAAEffect.h">
       <Filter>Header\Core\Effect</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\Gear2D\PrimitiveBatch.h">
@@ -489,10 +489,10 @@
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\GammaCorrectEffectInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Effect\SSREffect.h">
+    <ClInclude Include="Inc\Gear\Effect\SSREffect.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Effect\HBAOPlusEffect.h">
+    <ClInclude Include="Inc\Gear\Effect\HBAOPlusEffect.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\TOPOLOGY.h">
@@ -545,13 +545,13 @@
     <ClCompile Include="Src\Core\Resource\D3D12Resource\UploadHeap.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Effect\BloomEffect.cpp">
+    <ClCompile Include="Src\Effect\BloomEffect.cpp">
       <Filter>Source\Core\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Effect\EffectBase.cpp">
+    <ClCompile Include="Src\Effect\EffectBase.cpp">
       <Filter>Source\Core\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Effect\FXAAEffect.cpp">
+    <ClCompile Include="Src\Effect\FXAAEffect.cpp">
       <Filter>Source\Core\Effect</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\Gear2D\PrimitiveBatch.cpp">
@@ -740,10 +740,10 @@
     <ClCompile Include="Src\Core\GlobalEffect\GammaCorrectEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Effect\SSREffect.cpp">
+    <ClCompile Include="Src\Effect\SSREffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Effect\HBAOPlusEffect.cpp">
+    <ClCompile Include="Src\Effect\HBAOPlusEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\LocalDescriptorHeap.cpp">

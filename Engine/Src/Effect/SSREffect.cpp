@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/Effect/SSREffect.h>
+﻿#include<Gear/Effect/SSREffect.h>
 
 #include<Gear/CompiledShaders/HiZCopyCS.h>
 
@@ -6,7 +6,7 @@
 
 #include<Gear/CompiledShaders/HiZProcessPS.h>
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	SSREffectPtr SSREffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
@@ -17,11 +17,11 @@ namespace Gear::Core::Effect
 		EffectBase(contextRef, width, height, outputTextureFormat),
 		hiZTexture(ResourceManager::createComputeTexture(width, height, hiZTextureFormat, 1, hiZMiplvel, false, true))
 	{
-		hiZCopyCS = D3D12Core::Shader::create(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes));
+		hiZCopyCS = Shader::create(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes));
 
-		hiZCreateCS = D3D12Core::Shader::create(g_HiZCreateCSBytes, sizeof(g_HiZCreateCSBytes));
+		hiZCreateCS = Shader::create(g_HiZCreateCSBytes, sizeof(g_HiZCreateCSBytes));
 
-		hiZProcessPS = D3D12Core::Shader::create(g_HiZProcessPSBytes, sizeof(g_HiZProcessPSBytes));
+		hiZProcessPS = Shader::create(g_HiZProcessPSBytes, sizeof(g_HiZProcessPSBytes));
 
 		hiZCopyState = PipelineStateBuilder::build(*hiZCopyCS);
 
@@ -51,7 +51,7 @@ namespace Gear::Core::Effect
 
 	}
 
-	Resource::RenderTextureView* SSREffect::process(Resource::DepthTextureView& depthTexture, Resource::RenderTextureView& gPosition, Resource::RenderTextureView& gNormal)
+	RenderTextureView* SSREffect::process(DepthTextureView& depthTexture, RenderTextureView& gPosition, RenderTextureView& gNormal)
 	{
 		context->setPipelineState(*hiZCopyState);
 

@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_EFFECT_SSREFFECT_H_
-#define _GEAR_CORE_EFFECT_SSREFFECT_H_
+#ifndef _GEAR_EFFECT_SSREFFECT_H_
+#define _GEAR_EFFECT_SSREFFECT_H_
 
 #include"EffectBase.h"
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	CREATESAFETYPE(SSREffect);
 
@@ -20,28 +20,28 @@ namespace Gear::Core::Effect
 
 		~SSREffect();
 
-		Resource::RenderTextureView* process(
-			Resource::DepthTextureView& depthTexture,
-			Resource::RenderTextureView& gPosition,
-			Resource::RenderTextureView& gNormal);
+		RenderTextureView* process(
+			DepthTextureView& depthTexture,
+			RenderTextureView& gPosition,
+			RenderTextureView& gNormal);
 
 		void imGUICall() override;
 
 	private:
 
-		Resource::RenderTextureViewPtr hiZTexture;
+		RenderTextureViewPtr hiZTexture;
 
-		D3D12Core::ShaderPtr hiZCopyCS;
+		ShaderPtr hiZCopyCS;
 
-		D3D12Core::ShaderPtr hiZCreateCS;
+		ShaderPtr hiZCreateCS;
 
-		D3D12Core::ShaderPtr hiZProcessPS;
+		ShaderPtr hiZProcessPS;
 
-		D3D12Core::PipelineStatePtr hiZCopyState;
+		PipelineStatePtr hiZCopyState;
 
-		D3D12Core::PipelineStatePtr hiZCreateState;
+		PipelineStatePtr hiZCreateState;
 
-		D3D12Core::PipelineStatePtr hiZProcessState;
+		PipelineStatePtr hiZProcessState;
 
 		static constexpr uint32_t hiZMiplvel = 4u;
 
@@ -51,4 +51,4 @@ namespace Gear::Core::Effect
 
 	};
 }
-#endif // !_GEAR_CORE_EFFECT_SSREFFECT_H_
+#endif // !_GEAR_EFFECT_SSREFFECT_H_

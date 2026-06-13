@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_EFFECT_FXAAEFFECT_H_
-#define _GEAR_CORE_EFFECT_FXAAEFFECT_H_
+#ifndef _GEAR_EFFECT_FXAAEFFECT_H_
+#define _GEAR_EFFECT_FXAAEFFECT_H_
 
 #include"EffectBase.h"
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	CREATESAFETYPE(FXAAEffect);
 
@@ -19,7 +19,7 @@ namespace Gear::Core::Effect
 
 		~FXAAEffect();
 
-		Resource::RenderTextureView* process(Resource::RenderTextureView& inputTexture) const;
+		RenderTextureView* process(RenderTextureView& inputTexture) const;
 
 		void imGUICall() override;
 
@@ -31,7 +31,7 @@ namespace Gear::Core::Effect
 
 	private:
 
-		Resource::RenderTextureViewPtr colorLumaTexture;
+		RenderTextureViewPtr colorLumaTexture;
 
 		struct FXAAParam
 		{
@@ -41,13 +41,13 @@ namespace Gear::Core::Effect
 			float fxaaQualityEdgeThresholdMin;
 		} fxaaParam;
 
-		D3D12Core::ShaderPtr colorToColorLumaPS;
+		ShaderPtr colorToColorLumaPS;
 
-		D3D12Core::PipelineStatePtr colorToColorLumaState;
+		PipelineStatePtr colorToColorLumaState;
 
-		D3D12Core::ShaderPtr fxaaPS;
+		ShaderPtr fxaaPS;
 
-		D3D12Core::PipelineStatePtr fxaaState;
+		PipelineStatePtr fxaaState;
 
 	};
 }

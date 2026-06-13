@@ -1,6 +1,6 @@
-﻿#include<Gear/Core/Effect/EffectBase.h>
+﻿#include<Gear/Effect/EffectBase.h>
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	EffectBase::EffectBase(GraphicsContext& contextRef, const uint32_t width, const uint32_t height, const DXGI_FORMAT format) :
 		outputTexture(ResourceManager::createGraphicsTexture(width, height, format, 1, 1, false, true)),

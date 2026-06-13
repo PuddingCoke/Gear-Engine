@@ -15,15 +15,15 @@
 
 #include<Gear/Core/GlobalShader.h>
 
-#include<Gear/Core/Effect/EffectBase.h>
+#include<Gear/Effect/EffectBase.h>
 
-#include<Gear/Core/Effect/BloomEffect.h>
+#include<Gear/Effect/BloomEffect.h>
 
-#include<Gear/Core/Effect/FXAAEffect.h>
+#include<Gear/Effect/FXAAEffect.h>
 
-#include<Gear/Core/Effect/SSREffect.h>
+#include<Gear/Effect/SSREffect.h>
 
-#include<Gear/Core/Effect/HBAOPlusEffect.h>
+#include<Gear/Effect/HBAOPlusEffect.h>
 
 #include<Gear/Core/GlobalEffect/ToneMapEffect.h>
 
@@ -51,11 +51,9 @@ using namespace Gear::Core;
 
 using namespace Gear::Core::D3D12Core;
 
-using namespace Gear::Core::Effect;
+using namespace Gear::Effect;
 
 using namespace Gear::Core::Resource;
-
-using namespace Gear::Core::GlobalShader;
 
 using namespace Gear::Core::GlobalEffect;
 

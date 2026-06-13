@@ -1,10 +1,10 @@
-﻿#include<Gear/Core/Effect/HBAOPlusEffect.h>
+﻿#include<Gear/Effect/HBAOPlusEffect.h>
 
 #include<Gear/Core/MainCamera.h>
 
 #include<Gear/Core/RenderEngine.h>
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	HBAOPlusEffectPtr HBAOPlusEffect::create(GraphicsContext& contextRef, const uint32_t width, const uint32_t height)
 	{
@@ -20,9 +20,9 @@ namespace Gear::Core::Effect
 
 		customHeap.delete_ = ::operator delete;
 
-		D3D12Core::DescriptorHandle srvUAVCBVHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_CBV_SRV_UAV_HEAP_D3D12);
+		DescriptorHandle srvUAVCBVHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_CBV_SRV_UAV_HEAP_D3D12);
 
-		D3D12Core::DescriptorHandle rtvHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_RTV_HEAP_D3D12);
+		DescriptorHandle rtvHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_RTV_HEAP_D3D12);
 
 		GFSDK_SSAO_DescriptorHeaps_D3D12 descriptorHeaps;
 
@@ -73,7 +73,7 @@ namespace Gear::Core::Effect
 		ImGui::End();
 	}
 
-	Resource::RenderTextureView* HBAOPlusEffect::process(Resource::DepthTextureView& depthTexture, Resource::RenderTextureView& gNormal)
+	RenderTextureView* HBAOPlusEffect::process(DepthTextureView& depthTexture, RenderTextureView& gNormal)
 	{
 		GFSDK_SSAO_InputData_D3D12 inputData = {};
 
@@ -116,7 +116,7 @@ namespace Gear::Core::Effect
 		//    * The input depth & normal textures are assumed to have state D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE.
 		//    * The output AO render target is assumed to have state D3D12_RESOURCE_STATE_RENDER_TARGET.
 
-		D3D12Core::CommandList* const commandList = context->getCommandList();
+		CommandList* const commandList = context->getCommandList();
 
 		commandList->trackAndSetResourceState(depthTexture.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 

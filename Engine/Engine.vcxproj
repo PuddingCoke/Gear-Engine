@@ -142,9 +142,9 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\PipelineState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h" />
-    <ClInclude Include="Inc\Gear\Core\Effect\FXAAEffect.h" />
-    <ClInclude Include="Inc\Gear\Core\Effect\HBAOPlusEffect.h" />
-    <ClInclude Include="Inc\Gear\Core\Effect\SSREffect.h" />
+    <ClInclude Include="Inc\Gear\Effect\FXAAEffect.h" />
+    <ClInclude Include="Inc\Gear\Effect\HBAOPlusEffect.h" />
+    <ClInclude Include="Inc\Gear\Effect\SSREffect.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\GammaCorrectEffect.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\GammaCorrectEffectInternal.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\ToneMapEffectInternal.h" />
@@ -208,8 +208,8 @@
     <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\Buffer.h" />
     <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\D3D12ResourceBase.h" />
     <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\UploadHeap.h" />
-    <ClInclude Include="Inc\Gear\Core\Effect\BloomEffect.h" />
-    <ClInclude Include="Inc\Gear\Core\Effect\EffectBase.h" />
+    <ClInclude Include="Inc\Gear\Effect\BloomEffect.h" />
+    <ClInclude Include="Inc\Gear\Effect\EffectBase.h" />
     <ClInclude Include="Inc\Gear\Core\Gear2D\PrimitiveBatch.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalDescriptorHeap.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalRootSignature.h" />
@@ -244,8 +244,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Inc\DirectXTex\DDSTextureLoader12.cpp" />
-    <ClCompile Include="Src\Core\Effect\HBAOPlusEffect.cpp" />
-    <ClCompile Include="Src\Core\Effect\SSREffect.cpp" />
+    <ClCompile Include="Src\Effect\HBAOPlusEffect.cpp" />
+    <ClCompile Include="Src\Effect\SSREffect.cpp" />
     <ClCompile Include="Src\Core\GlobalEffect\GammaCorrectEffect.cpp" />
     <ClCompile Include="Src\Core\GlobalEffect\ToneMapEffect.cpp" />
     <ClCompile Include="Src\Core\RenderThread.cpp" />
@@ -271,15 +271,15 @@
     <ClCompile Include="Src\Camera\OrbitCamera.cpp" />
     <ClCompile Include="Src\Core\MainCamera.cpp" />
     <ClCompile Include="Src\Core\DynamicCBufferManager.cpp" />
-    <ClCompile Include="Src\Core\Effect\FXAAEffect.cpp" />
+    <ClCompile Include="Src\Effect\FXAAEffect.cpp" />
     <ClCompile Include="Src\Core\RenderTask.cpp" />
     <ClCompile Include="Src\Core\GlobalEffect\HDRClampEffect.cpp" />
     <ClCompile Include="Src\Core\LocalDescriptorHeap.cpp" />
     <ClCompile Include="Src\Utils\DeltaTimeEstimator.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\DescriptorHeap.cpp" />
     <ClCompile Include="Src\Core\Resource\D3D12Resource\ReadbackHeap.cpp" />
-    <ClCompile Include="Src\Core\Effect\BloomEffect.cpp" />
-    <ClCompile Include="Src\Core\Effect\EffectBase.cpp" />
+    <ClCompile Include="Src\Effect\BloomEffect.cpp" />
+    <ClCompile Include="Src\Effect\EffectBase.cpp" />
     <ClCompile Include="Src\Core\Gear2D\PrimitiveBatch.cpp" />
     <ClCompile Include="Src\Core\GlobalDescriptorHeap.cpp" />
     <ClCompile Include="Src\Core\GlobalRootSignature.cpp" />

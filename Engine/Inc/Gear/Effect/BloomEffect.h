@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_EFFECT_BLOOMEFFECT_H_
-#define _GEAR_CORE_EFFECT_BLOOMEFFECT_H_
+#ifndef _GEAR_EFFECT_BLOOMEFFECT_H_
+#define _GEAR_EFFECT_BLOOMEFFECT_H_
 
 #include<Gear/Core/Resource/SwapTexture.h>
 
@@ -9,7 +9,7 @@
 
 #include"EffectBase.h"
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	CREATESAFETYPE(BloomEffect);
 
@@ -27,7 +27,7 @@ namespace Gear::Core::Effect
 
 		~BloomEffect();
 
-		Resource::RenderTextureView* process(Resource::RenderTextureView& inputTexture);
+		RenderTextureView* process(RenderTextureView& inputTexture);
 
 		void imGUICall() override;
 
@@ -41,39 +41,39 @@ namespace Gear::Core::Effect
 
 		void updateCurve(const uint32_t index);
 
-		D3D12Core::ShaderPtr bloomFilter;
+		ShaderPtr bloomFilter;
 
-		D3D12Core::PipelineStatePtr bloomFilterState;
+		PipelineStatePtr bloomFilterState;
 
-		D3D12Core::ShaderPtr bloomHBlur;
+		ShaderPtr bloomHBlur;
 
-		D3D12Core::PipelineStatePtr bloomHBlurState;
+		PipelineStatePtr bloomHBlurState;
 
-		D3D12Core::ShaderPtr bloomVBlur;
+		ShaderPtr bloomVBlur;
 
-		D3D12Core::PipelineStatePtr bloomVBlurState;
+		PipelineStatePtr bloomVBlurState;
 
-		D3D12Core::ShaderPtr bloomFinal;
+		ShaderPtr bloomFinal;
 
-		D3D12Core::PipelineStatePtr bloomFinalState;
+		PipelineStatePtr bloomFinalState;
 
-		D3D12Core::ShaderPtr bloomDownSample;
+		ShaderPtr bloomDownSample;
 
-		D3D12Core::PipelineStatePtr bloomDownSampleState;
+		PipelineStatePtr bloomDownSampleState;
 
-		D3D12Core::ShaderPtr bloomKarisAverage;
+		ShaderPtr bloomKarisAverage;
 
-		D3D12Core::PipelineStatePtr bloomKarisAverageState;
+		PipelineStatePtr bloomKarisAverageState;
 
-		D3D12Core::PipelineStatePtr bloomUpSampleState;
+		PipelineStatePtr bloomUpSampleState;
 
-		Resource::RenderTextureViewPtr lensDirtTexture;
+		RenderTextureViewPtr lensDirtTexture;
 
-		Resource::SwapTexturePtr swapTexture[blurSteps];
+		SwapTexturePtr swapTexture[blurSteps];
 
-		Resource::RenderTextureViewPtr filteredTexture;
+		RenderTextureViewPtr filteredTexture;
 
-		Resource::StaticCBufferPtr blurParamBuffer[blurSteps];
+		StaticCBufferPtr blurParamBuffer[blurSteps];
 
 		struct BloomParam
 		{
@@ -98,4 +98,4 @@ namespace Gear::Core::Effect
 	};
 }
 
-#endif // !_GEAR_CORE_EFFECT_BLOOMEFFECT_H_
+#endif // !_GEAR_EFFECT_BLOOMEFFECT_H_

@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_EFFECT_HBAOPLUSEFFECT_H_
-#define _GEAR_CORE_EFFECT_HBAOPLUSEFFECT_H_
+#ifndef _GEAR_EFFECT_HBAOPLUSEFFECT_H_
+#define _GEAR_EFFECT_HBAOPLUSEFFECT_H_
 
 #include<HBAOPlus/GFSDK_SSAO.h>
 
 #include"EffectBase.h"
 
-namespace Gear::Core::Effect
+namespace Gear::Effect
 {
 	CREATESAFETYPE(HBAOPlusEffect);
 
@@ -23,7 +23,7 @@ namespace Gear::Core::Effect
 
 		void imGUICall() override;
 
-		Resource::RenderTextureView* process(Resource::DepthTextureView& depthTexture, Resource::RenderTextureView& gNormal);
+		RenderTextureView* process(DepthTextureView& depthTexture, RenderTextureView& gNormal);
 
 	private:
 
@@ -34,4 +34,4 @@ namespace Gear::Core::Effect
 	};
 }
 
-#endif // !_GEAR_CORE_EFFECT_HBAOPLUSEFFECT_H_
+#endif // !_GEAR_EFFECT_HBAOPLUSEFFECT_H_
