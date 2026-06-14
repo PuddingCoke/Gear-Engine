@@ -182,50 +182,50 @@ d3d11Context->Draw(36, 6);
 ### CrytekSponza
 延迟渲染管线。Geometry Pass 输出世界坐标+金属度、法线+粗糙度、BaseColor 三张 G-Buffer；Lighting Pass 通过全屏三角形完成 PBR 光照。集成 4096x4096 Shadow Map、HBAO+ 环境光遮蔽、屏幕空间反射（SSR，含 Hi-Z 加速）、FXAA 抗锯齿和 Bloom 后处理。使用 17x9x12 辐照度探针网格+八面体编码存储间接光照信息。FPSCamera 自由漫游，天空盒为 HDR 立方体贴图。
 
-![CrytekSponza](DemoImages/cryteksponza.jpg)
+![CrytekSponza](Images/cryteksponza.jpg)
 
 ### FFTOcean
 基于快速傅里叶变换的海洋模拟。三个级联波（250m/17m/5m），每级独立生成 Phillips 频谱并通过 Butterfly IFFT 计算位移、法线导数和雅可比矩阵。使用屏幕空间投影网格+曲面细分（Hull/Domain Shader）逐帧更新海浪几何，Domain Shader 从级联合并后的位移图采样顶点偏移。Pixel Shader 完成天空反射+阳光镜面高光+简单的泡沫渲染+级联 LOD。FPSCamera 自由漫游，Bloom 后处理。
 
-![FFTOcean](DemoImages/fftocean.jpg)
+![FFTOcean](Images/fftocean.jpg)
 
 ### FluidSimulation
 Stam 流体求解器的 Compute Shader 实现。完整管线：速度/颜色注入 → 涡流计算与约束 → 散度计算 → 雅可比压力求解（35 次迭代）→ 梯度减除 → 速度/颜色平流 → 边界条件处理。可选 Phong 着色、Sobel 边缘检测高亮、Bloom 后处理。ImGui 面板可调所有参数。相关文章：[基于欧拉法的2D流体模拟](https://www.cnblogs.com/TiredInkRaven/p/18459640)
 
-![FluidSimulation](DemoImages/fluidsimulation.jpg)
+![FluidSimulation](Images/fluidsimulation.jpg)
 
 ### SimpleParticleEffect
 Compute Shader 驱动的粒子系统（50,000 粒子）。CS 每帧更新粒子位置（带分散度因子），Point List 拓扑配合 Geometry Shader 将每个点扩展为Line Strip，Pixel Shader 着色。使用加法混合，含 Bloom 和 FXAA 后处理。粒子初始分布于球壳上，DXC 运行时编译 Shader。
 
-![SimpleParticleEffect](DemoImages/simpleparticleeffect.jpg)
+![SimpleParticleEffect](Images/simpleparticleeffect.jpg)
 
 ### BlackHole
 全屏 Pixel Shader 实现的黑洞引力透镜效果，通过叠加多层噪声和星盘纹理，以指数函数模拟光线在黑洞极强引力场中的弯曲路径，将背景扭曲为环形结构。ImGui 面板可调纹理周期、噪声层级参数等。含 Bloom 后处理。着色器代码来自[sonicether](https://www.shadertoy.com/view/lstSRS)，我改装成了循环模式，可以渲染成动画作为动态壁纸。
 
-![BlackHole](DemoImages/blackhole.jpg)
+![BlackHole](Images/blackhole.jpg)
 
 ### MandelBrotSet
 Compute Shader 实时渲染 Mandelbrot 集分形。鼠标拖拽平移、滚轮缩放，使用帧累积插值实现平滑过渡。ImGui 面板可调缩放和插值参数，含 Bloom 后处理。
 
-![MandelBrotSet](DemoImages/mandelbrotset.jpg)
+![MandelBrotSet](Images/mandelbrotset.jpg)
 
 此外还有一个相关的 [OpenCL 离线渲染项目](https://github.com/PuddingCoke/OpenCLTest)，使用 OpenCL 在 GPU 上离线计算 Mandelbrot 集，支持 64x64 样本全场景抗锯齿，可输出 7680x4800 高分辨率图像。
 
 ### MandelBulb
 全屏 Pixel Shader 光线步进渲染 3D Mandelbulb 分形。双 pass 设计：Accumulate Shader 每次迭代向累积纹理混合新采样（使用 alpha blend），Display Shader 读取累积结果输出到屏幕。鼠标拖拽旋转视角、滚轮缩放，帧索引跟踪确保视角变化时重新累积。ImGui 可调迭代指数。
 
-![MandelBulb](DemoImages/mandelbulb.jpg)
+![MandelBulb](Images/mandelbulb.jpg)
 
 ### SmoothLife
 Continuous-domain 细胞自动机（SmoothLife）。Compute Shader 实现：白噪声初始化 → 演化（EvolveCS，基于内外半径和内外阈值的连续域规则）→ 可视化（VisualizeCS，将标量场映射为 RGBA）。SwapTexture 乒乓缓冲，定时器控制演化步长。ImGui 面板可调全部 7 个参数，K 键重新初始化。
 
-![SmoothLife](DemoImages/smoothlife.jpg)
+![SmoothLife](Images/smoothlife.jpg)
 
 
 ### Steering Behavior
 基于 Reynolds 转向行为的群体模拟（1000 个体）。Compute Shader 每帧计算分离（Separation）、对齐（Alignment）、凝聚（Cohesion）三重基本行为力，鼠标移动触发逃离（Flee）行为——鼠标周围一定半径内的个体会远离光标。StepCS 负责群体逻辑，SwapBuffer 双缓冲位置与速度数据；Geometry Shader 将每个点扩展为带纹理的箭头三角形，Pixel Shader 上色并与箭头贴图混合。使用 alpha 混合渲染个体。
 
-![SteeringBehavior](DemoImages/steeringbehavior.jpg)
+![SteeringBehavior](Images/steeringbehavior.jpg)
 
 ### EncodeTest
 简单的视频编码测试程序，用于验证引擎的 NVENC 硬件编码功能。关于离线渲染，我的引擎代码中提供了相关的实现细节，此外我还写了一篇文章：[使用NVENC API编码D3D12纹理](https://www.cnblogs.com/TiredInkRaven/p/18656474)。这里稍微多提一下，离线渲染这个功能是我大二的时候心血来潮在我写的OpenGL老项目中实现的，当时还不能直接搞得利用CUDA，相关的代码在[这个仓库](https://github.com/PuddingCoke/Cuda-OpenGL-Encode)。后来学D3D11的时候在D3D11老项目中也实现了离线渲染功能，D3D11老项目代码写得太烂了，就不提供相关的实现了。当时真的就是觉得实现这个功能很有意思，觉得可以做点小动画什么的。所以就去网上学了一点和视频编码相关的知识，然后阅读英伟达发布的文档和源代码实现了相关功能。怎么说呢，用实时渲染的API来搞离线渲染可能稍微有点背道而驰，但是我就是觉得有意思，所以实现了这个功能。
