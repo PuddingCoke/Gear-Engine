@@ -4,44 +4,97 @@
 
 #include<Gear/DevEssential.h>
 
+#include"TextBatch.h"
+
+#include"Rain.h"
+
 class MyRenderTask :public RenderTask
 {
 public:
 
-	MyRenderTask()
+	MyRenderTask() :
+		textBatch(makeUnique<TextBatch>(*resManager, L"characters.fnt")),
+		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
+			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black)),
+		bloomEffect(BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager))
 	{
-		pixelShader = Shader::create(Utils::File::getRootFolder() + L"PixelShader.cso");
+		Rain::stride = static_cast<int>(textBatch->getFontSize());
 
-		pipelineState = PipelineStateBuilder()
-			.setDefaultFullScreenState()
-			.setRTVFormats({ Graphics::backBufferFormat })
-			.setPS(*pixelShader)
-			.build();
+		for (size_t i = 0; i < Graphics::getWidth() / Rain::stride; i++)
+		{
+			rains.push_back(Rain((Graphics::getWidth() - Graphics::getWidth() / Rain::stride * Rain::stride) / 2 + i * Rain::stride, Utils::Random::genUint() % 6 + 8));
+		}
+
+		Graphics::setGamma(1.2f);
+
+		bloomEffect->setIntensity(1.8f);
 	}
 
 	~MyRenderTask()
 	{
+
+	}
+
+	void imGUICall() override
+	{
+		bloomEffect->imGUICall();
+
+		ImGui::Begin("Rain Parameters");
+		ImGui::SliderFloat(TOSTRING(colorFactor), &colorFactor, 0.f, 3.f);
+		ImGui::End();
 	}
 
 protected:
 
 	void recordCommand() override
 	{
-		context->setDefRenderTarget();
+		for (Rain& rain : rains)
+		{
+			rain.update(Graphics::getDeltaTime());
 
-		context->setPipelineState(*pipelineState);
+			if (rain.y + Rain::stride * rain.len < 0)
+			{
+				rain.reset();
+			}
+		}
 
-		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
+		for (const Rain& rain : rains)
+		{
+			const float headColor = colorFactor * 1.25f;
 
-		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
+			textBatch->drawText(rain.character[0], rain.x, rain.y, 0.f, headColor, headColor, headColor, 1);
 
-		context->drawQuad();
+			for (uint32_t j = 1; j < rain.character.size(); j++)
+			{
+				const float trailColor = colorFactor * (1.f - static_cast<float>(j) / rain.character.size());
+
+				textBatch->drawText(rain.character[j], rain.x, rain.y + Rain::stride * j, 0.f, 0.f, trailColor, 0.f, 1.0f);
+			}
+		}
+
+		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
+
+		textBatch->render(*context, *originTexture);
+
+		auto bloomTexture = bloomEffect->process(*originTexture);
+
+		auto toneMappedTexture = ToneMapEffect::process(*context, *bloomTexture);
+
+		auto gammaCorrectedTexture = GammaCorrectEffect::process(*context, *toneMappedTexture);
+
+		blit(*gammaCorrectedTexture);
 	}
 
 private:
 
-	PipelineStatePtr pipelineState;
+	RenderTextureViewPtr originTexture;
 
-	ShaderPtr pixelShader;
+	BloomEffectPtr bloomEffect;
+
+	UniquePtr<TextBatch> textBatch;
+
+	std::vector<Rain> rains;
+
+	float colorFactor = 1.0f;
 
 };

@@ -1,0 +1,74 @@
+﻿#pragma once
+
+#include<Gear/DevEssential.h>
+
+#include<vector>
+
+class Rain
+{
+public:
+
+	std::vector<wchar_t> character;
+
+	int len;
+
+	int x, y;
+
+	static float speedFactor;
+
+	static int stride;
+
+	//Speed = 165/timeLimit per sec
+
+	Utils::Timer time;
+
+	Rain(int _x, int _len) :time(_len / speedFactor), len(_len), character(_len)
+	{
+		x = _x;
+
+		y = Graphics::getHeight() + Utils::Random::genUint() % (Graphics::getHeight() / stride) * stride;
+
+		for (size_t i = 0; i < _len; i++)
+		{
+			character[i] = Utils::Random::genUint() % 94 + 33;
+		}
+	}
+
+	void reset()
+	{
+		y = Graphics::getHeight() + Utils::Random::genUint() % (Graphics::getHeight() / stride) * stride;
+
+		len = Utils::Random::genUint() % 6 + 8;
+
+		time.restart();
+
+		time.setTimeLimit(len / speedFactor);
+
+		character = std::vector<wchar_t>(len);
+
+		for (size_t i = 0; i < len; i++)
+		{
+			character[i] = Utils::Random::genUint() % 94 + 33;
+		}
+	}
+
+	void update(const float& dt)
+	{
+		while (time.update(dt)) {
+
+			for (size_t i = len - 1ull; i > 0; i--)
+			{
+				character[i] = character[i - 1ULL];
+			}
+
+			character[0] = Utils::Random::genUint() % 94 + 33;
+
+			y -= stride;
+		}
+	}
+
+};
+
+float Rain::speedFactor = 120.f;
+
+int Rain::stride;
