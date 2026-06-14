@@ -5,7 +5,7 @@
 
 #include<Gear/Core/GraphicsDevice.h>
 
-#include<Gear/Core/D3D12Core/DXCCompiler.h>
+#include"DXCCompiler.h"
 
 namespace Gear::Core::D3D12Core
 {

@@ -1,9 +1,13 @@
 ﻿#pragma once
 
-#ifndef _GEAR_UTILS_H_
-#define _GEAR_UTILS_H_
+#ifndef _GEAR_UTILS_MEMORY_H_
+#define _GEAR_UTILS_MEMORY_H_
 
 #include<memory>
+
+#include<wrl/client.h>
+
+using Microsoft::WRL::ComPtr;
 
 template<typename T, typename Deleter = std::default_delete<T>>
 using UniquePtr = std::unique_ptr<T, Deleter>;
@@ -25,4 +29,8 @@ SharedPtr<T> makeShared(Args&&... args)
 	return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
-#endif // !_GEAR_UTILS_H_
+#undef min
+
+#undef max
+
+#endif // !_GEAR_UTILS_MEMORY_H_

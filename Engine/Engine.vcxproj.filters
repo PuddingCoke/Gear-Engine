@@ -507,7 +507,7 @@
     <ClInclude Include="Inc\Gear\Core\Internal\LocalDescriptorHeapInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Utils\GearMemory.h">
+    <ClInclude Include="Inc\Gear\Utils\Memory.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

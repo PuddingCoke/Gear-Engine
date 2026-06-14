@@ -11,19 +11,13 @@ static_assert(sizeof(double) == 8, "size of double must be 8");
 
 #include<Gear/Utils/Logger.h>
 
-#include<Gear/Utils/GearMemory.h>
-
-#include<Gear/Core/TOPOLOGY.h>
+#include<Gear/Utils/Memory.h>
 
 #include<D3D12Headers/d3dx12.h>
 
 #include<dxgi1_6.h>
 
-#include<wrl/client.h>
-
 #include<comdef.h>
-
-using Microsoft::WRL::ComPtr;
 
 #define CHECKERROR(x) \
 {\
@@ -34,10 +28,6 @@ _com_error err(hr);\
 LOGERROR(L"失败值",IntegerMode::HEX,static_cast<uint32_t>(hr),L"失败原因",err.ErrorMessage());\
 }\
 }\
-
-#define TOSTRING(x) #x
-
-#define TOWSTRING(x) L#x
 
 #undef DOMAIN
 

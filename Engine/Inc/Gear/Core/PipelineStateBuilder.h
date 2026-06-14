@@ -9,6 +9,10 @@
 
 #include<Gear/Core/Resource/RenderTextureView.h>
 
+#include"FMT.h"
+
+#include"TOPOLOGY.h"
+
 namespace Gear::Core
 {
 	class PipelineStateBuilder

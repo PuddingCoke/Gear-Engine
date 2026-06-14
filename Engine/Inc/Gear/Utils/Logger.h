@@ -35,6 +35,10 @@ namespace Gear::Utils::Logger
 	void submitLogMessage(const LogMessage& msg);
 }
 
+#define TOSTRING(x) #x
+
+#define TOWSTRING(x) L#x
+
 #define LOGSUCCESS(...) Gear::Utils::Logger::submitLogMessage(Gear::Utils::Logger::LogContext::createLogMessage(__FUNCTIONW__,Gear::Utils::Logger::LogType::LOG_SUCCESS,__VA_ARGS__))
 
 #define LOGENGINE(...) Gear::Utils::Logger::submitLogMessage(Gear::Utils::Logger::LogContext::createLogMessage(__FUNCTIONW__,Gear::Utils::Logger::LogType::LOG_ENGINE,__VA_ARGS__))

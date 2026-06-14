@@ -17,6 +17,8 @@
 
 #include<type_traits>
 
+#include"TOPOLOGY.h"
+
 //创建一个作用域，内置默认值为0的临时偏移co，它会随着API调用自增，建议搭配CodeSnippets中的片段使用
 //注意事项：作用域内只允许ctx->set*SConstants调用！因为宏定义是无法处理某些特殊情况的
 #define SETCONSTS(...) { uint32_t co = 0u; __VA_ARGS__ }

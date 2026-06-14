@@ -5,7 +5,7 @@
 
 #include"LogColor.h"
 
-#include<Gear/Utils/GearMemory.h>
+#include<Gear/Utils/Memory.h>
 
 #include<thread>
 

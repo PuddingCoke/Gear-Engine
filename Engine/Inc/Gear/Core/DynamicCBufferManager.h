@@ -15,7 +15,7 @@ namespace Gear::Core::DynamicCBufferManager
 		void* const dataPtr;
 		//提供GPU地址来直接绑定常量缓冲
 		const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
-		//提供资源视图的位置来通过ResourceDescriptorHeap访问常量缓冲
+		//提供资源视图的位置，通过ResourceDescriptorHeap访问常量缓冲
 		const uint32_t descriptorIndex;
 	};
 

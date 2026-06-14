@@ -186,7 +186,7 @@
     <ClInclude Include="Inc\Gear\Utils\Logger\LogColor.h" />
     <ClInclude Include="Inc\Gear\Utils\Logger\LogContext.h" />
     <ClInclude Include="Inc\Gear\Utils\Internal\FileInternal.h" />
-    <ClInclude Include="Inc\Gear\Utils\GearMemory.h" />
+    <ClInclude Include="Inc\Gear\Utils\Memory.h" />
     <ClInclude Include="Inc\Gear\Utils\WallpaperHelper.h" />
     <ClInclude Include="Inc\ImGUI\imconfig.h" />
     <ClInclude Include="Inc\ImGUI\imgui.h" />
