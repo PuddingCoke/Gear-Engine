@@ -25,9 +25,9 @@
 
 #include<Gear/Effect/HBAOPlusEffect.h>
 
-#include<Gear/Core/GlobalEffect/ToneMapEffect.h>
+#include<Gear/Effect/ToneMapEffect.h>
 
-#include<Gear/Core/GlobalEffect/GammaCorrectEffect.h>
+#include<Gear/Effect/GammaCorrectEffect.h>
 
 #include<Gear/Core/D3D12Core/Shader.h>
 
@@ -51,10 +51,8 @@ using namespace Gear::Core;
 
 using namespace Gear::Core::D3D12Core;
 
-using namespace Gear::Effect;
-
 using namespace Gear::Core::Resource;
 
-using namespace Gear::Core::GlobalEffect;
+using namespace Gear::Effect;
 
 #endif // !_DEVESSENTIAL_H_

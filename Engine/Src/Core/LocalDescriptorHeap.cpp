@@ -11,13 +11,18 @@ namespace Gear::Core::LocalDescriptorHeap
 {
 	namespace Internal
 	{
-		thread_local UniquePtr<D3D12Core::DescriptorHeap> perThreadStagingResourceHeap;
+		struct LocalDescriptorHeapImpl
+		{
+			LocalDescriptorHeapImpl();
 
-		thread_local UniquePtr<D3D12Core::DescriptorHeap> perThreadRenderTargetHeap;
+			UniquePtr<D3D12Core::DescriptorHeap> perThreadStagingResourceHeap;
 
-		thread_local UniquePtr<D3D12Core::DescriptorHeap> perThreadDepthStencilHeap;
+			UniquePtr<D3D12Core::DescriptorHeap> perThreadRenderTargetHeap;
 
-		void initialize()
+			UniquePtr<D3D12Core::DescriptorHeap> perThreadDepthStencilHeap;
+		};
+
+		LocalDescriptorHeapImpl::LocalDescriptorHeapImpl()
 		{
 			perThreadStagingResourceHeap = makeUnique<D3D12Core::DescriptorHeap>(numStagingResourceDescriptors + numStaticSRVDescriptors, numStagingResourceDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
@@ -28,49 +33,52 @@ namespace Gear::Core::LocalDescriptorHeap
 			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(LocalDescriptorHeap));
 		}
 
+		thread_local UniquePtr<LocalDescriptorHeapImpl> impl;
+
+		void initialize()
+		{
+			impl = makeUnique<LocalDescriptorHeapImpl>();
+		}
+
 		void release()
 		{
-			perThreadStagingResourceHeap.reset();
-
-			perThreadRenderTargetHeap.reset();
-
-			perThreadDepthStencilHeap.reset();
+			impl.reset();
 		}
 	}
 
 	D3D12Core::DescriptorHeap* getStagingResourceHeap()
 	{
 #ifdef _DEBUG
-		if (!Internal::perThreadStagingResourceHeap.get())
+		if (!Internal::impl.get())
 		{
-			LOGERROR(L"你还没有分配线程独享的暂存资源描述符堆!");
+			LOGERROR(L"你还没有申请线程局部描述符堆!");
 		}
 #endif // _DEBUG
 
-		return Internal::perThreadStagingResourceHeap.get();
+		return Internal::impl->perThreadStagingResourceHeap.get();
 	}
 
 	D3D12Core::DescriptorHeap* getRenderTargetHeap()
 	{
 #ifdef _DEBUG
-		if (!Internal::perThreadRenderTargetHeap.get())
+		if (!Internal::impl.get())
 		{
-			LOGERROR(L"你还没有分配线程独享的渲染目标描述符堆!");
+			LOGERROR(L"你还没有申请线程局部描述符堆!");
 		}
 #endif // _DEBUG
 
-		return Internal::perThreadRenderTargetHeap.get();
+		return Internal::impl->perThreadRenderTargetHeap.get();
 	}
 
 	D3D12Core::DescriptorHeap* getDepthStencilHeap()
 	{
 #ifdef _DEBUG
-		if (!Internal::perThreadDepthStencilHeap.get())
+		if (!Internal::impl.get())
 		{
-			LOGERROR(L"你还没有分配线程独享的深度模板描述符堆!");
+			LOGERROR(L"你还没有申请线程局部描述符堆!");
 		}
 #endif // _DEBUG
 
-		return Internal::perThreadDepthStencilHeap.get();
+		return Internal::impl->perThreadDepthStencilHeap.get();
 	}
 }

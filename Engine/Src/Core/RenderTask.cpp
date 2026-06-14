@@ -1,6 +1,6 @@
 ﻿#include<Gear/Core/RenderThread.h>
 
-#include<Gear/Core/GlobalEffect/BackBufferBlitEffect.h>
+#include<Gear/Effect/BackBufferBlitEffect.h>
 
 namespace Gear::Core
 {
@@ -54,7 +54,7 @@ namespace Gear::Core
 
 	void RenderTask::blit(Resource::RenderTextureView& texture) const
 	{
-		GlobalEffect::BackBufferBlitEffect::process(*context, texture);
+		Effect::BackBufferBlitEffect::process(*context, texture);
 	}
 
 	void RenderTask::workerLoop()

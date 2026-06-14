@@ -303,13 +303,13 @@
     <ClInclude Include="Inc\DirectXTex\WICTextureLoader12.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\HDRClampEffect.h">
+    <ClInclude Include="Inc\Gear\Effect\HDRClampEffect.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\LatLongMapToCubeMapEffect.h">
+    <ClInclude Include="Inc\Gear\Effect\LatLongMapToCubeMapEffect.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\BackBufferBlitEffect.h">
+    <ClInclude Include="Inc\Gear\Effect\BackBufferBlitEffect.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\D3D12Headers\d3d12.h">
@@ -378,9 +378,6 @@
     <ClInclude Include="Inc\D3D12Headers\dxgiformat.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\GlobalEffectHeader.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Gear\Utils\Logger\LogColor.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -435,13 +432,13 @@
     <ClInclude Include="Inc\Gear\Core\Internal\DynamicCBufferManagerInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\BackBufferBlitEffectInternal.h">
+    <ClInclude Include="Inc\Gear\Effect\Internal\BackBufferBlitEffectInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\HDRClampEffectInternal.h">
+    <ClInclude Include="Inc\Gear\Effect\Internal\HDRClampEffectInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\LatLongMapToCubeMapEffectInternal.h">
+    <ClInclude Include="Inc\Gear\Effect\Internal\LatLongMapToCubeMapEffectInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\Internal\RenderEngineInternal.h">
@@ -477,16 +474,16 @@
     <ClInclude Include="Inc\Gear\Core\RenderThread.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\ToneMapEffect.h">
+    <ClInclude Include="Inc\Gear\Effect\ToneMapEffect.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\ToneMapEffectInternal.h">
+    <ClInclude Include="Inc\Gear\Effect\Internal\ToneMapEffectInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\GammaCorrectEffect.h">
+    <ClInclude Include="Inc\Gear\Effect\GammaCorrectEffect.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\GlobalEffect\Internal\GammaCorrectEffectInternal.h">
+    <ClInclude Include="Inc\Gear\Effect\Internal\GammaCorrectEffectInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Effect\SSREffect.h">
@@ -683,13 +680,13 @@
     <ClCompile Include="Inc\DirectXTex\WICTextureLoader12.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GlobalEffect\HDRClampEffect.cpp">
+    <ClCompile Include="Src\Effect\HDRClampEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GlobalEffect\LatLongMapToCubeMapEffect.cpp">
+    <ClCompile Include="Src\Effect\LatLongMapToCubeMapEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GlobalEffect\BackBufferBlitEffect.cpp">
+    <ClCompile Include="Src\Effect\BackBufferBlitEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Utils\Logger\LogColor.cpp">
@@ -734,10 +731,10 @@
     <ClCompile Include="Src\Core\RenderThread.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GlobalEffect\ToneMapEffect.cpp">
+    <ClCompile Include="Src\Effect\ToneMapEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GlobalEffect\GammaCorrectEffect.cpp">
+    <ClCompile Include="Src\Effect\GammaCorrectEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Effect\SSREffect.cpp">

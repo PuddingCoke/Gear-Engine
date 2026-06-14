@@ -26,15 +26,15 @@
 
 #include<Gear/Core/Internal/DynamicCBufferManagerInternal.h>
 
-#include<Gear/Core/GlobalEffect/Internal/BackBufferBlitEffectInternal.h>
+#include<Gear/Effect/Internal/BackBufferBlitEffectInternal.h>
 
-#include<Gear/Core/GlobalEffect/Internal/HDRClampEffectInternal.h>
+#include<Gear/Effect/Internal/HDRClampEffectInternal.h>
 
-#include<Gear/Core/GlobalEffect/Internal/LatLongMapToCubeMapEffectInternal.h>
+#include<Gear/Effect/Internal/LatLongMapToCubeMapEffectInternal.h>
 
-#include<Gear/Core/GlobalEffect/Internal/ToneMapEffectInternal.h>
+#include<Gear/Effect/Internal/ToneMapEffectInternal.h>
 
-#include<Gear/Core/GlobalEffect/Internal/GammaCorrectEffectInternal.h>
+#include<Gear/Effect/Internal/GammaCorrectEffectInternal.h>
 
 #include<ImGUI/imgui.h>
 
@@ -74,15 +74,15 @@ namespace Gear::Core::RenderEngine
 
 			}
 
-			GlobalEffect::BackBufferBlitEffect::Internal::InitializeToken backBufferBlitEffect;
+			Effect::BackBufferBlitEffect::Internal::InitializeToken backBufferBlitEffect;
 
-			GlobalEffect::HDRClampEffect::Internal::InitializeToken hdrClampEffect;
+			Effect::HDRClampEffect::Internal::InitializeToken hdrClampEffect;
 
-			GlobalEffect::LatLongMapToCubeMapEffect::Internal::InitializeToken latLongMapToCubeMapEffect;
+			Effect::LatLongMapToCubeMapEffect::Internal::InitializeToken latLongMapToCubeMapEffect;
 
-			GlobalEffect::ToneMapEffect::Internal::InitializeToken toneMapEffect;
+			Effect::ToneMapEffect::Internal::InitializeToken toneMapEffect;
 
-			GlobalEffect::GammaCorrectEffect::Internal::InitializeToken gammaCorrectEffect;
+			Effect::GammaCorrectEffect::Internal::InitializeToken gammaCorrectEffect;
 		};
 
 		class RenderEngineImpl
