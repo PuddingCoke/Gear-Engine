@@ -40,7 +40,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl" />
     <FxCompile Include="SpriteGS.hlsl">
       <Filter>着色器</Filter>
     </FxCompile>
