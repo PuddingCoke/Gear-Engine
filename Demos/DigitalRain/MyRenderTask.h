@@ -41,6 +41,8 @@ public:
 
 		ImGui::Begin("Rain Parameters");
 		ImGui::SliderFloat(TOSTRING(colorFactor), &colorFactor, 0.f, 3.f);
+		ImGui::SliderFloat(TOSTRING(rainFadePow), &rainFadePow, 0.f, 3.f);
+		ImGui::Checkbox("Logic Running", &logicRunning);
 		ImGui::End();
 	}
 
@@ -48,13 +50,16 @@ protected:
 
 	void recordCommand() override
 	{
-		for (Rain& rain : rains)
+		if (logicRunning)
 		{
-			rain.update(Graphics::getDeltaTime());
-
-			if (rain.y + Rain::stride * rain.len < 0)
+			for (Rain& rain : rains)
 			{
-				rain.reset();
+				rain.update(Graphics::getDeltaTime());
+
+				if (rain.y + Rain::stride * rain.len < 0)
+				{
+					rain.reset();
+				}
 			}
 		}
 
@@ -66,7 +71,7 @@ protected:
 
 			for (uint32_t j = 1; j < rain.character.size(); j++)
 			{
-				const float trailColor = colorFactor * (1.f - static_cast<float>(j) / rain.character.size());
+				const float trailColor = colorFactor * std::pow((1.f - static_cast<float>(j) / rain.character.size()), rainFadePow);
 
 				textBatch->drawText(rain.character[j], rain.x, rain.y + Rain::stride * j, 0.f, 0.f, trailColor, 0.f, 1.0f);
 			}
@@ -96,5 +101,9 @@ private:
 	std::vector<Rain> rains;
 
 	float colorFactor = 1.0f;
+
+	float rainFadePow = 2.0f;
+
+	bool logicRunning = true;
 
 };
