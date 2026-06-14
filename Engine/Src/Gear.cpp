@@ -18,6 +18,8 @@
 
 #include<Gear/Utils/Logger.h>
 
+#include<Gear/Utils/Timer.h>
+
 #include<Gear/Core/VideoEncoder/NvidiaEncoder.h>
 
 #include<Gear/Utils/Internal/LoggerInternal.h>
@@ -365,33 +367,55 @@ namespace Gear
 	{
 		Utils::DeltaTimeEstimator dtEstimator;
 
+		bool desktopObscured = false;
+
+		std::chrono::high_resolution_clock::time_point obscureCheckPoint = std::chrono::high_resolution_clock::now();
+
+		Utils::Timer obscureCheckTimer(2.f);
+
 		while (Window::Win32Form::pollEvents())
 		{
-			const std::chrono::high_resolution_clock::time_point startPoint = std::chrono::high_resolution_clock::now();
+			{
+				const float dt = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - obscureCheckPoint).count();
 
-			Core::RenderEngine::Internal::setDefRenderTexture();
+				obscureCheckPoint = std::chrono::high_resolution_clock::now();
 
-			Core::RenderEngine::Internal::beginFrame();
+				if (obscureCheckTimer.update(dt))
+				{
+					desktopObscured = Utils::WallpaperHelper::isDesktopObscured();
 
-			game->update(Core::Graphics::getDeltaTime());
+					obscureCheckTimer.restart();
+				}
+			}
 
-			game->render();
+			if (!desktopObscured)
+			{
+				const std::chrono::high_resolution_clock::time_point startPoint = std::chrono::high_resolution_clock::now();
 
-			Core::RenderEngine::Internal::endFrame();
+				Core::RenderEngine::Internal::setDefRenderTexture();
 
-			Core::RenderEngine::Internal::present();
+				Core::RenderEngine::Internal::beginFrame();
 
-			Core::RenderEngine::Internal::waitForNextFrame();
+				game->update(Core::Graphics::getDeltaTime());
 
-			const std::chrono::high_resolution_clock::time_point endPoint = std::chrono::high_resolution_clock::now();
+				game->render();
 
-			const float deltaTime = std::chrono::duration<float>(endPoint - startPoint).count();
+				Core::RenderEngine::Internal::endFrame();
 
-			const float lerpDeltaTime = dtEstimator.getDeltaTime(deltaTime);
+				Core::RenderEngine::Internal::present();
 
-			Core::RenderEngine::Internal::setDeltaTime(lerpDeltaTime);
+				Core::RenderEngine::Internal::waitForNextFrame();
 
-			Core::RenderEngine::Internal::updateTimeElapsed();
+				const std::chrono::high_resolution_clock::time_point endPoint = std::chrono::high_resolution_clock::now();
+
+				const float deltaTime = std::chrono::duration<float>(endPoint - startPoint).count();
+
+				const float lerpDeltaTime = dtEstimator.getDeltaTime(deltaTime);
+
+				Core::RenderEngine::Internal::setDeltaTime(lerpDeltaTime);
+
+				Core::RenderEngine::Internal::updateTimeElapsed();
+			}
 		}
 	}
 

@@ -261,6 +261,8 @@ namespace Gear::Window::Win32Form
 
 				GetCursorPos(&pt);
 
+				SetForegroundWindow(hWnd);
+
 				TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, nullptr);
 			}
 			break;
