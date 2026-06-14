@@ -25,9 +25,11 @@ public:
 			rains.push_back(Rain((Graphics::getWidth() - Graphics::getWidth() / Rain::stride * Rain::stride) / 2 + i * Rain::stride + Rain::stride / 2.f, Utils::Random::genUint() % 6 + 8));
 		}
 
-		Graphics::setGamma(1.2f);
+		Graphics::setGamma(1.0f);
 
-		bloomEffect->setIntensity(1.8f);
+		bloomEffect->setThreshold(0.0f);
+
+		bloomEffect->setIntensity(0.5f);
 	}
 
 	~MyRenderTask()
@@ -42,6 +44,7 @@ public:
 		ImGui::Begin("Rain Parameters");
 		ImGui::SliderFloat(TOSTRING(colorFactor), &colorFactor, 0.f, 3.f);
 		ImGui::SliderFloat(TOSTRING(rainFadePow), &rainFadePow, 0.f, 3.f);
+		ImGui::SliderFloat(TOSTRING(goldenFactor), &goldenFactor, 0.f, 1.f);
 		ImGui::Checkbox("Logic Running", &logicRunning);
 		ImGui::End();
 	}
@@ -67,7 +70,7 @@ protected:
 		{
 			const float headColor = colorFactor * 1.25f;
 
-			textBatch->drawText(rain.character[0], rain.x, rain.y, 0.f, headColor, headColor, headColor, 1);
+			textBatch->drawText(rain.character[0], rain.x, rain.y, 0.f, headColor, headColor, headColor * goldenFactor, 1);
 
 			for (uint32_t j = 1; j < rain.character.size(); j++)
 			{
@@ -103,6 +106,8 @@ private:
 	float colorFactor = 1.0f;
 
 	float rainFadePow = 2.0f;
+
+	float goldenFactor = 0.825f;
 
 	bool logicRunning = true;
 
