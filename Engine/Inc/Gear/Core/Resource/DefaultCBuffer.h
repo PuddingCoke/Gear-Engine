@@ -11,8 +11,8 @@ namespace Gear::Core::Resource
 {
 	CREATESAFETYPE(DefaultCBuffer);
 
-	//注意事项：静态常量缓冲的更新必须置于使用这个常量缓冲的API前
-	//而动态常量缓冲可以在任意位置调用更新API，这是因为引擎有相关的管理框架
+	//注意事项：默认常量缓冲的更新必须置于使用这个常量缓冲的API前
+	//而对于动态常量缓冲来说，你可以在任意位置调用更新API，这是因为引擎有相关的管理框架
 	class DefaultCBuffer :public ImmutableCBuffer
 	{
 	public:

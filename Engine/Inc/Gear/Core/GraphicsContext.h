@@ -56,7 +56,7 @@ namespace Gear::Core
 		//更新高级缓冲对象
 		void updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const;
 
-		//更新静态常量缓冲
+		//更新默认常量缓冲
 		void updateBuffer(Resource::DefaultCBuffer& staticCBuffer, const void* const data, const uint32_t size) const;
 
 		//设置用户自定义的全局常量缓冲
