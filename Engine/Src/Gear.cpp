@@ -367,28 +367,9 @@ namespace Gear
 	{
 		Utils::DeltaTimeEstimator dtEstimator;
 
-		bool desktopObscured = false;
-
-		std::chrono::high_resolution_clock::time_point obscureCheckPoint = std::chrono::high_resolution_clock::now();
-
-		Utils::Timer obscureCheckTimer(2.f);
-
 		while (Window::Win32Form::pollEvents())
 		{
-			{
-				const float dt = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - obscureCheckPoint).count();
-
-				obscureCheckPoint = std::chrono::high_resolution_clock::now();
-
-				if (obscureCheckTimer.update(dt))
-				{
-					desktopObscured = Utils::WallpaperHelper::isDesktopObscured();
-
-					obscureCheckTimer.restart();
-				}
-			}
-
-			if (!desktopObscured)
+			if (!Utils::WallpaperHelper::isDesktopObscured())
 			{
 				const std::chrono::high_resolution_clock::time_point startPoint = std::chrono::high_resolution_clock::now();
 
