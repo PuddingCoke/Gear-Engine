@@ -9,24 +9,39 @@
 namespace Gear::Core
 {
 	RenderThread::RenderThread(const std::function<void(RenderTask**)>& createFunc) :
-		initialized(false), createFunc(createFunc), renderTask(nullptr), errorOccured(false)
+		taskCompleted(false), errorOccured(false), isRunning(true), createFunc(createFunc), renderTask(nullptr)
 	{
 		renderThread = std::thread(&RenderThread::workerLoop, this);
 	}
 
 	RenderThread::~RenderThread()
 	{
+		isRunning = false;
+
+		beginTask();
+
 		if (renderThread.joinable())
 		{
 			renderThread.join();
 		}
 	}
 
-	bool RenderThread::waitInitialized()
+	void RenderThread::beginTask()
+	{
+		{
+			std::lock_guard<std::mutex> lockGuard(taskMutex);
+
+			taskCompleted = false;
+		}
+
+		taskCondition.notify_one();
+	}
+
+	bool RenderThread::waitTask()
 	{
 		std::unique_lock<std::mutex> lock(taskMutex);
 
-		taskCondition.wait(lock, [this]() {return initialized; });
+		taskCondition.wait(lock, [this]() {return taskCompleted; });
 
 		return errorOccured;
 	}
@@ -38,8 +53,10 @@ namespace Gear::Core
 
 	void RenderThread::workerLoop()
 	{
+		//这里一定要调用CoInitialize
 		CoInitializeToken coInitializeToken;
 
+		//初始化每个渲染线程独享的DXC编译器
 		D3D12Core::DXCCompiler::Internal::InitializeToken dxcCompilerToken;
 
 		//申请每个渲染线程独享的描述符堆
@@ -57,7 +74,7 @@ namespace Gear::Core
 
 				RenderEngine::submitCommandList(renderTask->getCommandList());
 
-				initialized = true;
+				taskCompleted = true;
 			}
 #ifdef _DEBUG
 		}
@@ -66,7 +83,7 @@ namespace Gear::Core
 			{
 				std::lock_guard<std::mutex> lockGuard(taskMutex);
 
-				initialized = true;
+				taskCompleted = true;
 
 				errorOccured = true;
 			}
@@ -81,8 +98,47 @@ namespace Gear::Core
 		//通知主渲染线程子渲染线程创建完毕
 		taskCondition.notify_one();
 
-		//进入工作循环
-		//由主渲染线程来调度
-		renderTask->workerLoop();
+#ifdef _DEBUG
+		try
+		{
+#endif // _DEBUG
+			//进入工作循环
+			while (true)
+			{
+				{
+					std::unique_lock<std::mutex> lock(taskMutex);
+
+					taskCondition.wait(lock, [this]() {return !taskCompleted; });
+
+					if (!isRunning)
+					{
+						break;
+					}
+
+					renderTask->frameTask();
+
+					taskCompleted = true;
+				}
+
+				//通知主渲染线程帧任务完成
+				taskCondition.notify_one();
+			}
+#ifdef _DEBUG
+		}
+		catch (const std::exception&)
+		{
+			{
+				std::unique_lock<std::mutex> lock(taskMutex);
+
+				taskCompleted = true;
+
+				errorOccured = true;
+			}
+
+			taskCondition.notify_one();
+
+			return;
+		}
+#endif // _DEBUG
 	}
 }

@@ -20,7 +20,9 @@ namespace Gear::Core
 
 		~RenderThread();
 
-		bool waitInitialized();
+		void beginTask();
+
+		bool waitTask();
 
 		//把RenderThread管理权移交给RenderTask
 		void transferOwnerShip(UniquePtr<RenderThread> renderThread);
@@ -29,9 +31,11 @@ namespace Gear::Core
 
 		void workerLoop();
 
-		bool initialized;
+		bool taskCompleted;
 
 		bool errorOccured;
+
+		bool isRunning;
 
 		std::mutex taskMutex;
 

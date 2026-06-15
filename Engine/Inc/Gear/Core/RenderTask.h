@@ -45,17 +45,8 @@ namespace Gear::Core
 
 		friend class RenderThread;
 
-		void workerLoop();
-
-		bool taskCompleted;
-
-		bool errorOccur;
-
-		bool isRunning;
-
-		std::mutex taskMutex;
-
-		std::condition_variable taskCondition;
+		//帧任务
+		void frameTask();
 
 		UniquePtr<RenderThread> renderThread;
 

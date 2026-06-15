@@ -7,9 +7,6 @@ namespace Gear::Core
 	RenderTask::RenderTask() :
 		resManager(makeUnique<ResourceManager>()),
 		context(resManager->getGraphicsContext()),
-		taskCompleted(true),
-		errorOccur(false),
-		isRunning(true),
 		renderThread(nullptr)
 	{
 		context->begin();
@@ -17,29 +14,16 @@ namespace Gear::Core
 
 	RenderTask::~RenderTask()
 	{
-		isRunning = false;
-
-		beginTask();
 	}
 
 	void RenderTask::beginTask()
 	{
-		{
-			std::lock_guard<std::mutex> lockGuard(taskMutex);
-
-			taskCompleted = false;
-		}
-
-		taskCondition.notify_one();
+		renderThread->beginTask();
 	}
 
 	bool RenderTask::waitTask()
 	{
-		std::unique_lock<std::mutex> lock(taskMutex);
-
-		taskCondition.wait(lock, [this]() {return taskCompleted; });
-
-		return errorOccur;
+		return renderThread->waitTask();
 	}
 
 	D3D12Core::CommandList* RenderTask::getCommandList() const
@@ -57,51 +41,12 @@ namespace Gear::Core
 		Effect::BackBufferBlitEffect::process(*context, texture);
 	}
 
-	void RenderTask::workerLoop()
+	void RenderTask::frameTask()
 	{
-#ifdef _DEBUG
-		try
-		{
-#endif // _DEBUG
-			while (true)
-			{
-				{
-					std::unique_lock<std::mutex> lock(taskMutex);
+		resManager->cleanTransientResources();
 
-					taskCondition.wait(lock, [this]() {return !taskCompleted; });
+		context->begin();
 
-					if (!isRunning)
-					{
-						break;
-					}
-
-					resManager->cleanTransientResources();
-
-					context->begin();
-
-					recordCommand();
-
-					taskCompleted = true;
-				}
-
-				taskCondition.notify_one();
-			}
-#ifdef _DEBUG
-		}
-		catch (const std::exception&)
-		{
-			{
-				std::unique_lock<std::mutex> lock(taskMutex);
-
-				taskCompleted = true;
-
-				errorOccur = true;
-			}
-
-			taskCondition.notify_one();
-
-			return;
-		}
-#endif // _DEBUG
+		recordCommand();
 	}
 }

@@ -17,7 +17,7 @@ namespace Gear
 
 		while (createQueue.size())
 		{
-			createQueue.front()->waitInitialized();
+			createQueue.front()->waitTask();
 
 			Core::RenderThread* const renderThread = createQueue.front().get();
 
@@ -64,7 +64,7 @@ namespace Gear
 
 		while (createQueue.size())
 		{
-			if (createQueue.front()->waitInitialized())
+			if (createQueue.front()->waitTask())
 			{
 				throw "error occur while resource creation";
 			}
