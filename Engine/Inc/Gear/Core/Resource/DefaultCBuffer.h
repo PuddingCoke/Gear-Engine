@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_RESOURCE_STATICCBUFFER_H_
-#define _GEAR_CORE_RESOURCE_STATICCBUFFER_H_
+#ifndef _GEAR_CORE_RESOURCE_DEFAULTCBUFFER_H_
+#define _GEAR_CORE_RESOURCE_DEFAULTCBUFFER_H_
 
 #include<Gear/Core/Resource/D3D12Resource/UploadHeap.h>
 
@@ -9,19 +9,19 @@
 
 namespace Gear::Core::Resource
 {
-	CREATESAFETYPE(StaticCBuffer);
+	CREATESAFETYPE(DefaultCBuffer);
 
 	//注意事项：静态常量缓冲的更新必须置于使用这个常量缓冲的API前
 	//而动态常量缓冲可以在任意位置调用更新API，这是因为引擎有相关的管理框架
-	class StaticCBuffer :public ImmutableCBuffer
+	class DefaultCBuffer :public ImmutableCBuffer
 	{
 	public:
 
-		StaticCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent);
+		DefaultCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent);
 
-		StaticCBuffer(const StaticCBuffer&);
+		DefaultCBuffer(const DefaultCBuffer&);
 
-		~StaticCBuffer();
+		~DefaultCBuffer();
 
 		struct UpdateStruct
 		{
@@ -40,4 +40,4 @@ namespace Gear::Core::Resource
 	};
 }
 
-#endif // !_GEAR_CORE_RESOURCE_STATICCBUFFER_H_
+#endif // !_GEAR_CORE_RESOURCE_DEFAULTCBUFFER_H_

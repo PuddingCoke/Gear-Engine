@@ -25,9 +25,9 @@ namespace Gear::Core
 		commandList->copyBufferRegion(updateStruct.buffer, 0, updateStruct.uploadHeap, 0, size);
 	}
 
-	void GraphicsContext::updateBuffer(Resource::StaticCBuffer& staticCBuffer, const void* const data, const uint32_t size) const
+	void GraphicsContext::updateBuffer(Resource::DefaultCBuffer& staticCBuffer, const void* const data, const uint32_t size) const
 	{
-		const Resource::StaticCBuffer::UpdateStruct updateStruct = staticCBuffer.getUpdateStruct(data, size);
+		const Resource::DefaultCBuffer::UpdateStruct updateStruct = staticCBuffer.getUpdateStruct(data, size);
 
 		commandList->copyBufferRegion(updateStruct.buffer, 0, updateStruct.uploadHeap, 0, size);
 	}

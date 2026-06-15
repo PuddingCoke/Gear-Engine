@@ -396,7 +396,7 @@
     <ClInclude Include="Inc\Gear\Core\Resource\DynamicCBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\StaticCBuffer.h">
+    <ClInclude Include="Inc\Gear\Core\Resource\DefaultCBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\Internal\GraphicsInternal.h">
@@ -707,7 +707,7 @@
     <ClCompile Include="Src\Core\Resource\DynamicCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\StaticCBuffer.cpp">
+    <ClCompile Include="Src\Core\Resource\DefaultCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Utils\Logger.cpp">

@@ -11,7 +11,7 @@
 
 #include<Gear/Core/Resource/ImmutableCBuffer.h>
 
-#include<Gear/Core/Resource/StaticCBuffer.h>
+#include<Gear/Core/Resource/DefaultCBuffer.h>
 
 #include<Gear/Core/Resource/DynamicCbuffer.h>
 
@@ -72,9 +72,9 @@ namespace Gear::Core
 
 		Resource::ImmutableCBufferPtr createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent);
 
-		Resource::StaticCBufferPtr createStaticCBuffer(const uint32_t size, const void* const data, const bool persistent);
+		Resource::DefaultCBufferPtr createDefaultCBuffer(const uint32_t size, const void* const data, const bool persistent);
 
-		static Resource::StaticCBufferPtr createStaticCBuffer(const uint32_t size, const bool persistent);
+		static Resource::DefaultCBufferPtr createDefaultCBuffer(const uint32_t size, const bool persistent);
 
 		static Resource::DynamicCBufferPtr createDynamicCBuffer(const uint32_t size, const void* const data = nullptr);
 

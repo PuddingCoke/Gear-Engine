@@ -30,7 +30,7 @@ public:
 			FMT::R32F, 6, 1, true, true, distanceCubeClearColor)),
 		depthCube(ResourceManager::createDepthTextureView(probeCaptureResolution, probeCaptureResolution,
 			FMT::D32F, 6, 1, true, true)),
-		irradianceVolumeBuffer(ResourceManager::createStaticCBuffer(sizeof(IrradianceVolume), true)),
+		irradianceVolumeBuffer(ResourceManager::createDefaultCBuffer(sizeof(IrradianceVolume), true)),
 		shadowVS(Shader::create(File::getRootFolder() + L"ShadowVS.cso")),
 		deferredVShader(Shader::create(File::getRootFolder() + L"DeferredVShader.cso")),
 		deferredPShader(Shader::create(File::getRootFolder() + L"DeferredPShader.cso")),
@@ -547,7 +547,7 @@ protected:
 		float clipExponent = 0.3f;
 	}clipParameters;
 
-	StaticCBufferPtr irradianceVolumeBuffer;
+	DefaultCBufferPtr irradianceVolumeBuffer;
 
 	ImmutableCBufferPtr cubeRenderParamBuffer[probeCount];
 

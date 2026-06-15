@@ -1,10 +1,10 @@
-﻿#include<Gear/Core/Resource/StaticCBuffer.h>
+﻿#include<Gear/Core/Resource/DefaultCBuffer.h>
 
 #include<Gear/Core/Graphics.h>
 
 namespace Gear::Core::Resource
 {
-	StaticCBuffer::StaticCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent) :
+	DefaultCBuffer::DefaultCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent) :
 		ImmutableCBuffer(std::move(bufferPtr), size, persistent),
 		uploadHeaps(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
 		dataPtrs(makeShared<void* []>(Graphics::getFrameBufferCount()))
@@ -17,14 +17,14 @@ namespace Gear::Core::Resource
 		}
 	}
 
-	StaticCBuffer::StaticCBuffer(const StaticCBuffer& scb) :
+	DefaultCBuffer::DefaultCBuffer(const DefaultCBuffer& scb) :
 		ImmutableCBuffer(scb),
 		uploadHeaps(nullptr),
 		dataPtrs(scb.dataPtrs)
 	{
 	}
 
-	StaticCBuffer::~StaticCBuffer()
+	DefaultCBuffer::~DefaultCBuffer()
 	{
 		if (uploadHeaps.get())
 		{
@@ -38,7 +38,7 @@ namespace Gear::Core::Resource
 		}
 	}
 
-	StaticCBuffer::UpdateStruct StaticCBuffer::getUpdateStruct(const void* const data, const uint64_t size)
+	DefaultCBuffer::UpdateStruct DefaultCBuffer::getUpdateStruct(const void* const data, const uint64_t size)
 	{
 		memcpy(dataPtrs[Graphics::getFrameIndex()], data, size);
 

@@ -280,18 +280,18 @@ namespace Gear::Core
 		return makeUnique<Resource::ImmutableCBuffer>(std::move(buffer), size, persistent);
 	}
 
-	Resource::StaticCBufferPtr ResourceManager::createStaticCBuffer(const uint32_t size, const void* const data, const bool persistent)
+	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size, const void* const data, const bool persistent)
 	{
 		Resource::D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
-		return makeUnique<Resource::StaticCBuffer>(std::move(buffer), size, persistent);
+		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), size, persistent);
 	}
 
-	Resource::StaticCBufferPtr ResourceManager::createStaticCBuffer(const uint32_t size, const bool persistent)
+	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size, const bool persistent)
 	{
 		Resource::D3D12Resource::BufferPtr buffer = makeUnique<Resource::D3D12Resource::Buffer>(size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
 
-		return makeUnique<Resource::StaticCBuffer>(std::move(buffer), size, persistent);
+		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), size, persistent);
 	}
 
 	UniquePtr<Resource::DynamicCBuffer> ResourceManager::createDynamicCBuffer(const uint32_t size, const void* const data)

@@ -11,7 +11,7 @@
 
 #include<Gear/Core/Resource/BufferView.h>
 
-#include<Gear/Core/Resource/StaticCBuffer.h>
+#include<Gear/Core/Resource/DefaultCBuffer.h>
 
 #include<Gear/Utils/StaticVector.h>
 
@@ -57,7 +57,7 @@ namespace Gear::Core
 		void updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const;
 
 		//更新静态常量缓冲
-		void updateBuffer(Resource::StaticCBuffer& staticCBuffer, const void* const data, const uint32_t size) const;
+		void updateBuffer(Resource::DefaultCBuffer& staticCBuffer, const void* const data, const uint32_t size) const;
 
 		//设置用户自定义的全局常量缓冲
 		void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);

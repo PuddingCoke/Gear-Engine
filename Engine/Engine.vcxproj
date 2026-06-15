@@ -164,7 +164,7 @@
     <ClInclude Include="Inc\Gear\Core\RenderThread.h" />
     <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\PipelineResourceDesc.h" />
     <ClInclude Include="Inc\Gear\Core\Resource\DynamicCBuffer.h" />
-    <ClInclude Include="Inc\Gear\Core\Resource\StaticCBuffer.h" />
+    <ClInclude Include="Inc\Gear\Core\Resource\DefaultCBuffer.h" />
     <ClInclude Include="Inc\Gear\Effect\BackBufferBlitEffect.h" />
     <ClInclude Include="Inc\Gear\Effect\HDRClampEffect.h" />
     <ClInclude Include="Inc\Gear\Effect\Internal\BackBufferBlitEffectInternal.h" />
@@ -256,7 +256,7 @@
     <ClCompile Include="Src\Core\GlobalShader.cpp" />
     <ClCompile Include="Src\Core\PipelineStateBuilder.cpp" />
     <ClCompile Include="Src\Core\Resource\DynamicCBuffer.cpp" />
-    <ClCompile Include="Src\Core\Resource\StaticCBuffer.cpp" />
+    <ClCompile Include="Src\Core\Resource\DefaultCBuffer.cpp" />
     <ClCompile Include="Src\Effect\BackBufferBlitEffect.cpp" />
     <ClCompile Include="Src\Effect\LatLongMapToCubeMapEffect.cpp" />
     <ClCompile Include="Inc\ImGUI\imgui.cpp" />

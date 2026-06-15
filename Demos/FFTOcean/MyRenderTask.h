@@ -14,7 +14,7 @@ public:
 		vertices((gridSize + 1)* (gridSize + 1)),
 		camera(camera),
 		renderParamBuffer(ResourceManager::createDynamicCBuffer(sizeof(RenderParam))),
-		spectrumParamBuffer{ ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true),ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true),ResourceManager::createStaticCBuffer(sizeof(SpectrumParam), true) },
+		spectrumParamBuffer{ ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true),ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true),ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true) },
 		cascade{ makeUnique<WaveCascade>(textureResolution,context),makeUnique<WaveCascade>(textureResolution,context),makeUnique<WaveCascade>(textureResolution,context) },
 		textureCubePS(Shader::create(File::getRootFolder() + L"TextureCubePS.cso")),
 		gridDebugVS(Shader::create(File::getRootFolder() + L"GridDebugVS.cso")),
@@ -705,7 +705,7 @@ private:
 
 	DynamicCBufferPtr renderParamBuffer;
 
-	StaticCBufferPtr spectrumParamBuffer[cascadeNum];
+	DefaultCBufferPtr spectrumParamBuffer[cascadeNum];
 
 	UniquePtr<WaveCascade> cascade[cascadeNum];
 

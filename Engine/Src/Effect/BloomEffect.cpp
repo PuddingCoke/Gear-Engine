@@ -56,7 +56,7 @@ namespace Gear::Effect
 				blurParam[i].iteration = iteration[i];
 				blurParam[i].sigma = sigma[i];
 
-				blurParamBuffer[i] = ResourceManager::createStaticCBuffer(sizeof(BlurParam), true);
+				blurParamBuffer[i] = ResourceManager::createDefaultCBuffer(sizeof(BlurParam), true);
 
 				const std::wstring name = L"Blur Param Buffer ";
 

@@ -73,7 +73,7 @@ namespace Gear::Effect
 
 		RenderTextureViewPtr filteredTexture;
 
-		StaticCBufferPtr blurParamBuffer[blurSteps];
+		DefaultCBufferPtr blurParamBuffer[blurSteps];
 
 		struct BloomParam
 		{
