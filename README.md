@@ -1,4 +1,4 @@
-# Gear Engine v0.1
+﻿# Gear Engine v0.1
 
 这是我学习 Direct3D 12 以来一直在构思并编写的一个图形引擎。后续的一些部分经过AI润色😂，我提供了一些见解让AI撰写，最近实在是没时间，所以只能出此下策。
 
@@ -138,7 +138,7 @@ d3d11Context->Draw(36, 6);
 
 - **资源绑定与 Shader Model 6.6**：目前的资源绑定框架基于 Shader Model 6.6 设计。如果不使用 SM 6.6，那么资源绑定框架对我来说会较为难以设计。好在支持 Shader Model 6.6 的显卡覆盖范围还是比较广的，最低端的卡大约可以到 GTX 1660 Ti 这个级别。
 - **Bindless 设计倾向**：编写引擎之初我查阅了 NVIDIA 的 D3D12 Dos and Don'ts，里面明确提到了"Prefer a 'bindless' design."。Gear 当前的资源绑定路线正是朝着 bindless 方向走的，这也是选择 SM 6.6 作为最低 Shader Model 门槛的原因之一。
-- **多线程指令录制**：引擎在设计上是原生支持多线程录制命令列表的，`Game` 基类里有方法可以调度子渲染线程。不过目前我还没有进行充分的测试，所有示例项目都只使用**一个**子渲染线程来记录指令。后续需要更多验证后再在生产环境中启用多线程录制。
+- **多线程指令录制**：引擎在设计上是原生支持多线程录制命令列表的，`Game` 基类里有方法可以调度子渲染线程。不过目前我还没有进行充分的测试，仅 **CrytekSponza** 项目测试了两个子渲染线程来记录指令。当前需要进行更多的测试，来在生产环境中启用多线程录制。
 - **离线渲染的硬件限制**：由于我手头只有一张 NVIDIA 的显卡，当前视频编码模块（NVENC）只封装了 NVIDIA 的编码 API，无法为 AMD（AMF）或 Intel（QSV）等其他厂商的显卡编写视频编码封装。后续如果有能力接触到其他厂商的硬件，可能会进行相应的实现。
 
 ### 运行模式
@@ -161,8 +161,7 @@ d3d11Context->Draw(36, 6);
 | RenderTask | 渲染任务基类，用户继承后重写 `recordCommand()` |
 | RenderThread | 后台线程异步创建 RenderTask，`createRenderTaskAsync` 模板函数 |
 | GlobalShader | 内置公用 Shader（FullScreenVS、FullScreenPS、TextureCubeVS） |
-| GlobalEffect | 内置后处理：ToneMap、GammaCorrect、HDRClamp、BackBufferBlit、LatLongMapToCubeMap |
-| Effect 系统 | 可复用的屏幕空间效果：Bloom、FXAA、SSR、HBAO+ |
+| Effect 系统 | 内置各种效果：Bloom、FXAA、SSR、HBAO+、ToneMap、GammaCorrect、HDRClamp、BackBufferBlit、LatLongMapToCubeMap |
 | MainCamera | 全局相机状态，View/Proj 矩阵自动写入全局常量缓冲 |
 | FPSCamera / OrbitCamera | WASD 自由移动 / 轨道旋转相机 |
 | Input | Keyboard（按键事件注册/注销）、Mouse（位置、按键、移动、滚轮） |
