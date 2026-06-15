@@ -203,7 +203,7 @@ namespace Gear::Utils::WallpaperHelper
 
 			const float coverage = static_cast<float>(covered) / static_cast<float>(total);
 
-			LOGENGINE(coverage);
+			//LOGENGINE(coverage);
 
 			return coverage > 0.90f;
 		}
