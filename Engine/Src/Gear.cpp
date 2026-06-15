@@ -135,6 +135,8 @@ namespace Gear
 
 			backBufferHeap = makeUnique<Core::Resource::D3D12Resource::ReadbackHeap>(Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
 
+			SetForegroundWindow(Window::Win32Form::getHandle());
+
 			LOGENGINE(L"引擎用途", L"实时渲染");
 
 			break;
