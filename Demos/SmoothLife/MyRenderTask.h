@@ -10,9 +10,9 @@ public:
 
 	MyRenderTask() :
 		timer(1.f / 60.f),
-		whiteNoiseCS(Shader::create(Utils::File::getRootFolder() + L"WhiteNoiseCS.cso")),
-		evolveCS(Shader::create(Utils::File::getRootFolder() + L"EvolveCS.cso")),
-		visualizeCS(Shader::create(Utils::File::getRootFolder() + L"VisualizeCS.cso")),
+		whiteNoiseCS(Shader::create(File::getRootFolder() + L"WhiteNoiseCS.cso")),
+		evolveCS(Shader::create(File::getRootFolder() + L"EvolveCS.cso")),
+		visualizeCS(Shader::create(File::getRootFolder() + L"VisualizeCS.cso")),
 		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true))
 	{
 		whiteNoiseState = PipelineStateBuilder::build(*whiteNoiseCS);
@@ -58,7 +58,7 @@ protected:
 	{
 		context->setPipelineState(*whiteNoiseState);
 
-		const uint32_t uintSeed = Utils::Random::genUint();
+		const uint32_t uintSeed = Random::genUint();
 
 		SETCONSTS({
 		context->setCSConstants({ swapTexture.write()->getUAVMipIndex(0) }, co);
@@ -158,6 +158,6 @@ private:
 
 	RenderTextureViewPtr originTexture;
 
-	Utils::Timer timer;
+	Timer timer;
 
 };

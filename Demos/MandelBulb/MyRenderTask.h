@@ -9,9 +9,9 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		accumulateShader(Shader::create(Utils::File::getRootFolder() + L"AccumulateShader.cso")),
+		accumulateShader(Shader::create(File::getRootFolder() + L"AccumulateShader.cso")),
 		accumulatedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, false)),
-		cameraParam{ Utils::Math::pi / 4.f + 0.4f,0.f,3.0f,8.f },
+		cameraParam{ Math::pi / 4.f + 0.4f,0.f,3.0f,8.f },
 		accumulateParam{ 0,0.f }
 	{
 		accumulateState = PipelineStateBuilder()
@@ -27,7 +27,7 @@ public:
 				{
 					cameraParam.phi -= Input::Mouse::getDY() * Graphics::getDeltaTime();
 					cameraParam.theta += Input::Mouse::getDX() * Graphics::getDeltaTime();
-					cameraParam.phi = Utils::Math::clamp(cameraParam.phi, -Utils::Math::halfPi + 0.01f, Utils::Math::halfPi - 0.01f);
+					cameraParam.phi = Math::clamp(cameraParam.phi, -Math::halfPi + 0.01f, Math::halfPi - 0.01f);
 
 					accumulateParam.frameIndex = 0;
 				}

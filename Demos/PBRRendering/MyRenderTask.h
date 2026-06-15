@@ -12,10 +12,10 @@ public:
 
 	MyRenderTask() :
 		scene("E:/Assets/PBRRendering/DNA.obj", *resManager, FMT::RGBA16F),
-		skyboxPS(Shader::create(Utils::File::getRootFolder() + L"SkyboxPS.cso")),
-		prefilterVS(Shader::create(Utils::File::getRootFolder() + L"PrefilterVS.cso")),
-		prefilterPS(Shader::create(Utils::File::getRootFolder() + L"PrefilterPS.cso")),
-		irradiancePS(Shader::create(Utils::File::getRootFolder() + L"IrradiancePS.cso"))
+		skyboxPS(Shader::create(File::getRootFolder() + L"SkyboxPS.cso")),
+		prefilterVS(Shader::create(File::getRootFolder() + L"PrefilterVS.cso")),
+		prefilterPS(Shader::create(File::getRootFolder() + L"PrefilterPS.cso")),
+		irradiancePS(Shader::create(File::getRootFolder() + L"IrradiancePS.cso"))
 	{
 		renderTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), 
 			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
@@ -70,7 +70,7 @@ public:
 					{0.0f, 1.0f,  0.0f}
 				};
 
-				const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Utils::Math::halfPi, 1.f, 0.1f, 10.f);
+				const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::halfPi, 1.f, 0.1f, 10.f);
 
 				for (uint32_t i = 0; i < 6; i++)
 				{

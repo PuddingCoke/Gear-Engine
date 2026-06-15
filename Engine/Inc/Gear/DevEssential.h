@@ -45,6 +45,8 @@
 
 #include<Gear/Utils/Color.h>
 
+#include<Gear/Utils/StaticVector.h>
+
 using namespace Gear;
 
 using namespace Gear::Core;
@@ -54,5 +56,7 @@ using namespace Gear::Core::D3D12Core;
 using namespace Gear::Core::Resource;
 
 using namespace Gear::Effect;
+
+using namespace Gear::Utils;
 
 #endif // !_DEVESSENTIAL_H_

@@ -23,7 +23,7 @@ public:
 			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black)),
 		camera({ 0.f,20.f,0.f }, { 1.0f,0.f,0.f }, { 0.f,1.f,0.f }, 70.f)
 	{
-		MainCamera::setProj(Utils::Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
+		MainCamera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 1.f, 512.f);
 
 		Graphics::setExposure(0.6f);
 

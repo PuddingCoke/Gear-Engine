@@ -34,11 +34,11 @@ std::vector<std::wstring> split(std::wstring str, const wchar_t separator)
 }
 
 TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) :
-	spriteVS(Shader::create(Utils::File::getRootFolder() + L"SpriteVS.cso")),
-	spriteGS(Shader::create(Utils::File::getRootFolder() + L"SpriteGS.cso")),
-	spritePS(Shader::create(Utils::File::getRootFolder() + L"SpritePS.cso")),
+	spriteVS(Shader::create(File::getRootFolder() + L"SpriteVS.cso")),
+	spriteGS(Shader::create(File::getRootFolder() + L"SpriteGS.cso")),
+	spritePS(Shader::create(File::getRootFolder() + L"SpritePS.cso")),
 	textBuffer(ResourceManager::createStructuredBufferView(sizeof(Text), sizeof(Text)* maxTextNum, false, false, true, true, true)),
-	scale(1.f), index(0u)
+	scale(1.f)
 {
 	spriteState = PipelineStateBuilder()
 		.setInputElements({
@@ -176,19 +176,23 @@ TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) 
 void TextBatch::drawText(const wchar_t ch, const float x, const float y, const float z, const float r, const float g, const float b, const float a)
 {
 	const Character& character = characterMap[ch];
-	textArray[index].position = DirectX::XMFLOAT3(x, y, z);
-	textArray[index].size = DirectX::XMFLOAT2(character.width * scale, character.height * scale);
-	textArray[index].color = DirectX::XMFLOAT4(r, g, b, a);
-	textArray[index].uvLeft = character.leftTexCoord;
-	textArray[index].uvRight = character.rightTexCoord;
-	textArray[index].uvBottom = character.bottomTexCoord;
-	textArray[index].uvTop = character.topTexCoord;
-	index++;
+
+	Text text;
+
+	text.position = DirectX::XMFLOAT3(x, y, z);
+	text.size = DirectX::XMFLOAT2(character.width * scale, character.height * scale);
+	text.color = DirectX::XMFLOAT4(r, g, b, a);
+	text.uvLeft = character.leftTexCoord;
+	text.uvRight = character.rightTexCoord;
+	text.uvBottom = character.bottomTexCoord;
+	text.uvTop = character.topTexCoord;
+
+	textArray.push(text);
 }
 
 void TextBatch::render(GraphicsContext& context, RenderTextureView& outputTexture)
 {
-	context.updateBuffer(*textBuffer, textArray.data(), sizeof(Text) * index);
+	context.updateBuffer(*textBuffer, textArray.data(), sizeof(Text) * textArray.size());
 
 	context.setPipelineState(*spriteState);
 
@@ -204,9 +208,9 @@ void TextBatch::render(GraphicsContext& context, RenderTextureView& outputTextur
 	context.setPSConstants({fontTexture->getAllSRVIndex()},co);
 		});
 
-	context.draw(index, 1u, 0u, 0u);
+	context.draw(textArray.size(), 1u, 0u, 0u);
 
-	index = 0u;
+	textArray.clear();
 }
 
 float TextBatch::getFontSize() const

@@ -21,7 +21,7 @@ public:
 
 		scheduleAllTasks();
 
-		MainCamera::setProj(Utils::Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 256.f);
+		MainCamera::setProj(Math::pi / 4.f, Graphics::getAspectRatio(), 0.1f, 256.f);
 	}
 
 	~MyGame()

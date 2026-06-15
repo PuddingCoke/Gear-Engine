@@ -9,8 +9,8 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		blackHoleShader(Shader::create(Utils::File::getRootFolder() + L"BlackHolePS.cso")),
-		colorGradingShader(Shader::create(Utils::File::getRootFolder() + L"ColorGradingPS.cso")),
+		blackHoleShader(Shader::create(File::getRootFolder() + L"BlackHolePS.cso")),
+		colorGradingShader(Shader::create(File::getRootFolder() + L"ColorGradingPS.cso")),
 		noiseTexture(resManager->createRenderTextureView(L"Noise.png", true)),
 		diskTexture(resManager->createRenderTextureView(L"Disk.jpg", true)),
 		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true)),

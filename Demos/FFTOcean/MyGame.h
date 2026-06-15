@@ -15,7 +15,7 @@ public:
 	MyGame() :
 		camera({ 0.f,100.f,0.f }, { 1.f * sinf(0.63f),-0.1f,1.f * cosf(0.63f) }, { 0.f,1.f,0.f }, 100.f)
 	{
-		MainCamera::setProj(Utils::Math::pi / 3.f, Graphics::getAspectRatio(), 1.f, 5000.f);
+		MainCamera::setProj(Math::pi / 3.f, Graphics::getAspectRatio(), 1.f, 5000.f);
 
 		pushCreateAsync(createRenderTaskAsync(renderTask, &camera));
 

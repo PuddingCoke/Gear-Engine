@@ -22,7 +22,7 @@ public:
 
 		for (size_t i = 0; i < Graphics::getWidth() / Rain::stride; i++)
 		{
-			rains.push_back(Rain((Graphics::getWidth() - Graphics::getWidth() / Rain::stride * Rain::stride) / 2 + i * Rain::stride + Rain::stride / 2.f, Utils::Random::genUint() % 6 + 8));
+			rains.push_back(Rain((Graphics::getWidth() - Graphics::getWidth() / Rain::stride * Rain::stride) / 2 + i * Rain::stride + Rain::stride / 2.f, Random::genUint() % 6 + 8));
 		}
 
 		Graphics::setGamma(1.0f);

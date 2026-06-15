@@ -20,25 +20,25 @@ public:
 
 	//Speed = 165/timeLimit per sec
 
-	Utils::Timer time;
+	Timer time;
 
 	Rain(int _x, int _len) :time(_len / speedFactor), len(_len), character(_len)
 	{
 		x = _x;
 
-		y = Graphics::getHeight() + Utils::Random::genUint() % (Graphics::getHeight() / stride) * stride;
+		y = Graphics::getHeight() + Random::genUint() % (Graphics::getHeight() / stride) * stride;
 
 		for (size_t i = 0; i < _len; i++)
 		{
-			character[i] = Utils::Random::genUint() % 94 + 33;
+			character[i] = Random::genUint() % 94 + 33;
 		}
 	}
 
 	void reset()
 	{
-		y = Graphics::getHeight() + Utils::Random::genUint() % (Graphics::getHeight() / stride) * stride;
+		y = Graphics::getHeight() + Random::genUint() % (Graphics::getHeight() / stride) * stride;
 
-		len = Utils::Random::genUint() % 6 + 8;
+		len = Random::genUint() % 6 + 8;
 
 		time.restart();
 
@@ -48,7 +48,7 @@ public:
 
 		for (size_t i = 0; i < len; i++)
 		{
-			character[i] = Utils::Random::genUint() % 94 + 33;
+			character[i] = Random::genUint() % 94 + 33;
 		}
 	}
 
@@ -61,7 +61,7 @@ public:
 				character[i] = character[i - 1ULL];
 			}
 
-			character[0] = Utils::Random::genUint() % 94 + 33;
+			character[0] = Random::genUint() % 94 + 33;
 
 			y -= stride;
 		}

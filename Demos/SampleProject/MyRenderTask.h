@@ -10,7 +10,7 @@ public:
 
 	MyRenderTask()
 	{
-		pixelShader = Shader::create(Utils::File::getRootFolder() + L"PixelShader.cso");
+		pixelShader = Shader::create(File::getRootFolder() + L"PixelShader.cso");
 
 		pipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()

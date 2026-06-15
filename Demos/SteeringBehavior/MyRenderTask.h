@@ -12,10 +12,10 @@ public:
 		renderTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), 
 			FMT::RGBA8UN, 1, 1, false, true, DirectX::Colors::White)),
 		arrowTexture(resManager->createRenderTextureView(L"arrow.png", true)),
-		stepCS(Shader::create(Utils::File::getRootFolder() + L"StepCS.cso")),
-		vehicleVS(Shader::create(Utils::File::getRootFolder() + L"VehicleVS.cso")),
-		vehicleGS(Shader::create(Utils::File::getRootFolder() + L"VehicleGS.cso")),
-		vehiclePS(Shader::create(Utils::File::getRootFolder() + L"VehiclePS.cso")),
+		stepCS(Shader::create(File::getRootFolder() + L"StepCS.cso")),
+		vehicleVS(Shader::create(File::getRootFolder() + L"VehicleVS.cso")),
+		vehicleGS(Shader::create(File::getRootFolder() + L"VehicleGS.cso")),
+		vehiclePS(Shader::create(File::getRootFolder() + L"VehiclePS.cso")),
 		simulationParam{}
 	{
 		{
@@ -25,13 +25,13 @@ public:
 
 			for (size_t i = 0; i < numVehicle; i++)
 			{
-				float angle = Utils::Random::genFloat() * Utils::Math::twoPi;
+				float angle = Random::genFloat() * Math::twoPi;
 
 				float xSpeed = 3.f * cosf(angle);
 
 				float ySpeed = 3.f * sinf(angle);
 
-				positionVelocityArray[i] = DirectX::XMFLOAT4(Utils::Random::genFloat() * Graphics::getWidth(), Utils::Random::genFloat() * Graphics::getHeight(), xSpeed, ySpeed);
+				positionVelocityArray[i] = DirectX::XMFLOAT4(Random::genFloat() * Graphics::getWidth(), Random::genFloat() * Graphics::getHeight(), xSpeed, ySpeed);
 
 				maxSpeedMaxForceArray[i] = DirectX::XMFLOAT2(3.f, 0.1f);
 			}

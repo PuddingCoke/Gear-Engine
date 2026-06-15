@@ -36,13 +36,13 @@ public:
 			.setPS(*particlePS)
 			.build();
 
-		bloomEffect = BloomEffect::create(*context, Core::Graphics::getWidth(), Core::Graphics::getHeight(), *resManager);
+		bloomEffect = BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
 
-		fxaaEffect = FXAAEffect::create(*context, Core::Graphics::getWidth(), Core::Graphics::getHeight());
+		fxaaEffect = FXAAEffect::create(*context, Graphics::getWidth(), Graphics::getHeight());
 
-		originTexture = ResourceManager::createGraphicsTexture(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
+		originTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
 
-		depthTexture = ResourceManager::createDepthTextureView(Core::Graphics::getWidth(), Core::Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
+		depthTexture = ResourceManager::createDepthTextureView(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
 
 		{
 			UniquePtr<DirectX::XMFLOAT4[]> positions = makeUnique<DirectX::XMFLOAT4[]>(numParticles);
@@ -51,11 +51,11 @@ public:
 
 			for (uint32_t i = 0; i < numParticles; i++)
 			{
-				const float radius = 0.3f * Utils::Random::genFloat() + 0.3f;
+				const float radius = 0.3f * Random::genFloat() + 0.3f;
 
-				const float theta = Utils::Random::genFloat() * Utils::Math::twoPi;
+				const float theta = Random::genFloat() * Math::twoPi;
 
-				const float phi = Utils::Random::genFloat() * Utils::Math::twoPi;
+				const float phi = Random::genFloat() * Math::twoPi;
 
 				positions[i] = DirectX::XMFLOAT4(radius * cosf(theta) * sinf(phi), radius * cosf(theta) * cosf(phi), radius * sinf(theta), 1.f);
 
@@ -120,7 +120,7 @@ protected:
 
 		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 
-		context->setViewportSimple(Core::Graphics::getWidth(), Core::Graphics::getHeight());
+		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
 		context->setPrimitiveTopology(TOPOLOGY::POINTLIST);
 

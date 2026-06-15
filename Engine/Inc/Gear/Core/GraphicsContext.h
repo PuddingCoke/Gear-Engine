@@ -13,6 +13,8 @@
 
 #include<Gear/Core/Resource/StaticCBuffer.h>
 
+#include<Gear/Utils/StaticVector.h>
+
 #include<array>
 
 #include<type_traits>
@@ -329,13 +331,10 @@ namespace Gear::Core
 		//这里有个假设，微软的官方文档说每个根签名最多有 64 个 DWORD
 		//如果根签名全部都是根常量缓冲，那么最多有 64/2 = 32 个根常量缓冲
 		//这个想法是我在优化 GraphicsContext 时一瞬之间想到的
-		std::array<RootConstantBufferDesc, D3D12Core::RootSignature::maxDWORD / D3D12Core::RootSignature::perDescriptorDWORD> rootConstantBufferDescs;
 
-		uint32_t rootConstantBufferDescIndex;
+		Utils::StaticVector<RootConstantBufferDesc, D3D12Core::RootSignature::maxDWORD / D3D12Core::RootSignature::perDescriptorDWORD> rootConstantBufferDescs;
 
-		std::array<RenderTargetClearDesc, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> renderTargetClearDescs;
-
-		uint32_t renderTargetClearDescIndex;
+		Utils::StaticVector<RenderTargetClearDesc, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> renderTargetClearDescs;
 
 		DepthStencilClearDesc depthStencilClearDesc;
 

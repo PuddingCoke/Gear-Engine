@@ -31,18 +31,18 @@ public:
 		depthCube(ResourceManager::createDepthTextureView(probeCaptureResolution, probeCaptureResolution,
 			FMT::D32F, 6, 1, true, true)),
 		irradianceVolumeBuffer(ResourceManager::createStaticCBuffer(sizeof(IrradianceVolume), true)),
-		shadowVS(Shader::create(Utils::File::getRootFolder() + L"ShadowVS.cso")),
-		deferredVShader(Shader::create(Utils::File::getRootFolder() + L"DeferredVShader.cso")),
-		deferredPShader(Shader::create(Utils::File::getRootFolder() + L"DeferredPShader.cso")),
-		deferredFinal(Shader::create(Utils::File::getRootFolder() + L"DeferredFinal.cso")),
-		cubeRenderVS(Shader::create(Utils::File::getRootFolder() + L"CubeRenderVS.cso")),
-		cubeRenderPS(Shader::create(Utils::File::getRootFolder() + L"CubeRenderPS.cso")),
-		cubeRenderBouncePS(Shader::create(Utils::File::getRootFolder() + L"CubeRenderBouncePS.cso")),
-		irradianceOctahedralEncode(Shader::create(Utils::File::getRootFolder() + L"IrradianceOctahedralEncode.cso")),
-		depthOctahedralEncode(Shader::create(Utils::File::getRootFolder() + L"DepthOctahedralEncode.cso")),
-		skyboxPShader(Shader::create(Utils::File::getRootFolder() + L"SkybosPShader.cso")),
-		ssrCombinePS(Shader::create(Utils::File::getRootFolder() + L"SSRCombinePS.cso")),
-		sunAngle(Utils::Math::halfPi - 0.01f)
+		shadowVS(Shader::create(File::getRootFolder() + L"ShadowVS.cso")),
+		deferredVShader(Shader::create(File::getRootFolder() + L"DeferredVShader.cso")),
+		deferredPShader(Shader::create(File::getRootFolder() + L"DeferredPShader.cso")),
+		deferredFinal(Shader::create(File::getRootFolder() + L"DeferredFinal.cso")),
+		cubeRenderVS(Shader::create(File::getRootFolder() + L"CubeRenderVS.cso")),
+		cubeRenderPS(Shader::create(File::getRootFolder() + L"CubeRenderPS.cso")),
+		cubeRenderBouncePS(Shader::create(File::getRootFolder() + L"CubeRenderBouncePS.cso")),
+		irradianceOctahedralEncode(Shader::create(File::getRootFolder() + L"IrradianceOctahedralEncode.cso")),
+		depthOctahedralEncode(Shader::create(File::getRootFolder() + L"DepthOctahedralEncode.cso")),
+		skyboxPShader(Shader::create(File::getRootFolder() + L"SkybosPShader.cso")),
+		ssrCombinePS(Shader::create(File::getRootFolder() + L"SSRCombinePS.cso")),
+		sunAngle(Math::halfPi - 0.01f)
 	{
 		shadowTexture->getTexture()->setName(L"Shadow Texture");
 
@@ -170,7 +170,7 @@ public:
 							{0.0f, 1.0f,  0.0f}
 						};
 
-						const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Utils::Math::pi / 2.f, 1.f, 1.f, 512.f);
+						const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::pi / 2.f, 1.f, 1.f, 512.f);
 
 						for (int i = 0; i < 6; i++)
 						{
@@ -195,12 +195,12 @@ public:
 
 		irradianceOctahedralMap = ResourceManager::createComputeTexture(6, 6, FMT::RG11B10F, probeCount, 1, false, true);
 
-		const bool irradianceDataExist = Utils::File::exist(L"Irradiance_Bounce_Octahedral_Map.dds");
+		const bool irradianceDataExist = File::exist(L"Irradiance_Bounce_Octahedral_Map.dds");
 
 		irradianceBounceOctahedralMap = irradianceDataExist ? resManager->createRenderTextureView(L"Irradiance_Bounce_Octahedral_Map.dds", true, true, false) :
 			ResourceManager::createComputeTexture(6, 6, FMT::RG11B10F, probeCount, 1, false, true);
 
-		const bool depthDataExist = Utils::File::exist(L"Depth_Octahedral_Map.dds");
+		const bool depthDataExist = File::exist(L"Depth_Octahedral_Map.dds");
 
 		depthOctahedralMap = depthDataExist ? resManager->createRenderTextureView(L"Depth_Octahedral_Map.dds", true, true, false) :
 			ResourceManager::createComputeTexture(16, 16, FMT::RG16F, probeCount, 1, false, true);

@@ -56,9 +56,7 @@ private:
 
 	static constexpr size_t maxTextNum = 65536;
 
-	std::array<Text, maxTextNum> textArray;
-
-	uint32_t index;
+	StaticVector<Text, maxTextNum> textArray;
 
 	struct Character
 	{
