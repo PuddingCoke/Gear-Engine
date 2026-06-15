@@ -59,4 +59,6 @@ using namespace Gear::Effect;
 
 using namespace Gear::Utils;
 
+using Gear::Core::D3D12Core::DXCCompiler::ShaderProfile;
+
 #endif // !_DEVESSENTIAL_H_

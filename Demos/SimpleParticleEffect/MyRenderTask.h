@@ -10,13 +10,13 @@ public:
 
 	MyRenderTask()
 	{
-		particleVS = Shader::create(L"ParticleVS.hlsl", DXCCompiler::ShaderProfile::VERTEX);
+		particleVS = Shader::create(L"ParticleVS.hlsl", ShaderProfile::VERTEX);
 
-		particleGS = Shader::create(L"ParticleGS.hlsl", DXCCompiler::ShaderProfile::GEOMETRY);
+		particleGS = Shader::create(L"ParticleGS.hlsl", ShaderProfile::GEOMETRY);
 
-		particlePS = Shader::create(L"ParticlePS.hlsl", DXCCompiler::ShaderProfile::PIXEL);
+		particlePS = Shader::create(L"ParticlePS.hlsl", ShaderProfile::PIXEL);
 
-		particleCS = Shader::create(L"ParticleCS.hlsl", DXCCompiler::ShaderProfile::COMPUTE);
+		particleCS = Shader::create(L"ParticleCS.hlsl", ShaderProfile::COMPUTE);
 
 		particleComputeState = PipelineStateBuilder::build(*particleCS);
 
