@@ -158,16 +158,16 @@ namespace Gear::Core::D3D12Core
 		commandList->ClearUnorderedAccessViewUint(viewGPUHandleInCurrentHeap, viewCPUHandle, pResource, values, numRects, pRects);
 	}
 
-	void CommandList::transitionResources()
+	void CommandList::flushResourceBarriers()
 	{
-		ResourceStateTracker::transitionResourceStates(commandList.Get());
+		ResourceStateTracker::flushResourceBarriers(commandList.Get());
 	}
 
 	void CommandList::copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes)
 	{
 		trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
-		transitionResources();
+		flushResourceBarriers();
 
 		commandList->CopyBufferRegion(dstBuffer->getResource(), dstOffset, srcBuffer->getResource(), srcOffset, numBytes);
 	}
@@ -178,7 +178,7 @@ namespace Gear::Core::D3D12Core
 
 		trackAndSetResourceState(srcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-		transitionResources();
+		flushResourceBarriers();
 
 		commandList->CopyBufferRegion(dstBuffer->getResource(), dstOffset, srcBuffer->getResource(), srcOffset, numBytes);
 	}
@@ -187,7 +187,7 @@ namespace Gear::Core::D3D12Core
 	{
 		trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
-		transitionResources();
+		flushResourceBarriers();
 
 		commandList->CopyResource(dstBuffer->getResource(), srcBuffer->getResource());
 	}
@@ -198,7 +198,7 @@ namespace Gear::Core::D3D12Core
 
 		trackAndSetResourceState(srcBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-		transitionResources();
+		flushResourceBarriers();
 
 		commandList->CopyResource(dstBuffer->getResource(), srcBuffer->getResource());
 	}
@@ -209,7 +209,7 @@ namespace Gear::Core::D3D12Core
 
 		trackAndSetResourceState(srcTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-		transitionResources();
+		flushResourceBarriers();
 
 		D3D12_TEXTURE_COPY_LOCATION dstLocation = {};
 		dstLocation.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;

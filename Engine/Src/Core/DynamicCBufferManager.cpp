@@ -214,7 +214,7 @@ namespace Gear::Core::DynamicCBufferManager
 			//把大常量缓冲转变到STATE_COPY_DEST状态，用于内容更新
 			commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_COPY_DEST);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 
 			//划分有着固定子区域大小的区域后，可以通过极少的copyBufferRegion调用完成一帧所需的常量缓冲的更新，简直完美
 			for (uint32_t regionIndex = 0; regionIndex < numRegion; regionIndex++)
@@ -232,7 +232,7 @@ namespace Gear::Core::DynamicCBufferManager
 			//把大常量缓冲转变到STATE_VERTEX_AND_CONSTANT_BUFFER状态，用于后续使用
 			commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 		}
 
 		UniquePtr<DynamicCBufferManagerImpl> impl;

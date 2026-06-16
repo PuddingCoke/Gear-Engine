@@ -74,9 +74,9 @@ namespace Gear::Core::Resource::D3D12Resource
 
 		void pushToTrackingList(std::vector<D3D12ResourceBase*>& trackingList);
 
-		virtual void transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources);
+		virtual void transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers, std::vector<D3D12ResourceBase*>& pendingResources);
 
-		virtual void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers);
+		virtual void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers);
 
 		virtual void resetInternalState();
 

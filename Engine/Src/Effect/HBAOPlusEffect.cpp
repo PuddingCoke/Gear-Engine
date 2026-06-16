@@ -124,7 +124,7 @@ namespace Gear::Effect
 
 		commandList->trackAndSetResourceState(outputTexture->getTexture(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-		commandList->transitionResources();
+		commandList->flushResourceBarriers();
 
 		const GFSDK_SSAO_Status status = aoContext->RenderAO(RenderEngine::getCommandQueue(), commandList->get(), inputData, aoParameters, output, renderMask);
 

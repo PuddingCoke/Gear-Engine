@@ -42,7 +42,7 @@ namespace Gear::Core
 
 			commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 		}
 	}
 
@@ -500,7 +500,7 @@ namespace Gear::Core
 
 	void GraphicsContext::transitionResources()
 	{
-		commandList->transitionResources();
+		commandList->flushResourceBarriers();
 	}
 
 	void GraphicsContext::pushRootConstantBufferDesc(const RootConstantBufferDesc& desc)

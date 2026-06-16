@@ -281,8 +281,6 @@ private:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->transitionResources();
-
 		context->clearDefRenderTarget(DirectX::Colors::Black);
 
 		context->draw(vertices.size(), 1, 0, 0);

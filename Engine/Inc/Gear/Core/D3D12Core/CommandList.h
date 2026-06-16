@@ -87,7 +87,8 @@ namespace Gear::Core::D3D12Core
 
 		void clearUnorderedAccessUint(const D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandleInCurrentHeap, const D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle, ID3D12Resource* const pResource, const uint32_t values[4], const uint32_t numRects, const D3D12_RECT* const pRects) const;
 
-		void transitionResources();
+		//清空需要状态转变的资源并调用cmd->ResourceBarrier
+		void flushResourceBarriers();
 
 		void copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes);
 

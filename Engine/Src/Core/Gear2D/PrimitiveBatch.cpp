@@ -176,7 +176,7 @@
 //
 //		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
 //
-//		context->transitionResources();
+//		context->flushResourceBarriers();
 //
 //		context->draw(idx / 6, 1, 0, 0);
 //	}
@@ -228,7 +228,7 @@
 //
 //		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
 //
-//		context->transitionResources();
+//		context->flushResourceBarriers();
 //
 //		context->draw(128, idx / 7, 0, 0);
 //	}
@@ -280,7 +280,7 @@
 //
 //		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
 //
-//		context->transitionResources();
+//		context->flushResourceBarriers();
 //
 //		context->draw(idx / 7, 1, 0, 0);
 //	}

@@ -42,7 +42,7 @@ namespace Gear::Core::Resource::D3D12Resource
 		}
 	}
 
-	void Buffer::transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources)
+	void Buffer::transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers, std::vector<D3D12ResourceBase*>& pendingResources)
 	{
 		if (internalState == D3D12_RESOURCE_STATE_UNKNOWN)
 		{
@@ -62,17 +62,17 @@ namespace Gear::Core::Resource::D3D12Resource
 			barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(internalState);
 			barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(transitionState);
 
-			transitionBarriers.push_back(barrier);
+			resourceBarriers.push_back(barrier);
 
 			internalState = transitionState;
 		}
 		else if (internalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 		{
-			transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+			resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 		}
 	}
 
-	void Buffer::resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers)
+	void Buffer::resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers)
 	{
 		if (*globalState != pendingState)
 		{
@@ -84,11 +84,11 @@ namespace Gear::Core::Resource::D3D12Resource
 			barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState);
 			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-			transitionBarriers.push_back(barrier);
+			resourceBarriers.push_back(barrier);
 		}
 		else if (*globalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 		{
-			transitionBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
+			resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 		}
 	}
 

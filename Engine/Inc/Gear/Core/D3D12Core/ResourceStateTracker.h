@@ -13,17 +13,23 @@ namespace Gear::Core::D3D12Core
 	{
 	public:
 
+		//追踪并设置资源状态
 		void trackAndSetResourceState(Resource::D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state);
 
+		//追踪并设置资源状态
 		void trackAndSetResourceState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state);
 
-		void resolvePendingResourceStates(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers);
+		//清空BEFORE STATE待定的资源
+		void flushPendingResources(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers);
 
-		void updateReferredResourceStates();
+		//清空使用过的共享资源
+		void flushReferredResources();
 
-	protected:
+		//清空需要状态转变的资源
+		void flushTransitionResources();
 
-		void transitionResourceStates(ID3D12GraphicsCommandList6* const commandList);
+		//清空需要状态转变的资源并调用cmd->ResourceBarrier
+		void flushResourceBarriers(ID3D12GraphicsCommandList6* const commandList);
 
 	private:
 
@@ -39,7 +45,7 @@ namespace Gear::Core::D3D12Core
 		std::vector<Resource::D3D12Resource::D3D12ResourceBase*> pendingResources;
 
 		//暂存资源屏障
-		std::vector<D3D12_RESOURCE_BARRIER> transitionBarriers;
+		std::vector<D3D12_RESOURCE_BARRIER> resourceBarriers;
 
 	};
 }

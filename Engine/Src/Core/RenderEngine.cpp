@@ -383,7 +383,7 @@ namespace Gear::Core::RenderEngine
 
 			std::vector<D3D12_RESOURCE_BARRIER> barriers;
 
-			commandList->resolvePendingResourceStates(barriers);
+			commandList->flushPendingResources(barriers);
 
 			D3D12Core::CommandList* const helperCommandList = recordCommandLists.back();
 
@@ -400,7 +400,7 @@ namespace Gear::Core::RenderEngine
 
 			recordCommandLists.push_back(commandList);
 
-			commandList->updateReferredResourceStates();
+			commandList->flushReferredResources();
 		}
 
 		GPUVendor RenderEngineImpl::getVendor() const
@@ -461,6 +461,11 @@ namespace Gear::Core::RenderEngine
 			recordCommandLists.push_back(prepareCommandList.get());
 
 			engineDefinedGlobalCBuffer->acquireDataPtr();
+
+			//把后备缓冲转变到STATE_RENDER_TARGET，并暂存资源屏障
+			prepareCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+			prepareCommandList->flushTransitionResources();
 		}
 
 		void RenderEngineImpl::endFrame()
@@ -479,8 +484,6 @@ namespace Gear::Core::RenderEngine
 
 			//把后备缓冲转变到STATE_RENDER_TARGET，并更新所有动态常量缓冲
 			{
-				prepareCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
 				updateDynamicCBuffers();
 
 				//一些比较基础的信息的设置
@@ -529,8 +532,7 @@ namespace Gear::Core::RenderEngine
 			}
 
 			//使用最后一个命令列表做些收尾工作
-			//如有需要，则绘制ImGui帧
-			//把后备缓冲转变到STATE_PRESENT
+			//如果需要ImGUI界面，那么把后备缓冲转变到STATE_PRESENT并绘制ImGUI帧
 			{
 				D3D12Core::CommandList* const finishCommandList = recordCommandLists.back();
 
@@ -538,7 +540,7 @@ namespace Gear::Core::RenderEngine
 
 				finishCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_PRESENT);
 
-				finishCommandList->transitionResources();
+				finishCommandList->flushResourceBarriers();
 			}
 
 			processCommandLists();
@@ -610,23 +612,15 @@ namespace Gear::Core::RenderEngine
 
 			const CD3DX12_TEXTURE_COPY_LOCATION copySrc(getRenderTexture()->getResource(), 0);
 
-			ID3D12GraphicsCommandList6* const lastCommandList = recordCommandLists.back()->get();
+			D3D12Core::CommandList* const lastCommandList = recordCommandLists.back();
 
-			D3D12_RESOURCE_BARRIER barrier = {};
-			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-			barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-			barrier.Transition.pResource = getRenderTexture()->getResource();
-			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
+			ID3D12GraphicsCommandList6* const id3d12LastCommandList = lastCommandList->get();
 
-			lastCommandList->ResourceBarrier(1, &barrier);
+			lastCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-			lastCommandList->CopyTextureRegion(&copyDest, 0, 0, 0, &copySrc, nullptr);
+			lastCommandList->flushResourceBarriers();
 
-			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_SOURCE;
-			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-
-			lastCommandList->ResourceBarrier(1, &barrier);
+			id3d12LastCommandList->CopyTextureRegion(&copyDest, 0, 0, 0, &copySrc, nullptr);
 		}
 
 		ComPtr<IDXGIAdapter4> RenderEngineImpl::getBestAdapterAndVendor(IDXGIFactory7* const factory)
@@ -739,9 +733,11 @@ namespace Gear::Core::RenderEngine
 		{
 			if (displayImGUISurface)
 			{
-				ImGui::Render();
+				targetCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-				//targetCommandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap(), GlobalDescriptorHeap::getSamplerHeap());
+				targetCommandList->flushResourceBarriers();
+
+				ImGui::Render();
 
 				targetCommandList->setDefRenderTarget();
 

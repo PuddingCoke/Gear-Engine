@@ -278,7 +278,7 @@ namespace Gear
 
 				stbi_write_png("output.png", realTimeRender.width, realTimeRender.height, 4, colors.get(), Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width);
 
-				LOGSUCCESS(L"screenshot saved to output.png");
+				LOGSUCCESS(L"截屏保存到", L"output.png");
 			}
 		}
 	}

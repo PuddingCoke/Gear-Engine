@@ -273,7 +273,7 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		commandList->transitionResources();
+		commandList->flushResourceBarriers();
 
 		buffer->setStateTracking(false);
 
@@ -343,7 +343,7 @@ namespace Gear::Core
 
 			commandList->trackAndSetResourceState(buffer.get(), finalState);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 
 			buffer->setStateTracking(false);
 		}
@@ -397,7 +397,7 @@ namespace Gear::Core
 
 			commandList->trackAndSetResourceState(buffer.get(), finalState);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 
 			buffer->setStateTracking(false);
 		}
@@ -441,7 +441,7 @@ namespace Gear::Core
 
 			commandList->trackAndSetResourceState(buffer.get(), finalState);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 
 			buffer->setStateTracking(false);
 		}
@@ -531,7 +531,7 @@ namespace Gear::Core
 		{
 			commandList->trackAndSetResourceState(texture.get(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 
 			texture->setStateTracking(false);
 		}
@@ -581,7 +581,7 @@ namespace Gear::Core
 		{
 			commandList->trackAndSetResourceState(texture.get(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 
 			texture->setStateTracking(false);
 		}
@@ -767,7 +767,7 @@ namespace Gear::Core
 		{
 			commandList->trackAndSetResourceState(dstTexture.get(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 
 			dstTexture->setStateTracking(false);
 		}
@@ -845,7 +845,7 @@ namespace Gear::Core
 		{
 			commandList->trackAndSetResourceState(dstTexture.get(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
-			commandList->transitionResources();
+			commandList->flushResourceBarriers();
 
 			dstTexture->setStateTracking(false);
 		}

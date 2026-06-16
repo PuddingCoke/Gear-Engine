@@ -31,9 +31,9 @@ namespace Gear::Core::Resource::D3D12Resource
 
 		void updateGlobalStates() override;
 
-		void transition(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers, std::vector<D3D12ResourceBase*>& pendingResources) override;
+		void transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers, std::vector<D3D12ResourceBase*>& pendingResources) override;
 
-		void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& transitionBarriers) override;
+		void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers) override;
 
 		void resetInternalState() override;
 

@@ -29,7 +29,7 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::resolvePendingResourceStates(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers)
+	void ResourceStateTracker::flushPendingResources(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers)
 	{
 		if (pendingResources.size())
 		{
@@ -46,7 +46,7 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::updateReferredResourceStates()
+	void ResourceStateTracker::flushReferredResources()
 	{
 		if (referredResources.size())
 		{
@@ -63,13 +63,13 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::transitionResourceStates(ID3D12GraphicsCommandList6* const commandList)
+	void ResourceStateTracker::flushTransitionResources()
 	{
 		if (transitionResources.size())
 		{
 			for (Resource::D3D12Resource::D3D12ResourceBase* const resource : transitionResources)
 			{
-				resource->transition(transitionBarriers, pendingResources);
+				resource->transition(resourceBarriers, pendingResources);
 
 				resource->resetTransitionState();
 
@@ -78,12 +78,17 @@ namespace Gear::Core::D3D12Core
 
 			transitionResources.clear();
 		}
+	}
 
-		if (transitionBarriers.size())
+	void ResourceStateTracker::flushResourceBarriers(ID3D12GraphicsCommandList6* const commandList)
+	{
+		flushTransitionResources();
+
+		if (resourceBarriers.size())
 		{
-			commandList->ResourceBarrier(static_cast<uint32_t>(transitionBarriers.size()), transitionBarriers.data());
+			commandList->ResourceBarrier(static_cast<uint32_t>(resourceBarriers.size()), resourceBarriers.data());
 
-			transitionBarriers.clear();
+			resourceBarriers.clear();
 		}
 	}
 
