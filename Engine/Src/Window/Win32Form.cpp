@@ -41,6 +41,8 @@ namespace Gear::Window::Win32Form
 
 		bool pollEvents();
 
+		bool pollEvents(const DWORD millisecond);
+
 		HWND getHandle() const;
 
 		LRESULT CALLBACK windowProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const;
@@ -133,14 +135,43 @@ namespace Gear::Window::Win32Form
 
 		MSG msg = {};
 
-		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+		while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 
 			DispatchMessage(&msg);
+
+			if (msg.message == WM_QUIT)
+			{
+				return false;
+			}
 		}
 
-		return msg.message != WM_QUIT;
+		return true;
+	}
+
+	bool Win32FormImpl::pollEvents(const DWORD millisecond)
+	{
+		const DWORD result = MsgWaitForMultipleObjectsEx(0, nullptr, millisecond, QS_POSTMESSAGE | QS_SENDMESSAGE, 0);
+
+		if (result == WAIT_OBJECT_0)
+		{
+			MSG msg;
+
+			while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+
+				DispatchMessage(&msg);
+
+				if (msg.message == WM_QUIT)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	HWND Win32FormImpl::getHandle() const
@@ -296,6 +327,11 @@ namespace Gear::Window::Win32Form
 	bool pollEvents()
 	{
 		return impl->pollEvents();
+	}
+
+	bool pollEvents(const DWORD millisecond)
+	{
+		return impl->pollEvents(millisecond);
 	}
 
 	HWND getHandle()

@@ -48,41 +48,56 @@ namespace Gear::Utils::WallpaperHelper
 		return wallpaperHWND;
 	}
 
-	class DesktopDetectThread
+	class ObscureDetectThread
 	{
 	public:
 
-		DesktopDetectThread() :
-			desktopObscured(false), running(true)
+		ObscureDetectThread() :
+			obscured(false), running(true)
 		{
 			getSystemResolution(w, h);
 
-			detectThread = std::thread(&DesktopDetectThread::detectLoop, this);
+			RECT workArea;
+
+			if (SystemParametersInfoW(SPI_GETWORKAREA, 0, &workArea, 0))
+			{
+				taskBarHeight = static_cast<uint32_t>(h - workArea.bottom);
+			}
+			else
+			{
+				taskBarHeight = 72u;
+			}
+
+			LOGENGINE(L"任务栏高度", taskBarHeight);
+
+			detectThread = std::thread(&ObscureDetectThread::detectLoop, this);
 		}
 
-		~DesktopDetectThread()
+		~ObscureDetectThread()
 		{
 			running.store(false);
 
 			detectThread.join();
 		}
 
-		bool getDesktopObscured() const
+		bool getObscured() const
 		{
-			return desktopObscured.load(std::memory_order_relaxed);
+			return obscured.load(std::memory_order_relaxed);
 		}
 
 	private:
 
 		std::thread detectThread;
 
-		std::atomic<bool> desktopObscured;
+		std::atomic<bool> obscured;
 
 		std::atomic<bool> running;
 
 		uint32_t w;
 
 		uint32_t h;
+
+		uint32_t taskBarHeight;
 
 		//用Spy++查看了下，我的win11系统是这个结构，目前用着没太大的问题
 		bool isDesktop(const LONG x, const LONG y) const
@@ -131,60 +146,55 @@ namespace Gear::Utils::WallpaperHelper
 		//AI生成的，后续可能要改改，目前用着没太大问题
 		bool detectPoints() const
 		{
-			const uint32_t taskBarHeight = h / 9;
-			const uint32_t topMargin = h / 24;
-			const uint32_t bottomBoundary = h - taskBarHeight - 4;
+			const float marginRatio = 90.0f / 1600.0f;
 
-			// =======================
-			// 1. Y 轴：2-4-2 分布（修正版）
-			// =======================
-			const uint32_t vRange = bottomBoundary - topMargin;
+			const float topY_f = h * marginRatio;
+
+			const float bottomBoundary_f = h - taskBarHeight - h * marginRatio;
+
+			const float vRange_f = bottomBoundary_f - topY_f;
 
 			uint32_t yPos[8];
 
-			// 上 2 点（均匀分布在 20%区域）
-			for (uint32_t i = 0; i < 2; ++i)
+			for (int i = 0; i < 8; ++i)
 			{
-				yPos[i] = topMargin +
-					vRange * 2 / 10 * (i * 2 + 1) / 4;
+				float y = topY_f + (vRange_f * static_cast<float>(i)) / 7.0f;
+
+				yPos[i] = static_cast<uint32_t>(y + 0.5f);
 			}
 
-			// 中 4 点（均匀分布在 60%区域）
-			for (uint32_t i = 0; i < 4; ++i)
-			{
-				yPos[2 + i] = topMargin +
-					vRange * 2 / 10 +
-					vRange * 6 / 10 * (i * 2 + 1) / 8;
-			}
+			// 确保端点精度
+			yPos[0] = static_cast<uint32_t>(topY_f + 0.5f);
 
-			// 下 2 点（均匀分布在 20%区域）
-			for (uint32_t i = 0; i < 2; ++i)
-			{
-				yPos[6 + i] = topMargin +
-					vRange * 8 / 10 +
-					vRange * 2 / 10 * (i * 2 + 1) / 4;
-			}
+			yPos[7] = static_cast<uint32_t>(bottomBoundary_f + 0.5f);
 
-			// =======================
-			// 2. X 轴：均匀分布（保留你的思路，优化写法）
-			// =======================
-			const uint32_t hMargin = w / 64;
-			const uint32_t hRange = w - 2 * hMargin;
+			const float xMarginRatio = 90.0f / 2560.0f;         // 水平边距比例
+
+			const float leftX_f = w * xMarginRatio;
+
+			const float rightX_f = w - w * xMarginRatio;
+
+			const float hRange_f = rightX_f - leftX_f;
 
 			uint32_t xPos[8];
 
-			for (uint32_t i = 0; i < 8; ++i)
+			for (int i = 0; i < 8; ++i)
 			{
-				xPos[i] = hMargin +
-					hRange * (i * 2 + 1) / 16;
+				float x = leftX_f + (hRange_f * static_cast<float>(i)) / 7.0f;
+
+				xPos[i] = static_cast<uint32_t>(x + 0.5f);
 			}
+
+			xPos[0] = static_cast<uint32_t>(leftX_f + 0.5f);
+
+			xPos[7] = static_cast<uint32_t>(rightX_f + 0.5f);
 
 			// =======================
 			// 3. 采样检测
 			// =======================
 			uint32_t covered = 0;
 
-			const uint32_t total = 64u;
+			const uint32_t total = _countof(xPos) * _countof(yPos);
 
 			for (int yi = 0; yi < 8; ++yi)
 			{
@@ -205,48 +215,35 @@ namespace Gear::Utils::WallpaperHelper
 
 			//LOGENGINE(coverage);
 
-			return coverage > 0.90f;
+			return coverage > 0.96f;
 		}
 
 		void detectLoop()
 		{
-			CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
-
+			//定时进行检测
 			while (running)
 			{
-				desktopObscured.store(detectPoints(), std::memory_order_relaxed);
+				obscured.store(detectPoints(), std::memory_order_relaxed);
 
-				//定时进行检测
-				//其它时间接收消息
-				const size_t waitUntil = GetTickCount64() + 700;
-
-				while (running && GetTickCount64() < waitUntil)
-				{
-					const DWORD result = MsgWaitForMultipleObjectsEx(0, nullptr, 100, QS_POSTMESSAGE | QS_SENDMESSAGE, 0);
-
-					if (result == WAIT_OBJECT_0)
-					{
-						MSG msg;
-
-						while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-						{
-							if (msg.message == WM_QUIT)
-							{
-								break;
-							}
-						}
-					}
-				}
+				Sleep(static_cast<DWORD>(obscureCheckInterval));
 			}
-
-			CoUninitialize();
 		}
 	};
 
+	UniquePtr<ObscureDetectThread> detectThread;
+
 	bool isDesktopObscured()
 	{
-		static DesktopDetectThread detectThread;
+		return detectThread->getObscured();
+	}
 
-		return detectThread.getDesktopObscured();
+	void initialize()
+	{
+		detectThread = makeUnique<ObscureDetectThread>();
+	}
+
+	void release()
+	{
+		detectThread.reset();
 	}
 }

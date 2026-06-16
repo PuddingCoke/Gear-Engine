@@ -32,6 +32,8 @@ namespace Gear::Window::Win32Form
 
 	bool pollEvents();
 
+	bool pollEvents(const DWORD millisecond);
+
 	HWND getHandle();
 
 	constexpr DWORD normalWindowStyle = WS_CAPTION | WS_SYSMENU;

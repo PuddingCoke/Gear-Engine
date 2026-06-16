@@ -369,36 +369,43 @@ namespace Gear
 	{
 		Utils::DeltaTimeEstimator dtEstimator;
 
+		Utils::WallpaperHelper::DetectThreadToken detectThreadToken;
+
 		while (Window::Win32Form::pollEvents())
 		{
-			if (!Utils::WallpaperHelper::isDesktopObscured())
+			while (Utils::WallpaperHelper::isDesktopObscured())
 			{
-				const std::chrono::high_resolution_clock::time_point startPoint = std::chrono::high_resolution_clock::now();
-
-				Core::RenderEngine::Internal::setDefRenderTexture();
-
-				Core::RenderEngine::Internal::beginFrame();
-
-				game->update(Core::Graphics::getDeltaTime());
-
-				game->render();
-
-				Core::RenderEngine::Internal::endFrame();
-
-				Core::RenderEngine::Internal::present();
-
-				Core::RenderEngine::Internal::waitForNextFrame();
-
-				const std::chrono::high_resolution_clock::time_point endPoint = std::chrono::high_resolution_clock::now();
-
-				const float deltaTime = std::chrono::duration<float>(endPoint - startPoint).count();
-
-				const float lerpDeltaTime = dtEstimator.getDeltaTime(deltaTime);
-
-				Core::RenderEngine::Internal::setDeltaTime(lerpDeltaTime);
-
-				Core::RenderEngine::Internal::updateTimeElapsed();
+				if (!Window::Win32Form::pollEvents(static_cast<DWORD>(Utils::WallpaperHelper::obscureCheckInterval / 2ull - 75ull)))
+				{
+					return;
+				}
 			}
+
+			const std::chrono::high_resolution_clock::time_point startPoint = std::chrono::high_resolution_clock::now();
+
+			Core::RenderEngine::Internal::setDefRenderTexture();
+
+			Core::RenderEngine::Internal::beginFrame();
+
+			game->update(Core::Graphics::getDeltaTime());
+
+			game->render();
+
+			Core::RenderEngine::Internal::endFrame();
+
+			Core::RenderEngine::Internal::present();
+
+			Core::RenderEngine::Internal::waitForNextFrame();
+
+			const std::chrono::high_resolution_clock::time_point endPoint = std::chrono::high_resolution_clock::now();
+
+			const float deltaTime = std::chrono::duration<float>(endPoint - startPoint).count();
+
+			const float lerpDeltaTime = dtEstimator.getDeltaTime(deltaTime);
+
+			Core::RenderEngine::Internal::setDeltaTime(lerpDeltaTime);
+
+			Core::RenderEngine::Internal::updateTimeElapsed();
 		}
 	}
 
