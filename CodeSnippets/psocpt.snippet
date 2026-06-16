@@ -1,20 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
 	<CodeSnippet Format="1.0.0">
 		<Header>
-			<Title>setconsts</Title>
-			<Shortcut>setconsts</Shortcut>
-			<Description>展开 SETCONSTS 宏调用</Description>
+			<Title>psocpt</Title>
+			<Shortcut>psocpt</Shortcut>
+			<Description>Compute PSO 速建：PipelineStateBuilder::build</Description>
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>
 		</Header>
 		<Snippet>
 			<Code Language="CPP">
-				<![CDATA[SETCONSTS({
-  $end$
-  });]]>
+				<![CDATA[PipelineStateBuilder::build(*$shader$);]]>
 			</Code>
 		</Snippet>
 	</CodeSnippet>
 </CodeSnippets>
+

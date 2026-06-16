@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>psogfx</Title>
+			<Shortcut>psogfx</Shortcut>
+			<Description>图形 PSO 骨架：带 input layout、Blend/Rasterizer/DepthStencil、RTV/DSV、VS/PS</Description>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Code Language="CPP">
+				<![CDATA[PipelineStateBuilder()
+	.setInputElements($inputDesc$)
+	.setBlendState(PipelineStateHelper::$blend$)
+	.setPrimitiveTopologyType(TOPOLOGY::TYPE::$topo$)
+	.setRasterizerState(PipelineStateHelper::$raster$)
+	.setDepthStencilState(PipelineStateHelper::$depth$)
+	.setRTVFormats({ $rtvFormats$ })
+	.setDSVFormat($dsvFormat$)
+	.setVS(*$vertexShader$)
+	.setPS(*$pixelShader$)
+	.build();]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
+
