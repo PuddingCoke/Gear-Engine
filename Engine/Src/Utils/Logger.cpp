@@ -155,17 +155,6 @@ namespace Gear::Utils::Logger
 						file << temp << L"\n";
 
 						lock.lock();
-
-						if (message.type == LogType::LOG_ERROR)
-						{
-							isRunning = false;
-
-							file.flush();
-
-							file.close();
-
-							break;
-						}
 					}
 				}
 			}
