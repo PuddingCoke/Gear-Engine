@@ -67,10 +67,8 @@ namespace Gear::Core
 		//申请每个渲染线程独享的描述符堆
 		LocalDescriptorHeap::Internal::InitializeToken localDescriptorHeapToken;
 
-#ifdef _DEBUG
 		try
 		{
-#endif // _DEBUG
 			//开始创建RenderTask
 			{
 				std::lock_guard<std::mutex> lockGuard(taskMutex);
@@ -81,7 +79,6 @@ namespace Gear::Core
 
 				taskCompleted = true;
 			}
-#ifdef _DEBUG
 		}
 		catch (const std::exception& e)
 		{
@@ -100,15 +97,12 @@ namespace Gear::Core
 
 			return;
 		}
-#endif // _DEBUG
 
 		//通知主渲染线程子渲染线程创建完毕
 		taskCondition.notify_one();
 
-#ifdef _DEBUG
 		try
 		{
-#endif // _DEBUG
 			//进入工作循环
 			while (true)
 			{
@@ -130,7 +124,6 @@ namespace Gear::Core
 				//通知主渲染线程帧任务完成
 				taskCondition.notify_one();
 			}
-#ifdef _DEBUG
 		}
 		catch (const std::exception& e)
 		{
@@ -148,6 +141,5 @@ namespace Gear::Core
 
 			return;
 		}
-#endif // _DEBUG
 	}
 }
