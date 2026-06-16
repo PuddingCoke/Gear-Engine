@@ -22,7 +22,7 @@ namespace Gear
 
 	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
 
-	void failureExit();
+	void failureExit(const std::exception& e);
 
 }
 

@@ -111,8 +111,6 @@ namespace Gear::Utils::Logger
 
 					if (file.is_open())
 					{
-						std::wcout << temp << L"\n";
-
 						file << temp << L"\n";
 					}
 				}
@@ -149,7 +147,10 @@ namespace Gear::Utils::Logger
 
 						message.inUseCV.notify_one();
 
-						std::wcout << temp << L"\n";
+						if (message.type != LogType::LOG_ERROR)
+						{
+							std::wcout << temp << L"\n";
+						}
 
 						file << temp << L"\n";
 

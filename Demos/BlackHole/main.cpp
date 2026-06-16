@@ -26,9 +26,7 @@ int wmain(int argc, const wchar_t* argv[])
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << "\n";
-
-		Gear::failureExit();
+		Gear::failureExit(e);
 	}
 #endif // _DEBUG
 }

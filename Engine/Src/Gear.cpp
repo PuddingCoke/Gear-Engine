@@ -12,19 +12,17 @@
 
 #include<Gear/Input/Keyboard.h>
 
-#include<Gear/Utils/Math.h>
-
 #include<Gear/Utils/File.h>
 
 #include<Gear/Utils/Logger.h>
-
-#include<Gear/Utils/Timer.h>
 
 #include<Gear/Core/VideoEncoder/NvidiaEncoder.h>
 
 #include<Gear/Utils/Internal/LoggerInternal.h>
 
 #include<Gear/Utils/Internal/FileInternal.h>
+
+#include<iostream>
 
 #include<dxgidebug.h>
 
@@ -445,9 +443,13 @@ namespace Gear
 		impl.reset();
 	}
 
-	void failureExit()
+	void failureExit(const std::exception& e)
 	{
 		Utils::Logger::Internal::release();
+
+		std::cerr << e.what() << "\n";
+
+		std::cin.get();
 
 		std::quick_exit(EXIT_FAILURE);
 	}

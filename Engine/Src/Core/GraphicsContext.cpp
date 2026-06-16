@@ -2,8 +2,6 @@
 
 #include<Gear/Core/Graphics.h>
 
-#include<Gear/Core/GlobalRootSignature.h>
-
 namespace Gear::Core
 {
 	GraphicsContext::GraphicsContext() :

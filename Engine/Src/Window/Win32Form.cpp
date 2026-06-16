@@ -8,13 +8,9 @@
 
 #include<Gear/Input/Internal/KeyboardInternal.h>
 
-#include<Gear/Input/Mouse.h>
-
 #include<Gear/Input/Internal/MouseInternal.h>
 
 #include<ImGUI/imgui.h>
-
-#include<ImGUI/imgui_impl_win32.h>
 
 #define WM_TRAYICON WM_USER
 

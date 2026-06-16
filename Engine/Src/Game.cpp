@@ -8,23 +8,6 @@ namespace Gear
 
 	Game::~Game()
 	{
-		while (recordQueue.size())
-		{
-			recordQueue.front()->waitTask();
-
-			recordQueue.pop();
-		}
-
-		while (createQueue.size())
-		{
-			createQueue.front()->waitTask();
-
-			Core::RenderThread* const renderThread = createQueue.front().get();
-
-			renderThread->transferOwnerShip(std::move(createQueue.front()));
-
-			createQueue.pop();
-		}
 	}
 
 	void Game::imGUICall()
