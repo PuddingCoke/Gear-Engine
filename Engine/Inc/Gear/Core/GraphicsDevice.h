@@ -19,15 +19,15 @@ static_assert(sizeof(double) == 8, "size of double must be 8");
 
 #include<comdef.h>
 
-#define CHECKERROR(x) \
+#define CHECKERROR(x) do\
 {\
-const HRESULT hr = x;\
-if(FAILED(hr))\
+const HRESULT _hr_ = x;\
+if(FAILED(_hr_))\
 {\
-_com_error err(hr);\
-LOGERROR(L"失败值",IntegerMode::HEX,static_cast<uint32_t>(hr),L"失败原因",err.ErrorMessage());\
+_com_error _err_(_hr_);\
+LOGERROR(L"失败值",IntegerMode::HEX,static_cast<uint32_t>(_hr_),L"失败原因",_err_.ErrorMessage());\
 }\
-}\
+} while(0)\
 
 #undef DOMAIN
 

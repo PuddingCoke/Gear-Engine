@@ -51,6 +51,11 @@ namespace Gear::Core
 		renderTask->renderThread = std::move(renderThread);
 	}
 
+	std::string RenderThread::getErrorStr() const
+	{
+		return errorStr;
+	}
+
 	void RenderThread::workerLoop()
 	{
 		//这里一定要调用CoInitialize
@@ -78,7 +83,7 @@ namespace Gear::Core
 			}
 #ifdef _DEBUG
 		}
-		catch (const std::exception&)
+		catch (const std::exception& e)
 		{
 			{
 				std::lock_guard<std::mutex> lockGuard(taskMutex);
@@ -86,6 +91,8 @@ namespace Gear::Core
 				taskCompleted = true;
 
 				errorOccured = true;
+
+				errorStr = e.what();
 			}
 
 			//通知主渲染线程子渲染线程创建完毕
@@ -125,7 +132,7 @@ namespace Gear::Core
 			}
 #ifdef _DEBUG
 		}
-		catch (const std::exception&)
+		catch (const std::exception& e)
 		{
 			{
 				std::unique_lock<std::mutex> lock(taskMutex);
@@ -133,6 +140,8 @@ namespace Gear::Core
 				taskCompleted = true;
 
 				errorOccured = true;
+
+				errorStr = e.what();
 			}
 
 			taskCondition.notify_one();

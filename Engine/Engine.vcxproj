@@ -188,6 +188,7 @@
     <ClInclude Include="Inc\Gear\Utils\Internal\FileInternal.h" />
     <ClInclude Include="Inc\Gear\Utils\Memory.h" />
     <ClInclude Include="Inc\Gear\Utils\StaticVector.h" />
+    <ClInclude Include="Inc\Gear\Utils\String.h" />
     <ClInclude Include="Inc\Gear\Utils\WallpaperHelper.h" />
     <ClInclude Include="Inc\ImGUI\imconfig.h" />
     <ClInclude Include="Inc\ImGUI\imgui.h" />
@@ -317,6 +318,7 @@
     <ClCompile Include="Src\Utils\Logger\LogContext.cpp" />
     <ClCompile Include="Src\Utils\Math.cpp" />
     <ClCompile Include="Src\Utils\Random.cpp" />
+    <ClCompile Include="Src\Utils\String.cpp" />
     <ClCompile Include="Src\Utils\Timer.cpp" />
     <ClCompile Include="Src\Utils\File.cpp" />
     <ClCompile Include="Src\Utils\WallpaperHelper.cpp" />

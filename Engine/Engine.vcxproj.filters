@@ -513,6 +513,9 @@
     <ClInclude Include="Inc\Gear\Utils\StaticVector.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Utils\String.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -747,6 +750,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\LocalDescriptorHeap.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Utils\String.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

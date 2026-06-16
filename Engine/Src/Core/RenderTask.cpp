@@ -36,6 +36,11 @@ namespace Gear::Core
 
 	}
 
+	std::string RenderTask::getErrorStr() const
+	{
+		return renderThread->getErrorStr();
+	}
+
 	void RenderTask::blit(Resource::RenderTextureView& texture) const
 	{
 		Effect::BackBufferBlitEffect::process(*context, texture);

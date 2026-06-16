@@ -29,6 +29,8 @@ namespace Gear::Core
 
 		virtual void imGUICall();
 
+		std::string getErrorStr() const;
+
 	protected:
 
 		//把纹理绘制到后备缓冲上

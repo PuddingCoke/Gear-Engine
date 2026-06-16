@@ -2,6 +2,8 @@
 
 #include"MyGame.h"
 
+#include<iostream>
+
 using namespace Gear;
 
 int wmain(int argc, const wchar_t* argv[])
@@ -22,8 +24,10 @@ int wmain(int argc, const wchar_t* argv[])
 		}
 #ifdef _DEBUG
 	}
-	catch (const std::exception&)
+	catch (const std::exception& e)
 	{
+		std::cerr << e.what() << "\n";
+
 		Gear::failureExit();
 	}
 #endif // _DEBUG

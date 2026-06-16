@@ -27,6 +27,8 @@ namespace Gear::Core
 		//把RenderThread管理权移交给RenderTask
 		void transferOwnerShip(UniquePtr<RenderThread> renderThread);
 
+		std::string getErrorStr() const;
+
 	private:
 
 		void workerLoop();
@@ -47,6 +49,8 @@ namespace Gear::Core
 		RenderTask* renderTask;
 
 		std::thread renderThread;
+
+		std::string errorStr;
 
 	};
 

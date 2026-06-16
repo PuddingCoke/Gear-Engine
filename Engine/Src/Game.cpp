@@ -54,7 +54,9 @@ namespace Gear
 		{
 			if (recordQueue.front()->waitTask())
 			{
-				throw "error occur while command recording";
+				const std::string errorStr = recordQueue.front()->getErrorStr();
+
+				throw std::runtime_error(errorStr);
 			}
 
 			Core::RenderEngine::submitCommandList(recordQueue.front()->getCommandList());
@@ -66,7 +68,9 @@ namespace Gear
 		{
 			if (createQueue.front()->waitTask())
 			{
-				throw "error occur while resource creation";
+				const std::string errorStr = createQueue.front()->getErrorStr();
+
+				throw std::runtime_error(errorStr);
 			}
 
 			Core::RenderThread* const renderThread = createQueue.front().get();
