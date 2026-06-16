@@ -3,8 +3,6 @@
 #ifndef _GEAR_H_
 #define _GEAR_H_
 
-#include<Gear/Utils/DeltaTimeEstimator.h>
-
 #include<Gear/InitializationParam.h>
 
 #include<Gear/Game.h>

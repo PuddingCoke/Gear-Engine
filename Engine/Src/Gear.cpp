@@ -6,25 +6,29 @@
 
 #include<Gear/Core/Internal/RenderEngineInternal.h>
 
-#include<Gear/Utils/WallpaperHelper.h>
-
 #include<Gear/Core/Graphics.h>
 
 #include<Gear/Input/Keyboard.h>
 
 #include<Gear/Utils/File.h>
 
-#include<Gear/Utils/Logger.h>
+#include<Gear/Utils/Internal/FileInternal.h>
 
-#include<Gear/Core/VideoEncoder/NvidiaEncoder.h>
+#include<Gear/Utils/Logger.h>
 
 #include<Gear/Utils/Internal/LoggerInternal.h>
 
-#include<Gear/Utils/Internal/FileInternal.h>
+#include<Gear/Utils/WallpaperHelper.h>
+
+#include<Gear/Utils/DeltaTimeEstimator.h>
+
+#include<Gear/Core/VideoEncoder/NvidiaEncoder.h>
 
 #include<iostream>
 
 #include<dxgidebug.h>
+
+#include<dxgi1_6.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 

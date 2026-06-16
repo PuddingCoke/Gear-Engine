@@ -7,8 +7,6 @@
 
 #include<Gear/Core/D3D12Core/Shader.h>
 
-#include<Gear/Core/Resource/RenderTextureView.h>
-
 #include"FMT.h"
 
 #include"TOPOLOGY.h"

@@ -15,8 +15,6 @@
 
 #include<Gear/Utils/StaticVector.h>
 
-#include<array>
-
 #include<type_traits>
 
 #include"TOPOLOGY.h"

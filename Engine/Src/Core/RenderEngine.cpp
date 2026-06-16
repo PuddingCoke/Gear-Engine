@@ -42,6 +42,8 @@
 
 #include<ImGUI/imgui_impl_dx12.h>
 
+#include<dxgi1_6.h>
+
 namespace Gear::Core::RenderEngine
 {
 	namespace Internal
