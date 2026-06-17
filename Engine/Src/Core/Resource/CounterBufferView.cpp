@@ -67,7 +67,7 @@ namespace Gear::Core::Resource
 		uavIndex(cbv.uavIndex),
 		viewGPUHandle(cbv.viewGPUHandle),
 		viewCPUHandle(cbv.viewCPUHandle),
-		buffer(makeUnique<D3D12Resource::Buffer>(*cbv.buffer))
+		buffer(cbv.buffer ? makeUnique<D3D12Resource::Buffer>(*cbv.buffer) : nullptr)
 	{
 	}
 

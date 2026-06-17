@@ -9,7 +9,7 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		renderTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), 
+		renderTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
 			FMT::RGBA8UN, 1, 1, false, true, DirectX::Colors::White)),
 		arrowTexture(resManager->createRenderTextureView(L"arrow.png", true)),
 		stepCS(Shader::create(File::getRootFolder() + L"StepCS.cso")),
@@ -102,7 +102,7 @@ protected:
 
 		context->clearRenderTarget(renderTexture->getRTVMipHandle(0), DirectX::Colors::White);
 
-		context->setViewportSimple(renderTexture->getTexture()->getWidth(), renderTexture->getTexture()->getHeight());
+		context->setViewportSimple(renderTexture->get2Dimension());
 
 		context->setPrimitiveTopology(TOPOLOGY::POINTLIST);
 

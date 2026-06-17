@@ -34,7 +34,6 @@ namespace Gear::Core::Resource
 		}
 	}
 
-	//只持有使用权
 	DynamicCBuffer::DynamicCBuffer(const DynamicCBuffer& dcb) :
 		ImmutableCBuffer(dcb),
 		regionIndex(dcb.regionIndex),

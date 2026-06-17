@@ -383,7 +383,7 @@ namespace Gear::Core::Resource
 		depthSRVMipGPUHandles(dtv.depthSRVMipGPUHandles),
 		stencilSRVMipIndices(dtv.stencilSRVMipIndices),
 		dsvMipHandles(dtv.dsvMipHandles),
-		texture(makeUnique<D3D12Resource::Texture>(*dtv.texture))
+		texture(dtv.texture ? makeUnique<D3D12Resource::Texture>(*dtv.texture) : nullptr)
 	{
 	}
 

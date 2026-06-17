@@ -270,7 +270,7 @@ namespace Gear::Core::Resource
 		rtvMipHandles(rtv.rtvMipHandles),
 		viewGPUHandles(rtv.viewGPUHandles),
 		viewCPUHandles(rtv.viewCPUHandles),
-		texture(makeUnique<D3D12Resource::Texture>(*rtv.texture))
+		texture(rtv.texture ? makeUnique<D3D12Resource::Texture>(*rtv.texture) : nullptr)
 	{
 	}
 

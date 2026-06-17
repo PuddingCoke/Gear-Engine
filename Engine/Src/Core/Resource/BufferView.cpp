@@ -174,7 +174,7 @@ namespace Gear::Core::Resource
 		viewCPUHandle(bv.viewCPUHandle),
 		bufferViewStruct(bv.bufferViewStruct),
 		uploadHeaps(nullptr),
-		buffer(makeUnique<D3D12Resource::Buffer>(*bv.buffer))
+		buffer(bv.buffer ? makeUnique<D3D12Resource::Buffer>(*bv.buffer) : nullptr)
 	{
 	}
 

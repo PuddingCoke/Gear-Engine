@@ -17,7 +17,7 @@ public:
 		prefilterPS(Shader::create(File::getRootFolder() + L"PrefilterPS.cso")),
 		irradiancePS(Shader::create(File::getRootFolder() + L"IrradiancePS.cso"))
 	{
-		renderTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), 
+		renderTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
 			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
 
 		depthTexture = ResourceManager::createDepthTextureView(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
@@ -157,7 +157,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setViewportSimple(irradianceCube->getTexture()->getWidth(), irradianceCube->getTexture()->getHeight());
+		context->setViewportSimple(irradianceCube->get2Dimension());
 
 		context->setRenderTargets({ irradianceCube->getRTVMipHandle(0) });
 
