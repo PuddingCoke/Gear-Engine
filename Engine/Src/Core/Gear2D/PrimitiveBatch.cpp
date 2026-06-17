@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/Gear2D/PrimitiveBatch.h>
+﻿#include<Gear/Gear2D/PrimitiveBatch.h>
 
 #include<Gear/Core/PipelineStateHelper.h>
 

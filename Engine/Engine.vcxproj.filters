@@ -165,9 +165,6 @@
     <ClInclude Include="Inc\Gear\Effect\FXAAEffect.h">
       <Filter>Header\Core\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Gear2D\PrimitiveBatch.h">
-      <Filter>Header\Core\Gear2D</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Gear\Core\VideoEncoder\NvidiaEncoder.h">
       <Filter>Header\Core\VideoEncoder</Filter>
     </ClInclude>

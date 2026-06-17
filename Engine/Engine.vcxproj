@@ -211,7 +211,6 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Resource\UploadHeap.h" />
     <ClInclude Include="Inc\Gear\Effect\BloomEffect.h" />
     <ClInclude Include="Inc\Gear\Effect\EffectBase.h" />
-    <ClInclude Include="Inc\Gear\Core\Gear2D\PrimitiveBatch.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalDescriptorHeap.h" />
     <ClInclude Include="Inc\Gear\Core\GlobalRootSignature.h" />
     <ClInclude Include="Inc\Gear\Core\GraphicsContext.h" />
