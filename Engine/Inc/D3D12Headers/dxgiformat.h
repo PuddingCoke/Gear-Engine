@@ -1,4 +1,4 @@
-﻿//
+//
 //    Copyright (C) Microsoft Corporation.
 //    Licensed under the MIT license
 //

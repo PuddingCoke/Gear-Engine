@@ -261,9 +261,6 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DescriptorHeap.h">
       <Filter>Header\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\DirectXTex\DDSTextureLoader12.h">
-      <Filter>Header\ExternalHeader\DDSTextureLoader</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\ImGUI\imconfig.h">
       <Filter>Header\ExternalHeader\ImGUi</Filter>
     </ClInclude>
@@ -295,9 +292,6 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\RenderTask.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\DirectXTex\WICTextureLoader12.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Effect\HDRClampEffect.h">
@@ -513,6 +507,12 @@
     <ClInclude Include="Inc\Gear\Utils\String.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader12.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\WICTextureLoader\WICTextureLoader12.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -650,9 +650,6 @@
     <ClCompile Include="Src\Core\D3D12Core\Shader.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\DirectXTex\DDSTextureLoader12.cpp">
-      <Filter>Source\ExternalSource\DDSTextureLoader</Filter>
-    </ClCompile>
     <ClCompile Include="Inc\ImGUI\imgui.cpp">
       <Filter>Source\ExternalSource\ImGUi</Filter>
     </ClCompile>
@@ -678,9 +675,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\RenderTask.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\DirectXTex\WICTextureLoader12.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Effect\HDRClampEffect.cpp">
@@ -750,6 +744,12 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Utils\String.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

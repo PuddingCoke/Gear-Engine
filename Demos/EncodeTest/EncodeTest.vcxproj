@@ -65,7 +65,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Engine-d.lib;DirectXTex-d.lib;D3D12.lib;DXGI.lib;dxcompiler.lib;OpenEXR-3_3.lib;mfreadwrite.lib;mfplat.lib;mfuuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine-d.lib;DirectXTex-d.lib;D3D12.lib;DXGI.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;mfreadwrite.lib;mfplat.lib;mfuuid.lib;GFSDK_SSAO_D3D12.win64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /Y "$(SolutionDir)Dependencies\*" "$(OutDir)"</Command>
@@ -87,7 +87,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Engine.lib;DirectXTex.lib;D3D12.lib;DXGI.lib;dxcompiler.lib;OpenEXR-3_3.lib;mfreadwrite.lib;mfplat.lib;mfuuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;DirectXTex.lib;D3D12.lib;DXGI.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;mfreadwrite.lib;mfplat.lib;mfuuid.lib;GFSDK_SSAO_D3D12.win64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /Y "$(SolutionDir)Dependencies\*" "$(OutDir)"</Command>

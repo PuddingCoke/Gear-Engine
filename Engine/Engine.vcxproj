@@ -134,7 +134,7 @@
     <ClInclude Include="Inc\D3D12Headers\dxcore_interface.h" />
     <ClInclude Include="Inc\D3D12Headers\dxgicommon.h" />
     <ClInclude Include="Inc\D3D12Headers\dxgiformat.h" />
-    <ClInclude Include="Inc\DirectXTex\DDSTextureLoader12.h" />
+    <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader12.h" />
     <ClInclude Include="Inc\Gear\Camera\OrbitCamera.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DescriptorHandle.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DXCCompiler.h" />
@@ -239,11 +239,12 @@
     <ClInclude Include="Inc\Gear\Utils\Timer.h" />
     <ClInclude Include="Inc\Gear\Utils\File.h" />
     <ClInclude Include="Inc\Gear\Window\Win32Form.h" />
-    <ClInclude Include="Inc\DirectXTex\WICTextureLoader12.h" />
     <ClInclude Include="Inc\stb_image_write.h" />
+    <ClInclude Include="Inc\WICTextureLoader\WICTextureLoader12.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Inc\DirectXTex\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp" />
     <ClCompile Include="Src\Effect\HBAOPlusEffect.cpp" />
     <ClCompile Include="Src\Effect\SSREffect.cpp" />
     <ClCompile Include="Src\Effect\GammaCorrectEffect.cpp" />
@@ -266,7 +267,6 @@
     <ClCompile Include="Inc\ImGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="Inc\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="Inc\ImGUI\imgui_widgets.cpp" />
-    <ClCompile Include="Inc\DirectXTex\WICTextureLoader12.cpp" />
     <ClCompile Include="Src\Camera\FPSCamera.cpp" />
     <ClCompile Include="Src\Camera\OrbitCamera.cpp" />
     <ClCompile Include="Src\Core\MainCamera.cpp" />

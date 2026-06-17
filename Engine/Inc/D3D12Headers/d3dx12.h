@@ -1,4 +1,4 @@
-﻿//*********************************************************
+//*********************************************************
 //
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License (MIT).
@@ -32,4 +32,3 @@
 #endif // defined( __cplusplus )
 
 #endif //__D3DX12_H__
-

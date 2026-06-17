@@ -12,9 +12,9 @@
 
 #include<Gear/Utils/File.h>
 
-#include<DirectXTex/DDSTextureLoader12.h>
+#include<DDSTextureLoader/DDSTextureLoader12.h>
 
-#include<DirectXTex/WICTextureLoader12.h>
+#include<WICTextureLoader/WICTextureLoader12.h>
 
 #include<DirectXTex/DirectXTexEXR.h>
 
