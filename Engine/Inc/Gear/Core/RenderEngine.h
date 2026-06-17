@@ -23,7 +23,7 @@ namespace Gear::Core
 
 		GPUVendor getVendor();
 
-		Resource::D3D12Resource::Texture* getRenderTexture();
+		D3D12Resource::Texture* getRenderTexture();
 
 		ID3D12CommandQueue* getCommandQueue();
 

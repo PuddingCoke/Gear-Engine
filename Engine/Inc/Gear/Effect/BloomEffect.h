@@ -3,7 +3,7 @@
 #ifndef _GEAR_EFFECT_BLOOMEFFECT_H_
 #define _GEAR_EFFECT_BLOOMEFFECT_H_
 
-#include<Gear/Core/Resource/SwapTexture.h>
+#include<Gear/Resource/SwapTexture.h>
 
 #include<Gear/Utils/Math.h>
 

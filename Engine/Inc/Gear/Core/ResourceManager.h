@@ -5,21 +5,21 @@
 
 #include<Gear/Core/GraphicsContext.h>
 
-#include<Gear/Core/Resource/SwapTexture.h>
+#include<Gear/Resource/SwapTexture.h>
 
-#include<Gear/Core/Resource/SwapBuffer.h>
+#include<Gear/Resource/SwapBuffer.h>
 
-#include<Gear/Core/Resource/ImmutableCBuffer.h>
+#include<Gear/Resource/ImmutableCBuffer.h>
 
-#include<Gear/Core/Resource/DefaultCBuffer.h>
+#include<Gear/Resource/DefaultCBuffer.h>
 
-#include<Gear/Core/Resource/DynamicCbuffer.h>
+#include<Gear/Resource/DynamicCbuffer.h>
 
-#include<Gear/Core/Resource/BufferView.h>
+#include<Gear/Resource/BufferView.h>
 
-#include<Gear/Core/Resource/RenderTextureView.h>
+#include<Gear/Resource/RenderTextureView.h>
 
-#include<Gear/Core/Resource/DepthTextureView.h>
+#include<Gear/Resource/DepthTextureView.h>
 
 namespace Gear::Core
 {
@@ -46,7 +46,7 @@ namespace Gear::Core
 		~ResourceManager();
 
 		//延迟释放低级资源
-		void deferredRelease(UniquePtr<Resource::D3D12Resource::D3D12ResourceBase> d3d12Resource);
+		void deferredRelease(UniquePtr<D3D12Resource::D3D12ResourceBase> d3d12Resource);
 
 		//延迟释放高级资源
 		void deferredRelease(UniquePtr<Resource::ResourceBase> resource);
@@ -60,13 +60,13 @@ namespace Gear::Core
 		//以下的方法用于创建并使用数据来初始化低级资源
 
 		//从数据创建缓冲
-		Resource::D3D12Resource::BufferPtr createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags);
+		D3D12Resource::BufferPtr createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags);
 
 		//从文件创建纹理
-		Resource::D3D12Resource::TexturePtr createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube);
+		D3D12Resource::TexturePtr createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube);
 
 		//从随机数据创建纹理
-		Resource::D3D12Resource::TexturePtr createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags);
+		D3D12Resource::TexturePtr createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags);
 
 		//以下的方法用于创建高级资源
 
@@ -133,7 +133,7 @@ namespace Gear::Core
 
 	private:
 
-		UniquePtr<std::vector<UniquePtr<Resource::D3D12Resource::D3D12ResourceBase>>[]> d3d12Resources;
+		UniquePtr<std::vector<UniquePtr<D3D12Resource::D3D12ResourceBase>>[]> d3d12Resources;
 
 		UniquePtr<std::vector<UniquePtr<Resource::ResourceBase>>[]> resources;
 

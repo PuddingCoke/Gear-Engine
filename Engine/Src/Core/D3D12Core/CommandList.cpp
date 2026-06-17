@@ -163,7 +163,7 @@ namespace Gear::Core::D3D12Core
 		ResourceStateTracker::flushResourceBarriers(commandList.Get());
 	}
 
-	void CommandList::copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes)
+	void CommandList::copyBufferRegion(D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes)
 	{
 		trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -172,7 +172,7 @@ namespace Gear::Core::D3D12Core
 		commandList->CopyBufferRegion(dstBuffer->getResource(), dstOffset, srcBuffer->getResource(), srcOffset, numBytes);
 	}
 
-	void CommandList::copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::Buffer* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes)
+	void CommandList::copyBufferRegion(D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, D3D12Resource::Buffer* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes)
 	{
 		trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -183,7 +183,7 @@ namespace Gear::Core::D3D12Core
 		commandList->CopyBufferRegion(dstBuffer->getResource(), dstOffset, srcBuffer->getResource(), srcOffset, numBytes);
 	}
 
-	void CommandList::copyResource(Resource::D3D12Resource::Buffer* const dstBuffer, Resource::D3D12Resource::UploadHeap* const srcBuffer)
+	void CommandList::copyResource(D3D12Resource::Buffer* const dstBuffer, D3D12Resource::UploadHeap* const srcBuffer)
 	{
 		trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -192,7 +192,7 @@ namespace Gear::Core::D3D12Core
 		commandList->CopyResource(dstBuffer->getResource(), srcBuffer->getResource());
 	}
 
-	void CommandList::copyResource(Resource::D3D12Resource::Buffer* const dstBuffer, Resource::D3D12Resource::Buffer* const srcBuffer)
+	void CommandList::copyResource(D3D12Resource::Buffer* const dstBuffer, D3D12Resource::Buffer* const srcBuffer)
 	{
 		trackAndSetResourceState(dstBuffer, D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -203,11 +203,11 @@ namespace Gear::Core::D3D12Core
 		commandList->CopyResource(dstBuffer->getResource(), srcBuffer->getResource());
 	}
 
-	void CommandList::copyTextureRegion(Resource::D3D12Resource::Texture* const dstTexture, const uint32_t dstSubresource, Resource::D3D12Resource::Texture* const srcTexture, const uint32_t srcSubresource)
+	void CommandList::copyTextureRegion(D3D12Resource::Texture* const dstTexture, const uint32_t dstSubresource, D3D12Resource::Texture* const srcTexture, const uint32_t srcSubresource)
 	{
-		trackAndSetResourceState(dstTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_DEST);
+		trackAndSetResourceState(dstTexture, D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_DEST);
 
-		trackAndSetResourceState(srcTexture, Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+		trackAndSetResourceState(srcTexture, D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 		flushResourceBarriers();
 

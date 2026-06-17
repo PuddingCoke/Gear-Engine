@@ -5,7 +5,7 @@
 
 #include<Gear/Core/FMT.h>
 
-#include<Gear/Core/Resource/ImmutableCBuffer.h>
+#include<Gear/Resource/ImmutableCBuffer.h>
 
 namespace Gear::Core::Graphics
 {

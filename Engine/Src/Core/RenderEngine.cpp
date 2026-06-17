@@ -105,7 +105,7 @@ namespace Gear::Core::RenderEngine
 
 			GPUVendor getVendor() const;
 
-			Resource::D3D12Resource::Texture* getRenderTexture() const;
+			D3D12Resource::Texture* getRenderTexture() const;
 
 			ID3D12CommandQueue* getCommandQueue() const;
 
@@ -127,11 +127,11 @@ namespace Gear::Core::RenderEngine
 
 			void setDefRenderTexture();
 
-			void setRenderTexture(Resource::D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle);
+			void setRenderTexture(D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle);
 
 			void initializeResources();
 
-			void saveBackBuffer(Resource::D3D12Resource::ReadbackHeap* const readbackHeap);
+			void saveBackBuffer(D3D12Resource::ReadbackHeap* const readbackHeap);
 
 		private:
 
@@ -169,7 +169,7 @@ namespace Gear::Core::RenderEngine
 
 			UniquePtr<D3D12_CPU_DESCRIPTOR_HANDLE[]> backBufferHandles;
 
-			UniquePtr<Resource::D3D12Resource::TexturePtr[]> backBufferTextures;
+			UniquePtr<D3D12Resource::TexturePtr[]> backBufferTextures;
 
 			const bool initializeImGuiSurface;
 
@@ -184,7 +184,7 @@ namespace Gear::Core::RenderEngine
 			HANDLE fenceEvent;
 
 			//引用
-			Resource::D3D12Resource::Texture* renderTexture;
+			D3D12Resource::Texture* renderTexture;
 
 			std::mutex submitCommandListLock;
 
@@ -315,7 +315,7 @@ namespace Gear::Core::RenderEngine
 
 				backBufferHandles = makeUnique<D3D12_CPU_DESCRIPTOR_HANDLE[]>(Graphics::getFrameBufferCount());
 
-				backBufferTextures = makeUnique<Resource::D3D12Resource::TexturePtr[]>(Graphics::getFrameBufferCount());
+				backBufferTextures = makeUnique<D3D12Resource::TexturePtr[]>(Graphics::getFrameBufferCount());
 
 				for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 				{
@@ -330,7 +330,7 @@ namespace Gear::Core::RenderEngine
 					descriptorHandle.move();
 
 					//后备缓冲的初态为D3D12_RESOURCE_STATE_PRESENT
-					backBufferTextures[i] = makeUnique<Resource::D3D12Resource::Texture>(texture, true, D3D12_RESOURCE_STATE_PRESENT);
+					backBufferTextures[i] = makeUnique<D3D12Resource::Texture>(texture, true, D3D12_RESOURCE_STATE_PRESENT);
 				}
 			}
 
@@ -410,7 +410,7 @@ namespace Gear::Core::RenderEngine
 			return vendor;
 		}
 
-		Resource::D3D12Resource::Texture* RenderEngineImpl::getRenderTexture() const
+		D3D12Resource::Texture* RenderEngineImpl::getRenderTexture() const
 		{
 			return renderTexture;
 		}
@@ -465,7 +465,7 @@ namespace Gear::Core::RenderEngine
 			engineDefinedGlobalCBuffer->acquireDataPtr();
 
 			//把后备缓冲转变到STATE_RENDER_TARGET，并暂存资源屏障
-			prepareCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			prepareCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			prepareCommandList->flushTransitionResources();
 		}
@@ -540,7 +540,7 @@ namespace Gear::Core::RenderEngine
 
 				drawImGuiFrame(finishCommandList);
 
-				finishCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_PRESENT);
+				finishCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_PRESENT);
 
 				finishCommandList->flushResourceBarriers();
 			}
@@ -570,7 +570,7 @@ namespace Gear::Core::RenderEngine
 			setRenderTexture(backBufferTextures[Graphics::getFrameIndex()].get(), backBufferHandles[Graphics::getFrameIndex()]);
 		}
 
-		void RenderEngineImpl::setRenderTexture(Resource::D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
+		void RenderEngineImpl::setRenderTexture(D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
 		{
 			//状态转变
 			this->renderTexture = renderTexture;
@@ -596,7 +596,7 @@ namespace Gear::Core::RenderEngine
 			resManager->cleanTransientResources();
 		}
 
-		void RenderEngineImpl::saveBackBuffer(Resource::D3D12Resource::ReadbackHeap* const readbackHeap)
+		void RenderEngineImpl::saveBackBuffer(D3D12Resource::ReadbackHeap* const readbackHeap)
 		{
 			D3D12_PLACED_SUBRESOURCE_FOOTPRINT bufferFootprint = {};
 
@@ -618,7 +618,7 @@ namespace Gear::Core::RenderEngine
 
 			ID3D12GraphicsCommandList6* const id3d12LastCommandList = lastCommandList->get();
 
-			lastCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+			lastCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 			lastCommandList->flushResourceBarriers();
 
@@ -735,7 +735,7 @@ namespace Gear::Core::RenderEngine
 		{
 			if (displayImGUISurface)
 			{
-				targetCommandList->trackAndSetResourceState(getRenderTexture(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
+				targetCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 				targetCommandList->flushResourceBarriers();
 
@@ -794,7 +794,7 @@ namespace Gear::Core::RenderEngine
 			impl->updateTimeElapsed();
 		}
 
-		void saveBackBuffer(Resource::D3D12Resource::ReadbackHeap* const readbackHeap)
+		void saveBackBuffer(D3D12Resource::ReadbackHeap* const readbackHeap)
 		{
 			impl->saveBackBuffer(readbackHeap);
 		}
@@ -804,7 +804,7 @@ namespace Gear::Core::RenderEngine
 			impl->setDefRenderTexture();
 		}
 
-		void setRenderTexture(Resource::D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
+		void setRenderTexture(D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
 		{
 			impl->setRenderTexture(renderTexture, handle);
 		}
@@ -825,7 +825,7 @@ namespace Gear::Core::RenderEngine
 		return Internal::impl->getVendor();
 	}
 
-	Resource::D3D12Resource::Texture* getRenderTexture()
+	D3D12Resource::Texture* getRenderTexture()
 	{
 		return Internal::impl->getRenderTexture();
 	}

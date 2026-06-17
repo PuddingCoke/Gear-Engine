@@ -17,9 +17,9 @@
 
 namespace Gear::Effect
 {
-	using namespace Core;
+	using namespace Gear::Core;
 
-	using namespace Core::Resource;
+	using namespace Gear::Resource;
 
 	using namespace Core::D3D12Core;
 

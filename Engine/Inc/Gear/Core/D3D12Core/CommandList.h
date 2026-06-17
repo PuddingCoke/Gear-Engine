@@ -5,7 +5,7 @@
 
 #include"ResourceStateTracker.h"
 
-#include<Gear/Core/Resource/D3D12Resource/UploadHeap.h>
+#include<Gear/Core/D3D12Resource/UploadHeap.h>
 
 //向上取整，用于dispatchGrp
 constexpr uint32_t dispatchCeil(const uint32_t a, const uint32_t b)
@@ -90,15 +90,15 @@ namespace Gear::Core::D3D12Core
 		//清空需要状态转变的资源并调用cmd->ResourceBarrier
 		void flushResourceBarriers();
 
-		void copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes);
+		void copyBufferRegion(D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes);
 
-		void copyBufferRegion(Resource::D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, Resource::D3D12Resource::Buffer* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes);
+		void copyBufferRegion(D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, D3D12Resource::Buffer* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes);
 
-		void copyResource(Resource::D3D12Resource::Buffer* const dstBuffer, Resource::D3D12Resource::UploadHeap* const srcBuffer);
+		void copyResource(D3D12Resource::Buffer* const dstBuffer, D3D12Resource::UploadHeap* const srcBuffer);
 
-		void copyResource(Resource::D3D12Resource::Buffer* const dstBuffer, Resource::D3D12Resource::Buffer* const srcBuffer);
+		void copyResource(D3D12Resource::Buffer* const dstBuffer, D3D12Resource::Buffer* const srcBuffer);
 
-		void copyTextureRegion(Resource::D3D12Resource::Texture* const dstTexture, const uint32_t dstSubresource, Resource::D3D12Resource::Texture* const srcTexture, const uint32_t srcSubresource);
+		void copyTextureRegion(D3D12Resource::Texture* const dstTexture, const uint32_t dstSubresource, D3D12Resource::Texture* const srcTexture, const uint32_t srcSubresource);
 
 	private:
 

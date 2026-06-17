@@ -71,7 +71,7 @@ namespace Gear
 		UniquePtr<Game> game;
 
 		//用于截屏
-		UniquePtr<Core::Resource::D3D12Resource::ReadbackHeap> backBufferHeap;
+		UniquePtr<Core::D3D12Resource::ReadbackHeap> backBufferHeap;
 
 		InitializationParam::EngineUsage usage;
 
@@ -135,7 +135,7 @@ namespace Gear
 
 			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(realTimeRender.width, realTimeRender.height, Window::Win32Form::getHandle(), true, realTimeRender.enableImGuiSurface);
 
-			backBufferHeap = makeUnique<Core::Resource::D3D12Resource::ReadbackHeap>(Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
+			backBufferHeap = makeUnique<Core::D3D12Resource::ReadbackHeap>(Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
 
 			SetForegroundWindow(Window::Win32Form::getHandle());
 
@@ -310,7 +310,7 @@ namespace Gear
 		{
 			const uint32_t numTextures = Core::VideoEncoder::NvidiaEncoder::lookaheadDepth + 1;
 
-			UniquePtr<Core::Resource::D3D12Resource::Texture> renderTextures[numTextures] = {};
+			UniquePtr<Core::D3D12Resource::Texture> renderTextures[numTextures] = {};
 
 			D3D12_CPU_DESCRIPTOR_HANDLE textureHandles[numTextures] = {};
 
@@ -327,7 +327,7 @@ namespace Gear
 				{
 					const D3D12_CLEAR_VALUE clearValue = { Core::Graphics::backBufferFormat ,{0.f,0.f,0.f,1.f} };
 
-					renderTextures[i] = makeUnique<Core::Resource::D3D12Resource::Texture>(Core::Graphics::getWidth(), Core::Graphics::getHeight(), Core::Graphics::backBufferFormat, 1, 1, true, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, &clearValue);
+					renderTextures[i] = makeUnique<Core::D3D12Resource::Texture>(Core::Graphics::getWidth(), Core::Graphics::getHeight(), Core::Graphics::backBufferFormat, 1, 1, true, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, &clearValue);
 
 					Core::GraphicsDevice::get()->CreateRenderTargetView(renderTextures[i]->getResource(), &rtvDesc, descriptorHandle.getCurrentCPUHandle());
 

@@ -9,7 +9,7 @@
 
 #include<Gear/Core/Graphics.h>
 
-#include<Gear/Core/Resource/D3D12Resource/Texture.h>
+#include<Gear/Core/D3D12Resource/Texture.h>
 
 #include<chrono>
 
@@ -34,7 +34,7 @@ namespace Gear::Core::VideoEncoder
 
 		virtual ~Encoder();
 
-		virtual bool encode(Resource::D3D12Resource::Texture* const inputTexture) = 0;
+		virtual bool encode(D3D12Resource::Texture* const inputTexture) = 0;
 
 		static constexpr uint32_t frameRate = 60;
 

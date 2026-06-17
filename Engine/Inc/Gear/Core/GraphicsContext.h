@@ -9,9 +9,9 @@
 
 #include<Gear/Core/D3D12Core/PipelineState.h>
 
-#include<Gear/Core/Resource/BufferView.h>
+#include<Gear/Resource/BufferView.h>
 
-#include<Gear/Core/Resource/DefaultCBuffer.h>
+#include<Gear/Resource/DefaultCBuffer.h>
 
 #include<Gear/Utils/StaticVector.h>
 
@@ -63,22 +63,22 @@ namespace Gear::Core
 		//以下的方法用于设置每个着色器独享的根常量
 
 		template<size_t N>
-		void setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
+		void setVSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
+		void setHSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
+		void setDSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
+		void setGSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
+		void setPSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<size_t N>
-		void setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
+		void setCSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<typename StructType>
 		void setVSConstants(const StructType& structVal, uint32_t& offset) const;
@@ -131,9 +131,9 @@ namespace Gear::Core
 		//以下的方法用于设置渲染目标
 
 		template<size_t N>
-		void setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil = {});
+		void setRenderTargets(const D3D12Resource::RenderTargetDesc(&renderTargets)[N], const D3D12Resource::DepthStencilDesc& depthStencil = {});
 
-		void setRenderTargets(const Resource::D3D12Resource::DepthStencilDesc& depthStencil);
+		void setRenderTargets(const D3D12Resource::DepthStencilDesc& depthStencil);
 
 		//将后备缓冲设置为渲染目标
 		void setDefRenderTarget() const;
@@ -142,23 +142,23 @@ namespace Gear::Core
 		void clearDefRenderTarget(const float clearValue[4]) const;
 
 		//推迟到draw call清理渲染目标视图
-		void clearRenderTarget(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
+		void clearRenderTarget(const D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
 
 		//立刻清理渲染目标视图
-		void clearRenderTargetInstant(const Resource::D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
+		void clearRenderTargetInstant(const D3D12Resource::RenderTargetDesc& desc, const float clearValue[4]);
 
 		//清理下一个draw call即将绑定或已经绑定的深度模板视图
 		void clearDepthStencil(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
 
 		//立刻清理深度模板视图
-		void clearDepthStencilInstant(const Resource::D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
+		void clearDepthStencilInstant(const D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
 
 		//设置顶点缓冲
 		template<size_t N>
-		void setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N]);
+		void setVertexBuffers(const uint32_t startSlot, const D3D12Resource::VertexBufferDesc(&vertexBuffers)[N]);
 
 		//设置索引缓冲
-		void setIndexBuffer(const Resource::D3D12Resource::IndexBufferDesc& indexBuffers);
+		void setIndexBuffer(const D3D12Resource::IndexBufferDesc& indexBuffers);
 
 		//设置图元拓扑
 		void setPrimitiveTopology(const D3D12_PRIMITIVE_TOPOLOGY topology);
@@ -187,10 +187,10 @@ namespace Gear::Core
 		void setViewportSimple(const DirectX::XMUINT2 dimension);
 
 		//清理UAV
-		void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const float values[4]);
+		void clearUnorderedAccess(const D3D12Resource::ClearUAVDesc& desc, const float values[4]);
 
 		//清理UAV
-		void clearUnorderedAccess(const Resource::D3D12Resource::ClearUAVDesc& desc, const uint32_t values[4]);
+		void clearUnorderedAccess(const D3D12Resource::ClearUAVDesc& desc, const uint32_t values[4]);
 
 		//绘制实例
 		void draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation);
@@ -263,11 +263,11 @@ namespace Gear::Core
 		void transitionResources();
 
 		template<size_t N>
-		void setShaderResources(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState);
+		void setShaderResources(const D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState);
 
 		//从提供的ShaderResourceDesc提取索引
 		template<size_t N>
-		void getResourceIndicesFromDescs(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N]);
+		void getResourceIndicesFromDescs(const D3D12Resource::ShaderResourceDesc(&descs)[N]);
 
 		void pushRootConstantBufferDesc(const RootConstantBufferDesc& desc);
 
@@ -286,17 +286,17 @@ namespace Gear::Core
 		const D3D12Core::RootSignature* getComputeRootSignature() const;
 
 		//根据Desc设置对应资源的转变状态
-		void setResourceState(const Resource::D3D12Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState);
+		void setResourceState(const D3D12Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState);
 
-		void setResourceState(const Resource::D3D12Resource::RenderTargetDesc& desc);
+		void setResourceState(const D3D12Resource::RenderTargetDesc& desc);
 
-		void setResourceState(const Resource::D3D12Resource::DepthStencilDesc& desc);
+		void setResourceState(const D3D12Resource::DepthStencilDesc& desc);
 
-		void setResourceState(const Resource::D3D12Resource::VertexBufferDesc& desc);
+		void setResourceState(const D3D12Resource::VertexBufferDesc& desc);
 
-		void setResourceState(const Resource::D3D12Resource::IndexBufferDesc& desc);
+		void setResourceState(const D3D12Resource::IndexBufferDesc& desc);
 
-		Resource::D3D12Resource::D3D12ResourceBase* setResourceState(const Resource::D3D12Resource::ClearUAVDesc& desc);
+		D3D12Resource::D3D12ResourceBase* setResourceState(const D3D12Resource::ClearUAVDesc& desc);
 
 		//重置内部追踪的状态
 		void resetGraphicsRootSignature();
@@ -345,7 +345,7 @@ namespace Gear::Core
 	};
 
 	template<size_t N>
-	inline void GraphicsContext::setVSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
+	inline void GraphicsContext::setVSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -355,7 +355,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setHSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
+	inline void GraphicsContext::setHSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -365,7 +365,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setDSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
+	inline void GraphicsContext::setDSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -375,7 +375,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setGSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
+	inline void GraphicsContext::setGSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -385,7 +385,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setPSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
+	inline void GraphicsContext::setPSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -395,7 +395,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setCSConstants(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
+	inline void GraphicsContext::setCSConstants(const D3D12Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset)
 	{
 		getResourceIndicesFromDescs(descs);
 
@@ -465,7 +465,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::getResourceIndicesFromDescs(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N])
+	inline void GraphicsContext::getResourceIndicesFromDescs(const D3D12Resource::ShaderResourceDesc(&descs)[N])
 	{
 #ifdef _DEBUG
 		if (N > D3D12Core::RootSignature::maxPerShaderConstants)
@@ -481,7 +481,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setRenderTargets(const Resource::D3D12Resource::RenderTargetDesc(&renderTargets)[N], const Resource::D3D12Resource::DepthStencilDesc& depthStencil)
+	inline void GraphicsContext::setRenderTargets(const D3D12Resource::RenderTargetDesc(&renderTargets)[N], const D3D12Resource::DepthStencilDesc& depthStencil)
 	{
 #ifdef _DEBUG
 		if (N > D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT)
@@ -512,7 +512,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setVertexBuffers(const uint32_t startSlot, const Resource::D3D12Resource::VertexBufferDesc(&vertexBuffers)[N])
+	inline void GraphicsContext::setVertexBuffers(const uint32_t startSlot, const D3D12Resource::VertexBufferDesc(&vertexBuffers)[N])
 	{
 #ifdef _DEBUG
 		if (startSlot + N > D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)
@@ -532,9 +532,9 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setShaderResources(const Resource::D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState)
+	inline void GraphicsContext::setShaderResources(const D3D12Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState)
 	{
-		for (const Resource::D3D12Resource::ShaderResourceDesc& desc : descs)
+		for (const D3D12Resource::ShaderResourceDesc& desc : descs)
 		{
 			setResourceState(desc, targetSRVState);
 		}

@@ -2,7 +2,7 @@
 
 #include<Gear/Core/Internal/DynamicCBufferManagerInternal.h>
 
-#include<Gear/Core/Resource/D3D12Resource/UploadHeap.h>
+#include<Gear/Core/D3D12Resource/UploadHeap.h>
 
 #include<Gear/Core/Graphics.h>
 
@@ -34,13 +34,13 @@ namespace Gear::Core::DynamicCBufferManager
 
 			uint64_t getUpdateSize() const;
 
-			Resource::D3D12Resource::UploadHeap* getUploadHeap() const;
+			D3D12Resource::UploadHeap* getUploadHeap() const;
 
 		private:
 
 			const uint64_t subRegionSize;
 
-			UniquePtr<UniquePtr<Resource::D3D12Resource::UploadHeap>[]> uploadHeap;
+			UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeap;
 
 			UniquePtr<uint8_t* []> dataPtr;
 
@@ -50,13 +50,13 @@ namespace Gear::Core::DynamicCBufferManager
 
 		DynamicCBufferRegion::DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t subRegionNum) :
 			subRegionSize(subRegionSize),
-			uploadHeap(makeUnique<UniquePtr<Resource::D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
+			uploadHeap(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
 			dataPtr(makeUnique<uint8_t* []>(Graphics::getFrameBufferCount())),
 			currentOffset(0)
 		{
 			for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 			{
-				uploadHeap[i] = makeUnique<Resource::D3D12Resource::UploadHeap>(subRegionSize * subRegionNum);
+				uploadHeap[i] = makeUnique<D3D12Resource::UploadHeap>(subRegionSize * subRegionNum);
 
 				//这里有个技巧，上传堆可以保持映射状态，这样可以避免每帧映射和取消映射带来的开销，但是不要忘了析构时取消映射
 				dataPtr[i] = static_cast<uint8_t*>(uploadHeap[i]->map());
@@ -94,7 +94,7 @@ namespace Gear::Core::DynamicCBufferManager
 			return currentOffset.load(std::memory_order_relaxed);
 		}
 
-		Resource::D3D12Resource::UploadHeap* DynamicCBufferRegion::getUploadHeap() const
+		D3D12Resource::UploadHeap* DynamicCBufferRegion::getUploadHeap() const
 		{
 			return uploadHeap[Graphics::getFrameIndex()].get();
 		}
@@ -119,7 +119,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 		private:
 
-			Resource::D3D12Resource::BufferPtr buffer;
+			D3D12Resource::BufferPtr buffer;
 
 			UniquePtr<UniquePtr<DynamicCBufferRegion>[]> bufferRegions;
 
@@ -146,7 +146,7 @@ namespace Gear::Core::DynamicCBufferManager
 					requiredSize += (256u << regionIndex) * numSubRegion[regionIndex];
 				}
 
-				buffer = makeUnique<Resource::D3D12Resource::Buffer>(requiredSize, true, D3D12_RESOURCE_FLAG_NONE);
+				buffer = makeUnique<D3D12Resource::Buffer>(requiredSize, true, D3D12_RESOURCE_FLAG_NONE);
 
 				buffer->setName(L"Large Constant Buffer");
 

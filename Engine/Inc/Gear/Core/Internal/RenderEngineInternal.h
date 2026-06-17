@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_RENDERENGINE_INTERNAL_H_
 #define _GEAR_CORE_RENDERENGINE_INTERNAL_H_
 
-#include<Gear/Core/Resource/D3D12Resource/ReadbackHeap.h>
+#include<Gear/Core/D3D12Resource/ReadbackHeap.h>
 
 namespace Gear::Core::RenderEngine::Internal
 {
@@ -38,11 +38,11 @@ namespace Gear::Core::RenderEngine::Internal
 
 	void updateTimeElapsed();
 
-	void saveBackBuffer(Resource::D3D12Resource::ReadbackHeap* const readbackHeap);
+	void saveBackBuffer(D3D12Resource::ReadbackHeap* const readbackHeap);
 
 	void setDefRenderTexture();
 
-	void setRenderTexture(Resource::D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle);
+	void setRenderTexture(D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle);
 
 	void initializeResources();
 }

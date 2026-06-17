@@ -51,13 +51,13 @@ using namespace Gear;
 
 using namespace Gear::Core;
 
-using namespace Gear::Core::D3D12Core;
-
-using namespace Gear::Core::Resource;
+using namespace Gear::Resource;
 
 using namespace Gear::Effect;
 
 using namespace Gear::Utils;
+
+using namespace Gear::Core::D3D12Core;
 
 using Gear::Core::D3D12Core::DXCCompiler::ShaderProfile;
 

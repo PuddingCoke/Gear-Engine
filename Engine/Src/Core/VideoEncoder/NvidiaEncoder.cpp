@@ -19,7 +19,7 @@ namespace Gear::Core::VideoEncoder
 {
 	NvidiaEncoder::NvidiaEncoder(const uint32_t frameToEncode) :
 		Encoder(frameToEncode, outputVideoFormat), encoder(nullptr),
-		readbackHeap(makeUnique<Resource::D3D12Resource::ReadbackHeap>(2 * 4 * Graphics::getWidth() * Graphics::getHeight())),
+		readbackHeap(makeUnique<D3D12Resource::ReadbackHeap>(2 * 4 * Graphics::getWidth() * Graphics::getHeight())),
 		nvencAPI{ NV_ENCODE_API_FUNCTION_LIST_VER },
 		outputFenceValue(0)
 	{
@@ -147,7 +147,7 @@ namespace Gear::Core::VideoEncoder
 		}
 	}
 
-	bool NvidiaEncoder::encode(Resource::D3D12Resource::Texture* const inputTexture)
+	bool NvidiaEncoder::encode(D3D12Resource::Texture* const inputTexture)
 	{
 		bool encoding = true;
 

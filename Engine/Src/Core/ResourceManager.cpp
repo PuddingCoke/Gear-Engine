@@ -24,7 +24,7 @@ namespace Gear::Core
 {
 	ResourceManager::ResourceManager() :
 		context(makeUnique<GraphicsContext>()), commandList(context->getCommandList()),
-		d3d12Resources(makeUnique<std::vector<UniquePtr<Resource::D3D12Resource::D3D12ResourceBase>>[]>(Graphics::getFrameBufferCount())),
+		d3d12Resources(makeUnique<std::vector<UniquePtr<D3D12Resource::D3D12ResourceBase>>[]>(Graphics::getFrameBufferCount())),
 		resources(makeUnique<std::vector<UniquePtr<Resource::ResourceBase>>[]>(Graphics::getFrameBufferCount()))
 	{
 	}
@@ -33,7 +33,7 @@ namespace Gear::Core
 	{
 	}
 
-	void ResourceManager::deferredRelease(UniquePtr<Resource::D3D12Resource::D3D12ResourceBase> d3d12Resource)
+	void ResourceManager::deferredRelease(UniquePtr<D3D12Resource::D3D12ResourceBase> d3d12Resource)
 	{
 		d3d12Resources[Graphics::getFrameIndex()].emplace_back(std::move(d3d12Resource));
 	}
@@ -60,11 +60,11 @@ namespace Gear::Core
 		return commandList;
 	}
 
-	Resource::D3D12Resource::BufferPtr ResourceManager::createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags)
+	D3D12Resource::BufferPtr ResourceManager::createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags)
 	{
-		Resource::D3D12Resource::BufferPtr buffer = makeUnique<Resource::D3D12Resource::Buffer>(size, true, resFlags);
+		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
-		UniquePtr<Resource::D3D12Resource::UploadHeap> uploadHeap = makeUnique<Resource::D3D12Resource::UploadHeap>(size);
+		UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(size);
 
 		uploadHeap->update(data, size);
 
@@ -75,14 +75,14 @@ namespace Gear::Core
 		return buffer;
 	}
 
-	Resource::D3D12Resource::TexturePtr ResourceManager::createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube)
+	D3D12Resource::TexturePtr ResourceManager::createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube)
 	{
 		if (!Utils::File::exist(filePath))
 		{
 			LOGERROR(filePath, L"指定路径下未找到文件");
 		}
 
-		Resource::D3D12Resource::TexturePtr texture;
+		D3D12Resource::TexturePtr texture;
 
 		const std::wstring fileExtension = Utils::File::getExtension(filePath);
 
@@ -109,11 +109,11 @@ namespace Gear::Core
 
 			CHECKERROR(DirectX::LoadWICTextureFromFileEx(GraphicsDevice::get(), filePath.c_str(), 0, resFlags, DirectX::WIC_LOADER_DEFAULT, &tex, decodedData, subresource));
 
-			texture = makeUnique<Resource::D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
+			texture = makeUnique<D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
-			UniquePtr<Resource::D3D12Resource::UploadHeap> uploadHeap = makeUnique<Resource::D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
 			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
 
@@ -129,11 +129,11 @@ namespace Gear::Core
 
 			CHECKERROR(DirectX::LoadDDSTextureFromFileEx(GraphicsDevice::get(), filePath.c_str(), 0, resFlags, DirectX::DDS_LOADER_DEFAULT, &tex, decodedData, subresources, nullptr, isTextureCube));
 
-			texture = makeUnique<Resource::D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
+			texture = makeUnique<D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, static_cast<uint32_t>(subresources.size()));
 
-			UniquePtr<Resource::D3D12Resource::UploadHeap> uploadHeap = makeUnique<Resource::D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
 			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, static_cast<uint32_t>(subresources.size()), subresources.data());
 
@@ -169,11 +169,11 @@ namespace Gear::Core
 
 			CHECKERROR(DirectX::CreateTextureEx(GraphicsDevice::get(), metadata, resFlags, DirectX::CREATETEX_DEFAULT, &tex));
 
-			texture = makeUnique<Resource::D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
+			texture = makeUnique<D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
-			UniquePtr<Resource::D3D12Resource::UploadHeap> uploadHeap = makeUnique<Resource::D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
 			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
 
@@ -189,9 +189,9 @@ namespace Gear::Core
 		return texture;
 	}
 
-	Resource::D3D12Resource::TexturePtr ResourceManager::createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags)
+	D3D12Resource::TexturePtr ResourceManager::createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags)
 	{
-		Resource::D3D12Resource::TexturePtr texture;
+		D3D12Resource::TexturePtr texture;
 
 		if (type == RandomDataType::NOISE)
 		{
@@ -213,11 +213,11 @@ namespace Gear::Core
 				};
 			}
 
-			texture = makeUnique<Resource::D3D12Resource::Texture>(width, height, FMT::RGBA8UN, 1, 1, true, resFlags);
+			texture = makeUnique<D3D12Resource::Texture>(width, height, FMT::RGBA8UN, 1, 1, true, resFlags);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
-			UniquePtr<Resource::D3D12Resource::UploadHeap> uploadHeap = makeUnique<Resource::D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
 			subresourceData.pData = colors.data();
@@ -248,11 +248,11 @@ namespace Gear::Core
 				};
 			}
 
-			texture = makeUnique<Resource::D3D12Resource::Texture>(width, height, FMT::RGBA16F, 1, 1, true, resFlags);
+			texture = makeUnique<D3D12Resource::Texture>(width, height, FMT::RGBA16F, 1, 1, true, resFlags);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
-			UniquePtr<Resource::D3D12Resource::UploadHeap> uploadHeap = makeUnique<Resource::D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
 			subresourceData.pData = colors.data();
@@ -269,7 +269,7 @@ namespace Gear::Core
 
 	Resource::ImmutableCBufferPtr ResourceManager::createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent)
 	{
-		Resource::D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
+		D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
 		commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
@@ -282,14 +282,14 @@ namespace Gear::Core
 
 	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size, const void* const data, const bool persistent)
 	{
-		Resource::D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
+		D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
 		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), size, persistent);
 	}
 
 	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size, const bool persistent)
 	{
-		Resource::D3D12Resource::BufferPtr buffer = makeUnique<Resource::D3D12Resource::Buffer>(size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
+		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
 
 		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), size, persistent);
 	}
@@ -320,7 +320,7 @@ namespace Gear::Core
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
 
-		Resource::D3D12Resource::BufferPtr buffer = createBuffer(data, size, resFlags);
+		D3D12Resource::BufferPtr buffer = createBuffer(data, size, resFlags);
 
 		if (!cpuWritable && !createUAV)
 		{
@@ -365,7 +365,7 @@ namespace Gear::Core
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
 
-		Resource::D3D12Resource::BufferPtr buffer = makeUnique<Resource::D3D12Resource::Buffer>(size, true, resFlags);
+		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
 		return makeUnique<Resource::BufferView>(std::move(buffer), 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
 	}
@@ -379,7 +379,7 @@ namespace Gear::Core
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
 
-		Resource::D3D12Resource::BufferPtr buffer = createBuffer(data, size, resFlags);
+		D3D12Resource::BufferPtr buffer = createBuffer(data, size, resFlags);
 
 		if (!cpuWritable && !createUAV)
 		{
@@ -414,7 +414,7 @@ namespace Gear::Core
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
 
-		Resource::D3D12Resource::BufferPtr buffer = makeUnique<Resource::D3D12Resource::Buffer>(size, true, resFlags);
+		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
 		return makeUnique<Resource::BufferView>(std::move(buffer), structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 	}
@@ -428,7 +428,7 @@ namespace Gear::Core
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
 
-		Resource::D3D12Resource::BufferPtr buffer = createBuffer(data, size, resFlags);
+		D3D12Resource::BufferPtr buffer = createBuffer(data, size, resFlags);
 
 		if (!cpuWritable && !createUAV)
 		{
@@ -458,7 +458,7 @@ namespace Gear::Core
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
 
-		Resource::D3D12Resource::BufferPtr buffer = makeUnique<Resource::D3D12Resource::Buffer>(size, true, resFlags);
+		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
 		return makeUnique<Resource::BufferView>(std::move(buffer), 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
 	}
@@ -495,7 +495,7 @@ namespace Gear::Core
 		clearValue.DepthStencil.Depth = 1.f;
 		clearValue.DepthStencil.Stencil = 0;
 
-		Resource::D3D12Resource::TexturePtr texture = makeUnique<Resource::D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &clearValue);
+		D3D12Resource::TexturePtr texture = makeUnique<D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &clearValue);
 
 		return makeUnique<Resource::DepthTextureView>(std::move(texture), isTextureCube, persistent);
 	}
@@ -525,11 +525,11 @@ namespace Gear::Core
 
 		bool isTextureCube = false;
 
-		Resource::D3D12Resource::TexturePtr texture = createTexture(filePath, resFlags, &isTextureCube);
+		D3D12Resource::TexturePtr texture = createTexture(filePath, resFlags, &isTextureCube);
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(texture.get(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			commandList->trackAndSetResourceState(texture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 			commandList->flushResourceBarriers();
 
@@ -575,11 +575,11 @@ namespace Gear::Core
 			}
 		}
 
-		Resource::D3D12Resource::TexturePtr texture = createTexture(width, height, type, resFlags);
+		D3D12Resource::TexturePtr texture = createTexture(width, height, type, resFlags);
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(texture.get(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			commandList->trackAndSetResourceState(texture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 			commandList->flushResourceBarriers();
 
@@ -633,7 +633,7 @@ namespace Gear::Core
 			resFlags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 		}
 
-		Resource::D3D12Resource::TexturePtr texture;
+		D3D12Resource::TexturePtr texture;
 
 		if (color)
 		{
@@ -641,11 +641,11 @@ namespace Gear::Core
 			clearValue.Format = rtvFormat;
 			memcpy(clearValue.Color, color, sizeof(float) * 4);
 
-			texture = makeUnique<Resource::D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, resFlags, &clearValue);
+			texture = makeUnique<D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, resFlags, &clearValue);
 		}
 		else
 		{
-			texture = makeUnique<Resource::D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, resFlags);
+			texture = makeUnique<D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, resFlags);
 		}
 
 		return makeUnique<Resource::RenderTextureView>(std::move(texture), isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
@@ -750,9 +750,9 @@ namespace Gear::Core
 			}
 		}
 
-		Resource::D3D12Resource::TexturePtr dstTexture = makeUnique<Resource::D3D12Resource::Texture>(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, resFlags);
+		D3D12Resource::TexturePtr dstTexture = makeUnique<D3D12Resource::Texture>(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, resFlags);
 
-		Resource::D3D12Resource::Texture* srcTexture = cubeMap->getTexture();
+		D3D12Resource::Texture* srcTexture = cubeMap->getTexture();
 
 		for (uint32_t i = 0; i < 6; i++)
 		{
@@ -765,7 +765,7 @@ namespace Gear::Core
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(dstTexture.get(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			commandList->trackAndSetResourceState(dstTexture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 			commandList->flushResourceBarriers();
 
@@ -786,10 +786,10 @@ namespace Gear::Core
 
 	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 	{
-		Resource::D3D12Resource::Texture* srcTextures[6] = {};
+		D3D12Resource::Texture* srcTextures[6] = {};
 
 		{
-			Resource::D3D12Resource::TexturePtr srcTexturesRet[6];
+			D3D12Resource::TexturePtr srcTexturesRet[6];
 
 			uint32_t index = 0;
 
@@ -830,7 +830,7 @@ namespace Gear::Core
 			}
 		}
 
-		Resource::D3D12Resource::TexturePtr dstTexture = makeUnique<Resource::D3D12Resource::Texture>(srcTextures[0]->getWidth(), srcTextures[0]->getHeight(), srcTextures[0]->getFormat(), 6, 1, true, resFlags);
+		D3D12Resource::TexturePtr dstTexture = makeUnique<D3D12Resource::Texture>(srcTextures[0]->getWidth(), srcTextures[0]->getHeight(), srcTextures[0]->getFormat(), 6, 1, true, resFlags);
 
 		for (uint32_t i = 0; i < 6; i++)
 		{
@@ -843,7 +843,7 @@ namespace Gear::Core
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(dstTexture.get(), Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			commandList->trackAndSetResourceState(dstTexture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 			commandList->flushResourceBarriers();
 

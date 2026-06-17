@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_VIDEOENCODER_NVIDIAENCODER_H_
 #define _GEAR_CORE_VIDEOENCODER_NVIDIAENCODER_H_
 
-#include<Gear/Core/Resource/D3D12Resource/ReadbackHeap.h>
+#include<Gear/Core/D3D12Resource/ReadbackHeap.h>
 
 #include"Encoder.h"
 
@@ -45,7 +45,7 @@ namespace Gear::Core::VideoEncoder
 
 		~NvidiaEncoder();
 
-		bool encode(Resource::D3D12Resource::Texture* const inputTexture) override;
+		bool encode(D3D12Resource::Texture* const inputTexture) override;
 
 		static constexpr uint32_t lookaheadDepth = 31;
 
@@ -69,7 +69,7 @@ namespace Gear::Core::VideoEncoder
 
 		void* encoder;
 
-		UniquePtr<Resource::D3D12Resource::ReadbackHeap> readbackHeap;
+		UniquePtr<D3D12Resource::ReadbackHeap> readbackHeap;
 
 		ComPtr<ID3D12Fence> outputFence;
 

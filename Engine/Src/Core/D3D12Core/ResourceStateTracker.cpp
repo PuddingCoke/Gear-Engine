@@ -2,13 +2,13 @@
 
 namespace Gear::Core::D3D12Core
 {
-	void ResourceStateTracker::trackAndSetResourceState(Resource::D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state)
+	void ResourceStateTracker::trackAndSetResourceState(D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state)
 	{
 		if (texture->getStateTracking())
 		{
 			pushResourceToTrackList(texture);
 
-			if (mipslice == Resource::D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS)
+			if (mipslice == D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS)
 			{
 				texture->setAllState(state);
 			}
@@ -19,7 +19,7 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::trackAndSetResourceState(Resource::D3D12Resource::Buffer* const buffer, const uint32_t state)
+	void ResourceStateTracker::trackAndSetResourceState(D3D12Resource::Buffer* const buffer, const uint32_t state)
 	{
 		if (buffer && buffer->getStateTracking())
 		{
@@ -33,7 +33,7 @@ namespace Gear::Core::D3D12Core
 	{
 		if (pendingResources.size())
 		{
-			for (Resource::D3D12Resource::D3D12ResourceBase* const resource : pendingResources)
+			for (D3D12Resource::D3D12ResourceBase* const resource : pendingResources)
 			{
 				resource->resolvePendingState(outBarriers);
 
@@ -50,7 +50,7 @@ namespace Gear::Core::D3D12Core
 	{
 		if (referredResources.size())
 		{
-			for (Resource::D3D12Resource::D3D12ResourceBase* const resource : referredResources)
+			for (D3D12Resource::D3D12ResourceBase* const resource : referredResources)
 			{
 				resource->updateGlobalStates();
 
@@ -67,7 +67,7 @@ namespace Gear::Core::D3D12Core
 	{
 		if (transitionResources.size())
 		{
-			for (Resource::D3D12Resource::D3D12ResourceBase* const resource : transitionResources)
+			for (D3D12Resource::D3D12ResourceBase* const resource : transitionResources)
 			{
 				resource->transition(resourceBarriers, pendingResources);
 
@@ -92,7 +92,7 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::pushResourceToTrackList(Resource::D3D12Resource::D3D12ResourceBase* const resource)
+	void ResourceStateTracker::pushResourceToTrackList(D3D12Resource::D3D12ResourceBase* const resource)
 	{
 		resource->pushToReferredList(referredResources);
 

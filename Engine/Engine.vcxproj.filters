@@ -141,19 +141,19 @@
     <ClInclude Include="Inc\Gear\Camera\FPSCamera.h">
       <Filter>Header\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\Buffer.h">
+    <ClInclude Include="Inc\Gear\Core\D3D12Resource\Buffer.h">
       <Filter>Header\Core\DX</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\ReadbackHeap.h">
+    <ClInclude Include="Inc\Gear\Core\D3D12Resource\ReadbackHeap.h">
       <Filter>Header\Core\DX</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\D3D12ResourceBase.h">
+    <ClInclude Include="Inc\Gear\Core\D3D12Resource\D3D12ResourceBase.h">
       <Filter>Header\Core\DX</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\Texture.h">
+    <ClInclude Include="Inc\Gear\Core\D3D12Resource\Texture.h">
       <Filter>Header\Core\DX</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\UploadHeap.h">
+    <ClInclude Include="Inc\Gear\Core\D3D12Resource\UploadHeap.h">
       <Filter>Header\Core\DX</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Effect\BloomEffect.h">
@@ -171,25 +171,25 @@
     <ClInclude Include="Inc\Gear\Core\VideoEncoder\NvidiaEncoder.h">
       <Filter>Header\Core\VideoEncoder</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\BufferView.h">
+    <ClInclude Include="Inc\Gear\Resource\BufferView.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\CounterBufferView.h">
+    <ClInclude Include="Inc\Gear\Resource\CounterBufferView.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\ImmutableCBuffer.h">
+    <ClInclude Include="Inc\Gear\Resource\ImmutableCBuffer.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\ResourceBase.h">
+    <ClInclude Include="Inc\Gear\Resource\ResourceBase.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\SwapTexture.h">
+    <ClInclude Include="Inc\Gear\Resource\SwapTexture.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\DepthTextureView.h">
+    <ClInclude Include="Inc\Gear\Resource\DepthTextureView.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\RenderTextureView.h">
+    <ClInclude Include="Inc\Gear\Resource\RenderTextureView.h">
       <Filter>Header\Core\Resource</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\VideoEncoder\Encoder.h">
@@ -393,10 +393,10 @@
     <ClInclude Include="Inc\Gear\Utils\WallpaperHelper.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\DynamicCBuffer.h">
+    <ClInclude Include="Inc\Gear\Resource\DynamicCBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\DefaultCBuffer.h">
+    <ClInclude Include="Inc\Gear\Resource\DefaultCBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\Internal\GraphicsInternal.h">
@@ -453,7 +453,7 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\Internal\DXCCompilerInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\D3D12Resource\PipelineResourceDesc.h">
+    <ClInclude Include="Inc\Gear\Core\D3D12Resource\PipelineResourceDesc.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\DevEssential.h">
@@ -495,10 +495,10 @@
     <ClInclude Include="Inc\Gear\Core\TOPOLOGY.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\SwappableBase.h">
+    <ClInclude Include="Inc\Gear\Resource\SwappableBase.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\Resource\SwapBuffer.h">
+    <ClInclude Include="Inc\Gear\Resource\SwapBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\LocalDescriptorHeap.h">
@@ -533,19 +533,19 @@
     <ClCompile Include="Src\Camera\OrbitCamera.cpp">
       <Filter>Source\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\D3D12Resource\Buffer.cpp">
+    <ClCompile Include="Src\Core\D3D12Resource\Buffer.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\D3D12Resource\ReadbackHeap.cpp">
+    <ClCompile Include="Src\Core\D3D12Resource\ReadbackHeap.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\D3D12Resource\D3D12ResourceBase.cpp">
+    <ClCompile Include="Src\Core\D3D12Resource\D3D12ResourceBase.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\D3D12Resource\Texture.cpp">
+    <ClCompile Include="Src\Core\D3D12Resource\Texture.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\D3D12Resource\UploadHeap.cpp">
+    <ClCompile Include="Src\Core\D3D12Resource\UploadHeap.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
     <ClCompile Include="Src\Effect\BloomEffect.cpp">
@@ -560,25 +560,25 @@
     <ClCompile Include="Src\Core\Gear2D\PrimitiveBatch.cpp">
       <Filter>Source\Core\Gear2D</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\BufferView.cpp">
+    <ClCompile Include="Src\Resource\BufferView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\ImmutableCBuffer.cpp">
+    <ClCompile Include="Src\Resource\ImmutableCBuffer.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\CounterBufferView.cpp">
+    <ClCompile Include="Src\Resource\CounterBufferView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\ResourceBase.cpp">
+    <ClCompile Include="Src\Resource\ResourceBase.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\SwapTexture.cpp">
+    <ClCompile Include="Src\Resource\SwapTexture.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\DepthTextureView.cpp">
+    <ClCompile Include="Src\Resource\DepthTextureView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\RenderTextureView.cpp">
+    <ClCompile Include="Src\Resource\RenderTextureView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\VideoEncoder\NvidiaEncoder.cpp">
@@ -707,10 +707,10 @@
     <ClCompile Include="Src\Utils\WallpaperHelper.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\DynamicCBuffer.cpp">
+    <ClCompile Include="Src\Resource\DynamicCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Resource\DefaultCBuffer.cpp">
+    <ClCompile Include="Src\Resource\DefaultCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Utils\Logger.cpp">
