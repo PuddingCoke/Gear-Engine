@@ -44,6 +44,8 @@ namespace Gear::Resource
 
 		void copyDescriptors() override;
 
+		DXGI_FORMAT getDSVFormat() const;
+
 	private:
 
 		DXGI_FORMAT depthSRVFormat;

@@ -34,7 +34,7 @@ namespace Gear::Core::D3D12Core
 
 		PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType, const PipelineStateData pipelineStateData);
 
-		~PipelineState();
+		virtual ~PipelineState();
 
 		const RootSignature* getRootSignature() const;
 

@@ -450,6 +450,7 @@ namespace Gear::Resource
 		desc.texture = texture.get();
 		desc.mipSlice = mipSlice;
 		desc.dsvHandle = (*dsvMipHandles)[mipSlice];
+		desc.dsvFormat = getDSVFormat();
 
 		return desc;
 	}
@@ -490,5 +491,10 @@ namespace Gear::Resource
 				shaderVisibleHandle.move();
 			}
 		}
+	}
+
+	DXGI_FORMAT DepthTextureView::getDSVFormat() const
+	{
+		return dsvFormat;
 	}
 }

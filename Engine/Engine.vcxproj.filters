@@ -513,6 +513,9 @@
     <ClInclude Include="Inc\WICTextureLoader\WICTextureLoader12.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\D3D12Core\ComputeState.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -750,6 +753,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

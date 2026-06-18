@@ -16,7 +16,7 @@ namespace Gear::Resource
 
 		SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc);
 
-		~SwappableBase();
+		virtual ~SwappableBase();
 
 		T* read() const;
 

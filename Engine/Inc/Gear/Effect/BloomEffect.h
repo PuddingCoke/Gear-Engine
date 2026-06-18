@@ -45,11 +45,7 @@ namespace Gear::Effect
 
 		PipelineStatePtr bloomFilterState;
 
-		ShaderPtr bloomHBlur;
-
 		PipelineStatePtr bloomHBlurState;
-
-		ShaderPtr bloomVBlur;
 
 		PipelineStatePtr bloomVBlurState;
 

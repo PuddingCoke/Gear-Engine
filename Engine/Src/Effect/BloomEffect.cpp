@@ -34,8 +34,6 @@ namespace Gear::Effect
 
 		bloomFilter = Shader::create(g_BloomFilterPSBytes, sizeof(g_BloomFilterPSBytes));
 		bloomFinal = Shader::create(g_BloomFinalPSBytes, sizeof(g_BloomFinalPSBytes));
-		bloomVBlur = Shader::create(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes));
-		bloomHBlur = Shader::create(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes));
 		bloomDownSample = Shader::create(g_BloomDownSamplePSBytes, sizeof(g_BloomDownSamplePSBytes));
 		bloomKarisAverage = Shader::create(g_BloomKarisAveragePSBytes, sizeof(g_BloomKarisAveragePSBytes));
 
@@ -94,10 +92,9 @@ namespace Gear::Effect
 
 		bloomFinalState = getDefaultBuilder().setPS(*bloomFinal).build();
 
-		bloomHBlurState = PipelineStateBuilder::build(*bloomHBlur);
+		bloomHBlurState = PipelineStateBuilder::build(Shader::create(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes)));
 
-		bloomVBlurState = PipelineStateBuilder::build(*bloomVBlur);
-
+		bloomVBlurState = PipelineStateBuilder::build(Shader::create(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes)));
 	}
 
 	BloomEffect::~BloomEffect()

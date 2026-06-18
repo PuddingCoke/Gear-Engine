@@ -10,10 +10,9 @@ public:
 
 	MyRenderTask() :
 		effect(BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager)),
-		computeCS(Shader::create(File::getRootFolder() + L"ComputeCS.cso")),
 		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true))
 	{
-		computeState = PipelineStateBuilder::build(*computeCS);
+		computeState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"ComputeCS.cso"));
 
 		Graphics::setExposure(1.9f);
 
@@ -98,8 +97,6 @@ protected:
 	}
 
 private:
-
-	ShaderPtr computeCS;
 
 	PipelineStatePtr computeState;
 

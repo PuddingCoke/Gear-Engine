@@ -10,16 +10,13 @@ public:
 
 	MyRenderTask() :
 		timer(1.f / 60.f),
-		whiteNoiseCS(Shader::create(File::getRootFolder() + L"WhiteNoiseCS.cso")),
-		evolveCS(Shader::create(File::getRootFolder() + L"EvolveCS.cso")),
-		visualizeCS(Shader::create(File::getRootFolder() + L"VisualizeCS.cso")),
 		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true))
 	{
-		whiteNoiseState = PipelineStateBuilder::build(*whiteNoiseCS);
+		whiteNoiseState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"WhiteNoiseCS.cso"));
 
-		evolveState = PipelineStateBuilder::build(*evolveCS);
+		evolveState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"EvolveCS.cso"));
 
-		visualizeState = PipelineStateBuilder::build(*visualizeCS);
+		visualizeState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"VisualizeCS.cso"));
 
 		swapTexture = ResourceManager::createSwapTexture([] {return ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true); });
 
@@ -142,15 +139,9 @@ private:
 		float alpha_m = 0.147f;
 	}simulationParam;
 
-	ShaderPtr whiteNoiseCS;
-
 	PipelineStatePtr whiteNoiseState;
 
-	ShaderPtr evolveCS;
-
 	PipelineStatePtr evolveState;
-
-	ShaderPtr visualizeCS;
 
 	PipelineStatePtr visualizeState;
 

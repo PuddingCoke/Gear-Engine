@@ -12,16 +12,15 @@ public:
 		renderTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
 			FMT::RGBA8UN, 1, 1, false, true, DirectX::Colors::White)),
 		arrowTexture(resManager->createRenderTextureView(L"arrow.png", true)),
-		stepCS(Shader::create(File::getRootFolder() + L"StepCS.cso")),
 		vehicleVS(Shader::create(File::getRootFolder() + L"VehicleVS.cso")),
 		vehicleGS(Shader::create(File::getRootFolder() + L"VehicleGS.cso")),
 		vehiclePS(Shader::create(File::getRootFolder() + L"VehiclePS.cso")),
 		simulationParam{}
 	{
 		{
-			DirectX::XMFLOAT4* positionVelocityArray = new DirectX::XMFLOAT4[numVehicle];
+			UniquePtr<DirectX::XMFLOAT4[]> positionVelocityArray = makeUnique<DirectX::XMFLOAT4[]>(numVehicle);
 
-			DirectX::XMFLOAT2* maxSpeedMaxForceArray = new DirectX::XMFLOAT2[numVehicle];
+			UniquePtr<DirectX::XMFLOAT2[]> maxSpeedMaxForceArray = makeUnique<DirectX::XMFLOAT2[]>(numVehicle);
 
 			for (size_t i = 0; i < numVehicle; i++)
 			{
@@ -37,20 +36,16 @@ public:
 			}
 
 			positionVelocity = ResourceManager::createSwapBuffer(
-				[&] {return resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numVehicle, true, true, true, false, false, true, positionVelocityArray); },
+				[&] {return resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numVehicle, true, true, true, false, false, true, positionVelocityArray.get()); },
 				[&] {return ResourceManager::createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numVehicle, true, true, true, false, false, true); });
 
 			maxSpeedMaxForce = resManager->createTypedBufferView(FMT::RG32F, sizeof(DirectX::XMFLOAT2) * numVehicle,
-				true, false, false, false, false, true, maxSpeedMaxForceArray);
+				true, false, false, false, false, true, maxSpeedMaxForceArray.get());
 
 			maxSpeedMaxForce->getBuffer()->setName(L"Max Speed Max Force Buffer");
-
-			delete[] positionVelocityArray;
-
-			delete[] maxSpeedMaxForceArray;
 		}
 
-		stepState = PipelineStateBuilder::build(*stepCS);
+		stepState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"StepCS.cso"));
 
 		vehicleRenderState = PipelineStateBuilder()
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)

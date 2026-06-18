@@ -78,7 +78,7 @@ namespace Gear::Core
 		D3D12Core::PipelineStatePtr build();
 
 		//用于计算管线状态
-		static D3D12Core::PipelineStatePtr build(const D3D12Core::Shader& cs);
+		static D3D12Core::PipelineStatePtr build(D3D12Core::ShaderPtr cs);
 
 	private:
 

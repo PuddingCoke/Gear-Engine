@@ -20,8 +20,6 @@ namespace Gear::Effect::GammaCorrectEffect
 
 		private:
 
-			ShaderPtr gammaCorrectCS;
-
 			PipelineStatePtr gammaCorrectState;
 
 			RenderTextureViewPtr outputTexture;
@@ -32,9 +30,7 @@ namespace Gear::Effect::GammaCorrectEffect
 
 		GammaCorrectEffectImpl::GammaCorrectEffectImpl()
 		{
-			gammaCorrectCS = Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes));
-
-			gammaCorrectState = PipelineStateBuilder::build(*gammaCorrectCS);
+			gammaCorrectState = PipelineStateBuilder::build(Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes)));
 
 			outputTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true);
 

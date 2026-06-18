@@ -31,10 +31,6 @@ namespace Gear::Effect
 
 		RenderTextureViewPtr hiZTexture;
 
-		ShaderPtr hiZCopyCS;
-
-		ShaderPtr hiZCreateCS;
-
 		ShaderPtr hiZProcessPS;
 
 		PipelineStatePtr hiZCopyState;

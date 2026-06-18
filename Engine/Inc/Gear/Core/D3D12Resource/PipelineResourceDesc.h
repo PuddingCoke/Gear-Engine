@@ -52,6 +52,7 @@ namespace Gear::Core::D3D12Resource
 		Texture* texture;
 		uint32_t mipSlice;
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
+		DXGI_FORMAT rtvFormat;
 	};
 
 	struct DepthStencilDesc
@@ -59,6 +60,7 @@ namespace Gear::Core::D3D12Resource
 		Texture* texture;
 		uint32_t mipSlice;
 		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+		DXGI_FORMAT dsvFormat;
 	};
 
 	struct VertexBufferDesc

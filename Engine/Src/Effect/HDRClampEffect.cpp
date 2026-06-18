@@ -18,17 +18,13 @@ namespace Gear::Effect::HDRClampEffect
 
 		private:
 
-			ShaderPtr hdrClampShader;
-
 			PipelineStatePtr hdrClampState;
 
 		};
 
 		HDRClampEffectImpl::HDRClampEffectImpl()
 		{
-			hdrClampShader = Shader::create(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes));
-
-			hdrClampState = PipelineStateBuilder::build(*hdrClampShader);
+			hdrClampState = PipelineStateBuilder::build(Shader::create(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes)));
 
 			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(HDRClampEffect));
 		}

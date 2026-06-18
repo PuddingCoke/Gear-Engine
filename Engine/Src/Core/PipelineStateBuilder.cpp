@@ -6,6 +6,8 @@
 
 #include<Gear/Core/GlobalShader.h>
 
+#include<Gear/Core/D3D12Core/ComputeState.h>
+
 namespace Gear::Core
 {
 	PipelineStateBuilder::PipelineStateBuilder() :
@@ -324,8 +326,23 @@ namespace Gear::Core
 		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::GRAPHICS, pipelineStateData);
 	}
 
-	D3D12Core::PipelineStatePtr PipelineStateBuilder::build(const D3D12Core::Shader& cs)
+	D3D12Core::PipelineStatePtr PipelineStateBuilder::build(D3D12Core::ShaderPtr cs)
 	{
+		ComPtr<ID3D12ShaderReflection> reflection = cs->getReflection();
+
+		{
+			D3D12_SHADER_DESC shaderDesc = {};
+
+			reflection->GetDesc(&shaderDesc);
+
+			const uint32_t rawType = D3D12_SHVER_GET_TYPE(shaderDesc.Version);
+
+			if (static_cast<D3D12_SHADER_VERSION_TYPE>(rawType) != D3D12_SHVER_COMPUTE_SHADER)
+			{
+				LOGERROR(L"侦测到非计算着色器传入！是否读取了错误的文件路径或字节码？");
+			}
+		}
+
 		ComPtr<ID3D12PipelineState> id3d12PipelineState;
 
 		D3D12Core::PipelineState::PipelineStateData pipelineStateData = {};
@@ -334,25 +351,16 @@ namespace Gear::Core
 
 		D3D12_COMPUTE_PIPELINE_STATE_DESC computeDesc = {};
 		computeDesc.pRootSignature = selectedRootSignature->get();
-		computeDesc.CS = cs.getByteCode();
+		computeDesc.CS = cs->getByteCode();
 
 		CHECKERROR(GraphicsDevice::get()->CreateComputePipelineState(&computeDesc, IID_PPV_ARGS(&id3d12PipelineState)));
 
 		DirectX::XMUINT3 groupDimension = { 0,0,0 };
 
-		ComPtr<ID3D12ShaderReflection> reflection = cs.getReflection();
+		reflection->GetThreadGroupSize(&groupDimension.x, &groupDimension.y, &groupDimension.z);
 
-		if (reflection.Get())
-		{
-			reflection->GetThreadGroupSize(&groupDimension.x, &groupDimension.y, &groupDimension.z);
+		pipelineStateData.computeData.groupDimension = groupDimension;
 
-			pipelineStateData.computeData.groupDimension = groupDimension;
-		}
-		else
-		{
-			LOGERROR(L"无法获取计算着色器的反射信息");
-		}
-
-		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE, pipelineStateData);
+		return makeUnique<D3D12Core::ComputeState>(std::move(cs), id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE, pipelineStateData);
 	}
 }

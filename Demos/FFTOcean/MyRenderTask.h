@@ -22,13 +22,7 @@ public:
 		oceanVS(Shader::create(File::getRootFolder() + L"OceanVS.cso")),
 		oceanHS(Shader::create(File::getRootFolder() + L"OceanHS.cso")),
 		oceanDS(Shader::create(File::getRootFolder() + L"OceanDS.cso")),
-		oceanPS(Shader::create(File::getRootFolder() + L"OceanPS.cso")),
-		spectrumCS(Shader::create(File::getRootFolder() + L"SpectrumCS.cso")),
-		conjugateCS(Shader::create(File::getRootFolder() + L"ConjugateCS.cso")),
-		displacementSpectrumCS(Shader::create(File::getRootFolder() + L"DisplacementSpectrumCS.cso")),
-		ifftCS(Shader::create(File::getRootFolder() + L"IFFTCS.cso")),
-		permutationCS(Shader::create(File::getRootFolder() + L"PermutationCS.cso")),
-		waveMergeCS(Shader::create(File::getRootFolder() + L"WaveMergeCS.cso"))
+		oceanPS(Shader::create(File::getRootFolder() + L"OceanPS.cso"))
 	{
 		spectrumParam[0].mapLength = lengthScale0;
 
@@ -69,17 +63,17 @@ public:
 			.setPS(*oceanPS)
 			.build();
 
-		spectrumState = PipelineStateBuilder::build(*spectrumCS);
+		spectrumState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"SpectrumCS.cso"));
 
-		conjugateState = PipelineStateBuilder::build(*conjugateCS);
+		conjugateState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"ConjugateCS.cso"));
 
-		displacementSpectrumState = PipelineStateBuilder::build(*displacementSpectrumCS);
+		displacementSpectrumState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"DisplacementSpectrumCS.cso"));
 
-		ifftState = PipelineStateBuilder::build(*ifftCS);
+		ifftState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"IFFTCS.cso"));
 
-		permutationState = PipelineStateBuilder::build(*permutationCS);
+		permutationState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"PermutationCS.cso"));
 
-		waveMergeState = PipelineStateBuilder::build(*waveMergeCS);
+		waveMergeState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"WaveMergeCS.cso"));
 
 		tildeh0Texture = createTexture(textureResolution, FMT::RG32F);
 
@@ -655,28 +649,16 @@ private:
 
 	PipelineStatePtr oceanState;
 
-	ShaderPtr spectrumCS;
-
 	PipelineStatePtr spectrumState;
-
-	ShaderPtr conjugateCS;
 
 	PipelineStatePtr conjugateState;
 
-	ShaderPtr displacementSpectrumCS;
-
 	PipelineStatePtr displacementSpectrumState;
-
-	ShaderPtr ifftCS;
 
 	PipelineStatePtr ifftState;
 
 	//sign correction
-	ShaderPtr permutationCS;
-
 	PipelineStatePtr permutationState;
-
-	ShaderPtr waveMergeCS;
 
 	PipelineStatePtr waveMergeState;
 

@@ -38,8 +38,6 @@ public:
 		cubeRenderVS(Shader::create(File::getRootFolder() + L"CubeRenderVS.cso")),
 		cubeRenderPS(Shader::create(File::getRootFolder() + L"CubeRenderPS.cso")),
 		cubeRenderBouncePS(Shader::create(File::getRootFolder() + L"CubeRenderBouncePS.cso")),
-		irradianceOctahedralEncode(Shader::create(File::getRootFolder() + L"IrradianceOctahedralEncode.cso")),
-		depthOctahedralEncode(Shader::create(File::getRootFolder() + L"DepthOctahedralEncode.cso")),
 		skyboxPShader(Shader::create(File::getRootFolder() + L"SkybosPShader.cso")),
 		ssrCombinePS(Shader::create(File::getRootFolder() + L"SSRCombinePS.cso")),
 		sunAngle(Math::halfPi - 0.01f)
@@ -122,9 +120,9 @@ public:
 			.setPS(*ssrCombinePS)
 			.build();
 
-		irradianceOctahedralEncodeState = PipelineStateBuilder::build(*irradianceOctahedralEncode);
+		irradianceOctahedralEncodeState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"IrradianceOctahedralEncode.cso"));
 
-		depthOctahedralEncodeState = PipelineStateBuilder::build(*depthOctahedralEncode);
+		depthOctahedralEncodeState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"DepthOctahedralEncode.cso"));
 
 		skybox = resManager->createTextureCube(L"E:/Assets/Sponza/sky/kloppenheim_05_4k.hdr", 1024, true);
 
@@ -608,10 +606,6 @@ protected:
 	ShaderPtr cubeRenderPS;
 
 	ShaderPtr cubeRenderBouncePS;
-
-	ShaderPtr irradianceOctahedralEncode;
-
-	ShaderPtr depthOctahedralEncode;
 
 	ShaderPtr skyboxPShader;
 

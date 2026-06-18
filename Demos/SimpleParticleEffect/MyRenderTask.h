@@ -16,9 +16,7 @@ public:
 
 		particlePS = Shader::create(L"ParticlePS.hlsl", ShaderProfile::PIXEL);
 
-		particleCS = Shader::create(L"ParticleCS.hlsl", ShaderProfile::COMPUTE);
-
-		particleComputeState = PipelineStateBuilder::build(*particleCS);
+		particleComputeState = PipelineStateBuilder::build(Shader::create(L"ParticleCS.hlsl", ShaderProfile::COMPUTE));
 
 		particleRenderState = PipelineStateBuilder()
 			.setInputElements({
@@ -171,8 +169,6 @@ private:
 	ShaderPtr particleGS;
 
 	ShaderPtr particlePS;
-
-	ShaderPtr particleCS;
 
 	RenderTextureViewPtr originTexture;
 

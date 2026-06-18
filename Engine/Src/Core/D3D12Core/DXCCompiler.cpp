@@ -156,11 +156,21 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 			{
 				ComPtr<IDxcBlob> reflectionBlob;
 
-				dxcContainerReflection->GetPartContent(partIndex, &reflectionBlob);
+				if (FAILED(dxcContainerReflection->GetPartContent(partIndex, &reflectionBlob)))
+				{
+					LOGERROR(L"无法获取着色器的反射信息");
+				}
 
 				DxcBuffer reflectionBuffer = { reflectionBlob->GetBufferPointer(),reflectionBlob->GetBufferSize(),0 };
 
-				dxcUtils->CreateReflection(&reflectionBuffer, IID_PPV_ARGS(&shaderReflection));
+				if (FAILED(dxcUtils->CreateReflection(&reflectionBuffer, IID_PPV_ARGS(&shaderReflection))))
+				{
+					LOGERROR(L"无法获取着色器的反射信息");
+				}
+			}
+			else
+			{
+				LOGERROR(L"无法获取着色器的反射信息");
 			}
 
 			return shaderReflection;

@@ -138,6 +138,7 @@
     <ClInclude Include="Inc\D3D12Headers\dxgiformat.h" />
     <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader12.h" />
     <ClInclude Include="Inc\Gear\Camera\OrbitCamera.h" />
+    <ClInclude Include="Inc\Gear\Core\D3D12Core\ComputeState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DescriptorHandle.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DXCCompiler.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\Internal\DXCCompilerInternal.h" />
@@ -246,6 +247,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp" />
     <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp" />
     <ClCompile Include="Src\Effect\HBAOPlusEffect.cpp" />
     <ClCompile Include="Src\Effect\SSREffect.cpp" />

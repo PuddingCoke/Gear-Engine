@@ -325,6 +325,7 @@ namespace Gear::Resource
 		desc.texture = texture.get();
 		desc.mipSlice = mipSlice;
 		desc.rtvHandle = (*rtvMipHandles)[mipSlice];
+		desc.rtvFormat = getRTVFormat();
 
 		return desc;
 	}

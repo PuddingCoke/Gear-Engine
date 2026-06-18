@@ -17,15 +17,11 @@ namespace Gear::Effect
 		EffectBase(contextRef, width, height, outputTextureFormat),
 		hiZTexture(ResourceManager::createComputeTexture(width, height, hiZTextureFormat, 1, hiZMiplvel, false, true))
 	{
-		hiZCopyCS = Shader::create(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes));
-
-		hiZCreateCS = Shader::create(g_HiZCreateCSBytes, sizeof(g_HiZCreateCSBytes));
-
 		hiZProcessPS = Shader::create(g_HiZProcessPSBytes, sizeof(g_HiZProcessPSBytes));
 
-		hiZCopyState = PipelineStateBuilder::build(*hiZCopyCS);
+		hiZCopyState = PipelineStateBuilder::build(Shader::create(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes)));
 
-		hiZCreateState = PipelineStateBuilder::build(*hiZCreateCS);
+		hiZCreateState = PipelineStateBuilder::build(Shader::create(g_HiZCreateCSBytes, sizeof(g_HiZCreateCSBytes)));
 
 		hiZProcessState = PipelineStateBuilder()
 			.setBlendState(PipelineStateHelper::blendReplace)

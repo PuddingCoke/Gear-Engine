@@ -20,8 +20,6 @@ namespace Gear::Effect::ToneMapEffect
 
 		private:
 
-			ShaderPtr toneMapCS;
-
 			PipelineStatePtr toneMapState;
 
 			RenderTextureViewPtr outputTexture;
@@ -32,9 +30,7 @@ namespace Gear::Effect::ToneMapEffect
 
 		ToneMapEffectImpl::ToneMapEffectImpl()
 		{
-			toneMapCS = Shader::create(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes));
-
-			toneMapState = PipelineStateBuilder::build(*toneMapCS);
+			toneMapState = PipelineStateBuilder::build(Shader::create(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes)));
 
 			outputTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true);
 
