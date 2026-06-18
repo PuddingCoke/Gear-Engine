@@ -53,7 +53,6 @@ public:
 		originTexture->getTexture()->setName(L"Origin Texture");
 
 		shadowPipelineState = PipelineStateBuilder()
-			.setInputElements(inputDesc)
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterShadow)
@@ -64,7 +63,6 @@ public:
 			.build();
 
 		deferredPipelineState = PipelineStateBuilder()
-			.setInputElements(inputDesc)
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
@@ -82,7 +80,6 @@ public:
 			.build();
 
 		probeCapturePipelineState = PipelineStateBuilder()
-			.setInputElements(inputDesc)
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
@@ -94,7 +91,6 @@ public:
 			.build();
 
 		probeCaptureBouncePipelineState = PipelineStateBuilder()
-			.setInputElements(inputDesc)
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)

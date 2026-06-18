@@ -22,8 +22,8 @@ public:
 
 		particleRenderState = PipelineStateBuilder()
 			.setInputElements({
-				{"POSITION", 0, FMT::RGBA32F, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-				{"COLOR", 0, FMT::RGBA32F, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+				InputElementDesc(0),
+				InputElementDesc(1)
 				})
 			.setBlendState(PipelineStateHelper::blendAddtive)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)

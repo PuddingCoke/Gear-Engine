@@ -13,6 +13,30 @@
 
 namespace Gear::Core
 {
+	enum class InputClass
+	{
+		PERVERTEX = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		PERINSTANCE = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA
+	};
+
+	constexpr uint32_t ALIGNEDAUTO = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	struct InputElementDesc
+	{
+		constexpr explicit InputElementDesc(const uint32_t inputSlot, const InputClass inputSlotClass = InputClass::PERVERTEX, const uint32_t instanceDataStepRate = 0, const uint32_t alignedByteOffset = ALIGNEDAUTO) :
+			inputSlot(inputSlot), inputSlotClass(inputSlotClass), instanceDataStepRate(instanceDataStepRate), alignedByteOffset(alignedByteOffset)
+		{
+		}
+
+		uint32_t inputSlot;
+
+		InputClass inputSlotClass;
+
+		uint32_t instanceDataStepRate;
+
+		uint32_t alignedByteOffset;
+	};
+
 	class PipelineStateBuilder
 	{
 	public:
@@ -39,7 +63,7 @@ namespace Gear::Core
 		PipelineStateBuilder& setDSVFormat(const DXGI_FORMAT format);
 
 		template<size_t N>
-		PipelineStateBuilder& setInputElements(const D3D12_INPUT_ELEMENT_DESC(&descs)[N]);
+		PipelineStateBuilder& setInputElements(const InputElementDesc(&descs)[N]);
 
 		PipelineStateBuilder& setPrimitiveTopologyType(const D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopologyType);
 
@@ -60,6 +84,8 @@ namespace Gear::Core
 
 		std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements;
 
+		std::vector<std::string> semanticNames;
+
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsDesc;
 
 	};
@@ -75,11 +101,28 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline PipelineStateBuilder& PipelineStateBuilder::setInputElements(const D3D12_INPUT_ELEMENT_DESC(&descs)[N])
+	inline PipelineStateBuilder& PipelineStateBuilder::setInputElements(const InputElementDesc(&descs)[N])
 	{
-		inputElements = std::vector<D3D12_INPUT_ELEMENT_DESC>(descs, descs + N);
+		//如果是空的意味着没有调用setVS，那么需要先进行resize
+		if (inputElements.empty())
+		{
+			inputElements.resize(N);
+		}
+		else if (inputElements.size() != N)
+		{
+			LOGERROR(L"侦测到", TOWSTRING(descs), L"与", TOWSTRING(inputElements.size()), L"数量不匹配");
+		}
 
-		graphicsDesc.InputLayout = { inputElements.data(),static_cast<uint32_t>(inputElements.size()) };
+		for (uint32_t i = 0; i < N; i++)
+		{
+			inputElements[i].InputSlot = descs[i].inputSlot;
+
+			inputElements[i].AlignedByteOffset = descs[i].alignedByteOffset;
+
+			inputElements[i].InputSlotClass = static_cast<D3D12_INPUT_CLASSIFICATION>(descs[i].inputSlotClass);
+
+			inputElements[i].InstanceDataStepRate = descs[i].instanceDataStepRate;
+		}
 
 		return *this;
 	}

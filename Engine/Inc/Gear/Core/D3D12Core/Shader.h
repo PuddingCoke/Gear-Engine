@@ -38,7 +38,7 @@ namespace Gear::Core::D3D12Core
 		//hlsl
 		Shader(const std::wstring& filePath, const DXCCompiler::ShaderProfile profile);
 
-		ComPtr<ID3D12ShaderReflection> getReflectionBlob() const;
+		ComPtr<ID3D12ShaderReflection> getReflection() const;
 
 	private:
 

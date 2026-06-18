@@ -36,10 +36,6 @@ public:
 		}
 
 		pipelineState = PipelineStateBuilder()
-			.setInputElements({
-				{"POSITION",0,FMT::RGB32F,0,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0},
-				{"NORMAL",0,FMT::RGB32F,0,12,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0}
-				})
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)

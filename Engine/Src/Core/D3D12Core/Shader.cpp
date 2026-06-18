@@ -68,7 +68,7 @@ namespace Gear::Core::D3D12Core
 		shaderReflection = DXCCompiler::getReflectionBlob(shaderBlob);
 	}
 
-	ComPtr<ID3D12ShaderReflection> Shader::getReflectionBlob() const
+	ComPtr<ID3D12ShaderReflection> Shader::getReflection() const
 	{
 		return shaderReflection;
 	}

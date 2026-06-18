@@ -47,7 +47,6 @@ public:
 			.build();
 
 		gridDebugState = PipelineStateBuilder()
-			.setInputElements({ {"POSITION",0,FMT::RGB32F,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0} })
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
@@ -58,7 +57,6 @@ public:
 			.build();
 
 		oceanState = PipelineStateBuilder()
-			.setInputElements({ {"POSITION",0,FMT::RGB32F,0,D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0} })
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)

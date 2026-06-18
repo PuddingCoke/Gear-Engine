@@ -11,6 +11,7 @@
 
 namespace Gear::Utils::File
 {
+	//获取EXE执行目录
 	std::wstring getRootFolder();
 
 	std::wstring backslashToSlash(const std::wstring& filePath);

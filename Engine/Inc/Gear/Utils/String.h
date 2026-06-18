@@ -7,7 +7,7 @@
 
 namespace Gear::Utils::String
 {
-	std::string wstringToStr(const std::wstring& wstr);
+	std::string wstringToString(const std::wstring& wstr);
 }
 
 #endif // !_GEAR_UTILS_STRING_H_
