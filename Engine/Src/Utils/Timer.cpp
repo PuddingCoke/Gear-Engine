@@ -1,36 +1,38 @@
 ﻿#include<Gear/Utils/Timer.h>
 
+#include<Gear/Utils/Math.h>
+
 namespace Gear::Utils
 {
 	Timer::Timer() :
-		curTime(0), timeLimit(0)
+		timeLimit(0), currrentTime(0.f)
 	{
 
 	}
 
 	Timer::Timer(const float timeLimit) :
-		timeLimit(timeLimit), curTime(0)
+		timeLimit(timeLimit), currrentTime(0.f)
 	{
 
 	}
 
 	bool Timer::update(const float dt)
 	{
-		if (curTime >= timeLimit)
+		if (currrentTime >= timeLimit)
 		{
-			curTime -= timeLimit;
+			currrentTime -= timeLimit;
 
 			return true;
 		}
 
-		curTime += dt;
+		currrentTime += dt;
 
 		return false;
 	}
 
 	void Timer::restart()
 	{
-		curTime = 0;
+		currrentTime = 0.f;
 	}
 
 	void Timer::setTimeLimit(const float timeLimit)
@@ -41,5 +43,15 @@ namespace Gear::Utils
 	float Timer::getTimeLimit() const
 	{
 		return timeLimit;
+	}
+
+	float Timer::getCurrentTime() const
+	{
+		return currrentTime;
+	}
+
+	float Timer::getProgressRatio() const
+	{
+		return Math::saturate(currrentTime / timeLimit);
 	}
 }

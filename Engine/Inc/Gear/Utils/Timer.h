@@ -21,11 +21,15 @@ namespace Gear::Utils
 
 		float getTimeLimit() const;
 
+		float getCurrentTime() const;
+
+		float getProgressRatio() const;
+
 	private:
 
 		float timeLimit;
 
-		float curTime;
+		float currrentTime;
 
 	};
 }

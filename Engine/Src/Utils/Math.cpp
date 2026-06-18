@@ -31,6 +31,11 @@ namespace Gear::Utils::Math
 		return 1.f / (sigma * 2.506628274631000502415765284811f) * exp(-0.5f * (x / sigma) * (x / sigma));
 	}
 
+	float pow(const float x, const float y)
+	{
+		return powf(x, y);
+	}
+
 	uint32_t log2(const uint32_t x)
 	{
 		unsigned long y;

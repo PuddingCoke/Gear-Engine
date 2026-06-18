@@ -29,6 +29,8 @@ namespace Gear::Utils::Math
 
 	float gauss(const float sigma, const float x);
 
+	float pow(const float x, const float y);
+
 	uint32_t log2(const uint32_t x);
 }
 
