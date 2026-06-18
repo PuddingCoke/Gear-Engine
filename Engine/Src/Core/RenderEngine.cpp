@@ -351,6 +351,8 @@ namespace Gear::Core::RenderEngine
 				ImGui_ImplWin32_Init(hwnd);
 				ImGui_ImplDX12_Init(GraphicsDevice::get(), Graphics::getFrameBufferCount(), Graphics::backBufferFormat,
 					GlobalDescriptorHeap::getResourceHeap()->get(), handle.getCurrentCPUHandle(), handle.getCurrentGPUHandle());
+
+				io.Fonts->GetTexDataAsRGBA32(nullptr, nullptr, nullptr);
 			}
 			else
 			{
