@@ -2,7 +2,7 @@
 
 #include<Gear/Effect/Internal/HDRClampEffectInternal.h>
 
-#include<Gear/CompiledShaders/HDRClampCS.h>
+#include<Shaders/CompiledShaders/HDRClampCS.h>
 
 namespace Gear::Effect::HDRClampEffect
 {

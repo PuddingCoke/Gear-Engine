@@ -2,17 +2,17 @@
 
 #include<Gear/Core/PipelineStateHelper.h>
 
-#include<Gear/CompiledShaders/PrimitiveBatchLineVS.h>
+#include<Shaders/CompiledShaders/PrimitiveBatchLineVS.h>
 
-#include<Gear/CompiledShaders/PrimitiveBatchCircleVS.h>
+#include<Shaders/CompiledShaders/PrimitiveBatchCircleVS.h>
 
-#include<Gear/CompiledShaders/PrimitiveBatchRCLineVS.h>
+#include<Shaders/CompiledShaders/PrimitiveBatchRCLineVS.h>
 
-#include<Gear/CompiledShaders/PrimitiveBatchRCLineGS.h>
+#include<Shaders/CompiledShaders/PrimitiveBatchRCLineGS.h>
 
-#include<Gear/CompiledShaders/PrimitiveBatchLineGS.h>
+#include<Shaders/CompiledShaders/PrimitiveBatchLineGS.h>
 
-#include<Gear/CompiledShaders/PrimitiveBatchPS.h>
+#include<Shaders/CompiledShaders/PrimitiveBatchPS.h>
 
 //Gear::Core::Gear2D::PrimitiveBatch::PrimitiveBatch(const DXGI_FORMAT format, GraphicsContext* const context) :
 //	context(context), lineWidth(1.f)

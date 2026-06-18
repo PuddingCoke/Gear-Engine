@@ -4,7 +4,7 @@
 
 #include<Gear/Core/Graphics.h>
 
-#include<Gear/CompiledShaders/GammaCorrectCS.h>
+#include<Shaders/CompiledShaders/GammaCorrectCS.h>
 
 namespace Gear::Effect::GammaCorrectEffect
 {

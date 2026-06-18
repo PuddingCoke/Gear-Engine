@@ -6,17 +6,17 @@
 
 #include<Gear/Utils/File.h>
 
-#include<Gear/CompiledShaders/BloomFilterPS.h>
+#include<Shaders/CompiledShaders/BloomFilterPS.h>
 
-#include<Gear/CompiledShaders/BloomFinalPS.h>
+#include<Shaders/CompiledShaders/BloomFinalPS.h>
 
-#include<Gear/CompiledShaders/BloomVBlurCS.h>
+#include<Shaders/CompiledShaders/BloomVBlurCS.h>
 
-#include<Gear/CompiledShaders/BloomHBlurCS.h>
+#include<Shaders/CompiledShaders/BloomHBlurCS.h>
 
-#include<Gear/CompiledShaders/BloomDownSamplePS.h>
+#include<Shaders/CompiledShaders/BloomDownSamplePS.h>
 
-#include<Gear/CompiledShaders/BloomKarisAveragePS.h>
+#include<Shaders/CompiledShaders/BloomKarisAveragePS.h>
 
 namespace Gear::Effect
 {
