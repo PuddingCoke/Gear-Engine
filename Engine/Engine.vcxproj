@@ -145,8 +145,9 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\PipelineState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h" />
-    <ClInclude Include="Inc\Gear\Core\ImmutableIndexCBuffer.h" />
-    <ClInclude Include="Inc\Gear\Core\IndexCBufferBase.h" />
+    <ClInclude Include="Inc\Gear\Resource\DefaultIndexCBuffer.h" />
+    <ClInclude Include="Inc\Gear\Resource\ImmutableIndexCBuffer.h" />
+    <ClInclude Include="Inc\Gear\Resource\IndexCBufferBase.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadGlobalInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadLocalInternal.h" />
     <ClInclude Include="Inc\Gear\Core\RenderThreadGlobal.h" />
@@ -171,7 +172,7 @@
     <ClInclude Include="Inc\Gear\Core\PipelineStateBuilder.h" />
     <ClInclude Include="Inc\Gear\Core\RenderTask.h" />
     <ClInclude Include="Inc\Gear\Core\RenderThread.h" />
-    <ClInclude Include="Inc\Gear\Core\D3D12Resource\PipelineResourceDesc.h" />
+    <ClInclude Include="Inc\Gear\Resource\PipelineResourceDesc.h" />
     <ClInclude Include="Inc\Gear\Resource\DynamicCBuffer.h" />
     <ClInclude Include="Inc\Gear\Resource\DefaultCBuffer.h" />
     <ClInclude Include="Inc\Gear\Effect\BackBufferBlitEffect.h" />
@@ -180,7 +181,6 @@
     <ClInclude Include="Inc\Gear\Effect\Internal\HDRClampEffectInternal.h" />
     <ClInclude Include="Inc\Gear\Effect\Internal\LatLongMapToCubeMapEffectInternal.h" />
     <ClInclude Include="Inc\Gear\Effect\LatLongMapToCubeMapEffect.h" />
-    <ClInclude Include="Inc\Gear\Resource\IndexCBufferBase.h" />
     <ClInclude Include="Inc\Gear\Resource\SwapBuffer.h" />
     <ClInclude Include="Inc\Gear\Resource\SwappableBase.h" />
     <ClInclude Include="Inc\Gear\Core\TOPOLOGY.h" />
@@ -254,9 +254,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Src\Resource\ImmutableIndexCBuffer.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp" />
     <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp" />
-    <ClCompile Include="Src\Core\IndexCBufferBase.cpp" />
+    <ClCompile Include="Src\Resource\IndexCBufferBase.cpp" />
     <ClCompile Include="Src\Core\RenderThreadGlobal.cpp" />
     <ClCompile Include="Src\Core\RenderThreadLocal.cpp" />
     <ClCompile Include="Src\Effect\HBAOPlusEffect.cpp" />

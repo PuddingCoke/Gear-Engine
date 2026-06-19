@@ -23,11 +23,11 @@ namespace Gear::Resource
 
 		~CounterBufferView();
 
-		D3D12Resource::ShaderResourceDesc getSRVIndex() const;
+		ShaderResourceDesc getSRVIndex() const;
 
-		D3D12Resource::ShaderResourceDesc getUAVIndex() const;
+		ShaderResourceDesc getUAVIndex() const;
 
-		D3D12Resource::ClearUAVDesc getClearUAVDesc() const;
+		ClearUAVDesc getClearUAVDesc() const;
 
 		void copyDescriptors() override;
 

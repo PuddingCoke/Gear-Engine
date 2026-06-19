@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_D3D12RESOURCE_PIPELINERESOURCEDESC_H_
-#define _GEAR_CORE_D3D12RESOURCE_PIPELINERESOURCEDESC_H_
+#ifndef _GEAR_RESOURCE_PIPELINERESOURCEDESC_H_
+#define _GEAR_RESOURCE_PIPELINERESOURCEDESC_H_
 
 #include<D3D12Headers/d3dx12.h>
 
@@ -10,7 +10,10 @@ namespace Gear::Core::D3D12Resource
 	class Buffer;
 
 	class Texture;
+}
 
+namespace Gear::Resource
+{
 	struct ShaderResourceDesc
 	{
 		enum ResourceType
@@ -30,14 +33,14 @@ namespace Gear::Core::D3D12Resource
 
 		struct TextureTransitionDesc
 		{
-			Texture* texture;
+			Core::D3D12Resource::Texture* texture;
 			uint32_t mipSlice;
 		};
 
 		struct BufferTransitionDesc
 		{
-			Buffer* buffer;
-			Buffer* counterBuffer;
+			Core::D3D12Resource::Buffer* buffer;
+			Core::D3D12Resource::Buffer* counterBuffer;
 		};
 
 		union
@@ -49,7 +52,7 @@ namespace Gear::Core::D3D12Resource
 
 	struct RenderTargetDesc
 	{
-		Texture* texture;
+		Core::D3D12Resource::Texture* texture;
 		uint32_t mipSlice;
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
 		DXGI_FORMAT rtvFormat;
@@ -57,7 +60,7 @@ namespace Gear::Core::D3D12Resource
 
 	struct DepthStencilDesc
 	{
-		Texture* texture;
+		Core::D3D12Resource::Texture* texture;
 		uint32_t mipSlice;
 		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 		DXGI_FORMAT dsvFormat;
@@ -65,13 +68,13 @@ namespace Gear::Core::D3D12Resource
 
 	struct VertexBufferDesc
 	{
-		Buffer* buffer;
+		Core::D3D12Resource::Buffer* buffer;
 		D3D12_VERTEX_BUFFER_VIEW vbv;
 	};
 
 	struct IndexBufferDesc
 	{
-		Buffer* buffer;
+		Core::D3D12Resource::Buffer* buffer;
 		D3D12_INDEX_BUFFER_VIEW ibv;
 	};
 
@@ -85,13 +88,13 @@ namespace Gear::Core::D3D12Resource
 
 		struct TextureClearDesc
 		{
-			Texture* texture;
+			Core::D3D12Resource::Texture* texture;
 			uint32_t mipSlice;
 		};
 
 		struct BufferClearDesc
 		{
-			Buffer* buffer;
+			Core::D3D12Resource::Buffer* buffer;
 		};
 
 		union
@@ -106,4 +109,4 @@ namespace Gear::Core::D3D12Resource
 	};
 }
 
-#endif // !_GEAR_CORE_D3D12RESOURCE_PIPELINERESOURCEDESC_H_
+#endif // !_GEAR_RESOURCE_PIPELINERESOURCEDESC_H_

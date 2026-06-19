@@ -24,15 +24,15 @@ namespace Gear::Resource
 
 		~BufferView();
 
-		D3D12Resource::VertexBufferDesc getVertexBuffer() const;
+		VertexBufferDesc getVertexBuffer() const;
 
-		D3D12Resource::IndexBufferDesc getIndexBuffer() const;
+		IndexBufferDesc getIndexBuffer() const;
 
-		D3D12Resource::ShaderResourceDesc getSRVIndex() const;
+		ShaderResourceDesc getSRVIndex() const;
 
-		D3D12Resource::ShaderResourceDesc getUAVIndex() const;
+		ShaderResourceDesc getUAVIndex() const;
 
-		D3D12Resource::ClearUAVDesc getClearUAVDesc() const;
+		ClearUAVDesc getClearUAVDesc() const;
 
 		CounterBufferView* getCounterBuffer() const;
 

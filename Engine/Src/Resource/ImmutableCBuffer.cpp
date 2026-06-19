@@ -43,11 +43,11 @@ namespace Gear::Resource
 	{
 	}
 
-	D3D12Resource::ShaderResourceDesc ImmutableCBuffer::getBufferIndex() const
+	ShaderResourceDesc ImmutableCBuffer::getBufferIndex() const
 	{
-		D3D12Resource::ShaderResourceDesc desc = {};
-		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
-		desc.state = D3D12Resource::ShaderResourceDesc::CBV;
+		ShaderResourceDesc desc = {};
+		desc.type = ShaderResourceDesc::BUFFER;
+		desc.state = ShaderResourceDesc::CBV;
 		desc.resourceIndex = *bufferIndex;
 		desc.bufferDesc.buffer = buffer.get();
 

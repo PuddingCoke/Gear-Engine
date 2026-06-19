@@ -21,7 +21,7 @@
 
 #include<Gear/Resource/DepthTextureView.h>
 
-#include<Gear/Core/ImmutableIndexCBuffer.h>
+#include<Gear/Resource/ImmutableIndexCBuffer.h>
 
 namespace Gear::Core
 {
@@ -125,7 +125,7 @@ namespace Gear::Core
 		static Resource::SwapTexturePtr createSwapTexture(const std::function<Resource::RenderTextureViewPtr(void)>& textureFunc);
 
 		template<size_t N>
-		ImmutableIndexCBufferPtr createImmutableIndexCBuffer(const ResourceIndexPair(&pairs)[N], const bool persistent);
+		Resource::ImmutableIndexCBufferPtr createImmutableIndexCBuffer(const Resource::ResourceIndexPair(&pairs)[N]);
 
 	protected:
 
@@ -145,7 +145,7 @@ namespace Gear::Core
 	};
 
 	template<size_t N>
-	inline ImmutableIndexCBufferPtr ResourceManager::createImmutableIndexCBuffer(const ResourceIndexPair(&pairs)[N], const bool persistent)
+	inline Resource::ImmutableIndexCBufferPtr ResourceManager::createImmutableIndexCBuffer(const Resource::ResourceIndexPair(&pairs)[N])
 	{
 #ifdef _DEBUG
 		for (uint32_t i = 0; i < N; i++)
@@ -157,7 +157,7 @@ namespace Gear::Core
 		}
 #endif // _DEBUG
 
-		const uint64_t byteSize = IndexCBufferBase::getCBufferByteSize(pairs);
+		const uint64_t byteSize = Resource::getCBufferByteSizeFromPairs(pairs);
 
 		const uint64_t numElement = byteSize / sizeof(uint32_t);
 
@@ -170,7 +170,7 @@ namespace Gear::Core
 
 		D3D12Resource::BufferPtr buffer = createBuffer(resourceIndices.data(), byteSize, D3D12_RESOURCE_FLAG_NONE);
 
-		return makeUnique<ImmutableIndexCBuffer>(pairs, buffer, byteSize, persistent);
+		return makeUnique<Resource::ImmutableIndexCBuffer>(pairs, std::move(buffer));
 	}
 }
 

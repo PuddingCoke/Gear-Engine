@@ -444,7 +444,7 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\Internal\DXCCompilerInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\D3D12Resource\PipelineResourceDesc.h">
+    <ClInclude Include="Inc\Gear\Resource\PipelineResourceDesc.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\DevEssential.h">
@@ -519,10 +519,10 @@
     <ClInclude Include="Inc\Gear\Resource\IndexCBufferBase.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\ImmutableIndexCBuffer.h">
+    <ClInclude Include="Inc\Gear\Resource\ImmutableIndexCBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\IndexCBufferBase.h">
+    <ClInclude Include="Inc\Gear\Resource\IndexCBufferBase.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\RenderThreadLocal.h">
@@ -535,6 +535,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadGlobalInternal.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Resource\DefaultIndexCBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
@@ -779,13 +782,16 @@
     <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\IndexCBufferBase.cpp">
+    <ClCompile Include="Src\Resource\IndexCBufferBase.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\RenderThreadLocal.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\RenderThreadGlobal.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\ImmutableIndexCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

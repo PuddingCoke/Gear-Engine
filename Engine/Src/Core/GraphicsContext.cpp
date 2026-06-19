@@ -218,6 +218,72 @@ namespace Gear::Core
 		pushRootConstantBufferDesc({ getComputeRootSignature()->getCSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
 	}
 
+	void GraphicsContext::setVSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer)
+	{
+		D3D12Resource::Buffer* const buffer = immutableIndexCBuffer.getBuffer();
+
+		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getVSConstantBufferParameterIndex(),immutableIndexCBuffer.getGPUAddress() });
+
+		setShaderResources(immutableIndexCBuffer.getShaderResourceDescs(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	}
+
+	void GraphicsContext::setHSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer)
+	{
+		D3D12Resource::Buffer* const buffer = immutableIndexCBuffer.getBuffer();
+
+		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getHSConstantBufferParameterIndex(),immutableIndexCBuffer.getGPUAddress() });
+
+		setShaderResources(immutableIndexCBuffer.getShaderResourceDescs(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	}
+
+	void GraphicsContext::setDSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer)
+	{
+		D3D12Resource::Buffer* const buffer = immutableIndexCBuffer.getBuffer();
+
+		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getDSConstantBufferParameterIndex(),immutableIndexCBuffer.getGPUAddress() });
+
+		setShaderResources(immutableIndexCBuffer.getShaderResourceDescs(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	}
+
+	void GraphicsContext::setGSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer)
+	{
+		D3D12Resource::Buffer* const buffer = immutableIndexCBuffer.getBuffer();
+
+		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getGSConstantBufferParameterIndex(),immutableIndexCBuffer.getGPUAddress() });
+
+		setShaderResources(immutableIndexCBuffer.getShaderResourceDescs(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	}
+
+	void GraphicsContext::setPSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer)
+	{
+		D3D12Resource::Buffer* const buffer = immutableIndexCBuffer.getBuffer();
+
+		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getPSConstantBufferParameterIndex(),immutableIndexCBuffer.getGPUAddress() });
+
+		setShaderResources(immutableIndexCBuffer.getShaderResourceDescs(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	}
+
+	void GraphicsContext::setCSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer)
+	{
+		D3D12Resource::Buffer* const buffer = immutableIndexCBuffer.getBuffer();
+
+		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+		pushRootConstantBufferDesc({ getComputeRootSignature()->getCSConstantBufferParameterIndex(),immutableIndexCBuffer.getGPUAddress() });
+
+		setShaderResources(immutableIndexCBuffer.getShaderResourceDescs(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	}
+
 	void GraphicsContext::setPipelineState(const D3D12Core::PipelineState& pipelineState)
 	{
 		if (&pipelineState != currentPipelineState)
@@ -237,7 +303,7 @@ namespace Gear::Core
 		}
 	}
 
-	void GraphicsContext::setRenderTargets(const D3D12Resource::DepthStencilDesc& depthStencil)
+	void GraphicsContext::setRenderTargets(const Resource::DepthStencilDesc& depthStencil)
 	{
 		setResourceState(depthStencil);
 
@@ -256,12 +322,12 @@ namespace Gear::Core
 		commandList->clearRenderTarget(Graphics::getBackBufferHandle(), clearValue, 0, nullptr);
 	}
 
-	void GraphicsContext::clearRenderTarget(const D3D12Resource::RenderTargetDesc& desc, const float clearValue[4])
+	void GraphicsContext::clearRenderTarget(const Resource::RenderTargetDesc& desc, const float clearValue[4])
 	{
 		renderTargetClearDescs.push(RenderTargetClearDesc{ desc.rtvHandle,{clearValue[0],clearValue[1],clearValue[2],clearValue[3]} });
 	}
 
-	void GraphicsContext::clearRenderTargetInstant(const D3D12Resource::RenderTargetDesc& desc, const float clearValue[4])
+	void GraphicsContext::clearRenderTargetInstant(const Resource::RenderTargetDesc& desc, const float clearValue[4])
 	{
 		clearRenderTarget(desc, clearValue);
 
@@ -277,7 +343,7 @@ namespace Gear::Core
 		depthStencilClearDesc.setClearData(flags, depth, stencil);
 	}
 
-	void GraphicsContext::clearDepthStencilInstant(const D3D12Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
+	void GraphicsContext::clearDepthStencilInstant(const Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
 	{
 		setResourceState(desc);
 
@@ -290,7 +356,7 @@ namespace Gear::Core
 		resetDepthStencilClearDesc();
 	}
 
-	void GraphicsContext::setIndexBuffer(const D3D12Resource::IndexBufferDesc& indexBuffer)
+	void GraphicsContext::setIndexBuffer(const Resource::IndexBufferDesc& indexBuffer)
 	{
 		setResourceState(indexBuffer);
 
@@ -361,7 +427,7 @@ namespace Gear::Core
 		setScissorRect(0, 0, static_cast<int32_t>(dimension.x), static_cast<int32_t>(dimension.y));
 	}
 
-	void GraphicsContext::clearUnorderedAccess(const D3D12Resource::ClearUAVDesc& desc, const float values[4])
+	void GraphicsContext::clearUnorderedAccess(const Resource::ClearUAVDesc& desc, const float values[4])
 	{
 		D3D12Resource::D3D12ResourceBase* resource = setResourceState(desc);
 
@@ -376,7 +442,7 @@ namespace Gear::Core
 		commandList->resourceBarrier(1, &barrier);
 	}
 
-	void GraphicsContext::clearUnorderedAccess(const D3D12Resource::ClearUAVDesc& desc, const uint32_t values[4])
+	void GraphicsContext::clearUnorderedAccess(const Resource::ClearUAVDesc& desc, const uint32_t values[4])
 	{
 		D3D12Resource::D3D12ResourceBase* resource = setResourceState(desc);
 
@@ -501,6 +567,14 @@ namespace Gear::Core
 		commandList->flushResourceBarriers();
 	}
 
+	void GraphicsContext::setShaderResources(const std::vector<Resource::ShaderResourceDesc>& descs, const uint32_t targetSRVState)
+	{
+		for (const Resource::ShaderResourceDesc& desc : descs)
+		{
+			setResourceState(desc, targetSRVState);
+		}
+	}
+
 	void GraphicsContext::pushRootConstantBufferDesc(const RootConstantBufferDesc& desc)
 	{
 		rootConstantBufferDescs.push(desc);
@@ -618,15 +692,15 @@ namespace Gear::Core
 		return computeRootSignature;
 	}
 
-	void GraphicsContext::setResourceState(const D3D12Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState)
+	void GraphicsContext::setResourceState(const Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState)
 	{
-		if (desc.type == D3D12Resource::ShaderResourceDesc::BUFFER)
+		if (desc.type == Resource::ShaderResourceDesc::BUFFER)
 		{
-			if (desc.state == D3D12Resource::ShaderResourceDesc::SRV)
+			if (desc.state == Resource::ShaderResourceDesc::SRV)
 			{
 				commandList->trackAndSetResourceState(desc.bufferDesc.buffer, targetSRVState);
 			}
-			else if (desc.state == D3D12Resource::ShaderResourceDesc::UAV)
+			else if (desc.state == Resource::ShaderResourceDesc::UAV)
 			{
 				commandList->trackAndSetResourceState(desc.bufferDesc.buffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
@@ -637,50 +711,50 @@ namespace Gear::Core
 				commandList->trackAndSetResourceState(desc.bufferDesc.buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 			}
 		}
-		else if (desc.type == D3D12Resource::ShaderResourceDesc::TEXTURE)
+		else if (desc.type == Resource::ShaderResourceDesc::TEXTURE)
 		{
-			if (desc.state == D3D12Resource::ShaderResourceDesc::SRV)
+			if (desc.state == Resource::ShaderResourceDesc::SRV)
 			{
 				commandList->trackAndSetResourceState(desc.textureDesc.texture, desc.textureDesc.mipSlice, targetSRVState);
 			}
-			else if (desc.state == D3D12Resource::ShaderResourceDesc::UAV)
+			else if (desc.state == Resource::ShaderResourceDesc::UAV)
 			{
 				commandList->trackAndSetResourceState(desc.textureDesc.texture, desc.textureDesc.mipSlice, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 			}
 		}
 	}
 
-	void GraphicsContext::setResourceState(const D3D12Resource::RenderTargetDesc& desc)
+	void GraphicsContext::setResourceState(const Resource::RenderTargetDesc& desc)
 	{
 		commandList->trackAndSetResourceState(desc.texture, desc.mipSlice, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	}
 
-	void GraphicsContext::setResourceState(const D3D12Resource::DepthStencilDesc& desc)
+	void GraphicsContext::setResourceState(const Resource::DepthStencilDesc& desc)
 	{
 		commandList->trackAndSetResourceState(desc.texture, desc.mipSlice, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 	}
 
-	void GraphicsContext::setResourceState(const D3D12Resource::VertexBufferDesc& desc)
+	void GraphicsContext::setResourceState(const Resource::VertexBufferDesc& desc)
 	{
 		commandList->trackAndSetResourceState(desc.buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 	}
 
-	void GraphicsContext::setResourceState(const D3D12Resource::IndexBufferDesc& desc)
+	void GraphicsContext::setResourceState(const Resource::IndexBufferDesc& desc)
 	{
 		commandList->trackAndSetResourceState(desc.buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 	}
 
-	D3D12Resource::D3D12ResourceBase* GraphicsContext::setResourceState(const D3D12Resource::ClearUAVDesc& desc)
+	D3D12Resource::D3D12ResourceBase* GraphicsContext::setResourceState(const Resource::ClearUAVDesc& desc)
 	{
 		D3D12Resource::D3D12ResourceBase* resource = nullptr;
 
-		if (desc.type == D3D12Resource::ClearUAVDesc::BUFFER)
+		if (desc.type == Resource::ClearUAVDesc::BUFFER)
 		{
 			resource = desc.bufferDesc.buffer;
 
 			commandList->trackAndSetResourceState(desc.bufferDesc.buffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		}
-		else if (desc.type == D3D12Resource::ClearUAVDesc::TEXTURE)
+		else if (desc.type == Resource::ClearUAVDesc::TEXTURE)
 		{
 			resource = desc.textureDesc.texture;
 

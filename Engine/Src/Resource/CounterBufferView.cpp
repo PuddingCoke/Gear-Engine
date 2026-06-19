@@ -75,32 +75,32 @@ namespace Gear::Resource
 	{
 	}
 
-	D3D12Resource::ShaderResourceDesc CounterBufferView::getSRVIndex() const
+	ShaderResourceDesc CounterBufferView::getSRVIndex() const
 	{
-		D3D12Resource::ShaderResourceDesc desc = {};
-		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
-		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
+		ShaderResourceDesc desc = {};
+		desc.type = ShaderResourceDesc::BUFFER;
+		desc.state = ShaderResourceDesc::SRV;
 		desc.resourceIndex = *srvIndex;
 		desc.bufferDesc.buffer = buffer.get();
 
 		return desc;
 	}
 
-	D3D12Resource::ShaderResourceDesc CounterBufferView::getUAVIndex() const
+	ShaderResourceDesc CounterBufferView::getUAVIndex() const
 	{
-		D3D12Resource::ShaderResourceDesc desc = {};
-		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
-		desc.state = D3D12Resource::ShaderResourceDesc::UAV;
+		ShaderResourceDesc desc = {};
+		desc.type = ShaderResourceDesc::BUFFER;
+		desc.state = ShaderResourceDesc::UAV;
 		desc.resourceIndex = *uavIndex;
 		desc.bufferDesc.buffer = buffer.get();
 
 		return desc;
 	}
 
-	D3D12Resource::ClearUAVDesc CounterBufferView::getClearUAVDesc() const
+	ClearUAVDesc CounterBufferView::getClearUAVDesc() const
 	{
-		D3D12Resource::ClearUAVDesc desc = {};
-		desc.type = D3D12Resource::ClearUAVDesc::BUFFER;
+		ClearUAVDesc desc = {};
+		desc.type = ClearUAVDesc::BUFFER;
 		desc.bufferDesc.buffer = buffer.get();
 		desc.viewGPUHandle = *viewGPUHandle;
 		desc.viewCPUHandle = *viewCPUHandle;

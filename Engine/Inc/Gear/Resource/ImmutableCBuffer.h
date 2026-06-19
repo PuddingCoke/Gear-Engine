@@ -23,7 +23,7 @@ namespace Gear::Resource
 
 		~ImmutableCBuffer();
 
-		D3D12Resource::ShaderResourceDesc getBufferIndex() const;
+		ShaderResourceDesc getBufferIndex() const;
 
 		D3D12_GPU_VIRTUAL_ADDRESS getGPUAddress() const;
 

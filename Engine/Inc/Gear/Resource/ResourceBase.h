@@ -7,9 +7,9 @@
 
 #include<Gear/Core/LocalDescriptorHeap.h>
 
-#include<Gear/Core/D3D12Resource/PipelineResourceDesc.h>
-
 #include<Gear/Utils/Math.h>
+
+#include"PipelineResourceDesc.h"
 
 namespace Gear::Resource
 {

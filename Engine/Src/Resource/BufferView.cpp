@@ -182,18 +182,18 @@ namespace Gear::Resource
 	{
 	}
 
-	D3D12Resource::VertexBufferDesc BufferView::getVertexBuffer() const
+	VertexBufferDesc BufferView::getVertexBuffer() const
 	{
-		D3D12Resource::VertexBufferDesc desc = {};
+		VertexBufferDesc desc = {};
 		desc.buffer = buffer.get();
 		desc.vbv = bufferViewStruct->vbv;
 
 		return desc;
 	}
 
-	D3D12Resource::IndexBufferDesc BufferView::getIndexBuffer() const
+	IndexBufferDesc BufferView::getIndexBuffer() const
 	{
-		D3D12Resource::IndexBufferDesc desc = {};
+		IndexBufferDesc desc = {};
 		desc.buffer = buffer.get();
 		desc.ibv = bufferViewStruct->ibv;
 
@@ -201,22 +201,22 @@ namespace Gear::Resource
 	}
 
 
-	D3D12Resource::ShaderResourceDesc BufferView::getSRVIndex() const
+	ShaderResourceDesc BufferView::getSRVIndex() const
 	{
-		D3D12Resource::ShaderResourceDesc desc = {};
-		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
-		desc.state = D3D12Resource::ShaderResourceDesc::SRV;
+		ShaderResourceDesc desc = {};
+		desc.type = ShaderResourceDesc::BUFFER;
+		desc.state = ShaderResourceDesc::SRV;
 		desc.resourceIndex = *srvIndex;
 		desc.bufferDesc.buffer = buffer.get();
 
 		return desc;
 	}
 
-	D3D12Resource::ShaderResourceDesc BufferView::getUAVIndex() const
+	ShaderResourceDesc BufferView::getUAVIndex() const
 	{
-		D3D12Resource::ShaderResourceDesc desc = {};
-		desc.type = D3D12Resource::ShaderResourceDesc::BUFFER;
-		desc.state = D3D12Resource::ShaderResourceDesc::UAV;
+		ShaderResourceDesc desc = {};
+		desc.type = ShaderResourceDesc::BUFFER;
+		desc.state = ShaderResourceDesc::UAV;
 		desc.resourceIndex = *uavIndex;
 		desc.bufferDesc.buffer = buffer.get();
 		desc.bufferDesc.counterBuffer = (counterBuffer.get() ? counterBuffer->getBuffer() : nullptr);
@@ -224,10 +224,10 @@ namespace Gear::Resource
 		return desc;
 	}
 
-	D3D12Resource::ClearUAVDesc BufferView::getClearUAVDesc() const
+	ClearUAVDesc BufferView::getClearUAVDesc() const
 	{
-		D3D12Resource::ClearUAVDesc desc = {};
-		desc.type = D3D12Resource::ClearUAVDesc::BUFFER;
+		ClearUAVDesc desc = {};
+		desc.type = ClearUAVDesc::BUFFER;
 		desc.bufferDesc.buffer = buffer.get();
 		desc.viewGPUHandle = *viewGPUHandle;
 		desc.viewCPUHandle = *viewCPUHandle;
