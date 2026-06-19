@@ -1,9 +1,11 @@
 ﻿#include<Gear/Resource/ResourceBase.h>
 
+#include<Gear/Core/RenderThreadLocal.h>
+
 namespace Gear::Resource
 {
 	ResourceBase::ResourceBase(const bool persistent) :
-		persistent(persistent), numCBVSRVUAVDescriptors(0), copySrcDescriptorHandle(), lastUpdateDynamicIndex(UINT64_MAX)
+		persistent(persistent), numCBVSRVUAVDescriptors(0), copySrcDescriptorHandle(), lastUpdateDynamicIndex(UINT64_MAX), currentFrameCopied(false)
 	{
 	}
 
@@ -12,7 +14,9 @@ namespace Gear::Resource
 	ResourceBase::ResourceBase(const ResourceBase& resource) :
 		persistent(false),
 		numCBVSRVUAVDescriptors(resource.numCBVSRVUAVDescriptors),
-		copySrcDescriptorHandle()
+		copySrcDescriptorHandle(),
+		lastUpdateDynamicIndex(UINT64_MAX),
+		currentFrameCopied(false)
 	{
 	}
 
@@ -37,6 +41,11 @@ namespace Gear::Resource
 	void ResourceBase::setNumCBVSRVUAVDescriptors(const uint32_t numDescriptors)
 	{
 		numCBVSRVUAVDescriptors = numDescriptors;
+	}
+
+	void ResourceBase::resetCopyState()
+	{
+		currentFrameCopied = false;
 	}
 
 	D3D12Core::DescriptorHandle ResourceBase::allocCBVSRVUAVDescriptors()
@@ -69,6 +78,17 @@ namespace Gear::Resource
 		}
 #endif // _DEBUG
 
+		//这一帧如果拷贝了就不再进行多余的拷贝
+		if (currentFrameCopied)
+		{
+			return false;
+		}
+
+		currentFrameCopied = true;
+
+		RenderThreadLocal::pushToCopiedResources(this);
+
+		//如果没有拷贝过，但是检测到当前的位置是安全的那么也不更新
 		if (lastUpdateDynamicIndex != UINT64_MAX)
 		{
 			//>=lastUpdateDynamicIndex

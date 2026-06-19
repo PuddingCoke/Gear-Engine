@@ -21,6 +21,8 @@
 
 #include<Gear/Resource/DepthTextureView.h>
 
+#include<Gear/Core/ImmutableIndexCBuffer.h>
+
 namespace Gear::Core
 {
 	enum class RandomDataType
@@ -122,6 +124,9 @@ namespace Gear::Core
 
 		static Resource::SwapTexturePtr createSwapTexture(const std::function<Resource::RenderTextureViewPtr(void)>& textureFunc);
 
+		template<size_t N>
+		ImmutableIndexCBufferPtr createImmutableIndexCBuffer(const ResourceIndexPair(&pairs)[N], const bool persistent);
+
 	protected:
 
 		//处理高级任务，比如从等距柱状图创建立方体贴图
@@ -138,6 +143,35 @@ namespace Gear::Core
 		UniquePtr<std::vector<UniquePtr<Resource::ResourceBase>>[]> resources;
 
 	};
+
+	template<size_t N>
+	inline ImmutableIndexCBufferPtr ResourceManager::createImmutableIndexCBuffer(const ResourceIndexPair(&pairs)[N], const bool persistent)
+	{
+#ifdef _DEBUG
+		for (uint32_t i = 0; i < N; i++)
+		{
+			if (!(pairs[i].first->getPersistent()))
+			{
+				LOGERROR(L"侦测到传入的资源中有非持久性资源，无法为非持久性资源创建不可变索引常量缓冲");
+			}
+		}
+#endif // _DEBUG
+
+		const uint64_t byteSize = IndexCBufferBase::getCBufferByteSize(pairs);
+
+		const uint64_t numElement = byteSize / sizeof(uint32_t);
+
+		std::vector<uint32_t> resourceIndices = std::vector<uint32_t>(numElement);
+
+		for (uint32_t i = 0; i < N; i++)
+		{
+			resourceIndices[i] = pairs[i].second().resourceIndex;
+		}
+
+		D3D12Resource::BufferPtr buffer = createBuffer(resourceIndices.data(), byteSize, D3D12_RESOURCE_FLAG_NONE);
+
+		return makeUnique<ImmutableIndexCBuffer>(pairs, buffer, byteSize, persistent);
+	}
 }
 
 #endif // !_GEAR_CORE_RESOURCEMANAGER_H_

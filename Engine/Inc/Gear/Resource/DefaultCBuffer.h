@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_RESOURCE_DEFAULTCBUFFER_H_
-#define _GEAR_CORE_RESOURCE_DEFAULTCBUFFER_H_
+#ifndef _GEAR_RESOURCE_DEFAULTCBUFFER_H_
+#define _GEAR_RESOURCE_DEFAULTCBUFFER_H_
 
 #include<Gear/Core/D3D12Resource/UploadHeap.h>
 
@@ -40,4 +40,4 @@ namespace Gear::Resource
 	};
 }
 
-#endif // !_GEAR_CORE_RESOURCE_DEFAULTCBUFFER_H_
+#endif // !_GEAR_RESOURCE_DEFAULTCBUFFER_H_

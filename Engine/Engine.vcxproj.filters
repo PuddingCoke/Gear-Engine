@@ -516,6 +516,27 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ComputeState.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Resource\IndexCBufferBase.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\ImmutableIndexCBuffer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\IndexCBufferBase.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\RenderThreadLocal.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadLocalInternal.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\RenderThreadGlobal.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadGlobalInternal.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -756,6 +777,15 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\IndexCBufferBase.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\RenderThreadLocal.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\RenderThreadGlobal.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

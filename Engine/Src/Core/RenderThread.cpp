@@ -1,10 +1,6 @@
 ﻿#include<Gear/Core/RenderThread.h>
 
-#include<Gear/Core/RenderEngine.h>
-
-#include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
-
-#include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
+#include<Gear/Core/Internal/RenderThreadLocalInternal.h>
 
 namespace Gear::Core
 {
@@ -58,27 +54,22 @@ namespace Gear::Core
 
 	void RenderThread::workerLoop()
 	{
-		//这里一定要调用CoInitialize
-		CoInitializeToken coInitializeToken;
-
-		//初始化每个渲染线程独享的DXC编译器
-		D3D12Core::DXCCompiler::Internal::InitializeToken dxcCompilerToken;
-
-		//申请每个渲染线程独享的描述符堆
-		LocalDescriptorHeap::Internal::InitializeToken localDescriptorHeapToken;
+		//初始化线程局部资源
+		RenderThreadLocal::Internal::InitializeToken renderThreadLocalToken;
 
 		try
 		{
 			//开始创建RenderTask
+			createFunc(&renderTask);
+
+			RenderEngine::submitCommandList(renderTask->getCommandList());
+
 			{
 				std::lock_guard<std::mutex> lockGuard(taskMutex);
 
-				createFunc(&renderTask);
-
-				RenderEngine::submitCommandList(renderTask->getCommandList());
-
 				taskCompleted = true;
 			}
+
 		}
 		catch (const std::exception& e)
 		{
@@ -115,6 +106,8 @@ namespace Gear::Core
 					{
 						break;
 					}
+
+					RenderThreadLocal::Internal::flushCopiedResources();
 
 					renderTask->frameTask();
 

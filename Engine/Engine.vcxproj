@@ -145,6 +145,12 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\PipelineState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h" />
+    <ClInclude Include="Inc\Gear\Core\ImmutableIndexCBuffer.h" />
+    <ClInclude Include="Inc\Gear\Core\IndexCBufferBase.h" />
+    <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadGlobalInternal.h" />
+    <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadLocalInternal.h" />
+    <ClInclude Include="Inc\Gear\Core\RenderThreadGlobal.h" />
+    <ClInclude Include="Inc\Gear\Core\RenderThreadLocal.h" />
     <ClInclude Include="Inc\Gear\Effect\FXAAEffect.h" />
     <ClInclude Include="Inc\Gear\Effect\HBAOPlusEffect.h" />
     <ClInclude Include="Inc\Gear\Effect\SSREffect.h" />
@@ -174,6 +180,7 @@
     <ClInclude Include="Inc\Gear\Effect\Internal\HDRClampEffectInternal.h" />
     <ClInclude Include="Inc\Gear\Effect\Internal\LatLongMapToCubeMapEffectInternal.h" />
     <ClInclude Include="Inc\Gear\Effect\LatLongMapToCubeMapEffect.h" />
+    <ClInclude Include="Inc\Gear\Resource\IndexCBufferBase.h" />
     <ClInclude Include="Inc\Gear\Resource\SwapBuffer.h" />
     <ClInclude Include="Inc\Gear\Resource\SwappableBase.h" />
     <ClInclude Include="Inc\Gear\Core\TOPOLOGY.h" />
@@ -249,6 +256,9 @@
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp" />
     <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp" />
+    <ClCompile Include="Src\Core\IndexCBufferBase.cpp" />
+    <ClCompile Include="Src\Core\RenderThreadGlobal.cpp" />
+    <ClCompile Include="Src\Core\RenderThreadLocal.cpp" />
     <ClCompile Include="Src\Effect\HBAOPlusEffect.cpp" />
     <ClCompile Include="Src\Effect\SSREffect.cpp" />
     <ClCompile Include="Src\Effect\GammaCorrectEffect.cpp" />

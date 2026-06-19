@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_RESOURCE_SWAPTEXTURE_H_
-#define _GEAR_CORE_RESOURCE_SWAPTEXTURE_H_
+#ifndef _GEAR_RESOURCE_SWAPTEXTURE_H_
+#define _GEAR_RESOURCE_SWAPTEXTURE_H_
 
 #include"RenderTextureView.h"
 
@@ -28,4 +28,4 @@ namespace Gear::Resource
 	};
 }
 
-#endif // !_GEAR_CORE_RESOURCE_SWAPTEXTURE_H_
+#endif // !_GEAR_RESOURCE_SWAPTEXTURE_H_

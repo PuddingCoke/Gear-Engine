@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_RESOURCE_RESOURCEBASE_H_
-#define _GEAR_CORE_RESOURCE_RESOURCEBASE_H_
+#ifndef _GEAR_RESOURCE_RESOURCEBASE_H_
+#define _GEAR_RESOURCE_RESOURCEBASE_H_
 
 #include<Gear/Core/GlobalDescriptorHeap.h>
 
@@ -37,6 +37,8 @@ namespace Gear::Resource
 
 		void setNumCBVSRVUAVDescriptors(const uint32_t numDescriptors);
 
+		void resetCopyState();
+
 	protected:
 
 		//从描述器堆申请可用的描述符并返回DescriptorHandle
@@ -56,6 +58,8 @@ namespace Gear::Resource
 
 		static constexpr uint64_t safeMarginDenominator = 2;
 
+		bool currentFrameCopied;
+
 		uint64_t lastUpdateDynamicIndex;
 
 		//资源需要的CBV、SRV、UAV描述符的数量
@@ -67,4 +71,4 @@ namespace Gear::Resource
 	};
 }
 
-#endif // !_GEAR_CORE_RESOURCE_RESOURCEBASE_H_
+#endif // !_GEAR_RESOURCE_RESOURCEBASE_H_

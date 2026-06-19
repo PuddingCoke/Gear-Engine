@@ -10,19 +10,13 @@
 
 #include<Gear/Core/D3D12Core/CommonShaderLayout.h>
 
-#include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
-
 #include<Gear/Core/Internal/GraphicsInternal.h>
 
 #include<Gear/Core/Internal/GraphicsDeviceInternal.h>
 
-#include<Gear/Core/Internal/GlobalDescriptorHeapInternal.h>
+#include<Gear/Core/Internal/RenderThreadLocalInternal.h>
 
-#include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
-
-#include<Gear/Core/Internal/GlobalRootSignatureInternal.h>
-
-#include<Gear/Core/Internal/GlobalShaderInternal.h>
+#include<Gear/Core/Internal/RenderThreadGlobalInternal.h>
 
 #include<Gear/Core/Internal/DynamicCBufferManagerInternal.h>
 
@@ -48,26 +42,6 @@ namespace Gear::Core::RenderEngine
 {
 	namespace Internal
 	{
-		struct RenderInfrastructureToken
-		{
-			RenderInfrastructureToken()
-			{
-
-			}
-
-			D3D12Core::DXCCompiler::Internal::InitializeToken dxcCompiler;
-
-			GlobalShader::Internal::InitializeToken globalShader;
-
-			GlobalDescriptorHeap::Internal::InitializeToken globalDescriptorHeap;
-
-			LocalDescriptorHeap::Internal::InitializeToken localDescriptorHeap;
-
-			GlobalRootSignature::Internal::InitializeToken globalRootSignature;
-
-			DynamicCBufferManager::Internal::InitializeToken dynamicCBufferManager;
-		};
-
 		struct RenderResourceToken
 		{
 			RenderResourceToken(ResourceManager* const resManager) :
@@ -147,8 +121,6 @@ namespace Gear::Core::RenderEngine
 
 			void drawImGuiFrame(D3D12Core::CommandList* const targetCommandList);
 
-			CoInitializeToken coInitializeToken;
-
 			UniquePtr<GraphicsDevice::Internal::InitializeToken> graphicsDeviceToken;
 
 			ComPtr<ID3D12CommandQueue> commandQueue;
@@ -157,7 +129,9 @@ namespace Gear::Core::RenderEngine
 
 			UniquePtr<D3D12Core::CommandList> prepareCommandList;
 
-			UniquePtr<RenderInfrastructureToken> renderInfrastructureToken;
+			UniquePtr<RenderThreadLocal::Internal::InitializeToken> renderThreadLocalToken;
+
+			UniquePtr<RenderThreadGlobal::Internal::InitializeToken> renderThreadGlobalToken;
 
 			UniquePtr<Resource::DynamicCBuffer> engineDefinedGlobalCBuffer;
 
@@ -260,8 +234,11 @@ namespace Gear::Core::RenderEngine
 			//创建准备命令列表
 			prepareCommandList = makeUnique<D3D12Core::CommandList>(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-			//渲染相关的基础设施的初始化
-			renderInfrastructureToken = makeUnique<RenderInfrastructureToken>();
+			//初始化线程局部资源
+			renderThreadLocalToken = makeUnique<RenderThreadLocal::Internal::InitializeToken>();
+
+			//初始化线程全局资源
+			renderThreadGlobalToken = makeUnique<RenderThreadGlobal::Internal::InitializeToken>();
 
 			//引擎需要使用一个动态常量缓冲为每一帧的渲染提供有用的信息
 			engineDefinedGlobalCBuffer = ResourceManager::createDynamicCBuffer(sizeof(perframeResource));
@@ -593,6 +570,8 @@ namespace Gear::Core::RenderEngine
 
 			//等待准备工作完成
 			waitForCurrentFrame();
+
+			RenderThreadLocal::Internal::flushCopiedResources();
 
 			//清理静态资源管理器创建的临时资源
 			resManager->cleanTransientResources();
