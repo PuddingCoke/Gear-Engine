@@ -66,8 +66,11 @@ namespace Gear::Resource
 
 	void ImmutableCBuffer::copyDescriptors()
 	{
-		const D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
+		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		*bufferIndex = shaderVisibleHandle.getCurrentIndex();
+		if (copyToResourceHeap(shaderVisibleHandle))
+		{
+			*bufferIndex = shaderVisibleHandle.getCurrentIndex();
+		}
 	}
 }

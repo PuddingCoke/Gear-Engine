@@ -51,4 +51,25 @@ namespace Gear::Core::D3D12Core
 
 		return DescriptorHandle(cpuHandleStart, gpuHandleStart, static_cast<uint32_t>(retIndex), incrementSize, numDescriptors - numDynamicDescriptors, numDynamicDescriptors, this);
 	}
+
+	DescriptorHandle DescriptorHeap::allocDynamicDescriptor(const uint32_t num, uint64_t& currentDynamicIndex)
+	{
+		const uint64_t retIndex = dynamicIndex.fetch_add(num, std::memory_order_relaxed);
+
+		currentDynamicIndex = retIndex;
+
+		const uint32_t modRetIndex = static_cast<uint32_t>(retIndex % numDynamicDescriptors);
+
+		return DescriptorHandle(cpuHandleStart, gpuHandleStart, modRetIndex, incrementSize, numDescriptors - numDynamicDescriptors, numDynamicDescriptors, this);
+	}
+
+	uint64_t DescriptorHeap::getDynamicIndex() const
+	{
+		return dynamicIndex.load(std::memory_order_relaxed);
+	}
+
+	uint64_t DescriptorHeap::getNumDynamicDescriptors() const
+	{
+		return numDynamicDescriptors;
+	}
 }

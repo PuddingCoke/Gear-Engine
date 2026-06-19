@@ -349,28 +349,31 @@ namespace Gear::Resource
 
 	void RenderTextureView::copyDescriptors()
 	{
-		D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
+		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		*allSRVIndex = shaderVisibleHandle.getCurrentIndex();
-
-		shaderVisibleHandle.move();
-
-		for (uint32_t i = 0; i < texture->getMipLevels(); i++)
+		if (copyToResourceHeap(shaderVisibleHandle))
 		{
-			(*srvMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
+			*allSRVIndex = shaderVisibleHandle.getCurrentIndex();
 
 			shaderVisibleHandle.move();
-		}
 
-		if (uavFormat != FMT::UNKNOWN)
-		{
 			for (uint32_t i = 0; i < texture->getMipLevels(); i++)
 			{
-				(*uavMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
-
-				(*viewGPUHandles)[i] = shaderVisibleHandle.getCurrentGPUHandle();
+				(*srvMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
 
 				shaderVisibleHandle.move();
+			}
+
+			if (uavFormat != FMT::UNKNOWN)
+			{
+				for (uint32_t i = 0; i < texture->getMipLevels(); i++)
+				{
+					(*uavMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
+
+					(*viewGPUHandles)[i] = shaderVisibleHandle.getCurrentGPUHandle();
+
+					shaderVisibleHandle.move();
+				}
 			}
 		}
 	}

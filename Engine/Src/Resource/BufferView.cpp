@@ -247,20 +247,23 @@ namespace Gear::Resource
 
 	void BufferView::copyDescriptors()
 	{
-		D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
+		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		if (hasSRV)
+		if (copyToResourceHeap(shaderVisibleHandle))
 		{
-			*srvIndex = shaderVisibleHandle.getCurrentIndex();
+			if (hasSRV)
+			{
+				*srvIndex = shaderVisibleHandle.getCurrentIndex();
 
-			shaderVisibleHandle.move();
-		}
+				shaderVisibleHandle.move();
+			}
 
-		if (hasUAV)
-		{
-			*uavIndex = shaderVisibleHandle.getCurrentIndex();
+			if (hasUAV)
+			{
+				*uavIndex = shaderVisibleHandle.getCurrentIndex();
 
-			*viewGPUHandle = shaderVisibleHandle.getCurrentGPUHandle();
+				*viewGPUHandle = shaderVisibleHandle.getCurrentGPUHandle();
+			}
 		}
 	}
 

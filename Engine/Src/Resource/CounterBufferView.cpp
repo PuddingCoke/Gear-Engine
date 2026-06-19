@@ -110,15 +110,18 @@ namespace Gear::Resource
 
 	void CounterBufferView::copyDescriptors()
 	{
-		D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
+		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		*srvIndex = shaderVisibleHandle.getCurrentIndex();
+		if (copyToResourceHeap(shaderVisibleHandle))
+		{
+			*srvIndex = shaderVisibleHandle.getCurrentIndex();
 
-		shaderVisibleHandle.move();
+			shaderVisibleHandle.move();
 
-		*uavIndex = shaderVisibleHandle.getCurrentIndex();
+			*uavIndex = shaderVisibleHandle.getCurrentIndex();
 
-		*viewGPUHandle = shaderVisibleHandle.getCurrentGPUHandle();
+			*viewGPUHandle = shaderVisibleHandle.getCurrentGPUHandle();
+		}
 	}
 
 	D3D12Resource::Buffer* CounterBufferView::getBuffer() const

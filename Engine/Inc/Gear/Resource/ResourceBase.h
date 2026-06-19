@@ -43,13 +43,20 @@ namespace Gear::Resource
 		//在调用前要设置numCBVSRVUAVDescriptors！
 		D3D12Core::DescriptorHandle allocCBVSRVUAVDescriptors();
 
-		//把非持久性资源的描述符拷贝到资源描述符堆上，并返回DescriptorHandle
-		//仅用于非持久性资源！
-		D3D12Core::DescriptorHandle copyToResourceHeap() const;
+		//把非持久性资源的描述符从线程独享的暂存资源描述符堆拷贝到全局资源描述符堆上
+		//返回值代表是否需要更新
+		//注意：仅用于非持久性资源！
+		bool copyToResourceHeap(D3D12Core::DescriptorHandle& descriptorHandle);
 
 		const bool persistent;
 
 	private:
+
+		static constexpr uint64_t safeMarginNumerator = 1;
+
+		static constexpr uint64_t safeMarginDenominator = 2;
+
+		uint64_t lastUpdateDynamicIndex;
 
 		//资源需要的CBV、SRV、UAV描述符的数量
 		uint32_t numCBVSRVUAVDescriptors;

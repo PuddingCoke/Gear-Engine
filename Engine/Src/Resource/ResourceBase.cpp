@@ -3,7 +3,7 @@
 namespace Gear::Resource
 {
 	ResourceBase::ResourceBase(const bool persistent) :
-		persistent(persistent), numCBVSRVUAVDescriptors(0), copySrcDescriptorHandle()
+		persistent(persistent), numCBVSRVUAVDescriptors(0), copySrcDescriptorHandle(), lastUpdateDynamicIndex(UINT64_MAX)
 	{
 	}
 
@@ -44,7 +44,7 @@ namespace Gear::Resource
 #ifdef _DEBUG
 		if (getNumCBVSRVUAVDescriptors() == 0u)
 		{
-			LOGERROR(L"调用这个方法前应该先设置", TOWSTRING(numCBVSRVUAVDescriptors));
+			LOGERROR(L"调用", TOWSTRING(allocCBVSRVUAVDescriptors), L"前应该先调用", TOWSTRING(setNumCBVSRVUAVDescriptors));
 		}
 #endif // _DEBUG
 
@@ -60,7 +60,7 @@ namespace Gear::Resource
 		return copySrcDescriptorHandle;
 	}
 
-	D3D12Core::DescriptorHandle ResourceBase::copyToResourceHeap() const
+	bool ResourceBase::copyToResourceHeap(D3D12Core::DescriptorHandle& descriptorHandle)
 	{
 #ifdef _DEBUG
 		if (getPersistent())
@@ -69,10 +69,32 @@ namespace Gear::Resource
 		}
 #endif // _DEBUG
 
-		D3D12Core::DescriptorHandle copyDestDescriptorHandle = GlobalDescriptorHeap::getResourceHeap()->allocDynamicDescriptor(getNumCBVSRVUAVDescriptors());
+		if (lastUpdateDynamicIndex != UINT64_MAX)
+		{
+			//>=lastUpdateDynamicIndex
+			const uint64_t currentDynamicIndex = GlobalDescriptorHeap::getResourceHeap()->getDynamicIndex();
+
+			const uint64_t numDynamicDescriptors = GlobalDescriptorHeap::getResourceHeap()->getNumDynamicDescriptors();
+
+			//获取lastUpdateDynamicIndex下一个循环的对应位置
+			const uint64_t nextLoopDynamicIndex = lastUpdateDynamicIndex + numDynamicDescriptors;
+
+			//安全余量
+			const uint64_t safeMargin = numDynamicDescriptors * safeMarginNumerator / safeMarginDenominator;
+
+			//如果大于安全余量就不更新
+			if (nextLoopDynamicIndex > currentDynamicIndex && nextLoopDynamicIndex - currentDynamicIndex > safeMargin)
+			{
+				return false;
+			}
+		}
+
+		D3D12Core::DescriptorHandle copyDestDescriptorHandle = GlobalDescriptorHeap::getResourceHeap()->allocDynamicDescriptor(getNumCBVSRVUAVDescriptors(), lastUpdateDynamicIndex);
 
 		D3D12Core::DescriptorHandle::copyDescriptors(getNumCBVSRVUAVDescriptors(), copyDestDescriptorHandle, copySrcDescriptorHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-		return copyDestDescriptorHandle;
+		descriptorHandle = copyDestDescriptorHandle;
+
+		return true;
 	}
 }

@@ -29,6 +29,12 @@ namespace Gear::Core::D3D12Core
 
 		DescriptorHandle allocDynamicDescriptor(const uint32_t num);
 
+		DescriptorHandle allocDynamicDescriptor(const uint32_t num, uint64_t& currentDynamicIndex);
+
+		uint64_t getDynamicIndex() const;
+
+		uint64_t getNumDynamicDescriptors() const;
+
 	private:
 
 		const uint32_t numDescriptors;

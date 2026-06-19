@@ -462,33 +462,36 @@ namespace Gear::Resource
 
 	void DepthTextureView::copyDescriptors()
 	{
-		D3D12Core::DescriptorHandle shaderVisibleHandle = copyToResourceHeap();
+		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		if (FMT::UNKNOWN != depthSRVFormat)
+		if (copyToResourceHeap(shaderVisibleHandle))
 		{
-			*allDepthSRVIndex = shaderVisibleHandle.getCurrentIndex();
-
-			shaderVisibleHandle.move();
-
-			for (uint32_t i = 0; i < texture->getMipLevels(); i++)
+			if (FMT::UNKNOWN != depthSRVFormat)
 			{
-				(*depthSRVMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
+				*allDepthSRVIndex = shaderVisibleHandle.getCurrentIndex();
 
 				shaderVisibleHandle.move();
+
+				for (uint32_t i = 0; i < texture->getMipLevels(); i++)
+				{
+					(*depthSRVMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
+
+					shaderVisibleHandle.move();
+				}
 			}
-		}
 
-		if (FMT::UNKNOWN != stencilSRVFormat)
-		{
-			*allStencilSRVIndex = shaderVisibleHandle.getCurrentIndex();
-
-			shaderVisibleHandle.move();
-
-			for (uint32_t i = 0; i < texture->getMipLevels(); i++)
+			if (FMT::UNKNOWN != stencilSRVFormat)
 			{
-				(*stencilSRVMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
+				*allStencilSRVIndex = shaderVisibleHandle.getCurrentIndex();
 
 				shaderVisibleHandle.move();
+
+				for (uint32_t i = 0; i < texture->getMipLevels(); i++)
+				{
+					(*stencilSRVMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
+
+					shaderVisibleHandle.move();
+				}
 			}
 		}
 	}
