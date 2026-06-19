@@ -99,12 +99,12 @@ namespace Gear::Utils::Logger
 
 					messages.pop();
 
-					temp = message.slot.str;
+					temp = message.str;
 
 					{
 						std::lock_guard<std::mutex> inUseLock(message.inUseMutex);
 
-						message.slot.inUse = false;
+						message.readIndex++;
 					}
 
 					message.inUseCV.notify_one();
@@ -137,12 +137,12 @@ namespace Gear::Utils::Logger
 
 						lock.unlock();
 
-						temp = message.slot.str;
+						temp = message.str;
 
 						{
 							std::lock_guard<std::mutex> inUseLock(message.inUseMutex);
 
-							message.slot.inUse = false;
+							message.readIndex++;
 						}
 
 						message.inUseCV.notify_one();

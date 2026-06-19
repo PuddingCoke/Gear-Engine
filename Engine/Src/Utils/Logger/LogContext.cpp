@@ -2,11 +2,6 @@
 
 namespace Gear::Utils::Logger
 {
-	BufferSlot::BufferSlot() :
-		inUse(false)
-	{
-	}
-
 	LogContext::FloatPrecision::FloatPrecision(const int32_t precision) :
 		precision(std::max(std::min(precision, 16), 0))
 	{
@@ -16,6 +11,7 @@ namespace Gear::Utils::Logger
 		textColor{ L"" },
 		displayColor{ L"" },
 		writeIndex(0),
+		readIndex(0),
 		messageStr(nullptr)
 	{
 		resetState();
@@ -23,15 +19,9 @@ namespace Gear::Utils::Logger
 
 	LogContext::~LogContext()
 	{
-		for (uint32_t i = 0; i < slotNum; i++)
-		{
-			if (slots[i].inUse)
-			{
-				std::unique_lock<std::mutex> inUseLock(inUseMutex);
+		std::unique_lock<std::mutex> inUseLock(inUseMutex);
 
-				inUseCV.wait(inUseLock, [this, i]() {return !slots[i].inUse; });
-			}
-		}
+		inUseCV.wait(inUseLock, [this]() { return writeIndex == readIndex; });
 	}
 
 	void LogContext::packRestArgument()

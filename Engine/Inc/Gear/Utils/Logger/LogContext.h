@@ -23,24 +23,17 @@ namespace Gear::Utils::Logger
 		LOG_USER
 	};
 
-	struct BufferSlot
-	{
-		BufferSlot();
-
-		std::wstring str;
-
-		bool inUse;
-	};
-
 	struct LogMessage
 	{
-		BufferSlot& slot;
+		const std::wstring& str;
+
+		const LogType type;
 
 		std::mutex& inUseMutex;
 
 		std::condition_variable& inUseCV;
 
-		const LogType type;
+		uint64_t& readIndex;
 	};
 
 	class LogContext
@@ -99,31 +92,31 @@ namespace Gear::Utils::Logger
 		template<typename Arg>
 		void packArgument(const Arg& arg);
 
-		//wstring
+		//宽字符串
 		void packArgument(const std::wstring& arg);
 
-		//const wchar*
+		//原生宽字符串
 		void packArgument(const wchar_t* arg);
 
-		//singed 32bit integer
+		//有符号32位整数
 		void packArgument(const int32_t& arg);
 
-		//signed 64bit integer
+		//有符号64位整数
 		void packArgument(const int64_t& arg);
 
-		//unsigned 32bit integer
+		//无符号32位整数
 		void packArgument(const uint32_t& arg);
 
-		//unsigned 64bit integer
+		//无符号64位整数
 		void packArgument(const uint64_t& arg);
 
 		template<typename Arg>
 		void packFloatPoint(const Arg& arg);
 
-		//float
+		//浮点数
 		void packArgument(const float_t& arg);
 
-		//double
+		//双精度浮点数
 		void packArgument(const double_t& arg);
 
 		//改变整数模式
@@ -148,11 +141,13 @@ namespace Gear::Utils::Logger
 
 		LogColor displayColor;
 
-		static constexpr size_t slotNum = 128;
+		static constexpr size_t slotNum = 128ull;
 
-		std::array<BufferSlot,slotNum> slots;
+		std::array<std::wstring, slotNum> slots;
 
-		uint32_t writeIndex;
+		uint64_t writeIndex;
+
+		uint64_t readIndex;
 
 		std::wstring* messageStr;
 
@@ -175,20 +170,20 @@ namespace Gear::Utils::Logger
 	template<typename ...Args>
 	inline LogMessage LogContext::getLogMessage(const wchar_t* const functionName, const LogType& type, const Args & ...args)
 	{
-		if (slots[writeIndex].inUse)
+		writeIndex++;
+
+		if (!(writeIndex - readIndex < slotNum))
 		{
 			std::unique_lock<std::mutex> inUseLock(inUseMutex);
 
-			inUseCV.wait(inUseLock, [this]() {return !slots[writeIndex].inUse; });
+			inUseCV.wait(inUseLock, [this]() { return writeIndex - readIndex < slotNum; });
 		}
 
-		messageStr = &slots[writeIndex].str;
+		const uint64_t modWriteIndex = writeIndex % slotNum;
 
-		slots[writeIndex].inUse = true;
+		messageStr = &slots[modWriteIndex];
 
-		const LogMessage message = { slots[writeIndex],inUseMutex,inUseCV,type };
-
-		writeIndex = (writeIndex + 1u) % slotNum;
+		const LogMessage message = { slots[modWriteIndex],type,inUseMutex,inUseCV,readIndex };
 
 		messageStr->clear();
 

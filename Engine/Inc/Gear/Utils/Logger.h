@@ -49,7 +49,7 @@ namespace Gear::Utils::Logger
 
 #define LOGERROR(...) do { \
 const Gear::Utils::Logger::LogMessage _logMessage_ = Gear::Utils::Logger::LogContext::createLogMessage(__FUNCTIONW__,Gear::Utils::Logger::LogType::LOG_ERROR,__FILEW__,L"LINE",static_cast<int32_t>(__LINE__),__VA_ARGS__); \
-const std::string _errorStr_ = Gear::Utils::String::wstringToString(_logMessage_.slot.str); \
+const std::string _errorStr_ = Gear::Utils::String::wstringToString(_logMessage_.str); \
 Gear::Utils::Logger::submitLogMessage(_logMessage_); \
 throw std::runtime_error(_errorStr_); \
 } while(0)\
