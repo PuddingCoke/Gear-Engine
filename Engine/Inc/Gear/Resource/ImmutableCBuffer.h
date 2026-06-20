@@ -17,7 +17,7 @@ namespace Gear::Resource
 
 		ImmutableCBuffer() = delete;
 
-		ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent);
+		ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const bool persistent);
 
 		ImmutableCBuffer(const ImmutableCBuffer&);
 

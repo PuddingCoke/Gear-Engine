@@ -277,21 +277,21 @@ namespace Gear::Core
 
 		buffer->setStateTracking(false);
 
-		return makeUnique<Resource::ImmutableCBuffer>(std::move(buffer), size, persistent);
+		return makeUnique<Resource::ImmutableCBuffer>(std::move(buffer), persistent);
 	}
 
 	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size, const void* const data, const bool persistent)
 	{
 		D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
-		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), size, persistent);
+		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), persistent);
 	}
 
 	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size, const bool persistent)
 	{
 		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
 
-		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), size, persistent);
+		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), persistent);
 	}
 
 	UniquePtr<Resource::DynamicCBuffer> ResourceManager::createDynamicCBuffer(const uint32_t size, const void* const data)
@@ -348,7 +348,7 @@ namespace Gear::Core
 			buffer->setStateTracking(false);
 		}
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer), 0, format, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
 	}
 
 	Resource::BufferViewPtr ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent)
@@ -367,7 +367,7 @@ namespace Gear::Core
 
 		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), 0, format, size, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer), 0, format, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
 	}
 
 	Resource::BufferViewPtr ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent, const void* const data)
@@ -402,7 +402,7 @@ namespace Gear::Core
 			buffer->setStateTracking(false);
 		}
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer), structureByteStride, FMT::UNKNOWN, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 	}
 
 	Resource::BufferViewPtr ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent)
@@ -416,7 +416,7 @@ namespace Gear::Core
 
 		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), structureByteStride, FMT::UNKNOWN, size, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer), structureByteStride, FMT::UNKNOWN, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
 	}
 
 	Resource::BufferViewPtr ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data)
@@ -446,7 +446,7 @@ namespace Gear::Core
 			buffer->setStateTracking(false);
 		}
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer), 0, FMT::UNKNOWN, createSRV, createUAV, false, false, cpuWritable, persistent);
 	}
 
 	Resource::BufferViewPtr ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent)
@@ -460,7 +460,7 @@ namespace Gear::Core
 
 		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), 0, FMT::UNKNOWN, size, createSRV, createUAV, false, false, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer), 0, FMT::UNKNOWN, createSRV, createUAV, false, false, cpuWritable, persistent);
 	}
 
 	Resource::DepthTextureViewPtr ResourceManager::createDepthTextureView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)

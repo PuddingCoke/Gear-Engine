@@ -11,7 +11,7 @@
 namespace Gear::Resource
 {
 	DynamicCBuffer::DynamicCBuffer(const uint32_t size) :
-		ImmutableCBuffer(nullptr, size, true),
+		ImmutableCBuffer(nullptr, true),
 		regionIndex(Utils::Math::log2(size / 256u)),
 		dataPtr(makeShared<void*>(nullptr)),
 		acquireFrameIndex(makeShared<uint64_t>(UINT64_MAX)),

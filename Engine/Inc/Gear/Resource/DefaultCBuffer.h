@@ -17,7 +17,7 @@ namespace Gear::Resource
 	{
 	public:
 
-		DefaultCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent);
+		DefaultCBuffer(D3D12Resource::BufferPtr bufferPtr, const bool persistent);
 
 		DefaultCBuffer(const DefaultCBuffer&);
 

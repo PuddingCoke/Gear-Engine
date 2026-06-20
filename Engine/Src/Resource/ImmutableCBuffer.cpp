@@ -2,22 +2,22 @@
 
 namespace Gear::Resource
 {
-	ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent) :
+	ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const bool persistent) :
 		ResourceBase(persistent),
 		gpuAddress(makeShared<D3D12_GPU_VIRTUAL_ADDRESS>()),
 		bufferIndex(makeShared<uint32_t>()),
 		buffer(std::move(bufferPtr))
 	{
-		if (size % 256 != 0)
-		{
-			LOGERROR(L"常量缓冲的字节大小必须是256的倍数！");
-		}
-
 		if (buffer)
 		{
+			if (buffer->getSize() % 256ull != 0)
+			{
+				LOGERROR(L"常量缓冲的字节大小必须是256的倍数！");
+			}
+
 			D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 			desc.BufferLocation = buffer->getGPUAddress();
-			desc.SizeInBytes = size;
+			desc.SizeInBytes = static_cast<uint32_t>(buffer->getSize());
 
 			setNumCBVSRVUAVDescriptors(1);
 

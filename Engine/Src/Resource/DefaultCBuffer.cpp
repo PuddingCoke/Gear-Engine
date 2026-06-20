@@ -4,14 +4,14 @@
 
 namespace Gear::Resource
 {
-	DefaultCBuffer::DefaultCBuffer(D3D12Resource::BufferPtr bufferPtr, const uint32_t size, const bool persistent) :
-		ImmutableCBuffer(std::move(bufferPtr), size, persistent),
+	DefaultCBuffer::DefaultCBuffer(D3D12Resource::BufferPtr bufferPtr, const bool persistent) :
+		ImmutableCBuffer(std::move(bufferPtr), persistent),
 		uploadHeaps(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
 		dataPtrs(makeShared<void* []>(Graphics::getFrameBufferCount()))
 	{
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
-			uploadHeaps[i] = makeUnique<D3D12Resource::UploadHeap>(size);
+			uploadHeaps[i] = makeUnique<D3D12Resource::UploadHeap>(buffer->getSize());
 
 			dataPtrs[i] = uploadHeaps[i]->map();
 		}

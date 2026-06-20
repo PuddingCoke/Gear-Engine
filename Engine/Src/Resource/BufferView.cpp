@@ -4,7 +4,7 @@
 
 namespace Gear::Resource
 {
-	BufferView::BufferView(D3D12Resource::BufferPtr bufferPtr, const uint32_t structureByteStride, const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent) :
+	BufferView::BufferView(D3D12Resource::BufferPtr bufferPtr, const uint32_t structureByteStride, const DXGI_FORMAT format, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent) :
 		ResourceBase(persistent),
 		hasSRV(createSRV),
 		hasUAV(createUAV),
@@ -48,11 +48,11 @@ namespace Gear::Resource
 					srvFormat = format;
 
 					desc.Format = format;
-					desc.Buffer.NumElements = static_cast<uint32_t>(size) / FMT::getByteSize(format);
+					desc.Buffer.NumElements = static_cast<uint32_t>(buffer->getSize()) / FMT::getByteSize(format);
 				}
 				else if (isStructuredBuffer)
 				{
-					desc.Buffer.NumElements = static_cast<uint32_t>(size) / structureByteStride;
+					desc.Buffer.NumElements = static_cast<uint32_t>(buffer->getSize()) / structureByteStride;
 					desc.Buffer.StructureByteStride = structureByteStride;
 				}
 				else if (isByteAddressBuffer)
@@ -60,7 +60,7 @@ namespace Gear::Resource
 					srvFormat = FMT::R32TL;
 
 					desc.Format = FMT::R32TL;
-					desc.Buffer.NumElements = static_cast<uint32_t>(size) / 4;
+					desc.Buffer.NumElements = static_cast<uint32_t>(buffer->getSize()) / 4;
 					desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
 				}
 
@@ -81,11 +81,11 @@ namespace Gear::Resource
 					uavFormat = format;
 
 					desc.Format = format;
-					desc.Buffer.NumElements = static_cast<uint32_t>(size) / FMT::getByteSize(format);
+					desc.Buffer.NumElements = static_cast<uint32_t>(buffer->getSize()) / FMT::getByteSize(format);
 				}
 				else if (isStructuredBuffer)
 				{
-					desc.Buffer.NumElements = static_cast<uint32_t>(size) / structureByteStride;
+					desc.Buffer.NumElements = static_cast<uint32_t>(buffer->getSize()) / structureByteStride;
 					desc.Buffer.StructureByteStride = structureByteStride;
 				}
 				else if (isByteAddressBuffer)
@@ -93,7 +93,7 @@ namespace Gear::Resource
 					uavFormat = FMT::R32TL;
 
 					desc.Format = FMT::R32TL;
-					desc.Buffer.NumElements = static_cast<uint32_t>(size) / 4;
+					desc.Buffer.NumElements = static_cast<uint32_t>(buffer->getSize()) / 4;
 					desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 				}
 
@@ -139,14 +139,14 @@ namespace Gear::Resource
 		if (createVBV)
 		{
 			bufferViewStruct->vbv.BufferLocation = buffer->getGPUAddress();
-			bufferViewStruct->vbv.SizeInBytes = static_cast<uint32_t>(size);
+			bufferViewStruct->vbv.SizeInBytes = static_cast<uint32_t>(buffer->getSize());
 			bufferViewStruct->vbv.StrideInBytes = (isStructuredBuffer ? structureByteStride : FMT::getByteSize(format));
 		}
 
 		if (createIBV)
 		{
 			bufferViewStruct->ibv.BufferLocation = buffer->getGPUAddress();
-			bufferViewStruct->ibv.SizeInBytes = static_cast<uint32_t>(size);
+			bufferViewStruct->ibv.SizeInBytes = static_cast<uint32_t>(buffer->getSize());
 			bufferViewStruct->ibv.Format = format;
 		}
 
@@ -156,7 +156,7 @@ namespace Gear::Resource
 
 			for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 			{
-				uploadHeaps[i] = makeUnique<D3D12Resource::UploadHeap>(size);
+				uploadHeaps[i] = makeUnique<D3D12Resource::UploadHeap>(buffer->getSize());
 			}
 		}
 	}
@@ -225,7 +225,7 @@ namespace Gear::Resource
 		.resourceIndex = uavIndex.get(),
 		.bufferDesc = {
 				.buffer = buffer.get(),
-				.counterBuffer = (counterBuffer.get() ? counterBuffer->getBuffer() : nullptr)
+				.counterBuffer = (counterBuffer ? counterBuffer->getBuffer() : nullptr)
 		} };
 
 		return desc;

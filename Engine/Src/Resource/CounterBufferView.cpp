@@ -8,7 +8,7 @@ namespace Gear::Resource
 		uavIndex(makeShared<uint32_t>(0)),
 		viewGPUHandle(makeShared<D3D12_GPU_DESCRIPTOR_HANDLE>()),
 		viewCPUHandle(makeShared<D3D12_CPU_DESCRIPTOR_HANDLE>()),
-		buffer(makeUnique<D3D12Resource::Buffer>(4, true, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
+		buffer(makeUnique<D3D12Resource::Buffer>(sizeof(uint32_t), true, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
 	{
 		setNumCBVSRVUAVDescriptors(2);
 
