@@ -20,6 +20,8 @@ namespace Gear::Utils
 
 		size_t size() const;
 
+		size_t byteSize() const;
+
 		void push(const T& t);
 
 		void clear();
@@ -57,6 +59,12 @@ namespace Gear::Utils
 	inline size_t StaticVector<T, N>::size() const
 	{
 		return idx;
+	}
+
+	template<typename T, size_t N>
+	inline size_t StaticVector<T, N>::byteSize() const
+	{
+		return idx * sizeof(T);
 	}
 
 	template<typename T, size_t N>

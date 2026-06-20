@@ -183,7 +183,7 @@ void TextBatch::drawText(const wchar_t ch, const float x, const float y, const f
 
 void TextBatch::render(GraphicsContext& context, RenderTextureView& outputTexture)
 {
-	context.updateBuffer(*textBuffer, textArray.data(), sizeof(Text) * textArray.size());
+	context.updateBuffer(*textBuffer, textArray.data(), textArray.byteSize());
 
 	context.setPipelineState(*spriteState);
 
