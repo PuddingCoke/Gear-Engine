@@ -2,6 +2,10 @@
 
 namespace Gear::Resource
 {
+	ImmutableIndexCBuffer::~ImmutableIndexCBuffer()
+	{
+	}
+
 	D3D12Resource::Buffer* ImmutableIndexCBuffer::getBuffer() const
 	{
 		return buffer.get();
@@ -15,5 +19,10 @@ namespace Gear::Resource
 	const std::vector<ShaderResourceDesc>& ImmutableIndexCBuffer::getShaderResourceDescs() const
 	{
 		return shaderResourceDescs;
+	}
+
+	uint64_t ImmutableIndexCBuffer::getUpdateSize() const
+	{
+		return shaderResourceDescs.size() * sizeof(uint32_t);
 	}
 }

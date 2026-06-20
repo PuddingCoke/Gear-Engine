@@ -29,7 +29,7 @@ namespace Gear::Resource
 
 		ClearUAVDesc getClearUAVDesc() const;
 
-		void copyDescriptors() override;
+		bool copyDescriptors() override;
 
 		D3D12Resource::Buffer* getBuffer() const;
 

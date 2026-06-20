@@ -24,8 +24,9 @@ namespace Gear::Resource
 	{
 	}
 
-	void ResourceBase::copyDescriptors()
+	bool ResourceBase::copyDescriptors()
 	{
+		return false;
 	}
 
 	bool ResourceBase::getPersistent() const
@@ -84,11 +85,12 @@ namespace Gear::Resource
 			return false;
 		}
 
+		//currentFrameCopied应该放置在这里，得保证每帧使用数值相同的资源索引
 		currentFrameCopied = true;
 
 		RenderThreadLocal::pushToCopiedResources(this);
 
-		//如果没有拷贝过，但是检测到当前的位置是安全的那么也不更新
+		//如果没有拷贝过，但是检测到当前的位置是安全的那么也不更新，同时视为这一帧拷贝完毕
 		if (lastUpdateDynamicIndex != UINT64_MAX)
 		{
 			//>=lastUpdateDynamicIndex

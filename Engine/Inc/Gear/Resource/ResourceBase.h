@@ -29,7 +29,7 @@ namespace Gear::Resource
 
 		virtual ~ResourceBase();
 
-		virtual void copyDescriptors() = 0;
+		virtual bool copyDescriptors();
 
 		bool getPersistent() const;
 

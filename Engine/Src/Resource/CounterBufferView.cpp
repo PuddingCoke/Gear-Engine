@@ -77,42 +77,53 @@ namespace Gear::Resource
 
 	ShaderResourceDesc CounterBufferView::getSRVIndex() const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::BUFFER;
-		desc.state = ShaderResourceDesc::SRV;
-		desc.resourceIndex = *srvIndex;
-		desc.bufferDesc.buffer = buffer.get();
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::BUFFER,
+		.state = ShaderResourceDesc::SRV,
+		.resourceIndex = srvIndex.get(),
+		.bufferDesc = {
+				.buffer = buffer.get(),
+				.counterBuffer = nullptr
+		} };
 
 		return desc;
 	}
 
 	ShaderResourceDesc CounterBufferView::getUAVIndex() const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::BUFFER;
-		desc.state = ShaderResourceDesc::UAV;
-		desc.resourceIndex = *uavIndex;
-		desc.bufferDesc.buffer = buffer.get();
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::BUFFER,
+		.state = ShaderResourceDesc::UAV,
+		.resourceIndex = uavIndex.get(),
+		.bufferDesc = {
+				.buffer = buffer.get(),
+				.counterBuffer = nullptr
+		} };
 
 		return desc;
 	}
 
 	ClearUAVDesc CounterBufferView::getClearUAVDesc() const
 	{
-		ClearUAVDesc desc = {};
-		desc.type = ClearUAVDesc::BUFFER;
-		desc.bufferDesc.buffer = buffer.get();
-		desc.viewGPUHandle = *viewGPUHandle;
-		desc.viewCPUHandle = *viewCPUHandle;
+		const ClearUAVDesc desc = {
+		.type = ClearUAVDesc::BUFFER,
+		.bufferDesc = {
+				.buffer = buffer.get()
+		},
+		.viewGPUHandle = *viewGPUHandle,
+		.viewCPUHandle = *viewCPUHandle
+		};
 
 		return desc;
 	}
 
-	void CounterBufferView::copyDescriptors()
+	bool CounterBufferView::copyDescriptors()
 	{
 		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		if (copyToResourceHeap(shaderVisibleHandle))
+		const bool copied = copyToResourceHeap(shaderVisibleHandle);
+
+		if (copied)
 		{
 			*srvIndex = shaderVisibleHandle.getCurrentIndex();
 
@@ -122,6 +133,8 @@ namespace Gear::Resource
 
 			*viewGPUHandle = shaderVisibleHandle.getCurrentGPUHandle();
 		}
+
+		return copied;
 	}
 
 	D3D12Resource::Buffer* CounterBufferView::getBuffer() const

@@ -5,21 +5,32 @@
 
 #include<Gear/Core/D3D12Resource/UploadHeap.h>
 
-#include"IndexCBufferBase.h"
+#include<Gear/Core/Graphics.h>
 
-#include"ImmutableIndexCBuffer.h"
+#include"DefaultIndexCBufferBase.h"
 
 namespace Gear::Resource
 {
-	class DefaultIndexCBuffer :public ImmutableIndexCBuffer, public IndexCBufferBase
+	CREATESAFETYPE(DefaultIndexCBuffer);
+
+	class DefaultIndexCBuffer :public DefaultIndexCBufferBase
 	{
 	public:
 
 		template<size_t N>
-		DefaultIndexCBuffer(const ResourceIndexPair(&pairs)[N], Core::D3D12Resource::BufferPtr bufferPtr);
+		DefaultIndexCBuffer(const ResourceDescPair(&pairs)[N], Core::D3D12Resource::BufferPtr bufferPtr);
 
-		template<size_t N>
-		void update(const ResourceIndexPair(&pairs)[N]);
+		~DefaultIndexCBuffer();
+
+		struct UpdateStruct
+		{
+			D3D12Resource::Buffer* const buffer;
+			D3D12Resource::UploadHeap* const uploadHeap;
+		};
+
+		bool getNeedUpdate();
+
+		UpdateStruct getUpdateStruct();
 
 	private:
 
@@ -30,21 +41,17 @@ namespace Gear::Resource
 	};
 
 	template<size_t N>
-	inline DefaultIndexCBuffer::DefaultIndexCBuffer(const ResourceIndexPair(&pairs)[N], Core::D3D12Resource::BufferPtr bufferPtr) :
-		ImmutableIndexCBuffer(pairs, std::move(buffer)), IndexCBufferBase(pairs),
+	inline DefaultIndexCBuffer::DefaultIndexCBuffer(const ResourceDescPair(&pairs)[N], Core::D3D12Resource::BufferPtr bufferPtr) :
+		DefaultIndexCBufferBase(pairs, std::move(bufferPtr)),
 		uploadHeaps(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
 		dataPtrs(makeShared<void* []>(Graphics::getFrameBufferCount()))
 	{
-	}
+		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
+		{
+			uploadHeaps[i] = makeUnique<D3D12Resource::UploadHeap>(buffer->getSize());
 
-	template<size_t N>
-	inline void DefaultIndexCBuffer::update(const ResourceIndexPair(&pairs)[N])
-	{
-		updateIndexPairs(pairs);
-
-		updateShaderResourceDescs(pairs);
-
-		updateResourceIndices();
+			dataPtrs[i] = uploadHeaps[i]->map();
+		}
 	}
 }
 

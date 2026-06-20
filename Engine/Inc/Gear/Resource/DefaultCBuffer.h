@@ -28,7 +28,7 @@ namespace Gear::Resource
 			D3D12Resource::Buffer* const buffer;
 			D3D12Resource::UploadHeap* const uploadHeap;
 		};
-
+		
 		UpdateStruct getUpdateStruct(const void* const data, const uint64_t size);
 
 	private:

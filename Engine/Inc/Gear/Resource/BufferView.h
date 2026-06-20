@@ -38,7 +38,7 @@ namespace Gear::Resource
 
 		D3D12Resource::Buffer* getBuffer() const;
 
-		void copyDescriptors() override;
+		bool copyDescriptors() override;
 
 		struct UpdateStruct
 		{

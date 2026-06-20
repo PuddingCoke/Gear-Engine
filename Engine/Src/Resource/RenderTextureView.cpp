@@ -280,24 +280,28 @@ namespace Gear::Resource
 
 	ShaderResourceDesc RenderTextureView::getAllSRVIndex() const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::TEXTURE;
-		desc.state = ShaderResourceDesc::SRV;
-		desc.resourceIndex = *allSRVIndex;
-		desc.textureDesc.texture = texture.get();
-		desc.textureDesc.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS;
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::TEXTURE,
+		.state = ShaderResourceDesc::SRV,
+		.resourceIndex = allSRVIndex.get(),
+		.textureDesc = {
+				.texture = texture.get(),
+				.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS
+		} };
 
 		return desc;
 	}
 
 	ShaderResourceDesc RenderTextureView::getSRVMipIndex(const uint32_t mipSlice) const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::TEXTURE;
-		desc.state = ShaderResourceDesc::SRV;
-		desc.resourceIndex = (*srvMipIndices)[mipSlice];
-		desc.textureDesc.texture = texture.get();
-		desc.textureDesc.mipSlice = mipSlice;
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::TEXTURE,
+		.state = ShaderResourceDesc::SRV,
+		.resourceIndex = &(*srvMipIndices)[mipSlice],
+		.textureDesc = {
+				.texture = texture.get(),
+				.mipSlice = mipSlice
+		} };
 
 		return desc;
 	}
@@ -309,35 +313,41 @@ namespace Gear::Resource
 
 	ShaderResourceDesc RenderTextureView::getUAVMipIndex(const uint32_t mipSlice) const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::TEXTURE;
-		desc.state = ShaderResourceDesc::UAV;
-		desc.resourceIndex = (*uavMipIndices)[mipSlice];
-		desc.textureDesc.texture = texture.get();
-		desc.textureDesc.mipSlice = mipSlice;
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::TEXTURE,
+		.state = ShaderResourceDesc::UAV,
+		.resourceIndex = &(*uavMipIndices)[mipSlice],
+		.textureDesc = {
+				.texture = texture.get(),
+				.mipSlice = mipSlice
+		} };
 
 		return desc;
 	}
 
 	RenderTargetDesc RenderTextureView::getRTVMipHandle(const uint32_t mipSlice) const
 	{
-		RenderTargetDesc desc = {};
-		desc.texture = texture.get();
-		desc.mipSlice = mipSlice;
-		desc.rtvHandle = (*rtvMipHandles)[mipSlice];
-		desc.rtvFormat = getRTVFormat();
+		const RenderTargetDesc desc = {
+		.texture = texture.get(),
+		.mipSlice = mipSlice,
+		.rtvHandle = (*rtvMipHandles)[mipSlice],
+		.rtvFormat = getRTVFormat()
+		};
 
 		return desc;
 	}
 
 	ClearUAVDesc RenderTextureView::getClearUAVMipDesc(const uint32_t mipSlice) const
 	{
-		ClearUAVDesc desc = {};
-		desc.type = ClearUAVDesc::TEXTURE;
-		desc.textureDesc.texture = texture.get();
-		desc.textureDesc.mipSlice = mipSlice;
-		desc.viewGPUHandle = (*viewGPUHandles)[mipSlice];
-		desc.viewCPUHandle = (*viewCPUHandles)[mipSlice];
+		const ClearUAVDesc desc = {
+		.type = ClearUAVDesc::TEXTURE,
+		.textureDesc = {
+				.texture = texture.get(),
+				.mipSlice = mipSlice
+		},
+		.viewGPUHandle = (*viewGPUHandles)[mipSlice],
+		.viewCPUHandle = (*viewCPUHandles)[mipSlice]
+		};
 
 		return desc;
 	}
@@ -347,11 +357,13 @@ namespace Gear::Resource
 		return texture.get();
 	}
 
-	void RenderTextureView::copyDescriptors()
+	bool RenderTextureView::copyDescriptors()
 	{
 		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		if (copyToResourceHeap(shaderVisibleHandle))
+		const bool copied = copyToResourceHeap(shaderVisibleHandle);
+
+		if (copied)
 		{
 			*allSRVIndex = shaderVisibleHandle.getCurrentIndex();
 
@@ -376,6 +388,8 @@ namespace Gear::Resource
 				}
 			}
 		}
+
+		return copied;
 	}
 
 	DXGI_FORMAT RenderTextureView::getRTVFormat() const

@@ -184,18 +184,20 @@ namespace Gear::Resource
 
 	VertexBufferDesc BufferView::getVertexBuffer() const
 	{
-		VertexBufferDesc desc = {};
-		desc.buffer = buffer.get();
-		desc.vbv = bufferViewStruct->vbv;
+		const VertexBufferDesc desc = {
+		.buffer = buffer.get(),
+		.vbv = bufferViewStruct->vbv
+		};
 
 		return desc;
 	}
 
 	IndexBufferDesc BufferView::getIndexBuffer() const
 	{
-		IndexBufferDesc desc = {};
-		desc.buffer = buffer.get();
-		desc.ibv = bufferViewStruct->ibv;
+		const IndexBufferDesc desc = {
+		.buffer = buffer.get(),
+		.ibv = bufferViewStruct->ibv
+		};
 
 		return desc;
 	}
@@ -203,34 +205,42 @@ namespace Gear::Resource
 
 	ShaderResourceDesc BufferView::getSRVIndex() const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::BUFFER;
-		desc.state = ShaderResourceDesc::SRV;
-		desc.resourceIndex = *srvIndex;
-		desc.bufferDesc.buffer = buffer.get();
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::BUFFER,
+		.state = ShaderResourceDesc::SRV,
+		.resourceIndex = srvIndex.get(),
+		.bufferDesc = {
+				.buffer = buffer.get(),
+				.counterBuffer = nullptr
+		} };
 
 		return desc;
 	}
 
 	ShaderResourceDesc BufferView::getUAVIndex() const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::BUFFER;
-		desc.state = ShaderResourceDesc::UAV;
-		desc.resourceIndex = *uavIndex;
-		desc.bufferDesc.buffer = buffer.get();
-		desc.bufferDesc.counterBuffer = (counterBuffer.get() ? counterBuffer->getBuffer() : nullptr);
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::BUFFER,
+		.state = ShaderResourceDesc::UAV,
+		.resourceIndex = uavIndex.get(),
+		.bufferDesc = {
+				.buffer = buffer.get(),
+				.counterBuffer = (counterBuffer.get() ? counterBuffer->getBuffer() : nullptr)
+		} };
 
 		return desc;
 	}
 
 	ClearUAVDesc BufferView::getClearUAVDesc() const
 	{
-		ClearUAVDesc desc = {};
-		desc.type = ClearUAVDesc::BUFFER;
-		desc.bufferDesc.buffer = buffer.get();
-		desc.viewGPUHandle = *viewGPUHandle;
-		desc.viewCPUHandle = *viewCPUHandle;
+		const ClearUAVDesc desc = {
+		.type = ClearUAVDesc::BUFFER,
+		.bufferDesc = {
+				.buffer = buffer.get()
+		},
+		.viewGPUHandle = *viewGPUHandle,
+		.viewCPUHandle = *viewCPUHandle
+		};
 
 		return desc;
 	}
@@ -245,11 +255,13 @@ namespace Gear::Resource
 		return buffer.get();
 	}
 
-	void BufferView::copyDescriptors()
+	bool BufferView::copyDescriptors()
 	{
 		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		if (copyToResourceHeap(shaderVisibleHandle))
+		const bool copied = copyToResourceHeap(shaderVisibleHandle);
+
+		if (copied)
 		{
 			if (hasSRV)
 			{
@@ -265,6 +277,8 @@ namespace Gear::Resource
 				*viewGPUHandle = shaderVisibleHandle.getCurrentGPUHandle();
 			}
 		}
+
+		return copied;
 	}
 
 	BufferView::UpdateStruct BufferView::getUpdateStruct(const void* const data, const uint64_t size)

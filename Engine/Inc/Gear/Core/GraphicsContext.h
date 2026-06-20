@@ -15,6 +15,8 @@
 
 #include<Gear/Resource/ImmutableIndexCBuffer.h>
 
+#include<Gear/Resource/DefaultIndexCBuffer.h>
+
 #include<Gear/Utils/StaticVector.h>
 
 #include<type_traits>
@@ -57,7 +59,7 @@ namespace Gear::Core
 		void updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const;
 
 		//更新默认常量缓冲
-		void updateBuffer(Resource::DefaultCBuffer& staticCBuffer, const void* const data, const uint32_t size) const;
+		void updateBuffer(Resource::DefaultCBuffer& defaultCBuffer, const void* const data, const uint32_t size) const;
 
 		//设置用户自定义的全局常量缓冲
 		void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
@@ -139,6 +141,18 @@ namespace Gear::Core
 		void setPSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer);
 
 		void setCSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer);
+
+		void setVSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
+
+		void setHSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
+
+		void setDSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
+
+		void setGSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
+
+		void setPSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
+
+		void setCSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
 
 		void setPipelineState(const D3D12Core::PipelineState& pipelineState);
 
@@ -280,6 +294,8 @@ namespace Gear::Core
 
 		template<size_t N>
 		void setShaderResources(const Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState);
+
+		void updateBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer) const;
 
 		//从提供的ShaderResourceDesc提取索引
 		template<size_t N>
@@ -492,7 +508,7 @@ namespace Gear::Core
 
 		for (uint32_t i = 0; i < N; i++)
 		{
-			transientResourceIndices[i] = descs[i].resourceIndex;
+			transientResourceIndices[i] = *descs[i].resourceIndex;
 		}
 	}
 

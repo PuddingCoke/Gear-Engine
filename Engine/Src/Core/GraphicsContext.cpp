@@ -23,11 +23,18 @@ namespace Gear::Core
 		commandList->copyBufferRegion(updateStruct.buffer, 0, updateStruct.uploadHeap, 0, size);
 	}
 
-	void GraphicsContext::updateBuffer(Resource::DefaultCBuffer& staticCBuffer, const void* const data, const uint32_t size) const
+	void GraphicsContext::updateBuffer(Resource::DefaultCBuffer& defaultCBuffer, const void* const data, const uint32_t size) const
 	{
-		const Resource::DefaultCBuffer::UpdateStruct updateStruct = staticCBuffer.getUpdateStruct(data, size);
+		const Resource::DefaultCBuffer::UpdateStruct updateStruct = defaultCBuffer.getUpdateStruct(data, size);
 
 		commandList->copyBufferRegion(updateStruct.buffer, 0, updateStruct.uploadHeap, 0, size);
+	}
+
+	void GraphicsContext::updateBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer) const
+	{
+		const Resource::DefaultIndexCBuffer::UpdateStruct updateStruct = defaultIndexCBuffer.getUpdateStruct();
+
+		commandList->copyBufferRegion(updateStruct.buffer, 0, updateStruct.uploadHeap, 0, defaultIndexCBuffer.getUpdateSize());
 	}
 
 	void GraphicsContext::setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -282,6 +289,78 @@ namespace Gear::Core
 		pushRootConstantBufferDesc({ getComputeRootSignature()->getCSConstantBufferParameterIndex(),immutableIndexCBuffer.getGPUAddress() });
 
 		setShaderResources(immutableIndexCBuffer.getShaderResourceDescs(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	}
+
+	void GraphicsContext::setVSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer)
+	{
+		if (defaultIndexCBuffer.getNeedUpdate())
+		{
+			updateBuffer(defaultIndexCBuffer);
+		}
+
+		const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer = defaultIndexCBuffer;
+
+		setVSConstantBuffer(immutableIndexCBuffer);
+	}
+
+	void GraphicsContext::setHSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer)
+	{
+		if (defaultIndexCBuffer.getNeedUpdate())
+		{
+			updateBuffer(defaultIndexCBuffer);
+		}
+
+		const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer = defaultIndexCBuffer;
+
+		setHSConstantBuffer(immutableIndexCBuffer);
+	}
+
+	void GraphicsContext::setDSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer)
+	{
+		if (defaultIndexCBuffer.getNeedUpdate())
+		{
+			updateBuffer(defaultIndexCBuffer);
+		}
+
+		const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer = defaultIndexCBuffer;
+
+		setDSConstantBuffer(immutableIndexCBuffer);
+	}
+
+	void GraphicsContext::setGSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer)
+	{
+		if (defaultIndexCBuffer.getNeedUpdate())
+		{
+			updateBuffer(defaultIndexCBuffer);
+		}
+
+		const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer = defaultIndexCBuffer;
+
+		setGSConstantBuffer(immutableIndexCBuffer);
+	}
+
+	void GraphicsContext::setPSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer)
+	{
+		if (defaultIndexCBuffer.getNeedUpdate())
+		{
+			updateBuffer(defaultIndexCBuffer);
+		}
+
+		const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer = defaultIndexCBuffer;
+
+		setPSConstantBuffer(immutableIndexCBuffer);
+	}
+
+	void GraphicsContext::setCSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer)
+	{
+		if (defaultIndexCBuffer.getNeedUpdate())
+		{
+			updateBuffer(defaultIndexCBuffer);
+		}
+
+		const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer = defaultIndexCBuffer;
+
+		setCSConstantBuffer(immutableIndexCBuffer);
 	}
 
 	void GraphicsContext::setPipelineState(const D3D12Core::PipelineState& pipelineState)

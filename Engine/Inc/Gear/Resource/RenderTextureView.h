@@ -43,7 +43,7 @@ namespace Gear::Resource
 
 		D3D12Resource::Texture* getTexture() const;
 
-		void copyDescriptors() override;
+		bool copyDescriptors() override;
 
 		DXGI_FORMAT getRTVFormat() const;
 

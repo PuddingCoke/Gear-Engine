@@ -7,16 +7,14 @@
 
 #include"ResourceBase.h"
 
-#include<functional>
-
 namespace Gear::Resource
 {
 	CREATESAFETYPE(ImmutableIndexCBuffer);
 
-	using ResourceIndexPair = std::pair<ResourceBase*, std::function<ShaderResourceDesc(void)>>;
+	using ResourceDescPair = std::pair<ResourceBase*, ShaderResourceDesc>;
 
 	template<size_t N>
-	static constexpr uint64_t getCBufferByteSizeFromPairs(const ResourceIndexPair(&pairs)[N])
+	static constexpr uint64_t getCBufferByteSizeFromPairs(const ResourceDescPair(&pairs)[N])
 	{
 		constexpr uint64_t byteSize = sizeof(uint32_t) * N;
 
@@ -56,7 +54,9 @@ namespace Gear::Resource
 	public:
 
 		template<size_t N>
-		ImmutableIndexCBuffer(const ResourceIndexPair(&pairs)[N], Core::D3D12Resource::BufferPtr bufferPtr);
+		ImmutableIndexCBuffer(const ResourceDescPair(&pairs)[N], Core::D3D12Resource::BufferPtr bufferPtr);
+
+		virtual ~ImmutableIndexCBuffer();
 
 		D3D12Resource::Buffer* getBuffer() const;
 
@@ -64,32 +64,34 @@ namespace Gear::Resource
 
 		const std::vector<ShaderResourceDesc>& getShaderResourceDescs() const;
 
+		uint64_t getUpdateSize() const;
+
 	protected:
 
 		template<size_t N>
-		void updateShaderResourceDescs(const ResourceIndexPair(&pairs)[N]);
-
-	private:
+		void updateShaderResourceDescs(const ResourceDescPair(&pairs)[N]);
 
 		D3D12Resource::BufferPtr buffer;
+
+		//用于资源状态转变以及索引提取
+		std::vector<ShaderResourceDesc> shaderResourceDescs;
+
+	private:
 
 		//用于绑定
 		SharedPtr<D3D12_GPU_VIRTUAL_ADDRESS> gpuAddress;
 
-		//仅用于状态转变
-		std::vector<ShaderResourceDesc> shaderResourceDescs;
-
 	};
 
 	template<size_t N>
-	inline ImmutableIndexCBuffer::ImmutableIndexCBuffer(const ResourceIndexPair(&pairs)[N], Core::D3D12Resource::BufferPtr bufferPtr) :
+	inline ImmutableIndexCBuffer::ImmutableIndexCBuffer(const ResourceDescPair(&pairs)[N], Core::D3D12Resource::BufferPtr bufferPtr) :
 		buffer(std::move(bufferPtr)), gpuAddress(buffer ? makeShared<D3D12_GPU_VIRTUAL_ADDRESS>(buffer->getGPUAddress()) : makeShared<D3D12_GPU_VIRTUAL_ADDRESS>())
 	{
 		updateShaderResourceDescs(pairs);
 	}
 
 	template<size_t N>
-	inline void ImmutableIndexCBuffer::updateShaderResourceDescs(const ResourceIndexPair(&pairs)[N])
+	inline void ImmutableIndexCBuffer::updateShaderResourceDescs(const ResourceDescPair(&pairs)[N])
 	{
 		if (N != shaderResourceDescs.size())
 		{
@@ -98,11 +100,11 @@ namespace Gear::Resource
 
 		for (uint32_t i = 0; i < N; i++)
 		{
-			shaderResourceDescs[i] = pairs->second();
+			shaderResourceDescs[i] = pairs[i].second;
 		}
 	}
 }
 
-#define CREATEINDEXPAIR(_res_,_func_) Gear::Resource::ResourceIndexPair(_res_.get(),[&]{ return _func_; })
+#define RESDESCPAIR(_res_,_srd_) Gear::Resource::ResourceDescPair(_res_.get(), _srd_)
 
 #endif // !_GEAR_RESOURCE_IMMUTABLEINDEXCBUFFER_H_

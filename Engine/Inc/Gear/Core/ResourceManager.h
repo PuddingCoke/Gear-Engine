@@ -125,7 +125,10 @@ namespace Gear::Core
 		static Resource::SwapTexturePtr createSwapTexture(const std::function<Resource::RenderTextureViewPtr(void)>& textureFunc);
 
 		template<size_t N>
-		Resource::ImmutableIndexCBufferPtr createImmutableIndexCBuffer(const Resource::ResourceIndexPair(&pairs)[N]);
+		Resource::ImmutableIndexCBufferPtr createImmutableIndexCBuffer(const Resource::ResourceDescPair(&pairs)[N]);
+
+		template<size_t N>
+		Resource::DefaultIndexCBufferPtr createDefaultIndexCBuffer(const Resource::ResourceDescPair(&pairs)[N]);
 
 	protected:
 
@@ -145,7 +148,7 @@ namespace Gear::Core
 	};
 
 	template<size_t N>
-	inline Resource::ImmutableIndexCBufferPtr ResourceManager::createImmutableIndexCBuffer(const Resource::ResourceIndexPair(&pairs)[N])
+	inline Resource::ImmutableIndexCBufferPtr ResourceManager::createImmutableIndexCBuffer(const Resource::ResourceDescPair(&pairs)[N])
 	{
 #ifdef _DEBUG
 		for (uint32_t i = 0; i < N; i++)
@@ -165,12 +168,37 @@ namespace Gear::Core
 
 		for (uint32_t i = 0; i < N; i++)
 		{
-			resourceIndices[i] = pairs[i].second().resourceIndex;
+			resourceIndices[i] = *pairs[i].second.resourceIndex;
 		}
 
 		D3D12Resource::BufferPtr buffer = createBuffer(resourceIndices.data(), byteSize, D3D12_RESOURCE_FLAG_NONE);
 
+		commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+		commandList->flushResourceBarriers();
+
+		buffer->setStateTracking(false);
+
 		return makeUnique<Resource::ImmutableIndexCBuffer>(pairs, std::move(buffer));
+	}
+
+	template<size_t N>
+	inline Resource::DefaultIndexCBufferPtr ResourceManager::createDefaultIndexCBuffer(const Resource::ResourceDescPair(&pairs)[N])
+	{
+		const uint64_t byteSize = Resource::getCBufferByteSizeFromPairs(pairs);
+
+		const uint64_t numElement = byteSize / sizeof(uint32_t);
+
+		std::vector<uint32_t> resourceIndices = std::vector<uint32_t>(numElement);
+
+		for (uint32_t i = 0; i < N; i++)
+		{
+			resourceIndices[i] = *pairs[i].second.resourceIndex;
+		}
+
+		D3D12Resource::BufferPtr buffer = createBuffer(resourceIndices.data(), byteSize, D3D12_RESOURCE_FLAG_NONE);
+
+		return makeUnique<Resource::DefaultIndexCBuffer>(pairs, std::move(buffer));
 	}
 }
 

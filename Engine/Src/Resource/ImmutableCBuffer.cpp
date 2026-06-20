@@ -45,11 +45,14 @@ namespace Gear::Resource
 
 	ShaderResourceDesc ImmutableCBuffer::getBufferIndex() const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::BUFFER;
-		desc.state = ShaderResourceDesc::CBV;
-		desc.resourceIndex = *bufferIndex;
-		desc.bufferDesc.buffer = buffer.get();
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::BUFFER,
+		.state = ShaderResourceDesc::CBV,
+		.resourceIndex = bufferIndex.get(),
+		.bufferDesc = {
+				.buffer = buffer.get(),
+				.counterBuffer = nullptr
+		} };
 
 		return desc;
 	}
@@ -64,13 +67,17 @@ namespace Gear::Resource
 		return buffer.get();
 	}
 
-	void ImmutableCBuffer::copyDescriptors()
+	bool ImmutableCBuffer::copyDescriptors()
 	{
 		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		if (copyToResourceHeap(shaderVisibleHandle))
+		const bool copied = copyToResourceHeap(shaderVisibleHandle);
+
+		if (copied)
 		{
 			*bufferIndex = shaderVisibleHandle.getCurrentIndex();
 		}
+
+		return copied;
 	}
 }

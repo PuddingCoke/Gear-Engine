@@ -393,36 +393,42 @@ namespace Gear::Resource
 
 	ShaderResourceDesc DepthTextureView::getAllDepthIndex() const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::TEXTURE;
-		desc.state = ShaderResourceDesc::SRV;
-		desc.resourceIndex = *allDepthSRVIndex;
-		desc.textureDesc.texture = texture.get();
-		desc.textureDesc.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS;
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::TEXTURE,
+		.state = ShaderResourceDesc::SRV,
+		.resourceIndex = allDepthSRVIndex.get(),
+		.textureDesc = {
+				.texture = texture.get(),
+				.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS
+		} };
 
 		return desc;
 	}
 
 	ShaderResourceDesc DepthTextureView::getAllStencilIndex() const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::TEXTURE;
-		desc.state = ShaderResourceDesc::SRV;
-		desc.resourceIndex = *allStencilSRVIndex;
-		desc.textureDesc.texture = texture.get();
-		desc.textureDesc.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS;
+		const ShaderResourceDesc desc = {
+			.type = ShaderResourceDesc::TEXTURE,
+			.state = ShaderResourceDesc::SRV,
+			.resourceIndex = allStencilSRVIndex.get(),
+			.textureDesc = {
+				.texture = texture.get(),
+				.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS
+		} };
 
 		return desc;
 	}
 
 	ShaderResourceDesc DepthTextureView::getDepthMipIndex(const uint32_t mipSlice) const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::TEXTURE;
-		desc.state = ShaderResourceDesc::SRV;
-		desc.resourceIndex = (*depthSRVMipIndices)[mipSlice];
-		desc.textureDesc.texture = texture.get();
-		desc.textureDesc.mipSlice = mipSlice;
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::TEXTURE,
+		.state = ShaderResourceDesc::SRV,
+		.resourceIndex = &(*depthSRVMipIndices)[mipSlice],
+		.textureDesc = {
+				.texture = texture.get(),
+				.mipSlice = mipSlice
+		} };
 
 		return desc;
 	}
@@ -434,23 +440,26 @@ namespace Gear::Resource
 
 	ShaderResourceDesc DepthTextureView::getStencilMipIndex(const uint32_t mipSlice) const
 	{
-		ShaderResourceDesc desc = {};
-		desc.type = ShaderResourceDesc::TEXTURE;
-		desc.state = ShaderResourceDesc::SRV;
-		desc.resourceIndex = (*stencilSRVMipIndices)[mipSlice];
-		desc.textureDesc.texture = texture.get();
-		desc.textureDesc.mipSlice = mipSlice;
+		const ShaderResourceDesc desc = {
+		.type = ShaderResourceDesc::TEXTURE,
+		.state = ShaderResourceDesc::SRV,
+		.resourceIndex = &(*stencilSRVMipIndices)[mipSlice],
+		.textureDesc = {
+				.texture = texture.get(),
+				.mipSlice = mipSlice
+		} };
 
 		return desc;
 	}
 
 	DepthStencilDesc DepthTextureView::getDSVMipHandle(const uint32_t mipSlice) const
 	{
-		DepthStencilDesc desc = {};
-		desc.texture = texture.get();
-		desc.mipSlice = mipSlice;
-		desc.dsvHandle = (*dsvMipHandles)[mipSlice];
-		desc.dsvFormat = getDSVFormat();
+		const DepthStencilDesc desc = {
+		.texture = texture.get(),
+		.mipSlice = mipSlice,
+		.dsvHandle = (*dsvMipHandles)[mipSlice],
+		.dsvFormat = getDSVFormat()
+		};
 
 		return desc;
 	}
@@ -460,11 +469,13 @@ namespace Gear::Resource
 		return texture.get();
 	}
 
-	void DepthTextureView::copyDescriptors()
+	bool DepthTextureView::copyDescriptors()
 	{
 		D3D12Core::DescriptorHandle shaderVisibleHandle;
 
-		if (copyToResourceHeap(shaderVisibleHandle))
+		const bool copied = copyToResourceHeap(shaderVisibleHandle);
+
+		if (copied)
 		{
 			if (FMT::UNKNOWN != depthSRVFormat)
 			{
@@ -494,6 +505,8 @@ namespace Gear::Resource
 				}
 			}
 		}
+
+		return copied;
 	}
 
 	DXGI_FORMAT DepthTextureView::getDSVFormat() const

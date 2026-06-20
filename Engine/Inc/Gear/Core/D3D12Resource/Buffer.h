@@ -43,9 +43,11 @@ namespace Gear::Core::D3D12Resource
 
 		void setState(const uint32_t state);
 
-		uint32_t getState() const;
+		uint64_t getSize() const;
 
 	private:
+
+		uint64_t size;
 
 		SharedPtr<uint32_t> globalState;
 
