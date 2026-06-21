@@ -31,6 +31,15 @@ namespace Gear::Core::D3D12Core
 		//清空需要状态转变的资源并调用cmd->ResourceBarrier
 		void flushResourceBarriers(ID3D12GraphicsCommandList6* const commandList);
 
+		//手动插入资源屏障
+		void pushResourceBarrier(const D3D12_RESOURCE_BARRIER& barrier);
+
+		//手动插入资源屏障
+		void pushResourceBarriers(const std::vector<D3D12_RESOURCE_BARRIER>& barriers);
+
+		//是否有待定资源
+		bool hasPendingResource() const;
+
 	private:
 
 		void pushResourceToTrackList(D3D12Resource::D3D12ResourceBase* const resource);

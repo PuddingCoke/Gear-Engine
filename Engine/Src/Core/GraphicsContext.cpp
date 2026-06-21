@@ -510,30 +510,34 @@ namespace Gear::Core
 	{
 		D3D12Resource::D3D12ResourceBase* resource = setResourceState(desc);
 
-		transitionResources();
+		commandList->flushTransitionResources();
 
-		const D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource());
+		commandList->pushResourceBarrier(CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource()));
 
-		commandList->resourceBarrier(1, &barrier);
+		commandList->flushResourceBarriers();
 
 		commandList->clearUnorderedAccessFloat(desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
 
-		commandList->resourceBarrier(1, &barrier);
+		commandList->pushResourceBarrier(CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource()));
+
+		commandList->flushResourceBarriers();
 	}
 
 	void GraphicsContext::clearUnorderedAccess(const Resource::UAVClearDesc& desc, const uint32_t values[4])
 	{
 		D3D12Resource::D3D12ResourceBase* resource = setResourceState(desc);
 
-		transitionResources();
+		commandList->flushTransitionResources();
 
-		const D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource());
+		commandList->pushResourceBarrier(CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource()));
 
-		commandList->resourceBarrier(1, &barrier);
+		commandList->flushResourceBarriers();
 
 		commandList->clearUnorderedAccessUint(desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
 
-		commandList->resourceBarrier(1, &barrier);
+		commandList->pushResourceBarrier(CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource()));
+
+		commandList->flushResourceBarriers();
 	}
 
 	void GraphicsContext::draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation)

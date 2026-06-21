@@ -166,6 +166,8 @@ namespace Gear::Core::RenderEngine
 
 			D3D12Core::CommonShaderLayout::PerframeResource perframeResource;
 
+			std::vector<D3D12_RESOURCE_BARRIER> resourceBarriers;
+
 		};
 
 		RenderEngineImpl::RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface) :
@@ -300,6 +302,10 @@ namespace Gear::Core::RenderEngine
 
 					swapChain->GetBuffer(i, IID_PPV_ARGS(&texture));
 
+					const std::wstring backBufferName = L"Back Buffer (" + std::to_wstring(i) + L")";
+
+					texture->SetName(backBufferName.c_str());
+
 					GraphicsDevice::get()->CreateRenderTargetView(texture.Get(), nullptr, descriptorHandle.getCurrentCPUHandle());
 
 					backBufferHandles[i] = descriptorHandle.getCurrentCPUHandle();
@@ -362,15 +368,27 @@ namespace Gear::Core::RenderEngine
 		{
 			std::lock_guard<std::mutex> lockGuard(submitCommandListLock);
 
-			std::vector<D3D12_RESOURCE_BARRIER> barriers;
-
-			commandList->flushPendingResources(barriers);
-
 			D3D12Core::CommandList* const helperCommandList = recordCommandLists.back();
 
-			if (barriers.size() > 0)
+			if (commandList->hasPendingResource())
 			{
-				helperCommandList->resourceBarrier(static_cast<uint32_t>(barriers.size()), barriers.data());
+				resourceBarriers.clear();
+
+				commandList->flushPendingResources(resourceBarriers);
+
+				if (helperCommandList != prepareCommandList.get())
+				{
+					helperCommandList->resourceBarrier(static_cast<uint32_t>(resourceBarriers.size()), resourceBarriers.data());
+				}
+				else
+				{
+					//尽量减少D3D12 API ResourceBarrier调用
+					helperCommandList->pushResourceBarriers(resourceBarriers);
+				}
+
+				//有待定资源那么会需要更新资源的全局状态
+				//因此最后会需要更新使用过的资源的全局状态
+				commandList->flushReferredResources();
 			}
 
 			//不应该关闭准备命令列表，因为要用它来转变后备缓冲的状态，此外还要用它来记录动态常量缓冲更新指令。
@@ -380,8 +398,6 @@ namespace Gear::Core::RenderEngine
 			}
 
 			recordCommandLists.push_back(commandList);
-
-			commandList->flushReferredResources();
 		}
 
 		GPUVendor RenderEngineImpl::getVendor() const

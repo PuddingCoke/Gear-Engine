@@ -92,6 +92,24 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
+	void ResourceStateTracker::pushResourceBarrier(const D3D12_RESOURCE_BARRIER& barrier)
+	{
+		resourceBarriers.push_back(barrier);
+	}
+
+	void ResourceStateTracker::pushResourceBarriers(const std::vector<D3D12_RESOURCE_BARRIER>& barriers)
+	{
+		for (const D3D12_RESOURCE_BARRIER& barrier : barriers)
+		{
+			pushResourceBarrier(barrier);
+		}
+	}
+
+	bool ResourceStateTracker::hasPendingResource() const
+	{
+		return pendingResources.size();
+	}
+
 	void ResourceStateTracker::pushResourceToTrackList(D3D12Resource::D3D12ResourceBase* const resource)
 	{
 		resource->pushToReferredList(referredResources);
