@@ -2,22 +2,29 @@
 
 #include<Gear/Game.h>
 
-#include<Gear/Camera/FPSCamera.h>
+#include"SceneRenderTask.h"
 
-#include"MyRenderTask.h"
-
-using namespace Gear;
+#include"PostProcessTask.h"
 
 class MyGame :public Game
 {
 public:
 
 	MyGame() :
-		camera({ 0.f,100.f,0.f }, { 1.f * sinf(0.63f),-0.1f,1.f * cosf(0.63f) }, { 0.f,1.f,0.f }, 100.f)
+		camera({ 0.f,100.f,0.f }, { 1.f * sinf(0.63f),-0.1f,1.f * cosf(0.63f) }, { 0.f,1.f,0.f }, 100.f),
+		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black))
 	{
 		MainCamera::setProj(Math::pi / 3.f, Graphics::getAspectRatio(), 1.f, 5000.f);
 
-		pushCreateAsync(createRenderTaskAsync(renderTask, &camera));
+		Graphics::setExposure(0.59f);
+
+		Graphics::setGamma(0.972f);
+
+		originTexture->getTexture()->setName(L"originTexture");
+
+		pushCreateAsync(createRenderTaskAsync(sceneRenderTask, &camera, *originTexture));
+
+		pushCreateAsync(createRenderTaskAsync(postProcessTask, *originTexture));
 
 		scheduleAllTasks();
 	}
@@ -33,13 +40,19 @@ public:
 
 	void render()
 	{
-		beginRenderTask(*renderTask);
+		beginRenderTask(*sceneRenderTask);
+
+		beginRenderTask(*postProcessTask);
 
 		scheduleAllTasks();
 	}
 
-	UniquePtr<MyRenderTask> renderTask;
-
 	FPSCamera camera;
+
+	RenderTextureViewPtr originTexture;
+
+	UniquePtr<SceneRenderTask> sceneRenderTask;
+
+	UniquePtr<PostProcessTask> postProcessTask;
 
 };

@@ -29,6 +29,10 @@
 
 #include<Gear/Effect/GammaCorrectEffect.h>
 
+#include<Gear/Camera/FPSCamera.h>
+
+#include<Gear/Camera/OrbitCamera.h>
+
 #include<Gear/Core/D3D12Core/Shader.h>
 
 #include<Gear/Input/Mouse.h>

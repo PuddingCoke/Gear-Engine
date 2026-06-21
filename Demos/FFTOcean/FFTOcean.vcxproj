@@ -107,7 +107,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyGame.h" />
-    <ClInclude Include="MyRenderTask.h" />
+    <ClInclude Include="SceneRenderTask.h" />
+    <ClInclude Include="PostProcessTask.h" />
     <ClInclude Include="WaveCascade.h" />
   </ItemGroup>
   <ItemGroup>

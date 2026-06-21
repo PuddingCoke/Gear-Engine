@@ -3,6 +3,8 @@
 #ifndef _GEAR_GAME_H_
 #define _GEAR_GAME_H_
 
+#include<Gear/DevEssential.h>
+
 #include<Gear/Core/RenderThread.h>
 
 #include<queue>
@@ -27,17 +29,17 @@ namespace Gear
 
 		virtual void render() = 0;
 
-		void beginRenderTask(Core::RenderTask& renderTask);
+		void beginRenderTask(RenderTask& renderTask);
 
-		void pushCreateAsync(UniquePtr<Core::RenderThread> renderThread);
+		void pushCreateAsync(UniquePtr<RenderThread> renderThread);
 
 		void scheduleAllTasks();
 
 	private:
 
-		std::queue<Core::RenderTask*> recordQueue;
+		std::queue<RenderTask*> recordQueue;
 
-		std::queue<UniquePtr<Core::RenderThread>> createQueue;
+		std::queue<UniquePtr<RenderThread>> createQueue;
 
 	};
 }

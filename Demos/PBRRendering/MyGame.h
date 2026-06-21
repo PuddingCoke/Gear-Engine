@@ -4,12 +4,6 @@
 
 #include"MyRenderTask.h"
 
-#include<Gear/Camera/OrbitCamera.h>
-
-#include<Gear/Core/MainCamera.h>
-
-using namespace Gear;
-
 class MyGame :public Game
 {
 public:

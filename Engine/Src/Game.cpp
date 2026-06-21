@@ -14,9 +14,9 @@ namespace Gear
 	{
 	}
 
-	void Game::beginRenderTask(Core::RenderTask& renderTask)
+	void Game::beginRenderTask(RenderTask& renderTask)
 	{
-		if (Core::RenderEngine::getDisplayImGuiSurface())
+		if (RenderEngine::getDisplayImGuiSurface())
 		{
 			renderTask.imGUICall();
 		}
@@ -26,7 +26,7 @@ namespace Gear
 		recordQueue.push(&renderTask);
 	}
 
-	void Game::pushCreateAsync(UniquePtr<Core::RenderThread> renderThread)
+	void Game::pushCreateAsync(UniquePtr<RenderThread> renderThread)
 	{
 		createQueue.push(std::move(renderThread));
 	}
@@ -42,7 +42,7 @@ namespace Gear
 				throw std::runtime_error(errorStr);
 			}
 
-			Core::RenderEngine::submitCommandList(recordQueue.front()->getCommandList());
+			RenderEngine::submitCommandList(recordQueue.front()->getCommandList());
 
 			recordQueue.pop();
 		}
@@ -56,7 +56,7 @@ namespace Gear
 				throw std::runtime_error(errorStr);
 			}
 
-			Core::RenderThread* const renderThread = createQueue.front().get();
+			RenderThread* const renderThread = createQueue.front().get();
 
 			renderThread->transferOwnerShip(std::move(createQueue.front()));
 

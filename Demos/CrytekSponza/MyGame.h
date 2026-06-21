@@ -1,16 +1,10 @@
 ﻿#pragma once
 
-#include<Gear/Camera/FPSCamera.h>
-
-#include<Gear/Core/MainCamera.h>
-
 #include<Gear/Game.h>
 
 #include"SceneRenderTask.h"
 
 #include"PostProcessTask.h"
-
-using namespace Gear;
 
 class MyGame :public Game
 {
@@ -28,6 +22,8 @@ public:
 		Graphics::setExposure(0.6f);
 
 		Graphics::setGamma(2.2f);
+
+		ssrCombinedTexture->getTexture()->setName(L"SSR Combined Texture");
 
 		pushCreateAsync(createRenderTaskAsync(sceneRenderTask, *ssrCombinedTexture));
 

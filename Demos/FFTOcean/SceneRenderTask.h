@@ -6,11 +6,11 @@
 
 #include"WaveCascade.h"
 
-class MyRenderTask :public RenderTask
+class SceneRenderTask :public RenderTask
 {
 public:
 
-	MyRenderTask(FPSCamera* const camera) :
+	SceneRenderTask(FPSCamera* const camera, const RenderTextureView& originTexture) :
 		vertices((gridSize + 1)* (gridSize + 1)),
 		camera(camera),
 		renderParamBuffer(ResourceManager::createDynamicCBuffer(sizeof(RenderParam))),
@@ -22,7 +22,9 @@ public:
 		oceanVS(Shader::create(File::getRootFolder() + L"OceanVS.cso")),
 		oceanHS(Shader::create(File::getRootFolder() + L"OceanHS.cso")),
 		oceanDS(Shader::create(File::getRootFolder() + L"OceanDS.cso")),
-		oceanPS(Shader::create(File::getRootFolder() + L"OceanPS.cso"))
+		oceanPS(Shader::create(File::getRootFolder() + L"OceanPS.cso")),
+		originTexture(makeUnique<RenderTextureView>(originTexture)),
+		renderOcean(true)
 	{
 		spectrumParam[0].mapLength = lengthScale0;
 
@@ -95,11 +97,7 @@ public:
 
 		WaveCascade::tempTexture = tempTexture.get();
 
-		originTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
-
 		depthTexture = ResourceManager::createDepthTextureView(Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true);
-
-		effect = BloomEffect::create(*context, Graphics::getWidth(), Graphics::getHeight(), *resManager);
 
 		vertexBuffer = resManager->createStructuredBufferView(sizeof(DirectX::XMFLOAT3), static_cast<uint32_t>(sizeof(DirectX::XMFLOAT3) * vertices.size()), false, false, true, true, true, vertices.data());
 
@@ -149,27 +147,17 @@ public:
 
 		tildeh0Texture->getTexture()->setName(L"tildeh0Texture");
 
-		originTexture->getTexture()->setName(L"originTexture");
-
 		depthTexture->getTexture()->setName(L"depthTexture");
 
 		oceanState->get()->SetName(L"oceanState");
-
-		Graphics::setExposure(0.59f);
-
-		Graphics::setGamma(0.972f);
-
-		effect->setSoftThreshold(0.85f);
 	}
 
-	~MyRenderTask()
+	~SceneRenderTask()
 	{
 	}
 
 	void imGUICall() override
 	{
-		effect->imGUICall();
-
 		ImGui::Begin("RenderParam");
 		ImGui::SliderFloat("Lod Scale", &renderParam.lodScale, 1.0f, 10.f);
 		ImGui::SliderFloat("Sun Strength", &renderParam.sunStrength, 0.f, 100.f);
@@ -251,11 +239,14 @@ private:
 
 	void calculateDisplacementAndDerivative()
 	{
-		for (uint32_t i = 0; i < cascadeNum; i++)
+		if (renderOcean)
 		{
-			cascade[i]->calculateTimeDependentSpectrum();
+			for (uint32_t i = 0; i < cascadeNum; i++)
+			{
+				cascade[i]->calculateTimeDependentSpectrum();
 
-			cascade[i]->calculateDisplacementAndDerivative();
+				cascade[i]->calculateDisplacementAndDerivative();
+			}
 		}
 	}
 
@@ -296,54 +287,49 @@ private:
 
 		context->draw(36, 1, 0, 0);
 
-		context->setPipelineState(*oceanState);
+		if (renderOcean)
+		{
+			context->setPipelineState(*oceanState);
 
-		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
+			context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
-		context->setPrimitiveTopology(TOPOLOGY::PATCH3CONTROL);
+			context->setPrimitiveTopology(TOPOLOGY::PATCH3CONTROL);
 
-		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
+			context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
 
-		context->setIndexBuffer(indexBuffer->getIndexBuffer());
+			context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
+			context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
 
-		SETCONSTS({
-		context->setDSConstants({
-			cascade[0]->displacementTexture->getAllSRVIndex(),
-			cascade[1]->displacementTexture->getAllSRVIndex(),
-			cascade[2]->displacementTexture->getAllSRVIndex() }, co);
-			});
+			SETCONSTS({
+			context->setDSConstants({
+				cascade[0]->displacementTexture->getAllSRVIndex(),
+				cascade[1]->displacementTexture->getAllSRVIndex(),
+				cascade[2]->displacementTexture->getAllSRVIndex() }, co);
+				});
 
-		context->setDSConstantBuffer(*renderParamBuffer);
+			context->setDSConstantBuffer(*renderParamBuffer);
 
-		SETCONSTS({
-		context->setPSConstants({
-			cascade[0]->displacementTexture->getAllSRVIndex(),
-			cascade[0]->derivativeTexture->getAllSRVIndex(),
-			cascade[0]->jacobianTexture->getAllSRVIndex(),
-			cascade[1]->displacementTexture->getAllSRVIndex(),
-			cascade[1]->derivativeTexture->getAllSRVIndex(),
-			cascade[1]->jacobianTexture->getAllSRVIndex(),
-			cascade[2]->displacementTexture->getAllSRVIndex(),
-			cascade[2]->derivativeTexture->getAllSRVIndex(),
-			cascade[2]->jacobianTexture->getAllSRVIndex(),
-			enviromentCube->getAllSRVIndex() }, co);
-			});
+			SETCONSTS({
+			context->setPSConstants({
+				cascade[0]->displacementTexture->getAllSRVIndex(),
+				cascade[0]->derivativeTexture->getAllSRVIndex(),
+				cascade[0]->jacobianTexture->getAllSRVIndex(),
+				cascade[1]->displacementTexture->getAllSRVIndex(),
+				cascade[1]->derivativeTexture->getAllSRVIndex(),
+				cascade[1]->jacobianTexture->getAllSRVIndex(),
+				cascade[2]->displacementTexture->getAllSRVIndex(),
+				cascade[2]->derivativeTexture->getAllSRVIndex(),
+				cascade[2]->jacobianTexture->getAllSRVIndex(),
+				enviromentCube->getAllSRVIndex() }, co);
+				});
 
-		context->setPSConstantBuffer(*renderParamBuffer);
+			context->setPSConstantBuffer(*renderParamBuffer);
 
-		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
+			context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
-		context->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-
-		auto bloomTexture = effect->process(*originTexture);
-
-		auto toneMappedTexture = ToneMapEffect::process(*context, *bloomTexture);
-
-		auto gammaCorrectedTexture = GammaCorrectEffect::process(*context, *toneMappedTexture);
-
-		blit(*gammaCorrectedTexture);
+			context->drawIndexed(static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+		}
 	}
 
 	bool getMinMaxMatrix(DirectX::XMMATRIX* minMaxMatrix)
@@ -440,6 +426,11 @@ private:
 			{
 				intersections.push_back(p0);
 			}
+		}
+
+		if (intersections.empty())
+		{
+			return false;
 		}
 
 		//project all points to y=0 plane
@@ -553,7 +544,16 @@ private:
 	{
 		DirectX::XMMATRIX range;
 
-		getMinMaxMatrix(&range);
+		if (getMinMaxMatrix(&range))
+		{
+			renderOcean = true;
+		}
+		else
+		{
+			renderOcean = false;
+
+			return;
+		}
 
 		//left bottom
 		const DirectX::XMFLOAT4 corners0 = getWorldPos(0.f, 0.f, range);
@@ -611,9 +611,9 @@ private:
 	struct RenderParam
 	{
 		float lodScale = 3.f;
-		float lengthScale0 = MyRenderTask::lengthScale0;
-		float lengthScale1 = MyRenderTask::lengthScale1;
-		float lengthScale2 = MyRenderTask::lengthScale2;
+		float lengthScale0 = SceneRenderTask::lengthScale0;
+		float lengthScale1 = SceneRenderTask::lengthScale1;
+		float lengthScale2 = SceneRenderTask::lengthScale2;
 		float sunStrength = 0.548f;
 		float sunTheta = 0.143f;
 		float specularPower = 256.f;
@@ -679,8 +679,6 @@ private:
 
 	DepthTextureViewPtr depthTexture;
 
-	BloomEffectPtr effect;
-
 	DynamicCBufferPtr renderParamBuffer;
 
 	DefaultCBufferPtr spectrumParamBuffer[cascadeNum];
@@ -692,4 +690,6 @@ private:
 	std::vector<DirectX::XMFLOAT3> vertices;
 
 	std::vector<uint32_t> indices;
+
+	bool renderOcean;
 };

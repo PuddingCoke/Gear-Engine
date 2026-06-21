@@ -4,8 +4,6 @@
 
 #include"MyRenderTask.h"
 
-using namespace Gear;
-
 class MyGame :public Game
 {
 public:
