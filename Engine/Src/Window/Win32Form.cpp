@@ -201,38 +201,45 @@ namespace Gear::Window::Win32Form
 		break;
 
 		case WM_MOUSEMOVE:
-			Input::Mouse::Internal::move(static_cast<float>(LOWORD(lParam)), static_cast<float>(Core::Graphics::getHeight()) - static_cast<float>(HIWORD(lParam)));
+			if (!ImGui::GetIO().WantCaptureMouse)
+				Input::Mouse::Internal::move(static_cast<float>(LOWORD(lParam)), static_cast<float>(Core::Graphics::getHeight()) - static_cast<float>(HIWORD(lParam)));
 			break;
 
 		case WM_LBUTTONDOWN:
-			Input::Mouse::Internal::pressLeft();
+			if (!ImGui::GetIO().WantCaptureMouse)
+				Input::Mouse::Internal::pressLeft();
 			break;
 
 		case WM_RBUTTONDOWN:
-			Input::Mouse::Internal::pressRight();
+			if (!ImGui::GetIO().WantCaptureMouse)
+				Input::Mouse::Internal::pressRight();
 			break;
 
 		case WM_LBUTTONUP:
-			Input::Mouse::Internal::releaseLeft();
+			if (!ImGui::GetIO().WantCaptureMouse)
+				Input::Mouse::Internal::releaseLeft();
 			break;
 
 		case WM_RBUTTONUP:
-			Input::Mouse::Internal::releaseRight();
+			if (!ImGui::GetIO().WantCaptureMouse)
+				Input::Mouse::Internal::releaseRight();
 			break;
 
 		case WM_MOUSEWHEEL:
-			Input::Mouse::Internal::scroll(GET_WHEEL_DELTA_WPARAM(wParam) / 120.f);
+			if (!ImGui::GetIO().WantCaptureMouse)
+				Input::Mouse::Internal::scroll(GET_WHEEL_DELTA_WPARAM(wParam) / 120.f);
 			break;
 
 		case WM_KEYDOWN:
-			if ((HIWORD(lParam) & KF_REPEAT) == 0)
+			if (((HIWORD(lParam) & KF_REPEAT) == 0) && !ImGui::GetIO().WantCaptureKeyboard)
 			{
 				Input::Keyboard::Internal::pressKey(static_cast<Input::Keyboard::Key>(wParam));
 			}
 			break;
 
 		case WM_KEYUP:
-			Input::Keyboard::Internal::releaseKey(static_cast<Input::Keyboard::Key>(wParam));
+			if (!ImGui::GetIO().WantCaptureKeyboard)
+				Input::Keyboard::Internal::releaseKey(static_cast<Input::Keyboard::Key>(wParam));
 			break;
 
 		case WM_DESTROY:
