@@ -62,6 +62,7 @@ namespace Gear::Core
 	{
 		using RenderTaskType = typename First::element_type;
 
+		//这里有点危险，有时间再来想想该怎么改这里
 		auto createFunc = [&](RenderTask** renderTask)
 			{
 				first = makeUnique<RenderTaskType>(std::forward<Rest>(args)...);

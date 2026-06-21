@@ -39,6 +39,16 @@ namespace Gear
 			{
 				const std::string errorStr = recordQueue.front()->getErrorStr();
 
+				recordQueue.pop();
+
+				//当下就改成这个样子，以后可能还会再改改
+				while (recordQueue.size())
+				{
+					recordQueue.front()->waitTask();
+
+					recordQueue.pop();
+				}
+
 				throw std::runtime_error(errorStr);
 			}
 
@@ -52,6 +62,16 @@ namespace Gear
 			if (createQueue.front()->waitTask())
 			{
 				const std::string errorStr = createQueue.front()->getErrorStr();
+
+				createQueue.pop();
+
+				//当下就改成这个样子，以后可能还会再改改
+				while (createQueue.size())
+				{
+					createQueue.front()->waitTask();
+
+					createQueue.pop();
+				}
 
 				throw std::runtime_error(errorStr);
 			}
