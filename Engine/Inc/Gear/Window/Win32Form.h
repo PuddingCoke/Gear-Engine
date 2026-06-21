@@ -45,6 +45,8 @@ namespace Gear::Window::Win32Form
 	LRESULT CALLBACK encodeCallback(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam);
 
 	LRESULT CALLBACK wallpaperCallBack(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam);
+
+	LRESULT CALLBACK mouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 }
 
 #endif // !_GEAR_WINDOW_WIN32FORM_H_

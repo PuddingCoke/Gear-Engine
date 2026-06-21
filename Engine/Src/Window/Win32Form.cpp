@@ -47,6 +47,8 @@ namespace Gear::Window::Win32Form
 
 		LRESULT CALLBACK wallpaperProc(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam) const;
 
+		LRESULT CALLBACK mouseHookProc(int nCode, WPARAM wParam, LPARAM lParam) const;
+
 	private:
 
 		HWND hWnd;
@@ -56,6 +58,8 @@ namespace Gear::Window::Win32Form
 		HMENU hMenu;
 
 		NOTIFYICONDATA nid;
+
+		HHOOK mouseHook;
 
 	};
 
@@ -108,6 +112,8 @@ namespace Gear::Window::Win32Form
 			hMenu = CreatePopupMenu();
 
 			AppendMenu(hMenu, MF_STRING, EXITUID, L"退出程序");
+
+			mouseHook = SetWindowsHookEx(WH_MOUSE_LL, Win32Form::mouseHookProc, nullptr, 0);
 		}
 	}
 
@@ -115,6 +121,8 @@ namespace Gear::Window::Win32Form
 	{
 		if (iniTrayIcon)
 		{
+			UnhookWindowsHookEx(mouseHook);
+
 			DestroyMenu(hMenu);
 
 			Shell_NotifyIcon(NIM_DELETE, &nid);
@@ -308,6 +316,40 @@ namespace Gear::Window::Win32Form
 		return 0;
 	}
 
+	LRESULT Win32FormImpl::mouseHookProc(int nCode, WPARAM wParam, LPARAM lParam) const
+	{
+		if (nCode == HC_ACTION)
+		{
+			const MSLLHOOKSTRUCT* const pMouseStruct = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
+
+			switch (wParam)
+			{
+			case WM_MOUSEMOVE:
+				Input::Mouse::Internal::move(static_cast<float>(pMouseStruct->pt.x), static_cast<float>(Core::Graphics::getHeight()) - static_cast<float>(pMouseStruct->pt.y));
+				break;
+
+			case WM_LBUTTONDOWN:
+				Input::Mouse::Internal::pressLeft();
+				break;
+
+			case WM_RBUTTONDOWN:
+				Input::Mouse::Internal::pressRight();
+				break;
+
+			case WM_LBUTTONUP:
+				Input::Mouse::Internal::releaseLeft();
+				break;
+
+			case WM_RBUTTONUP:
+				Input::Mouse::Internal::releaseRight();
+				break;
+			}
+
+		}
+
+		return CallNextHookEx(mouseHook, nCode, wParam, lParam);
+	}
+
 	UniquePtr<Win32FormImpl> impl;
 
 	void initialize(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
@@ -348,5 +390,10 @@ namespace Gear::Window::Win32Form
 	LRESULT CALLBACK wallpaperCallBack(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		return impl->wallpaperProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	LRESULT mouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+	{
+		return impl->mouseHookProc(nCode, wParam, lParam);
 	}
 }
