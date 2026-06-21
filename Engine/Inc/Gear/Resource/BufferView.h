@@ -32,7 +32,7 @@ namespace Gear::Resource
 
 		ShaderResourceDesc getUAVIndex() const;
 
-		ClearUAVDesc getClearUAVDesc() const;
+		UAVClearDesc getUAVClearDesc() const;
 
 		CounterBufferView* getCounterBuffer() const;
 

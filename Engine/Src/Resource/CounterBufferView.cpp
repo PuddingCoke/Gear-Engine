@@ -103,10 +103,10 @@ namespace Gear::Resource
 		return desc;
 	}
 
-	ClearUAVDesc CounterBufferView::getClearUAVDesc() const
+	UAVClearDesc CounterBufferView::getUAVClearDesc() const
 	{
-		const ClearUAVDesc desc = {
-		.type = ClearUAVDesc::BUFFER,
+		const UAVClearDesc desc = {
+		.type = UAVClearDesc::BUFFER,
 		.bufferDesc = {
 				.buffer = buffer.get()
 		},

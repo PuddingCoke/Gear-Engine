@@ -337,10 +337,10 @@ namespace Gear::Resource
 		return desc;
 	}
 
-	ClearUAVDesc RenderTextureView::getClearUAVMipDesc(const uint32_t mipSlice) const
+	UAVClearDesc RenderTextureView::getUAVMipClearDesc(const uint32_t mipSlice) const
 	{
-		const ClearUAVDesc desc = {
-		.type = ClearUAVDesc::TEXTURE,
+		const UAVClearDesc desc = {
+		.type = UAVClearDesc::TEXTURE,
 		.textureDesc = {
 				.texture = texture.get(),
 				.mipSlice = mipSlice

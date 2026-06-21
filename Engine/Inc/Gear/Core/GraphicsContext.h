@@ -215,10 +215,10 @@ namespace Gear::Core
 		void setViewportSimple(const DirectX::XMUINT2 dimension);
 
 		//清理UAV
-		void clearUnorderedAccess(const Resource::ClearUAVDesc& desc, const float values[4]);
+		void clearUnorderedAccess(const Resource::UAVClearDesc& desc, const float values[4]);
 
 		//清理UAV
-		void clearUnorderedAccess(const Resource::ClearUAVDesc& desc, const uint32_t values[4]);
+		void clearUnorderedAccess(const Resource::UAVClearDesc& desc, const uint32_t values[4]);
 
 		//绘制实例
 		void draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation);
@@ -328,7 +328,7 @@ namespace Gear::Core
 
 		void setResourceState(const Resource::IndexBufferDesc& desc);
 
-		D3D12Resource::D3D12ResourceBase* setResourceState(const Resource::ClearUAVDesc& desc);
+		D3D12Resource::D3D12ResourceBase* setResourceState(const Resource::UAVClearDesc& desc);
 
 		//重置内部追踪的状态
 		void resetGraphicsRootSignature();

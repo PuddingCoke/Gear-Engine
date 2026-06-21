@@ -506,7 +506,7 @@ namespace Gear::Core
 		setScissorRect(0, 0, static_cast<int32_t>(dimension.x), static_cast<int32_t>(dimension.y));
 	}
 
-	void GraphicsContext::clearUnorderedAccess(const Resource::ClearUAVDesc& desc, const float values[4])
+	void GraphicsContext::clearUnorderedAccess(const Resource::UAVClearDesc& desc, const float values[4])
 	{
 		D3D12Resource::D3D12ResourceBase* resource = setResourceState(desc);
 
@@ -521,7 +521,7 @@ namespace Gear::Core
 		commandList->resourceBarrier(1, &barrier);
 	}
 
-	void GraphicsContext::clearUnorderedAccess(const Resource::ClearUAVDesc& desc, const uint32_t values[4])
+	void GraphicsContext::clearUnorderedAccess(const Resource::UAVClearDesc& desc, const uint32_t values[4])
 	{
 		D3D12Resource::D3D12ResourceBase* resource = setResourceState(desc);
 
@@ -823,17 +823,17 @@ namespace Gear::Core
 		commandList->trackAndSetResourceState(desc.buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 	}
 
-	D3D12Resource::D3D12ResourceBase* GraphicsContext::setResourceState(const Resource::ClearUAVDesc& desc)
+	D3D12Resource::D3D12ResourceBase* GraphicsContext::setResourceState(const Resource::UAVClearDesc& desc)
 	{
 		D3D12Resource::D3D12ResourceBase* resource = nullptr;
 
-		if (desc.type == Resource::ClearUAVDesc::BUFFER)
+		if (desc.type == Resource::UAVClearDesc::BUFFER)
 		{
 			resource = desc.bufferDesc.buffer;
 
 			commandList->trackAndSetResourceState(desc.bufferDesc.buffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		}
-		else if (desc.type == Resource::ClearUAVDesc::TEXTURE)
+		else if (desc.type == Resource::UAVClearDesc::TEXTURE)
 		{
 			resource = desc.textureDesc.texture;
 

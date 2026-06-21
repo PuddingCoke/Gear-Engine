@@ -27,7 +27,7 @@ namespace Gear::Resource
 
 		ShaderResourceDesc getUAVIndex() const;
 
-		ClearUAVDesc getClearUAVDesc() const;
+		UAVClearDesc getUAVClearDesc() const;
 
 		bool copyDescriptors() override;
 

@@ -78,7 +78,7 @@ namespace Gear::Resource
 		D3D12_INDEX_BUFFER_VIEW ibv;
 	};
 
-	struct ClearUAVDesc
+	struct UAVClearDesc
 	{
 		enum ResourceType
 		{

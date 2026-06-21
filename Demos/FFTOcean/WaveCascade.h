@@ -35,7 +35,7 @@ public:
 
 		float clearVal[] = { 9999.f,9999.f,9999.f,9999.f };
 
-		context->clearUnorderedAccess(jacobianTexture->getClearUAVMipDesc(0), clearVal);
+		context->clearUnorderedAccess(jacobianTexture->getUAVMipClearDesc(0), clearVal);
 	}
 
 	~WaveCascade()

@@ -1,11 +1,12 @@
 import json
 import tkinter as tk
+import tkinter.font as tkfont
 from pathlib import Path
 from tkinter import messagebox, ttk
 
 
 TASKS_FILE = Path(__file__).with_name("tasks.json")
-README_FILE = Path(__file__).parent.parent / "README.md"
+README_FILE = Path(__file__).parent.parent / "TODO.md"
 
 
 class TodoApp:
@@ -16,6 +17,8 @@ class TodoApp:
         self.root.minsize(420, 360)
 
         self.tasks: list[str] = self.load_tasks()
+
+        tkfont.nametofont("TkDefaultFont").configure(family="Microsoft YaHei", size=12)
 
         self.build_ui()
         self.refresh_tasks()
@@ -194,7 +197,11 @@ class TodoApp:
     def on_mouse_wheel(self, event: tk.Event) -> None:
         if self.canvas.winfo_containing(event.x_root, event.y_root) is None:
             return
-        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        delta = int(-1 * (event.delta / 120))
+        y0, y1 = self.canvas.yview()
+        if (delta < 0 and y0 <= 0.0) or (delta > 0 and y1 >= 1.0):
+            return
+        self.canvas.yview_scroll(delta, "units")
 
     def close(self) -> None:
         self.save_tasks()
