@@ -62,16 +62,16 @@ namespace Gear
 
 		void reportLiveObjects() const;
 
-		UniquePtr<Utils::Logger::Internal::InitializeToken> loggerToken;
+		UniquePtr<Logger::Internal::InitializeToken> loggerToken;
 
 		UniquePtr<Window::Win32Form::InitializeToken> windowToken;
 
-		UniquePtr<Core::RenderEngine::Internal::InitializeToken> renderEngineToken;
+		UniquePtr<RenderEngine::Internal::InitializeToken> renderEngineToken;
 
 		UniquePtr<Game> game;
 
 		//用于截屏
-		UniquePtr<Core::D3D12Resource::ReadbackHeap> backBufferHeap;
+		UniquePtr<D3D12Resource::ReadbackHeap> backBufferHeap;
 
 		InitializationParam::EngineUsage usage;
 
@@ -92,7 +92,7 @@ namespace Gear
 
 	GearImpl::~GearImpl()
 	{
-		Core::RenderEngine::Internal::waitForCurrentFrame();
+		RenderEngine::Internal::waitForCurrentFrame();
 
 #ifdef _DEBUG
 
@@ -112,17 +112,17 @@ namespace Gear
 
 	int32_t GearImpl::iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
 	{
-		loggerToken = makeUnique<Utils::Logger::Internal::InitializeToken>();
+		loggerToken = makeUnique<Logger::Internal::InitializeToken>();
 
-		Utils::File::Internal::setRootFolder(Utils::File::backslashToSlash(Utils::File::getParentFolder(argv[0])));
+		File::Internal::setRootFolder(File::backslashToSlash(File::getParentFolder(argv[0])));
 
-		LOGENGINE(L"EXE根目录", LogColor::brightBlue, Utils::File::getRootFolder());
+		LOGENGINE(L"EXE根目录", LogColor::brightBlue, File::getRootFolder());
 
 		usage = param.usage;
 
 		DirectX::XMUINT2 systemResolution = {};
 
-		Utils::WallpaperHelper::getSystemResolution(systemResolution.x, systemResolution.y);
+		WallpaperHelper::getSystemResolution(systemResolution.x, systemResolution.y);
 
 		switch (usage)
 		{
@@ -133,9 +133,9 @@ namespace Gear
 			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, (systemResolution.x - realTimeRender.width) / 2, (systemResolution.y - realTimeRender.height) / 2,
 				realTimeRender.width, realTimeRender.height, Window::Win32Form::normalWindowStyle, Window::Win32Form::windowCallback);
 
-			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(realTimeRender.width, realTimeRender.height, Window::Win32Form::getHandle(), true, realTimeRender.enableImGuiSurface);
+			renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(realTimeRender.width, realTimeRender.height, Window::Win32Form::getHandle(), true, realTimeRender.enableImGuiSurface);
 
-			backBufferHeap = makeUnique<Core::D3D12Resource::ReadbackHeap>(Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
+			backBufferHeap = makeUnique<D3D12Resource::ReadbackHeap>(FMT::getByteSize(Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
 
 			SetForegroundWindow(Window::Win32Form::getHandle());
 
@@ -151,7 +151,7 @@ namespace Gear
 
 			ShowWindow(Window::Win32Form::getHandle(), SW_HIDE);
 
-			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(videoRender.width, videoRender.height, Window::Win32Form::getHandle(), false, false);
+			renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(videoRender.width, videoRender.height, Window::Win32Form::getHandle(), false, false);
 
 			LOGENGINE(L"引擎用途", L"视频渲染");
 
@@ -162,12 +162,12 @@ namespace Gear
 			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, 0, 0, systemResolution.x, systemResolution.y, Window::Win32Form::wallpaperWindowStyle, Window::Win32Form::wallpaperCallBack);
 
 			{
-				const HWND parentHWND = Utils::WallpaperHelper::getWallpaperHWND();
+				const HWND parentHWND = WallpaperHelper::getWallpaperHWND();
 
 				SetParent(Window::Win32Form::getHandle(), parentHWND);
 			}
 
-			renderEngineToken = makeUnique<Core::RenderEngine::Internal::InitializeToken>(systemResolution.x, systemResolution.y, Window::Win32Form::getHandle(), true, false);
+			renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(systemResolution.x, systemResolution.y, Window::Win32Form::getHandle(), true, false);
 
 			LOGENGINE(L"引擎用途", L"动态壁纸");
 
@@ -177,11 +177,11 @@ namespace Gear
 			break;
 		}
 
-		LOGENGINE(L"分辨率", Core::Graphics::getWidth(), L"x", Core::Graphics::getHeight());
+		LOGENGINE(L"分辨率", Graphics::getWidth(), L"x", Graphics::getHeight());
 
-		LOGENGINE(L"横纵比", Core::Graphics::getAspectRatio());
+		LOGENGINE(L"横纵比", Graphics::getAspectRatio());
 
-		LOGENGINE(L"后备缓冲数量", Core::Graphics::getFrameBufferCount());
+		LOGENGINE(L"后备缓冲数量", Graphics::getFrameBufferCount());
 
 		return 0;
 	}
@@ -190,7 +190,7 @@ namespace Gear
 	{
 		game = std::move(gamePtr);
 
-		Core::RenderEngine::Internal::initializeResources();
+		RenderEngine::Internal::initializeResources();
 
 		switch (usage)
 		{
@@ -213,17 +213,17 @@ namespace Gear
 
 	void GearImpl::runRealTimeRender()
 	{
-		Utils::DeltaTimeEstimator dtEstimator;
+		DeltaTimeEstimator dtEstimator;
 
 		while (Window::Win32Form::pollEvents())
 		{
 			const std::chrono::high_resolution_clock::time_point startPoint = std::chrono::high_resolution_clock::now();
 
-			Core::RenderEngine::Internal::setDefRenderTexture();
+			RenderEngine::Internal::setDefRenderTexture();
 
-			Core::RenderEngine::Internal::beginFrame();
+			RenderEngine::Internal::beginFrame();
 
-			game->update(Core::Graphics::getDeltaTime());
+			game->update(Graphics::getDeltaTime());
 
 			game->render();
 
@@ -231,19 +231,19 @@ namespace Gear
 
 			if (needScreenGrab)
 			{
-				Core::RenderEngine::Internal::saveBackBuffer(backBufferHeap.get());
+				RenderEngine::Internal::saveBackBuffer(backBufferHeap.get());
 			}
 
-			Core::RenderEngine::Internal::endFrame();
+			RenderEngine::Internal::endFrame();
 
-			Core::RenderEngine::Internal::present();
+			RenderEngine::Internal::present();
 
 			if (needScreenGrab)
 			{
-				Core::RenderEngine::Internal::waitForCurrentFrame();
+				RenderEngine::Internal::waitForCurrentFrame();
 			}
 
-			Core::RenderEngine::Internal::waitForNextFrame();
+			RenderEngine::Internal::waitForNextFrame();
 
 			const std::chrono::high_resolution_clock::time_point endPoint = std::chrono::high_resolution_clock::now();
 
@@ -251,16 +251,16 @@ namespace Gear
 
 			const float lerpDeltaTime = dtEstimator.getDeltaTime(deltaTime);
 
-			Core::RenderEngine::Internal::setDeltaTime(lerpDeltaTime);
+			RenderEngine::Internal::setDeltaTime(lerpDeltaTime);
 
-			Core::RenderEngine::Internal::updateTimeElapsed();
+			RenderEngine::Internal::updateTimeElapsed();
 
 			if (needScreenGrab)
 			{
 				const uint8_t* const dataPtr = reinterpret_cast<uint8_t*>(backBufferHeap->map(CD3DX12_RANGE(0ull,
-					Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height)));
+					FMT::getByteSize(Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height)));
 
-				UniquePtr<uint8_t[]> colors = makeUnique<uint8_t[]>(Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
+				UniquePtr<uint8_t[]> colors = makeUnique<uint8_t[]>(FMT::getByteSize(Graphics::backBufferFormat) * realTimeRender.width * realTimeRender.height);
 
 				for (uint32_t i = 0; i < realTimeRender.width * realTimeRender.height; i++)
 				{
@@ -278,7 +278,7 @@ namespace Gear
 
 				backBufferHeap->unmap();
 
-				stbi_write_png("output.png", realTimeRender.width, realTimeRender.height, 4, colors.get(), Core::FMT::getByteSize(Core::Graphics::backBufferFormat) * realTimeRender.width);
+				stbi_write_png("output.png", realTimeRender.width, realTimeRender.height, 4, colors.get(), FMT::getByteSize(Graphics::backBufferFormat) * realTimeRender.width);
 
 				LOGSUCCESS(L"截屏保存到", L"output.png");
 			}
@@ -287,49 +287,49 @@ namespace Gear
 
 	void GearImpl::runVideoRender()
 	{
-		const Core::GPUVendor vendor = Core::RenderEngine::getVendor();
+		const GPUVendor vendor = RenderEngine::getVendor();
 
-		UniquePtr<Core::VideoEncoder::Encoder> encoder;
+		UniquePtr<VideoEncoder::Encoder> encoder;
 
-		const uint32_t frameToEncode = videoRender.second * Core::VideoEncoder::Encoder::frameRate;
+		const uint32_t frameToEncode = videoRender.second * VideoEncoder::Encoder::frameRate;
 
 		switch (vendor)
 		{
-		case Core::GPUVendor::NVIDIA:
-			encoder = makeUnique<Core::VideoEncoder::NvidiaEncoder>(frameToEncode);
+		case GPUVendor::NVIDIA:
+			encoder = makeUnique<VideoEncoder::NvidiaEncoder>(frameToEncode);
 			break;
-		case Core::GPUVendor::AMD:
-		case Core::GPUVendor::INTEL:
-		case Core::GPUVendor::UNKNOWN:
+		case GPUVendor::AMD:
+		case GPUVendor::INTEL:
+		case GPUVendor::UNKNOWN:
 			break;
 		default:
 			break;
 		}
 
-		if (vendor == Core::GPUVendor::NVIDIA)
+		if (vendor == GPUVendor::NVIDIA)
 		{
-			const uint32_t numTextures = Core::VideoEncoder::NvidiaEncoder::lookaheadDepth + 1;
+			const uint32_t numTextures = VideoEncoder::NvidiaEncoder::lookaheadDepth + 1;
 
-			UniquePtr<Core::D3D12Resource::Texture> renderTextures[numTextures] = {};
+			UniquePtr<D3D12Resource::Texture> renderTextures[numTextures] = {};
 
 			D3D12_CPU_DESCRIPTOR_HANDLE textureHandles[numTextures] = {};
 
 			{
-				Core::D3D12Core::DescriptorHandle descriptorHandle = Core::LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(numTextures);
+				DescriptorHandle descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(numTextures);
 
 				D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 				rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-				rtvDesc.Format = Core::Graphics::backBufferFormat;
+				rtvDesc.Format = Graphics::backBufferFormat;
 				rtvDesc.Texture2D.MipSlice = 0;
 				rtvDesc.Texture2D.PlaneSlice = 0;
 
 				for (uint32_t i = 0; i < numTextures; i++)
 				{
-					const D3D12_CLEAR_VALUE clearValue = { Core::Graphics::backBufferFormat ,{0.f,0.f,0.f,1.f} };
+					const D3D12_CLEAR_VALUE clearValue = { Graphics::backBufferFormat ,{0.f,0.f,0.f,1.f} };
 
-					renderTextures[i] = makeUnique<Core::D3D12Resource::Texture>(Core::Graphics::getWidth(), Core::Graphics::getHeight(), Core::Graphics::backBufferFormat, 1, 1, true, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, &clearValue);
+					renderTextures[i] = makeUnique<D3D12Resource::Texture>(Graphics::getWidth(), Graphics::getHeight(), Graphics::backBufferFormat, 1, 1, true, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, &clearValue);
 
-					Core::GraphicsDevice::get()->CreateRenderTargetView(renderTextures[i]->getResource(), &rtvDesc, descriptorHandle.getCurrentCPUHandle());
+					GraphicsDevice::get()->CreateRenderTargetView(renderTextures[i]->getResource(), &rtvDesc, descriptorHandle.getCurrentCPUHandle());
 
 					textureHandles[i] = descriptorHandle.getCurrentCPUHandle();
 
@@ -339,25 +339,25 @@ namespace Gear
 
 			uint32_t index = 0;
 
-			Core::RenderEngine::Internal::setDeltaTime(1.f / static_cast<float>(Core::VideoEncoder::Encoder::frameRate));
+			RenderEngine::Internal::setDeltaTime(1.f / static_cast<float>(VideoEncoder::Encoder::frameRate));
 
 			while (true)
 			{
-				Core::RenderEngine::Internal::setRenderTexture(renderTextures[index].get(), textureHandles[index]);
+				RenderEngine::Internal::setRenderTexture(renderTextures[index].get(), textureHandles[index]);
 
-				Core::RenderEngine::Internal::beginFrame();
+				RenderEngine::Internal::beginFrame();
 
-				game->update(Core::Graphics::getDeltaTime());
+				game->update(Graphics::getDeltaTime());
 
 				game->render();
 
-				Core::RenderEngine::Internal::endFrame();
+				RenderEngine::Internal::endFrame();
 
-				Core::RenderEngine::Internal::waitForCurrentFrame();
+				RenderEngine::Internal::waitForCurrentFrame();
 
-				Core::RenderEngine::Internal::updateTimeElapsed();
+				RenderEngine::Internal::updateTimeElapsed();
 
-				if (!encoder->encode(Core::RenderEngine::getRenderTexture()))
+				if (!encoder->encode(RenderEngine::getRenderTexture()))
 				{
 					break;
 				}
@@ -369,15 +369,15 @@ namespace Gear
 
 	void GearImpl::runWallpaper()
 	{
-		Utils::DeltaTimeEstimator dtEstimator;
+		DeltaTimeEstimator dtEstimator;
 
-		Utils::WallpaperHelper::DetectThreadToken detectThreadToken;
+		WallpaperHelper::DetectThreadToken detectThreadToken;
 
 		while (Window::Win32Form::pollEvents())
 		{
-			while (Utils::WallpaperHelper::isDesktopObscured())
+			while (WallpaperHelper::isDesktopObscured())
 			{
-				if (!Window::Win32Form::pollEvents(static_cast<DWORD>(Utils::WallpaperHelper::obscureCheckInterval / 2ull - 75ull)))
+				if (!Window::Win32Form::pollEvents(static_cast<DWORD>(WallpaperHelper::obscureCheckInterval / 2ull - 75ull)))
 				{
 					return;
 				}
@@ -385,19 +385,19 @@ namespace Gear
 
 			const std::chrono::high_resolution_clock::time_point startPoint = std::chrono::high_resolution_clock::now();
 
-			Core::RenderEngine::Internal::setDefRenderTexture();
+			RenderEngine::Internal::setDefRenderTexture();
 
-			Core::RenderEngine::Internal::beginFrame();
+			RenderEngine::Internal::beginFrame();
 
-			game->update(Core::Graphics::getDeltaTime());
+			game->update(Graphics::getDeltaTime());
 
 			game->render();
 
-			Core::RenderEngine::Internal::endFrame();
+			RenderEngine::Internal::endFrame();
 
-			Core::RenderEngine::Internal::present();
+			RenderEngine::Internal::present();
 
-			Core::RenderEngine::Internal::waitForNextFrame();
+			RenderEngine::Internal::waitForNextFrame();
 
 			const std::chrono::high_resolution_clock::time_point endPoint = std::chrono::high_resolution_clock::now();
 
@@ -405,9 +405,9 @@ namespace Gear
 
 			const float lerpDeltaTime = dtEstimator.getDeltaTime(deltaTime);
 
-			Core::RenderEngine::Internal::setDeltaTime(lerpDeltaTime);
+			RenderEngine::Internal::setDeltaTime(lerpDeltaTime);
 
-			Core::RenderEngine::Internal::updateTimeElapsed();
+			RenderEngine::Internal::updateTimeElapsed();
 		}
 	}
 
@@ -449,7 +449,7 @@ namespace Gear
 
 	void failureExit(const std::exception& e)
 	{
-		Utils::Logger::Internal::release();
+		Logger::Internal::release();
 
 		std::cerr << e.what() << "\n";
 
