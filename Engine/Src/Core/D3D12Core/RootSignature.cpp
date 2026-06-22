@@ -169,12 +169,12 @@ namespace Gear::Core::D3D12Core
 		return rootSignature.Get();
 	}
 
-	uint32_t RootSignature::getEngineDefinedGlobalConstantBufferParameterIndex()
+	uint32_t RootSignature::getEngineGlobalConstantBufferParameterIndex()
 	{
 		return CommonShaderLayout::globalParameterIndices.engineGlobalCBufferParameterIndex;
 	}
 
-	uint32_t RootSignature::getUserDefinedGlobalConstantBufferParameterIndex()
+	uint32_t RootSignature::getUserGlobalConstantBufferParameterIndex()
 	{
 		return CommonShaderLayout::globalParameterIndices.userGlobalCBufferParameterIndex;
 	}

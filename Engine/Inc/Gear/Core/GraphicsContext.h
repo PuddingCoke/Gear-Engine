@@ -21,10 +21,8 @@
 
 #include<type_traits>
 
-#include"TOPOLOGY.h"
-
 //创建一个作用域，内置默认值为0的临时偏移co，它会随着API调用自增，建议搭配CodeSnippets中的片段使用
-//注意事项：作用域内只允许ctx->set*SConstants调用！因为宏定义是无法处理某些特殊情况的
+//注意：作用域内只允许ctx->set*SConstants调用！因为宏定义是无法处理某些特殊情况的
 #define SETCONSTS(...) { uint32_t co = 0u; __VA_ARGS__ }
 
 namespace Gear::Core
@@ -41,7 +39,7 @@ namespace Gear::Core
 	CREATESAFETYPE(GraphicsContext);
 
 	/// <summary>
-	/// 注意事项：禁止将UAV用于只读用途，否则引擎可能会插入多余的UAV屏障
+	/// 注意：禁止将UAV用于只读用途，否则引擎可能会插入多余的UAV屏障
 	/// </summary>
 	class GraphicsContext
 	{
@@ -337,7 +335,7 @@ namespace Gear::Core
 
 		void resetComputeRootSignature();
 
-		void resetUserDefinedGlobalConstantBuffer();
+		void resetUserGlobalCBuffer();
 
 		D3D12_VIEWPORT vp;
 
@@ -348,7 +346,7 @@ namespace Gear::Core
 		//以下是内部追踪的状态，用于减少图形API的调用
 		const D3D12Core::PipelineState* currentPipelineState;
 
-		const Resource::ImmutableCBuffer* userDefinedGlobalConstantBuffer;
+		const Resource::ImmutableCBuffer* userGlobalCBuffer;
 
 		D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
 

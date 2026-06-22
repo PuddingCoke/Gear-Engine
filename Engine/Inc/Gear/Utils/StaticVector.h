@@ -18,9 +18,20 @@ namespace Gear::Utils
 
 		~StaticVector();
 
+		//每个元素的字节大小
+		static size_t elementByteSize();
+
+		//当前的元素个数
 		size_t size() const;
 
+		//容器的总元素个数
+		static size_t totalSize();
+
+		//当前的字节大小
 		size_t byteSize() const;
+
+		//容器的总字节大小
+		static size_t totalByteSize();
 
 		void push(const T& t);
 
@@ -56,15 +67,33 @@ namespace Gear::Utils
 	}
 
 	template<typename T, size_t N>
+	inline size_t StaticVector<T, N>::elementByteSize()
+	{
+		return sizeof(T);
+	}
+
+	template<typename T, size_t N>
 	inline size_t StaticVector<T, N>::size() const
 	{
 		return idx;
 	}
 
 	template<typename T, size_t N>
+	inline size_t StaticVector<T, N>::totalSize()
+	{
+		return N;
+	}
+
+	template<typename T, size_t N>
 	inline size_t StaticVector<T, N>::byteSize() const
 	{
-		return idx * sizeof(T);
+		return size() * elementByteSize();
+	}
+
+	template<typename T, size_t N>
+	inline size_t StaticVector<T, N>::totalByteSize()
+	{
+		return totalSize() * elementByteSize();
 	}
 
 	template<typename T, size_t N>

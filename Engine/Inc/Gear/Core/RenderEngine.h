@@ -7,7 +7,7 @@
 
 namespace Gear::Core
 {
-	enum class GPUVendor
+	enum class AdapterVendor
 	{
 		NVIDIA,
 		AMD,
@@ -21,7 +21,7 @@ namespace Gear::Core
 	{
 		void submitCommandList(D3D12Core::CommandList* const commandList);
 
-		GPUVendor getVendor();
+		AdapterVendor getVendor();
 
 		D3D12Resource::Texture* getRenderTexture();
 

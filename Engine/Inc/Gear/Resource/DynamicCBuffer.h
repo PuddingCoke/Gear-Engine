@@ -9,7 +9,7 @@ namespace Gear::Resource
 {
 	CREATESAFETYPE(DynamicCBuffer);
 
-	//硬性要求：每帧都必须更新一次
+	//注意：每帧都必须更新一次
 	class DynamicCBuffer :public ImmutableCBuffer
 	{
 	public:

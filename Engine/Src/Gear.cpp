@@ -287,7 +287,7 @@ namespace Gear
 
 	void GearImpl::runVideoRender()
 	{
-		const GPUVendor vendor = RenderEngine::getVendor();
+		const AdapterVendor vendor = RenderEngine::getVendor();
 
 		UniquePtr<VideoEncoder::Encoder> encoder;
 
@@ -295,18 +295,19 @@ namespace Gear
 
 		switch (vendor)
 		{
-		case GPUVendor::NVIDIA:
+		case AdapterVendor::NVIDIA:
 			encoder = makeUnique<VideoEncoder::NvidiaEncoder>(frameToEncode);
 			break;
-		case GPUVendor::AMD:
-		case GPUVendor::INTEL:
-		case GPUVendor::UNKNOWN:
+		case AdapterVendor::AMD:
+		case AdapterVendor::INTEL:
+		case AdapterVendor::UNKNOWN:
+			LOGERROR(L"目前只为英伟达的GPU做了视频编码的适配");
 			break;
 		default:
 			break;
 		}
 
-		if (vendor == GPUVendor::NVIDIA)
+		if (vendor == AdapterVendor::NVIDIA)
 		{
 			const uint32_t numTextures = VideoEncoder::NvidiaEncoder::lookaheadDepth + 1;
 

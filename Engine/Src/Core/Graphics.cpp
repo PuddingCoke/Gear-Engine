@@ -33,7 +33,7 @@ namespace Gear::Core::Graphics
 
 			D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = {};
 
-			Resource::ImmutableCBuffer* engineDefinedGlobalCBuffer = nullptr;
+			Resource::ImmutableCBuffer* engineGlobalCBuffer = nullptr;
 
 		}impl;
 
@@ -73,9 +73,9 @@ namespace Gear::Core::Graphics
 			impl.backBufferHandle = backBufferHandle;
 		}
 
-		void setEngineDefinedGlobalCBuffer(Resource::ImmutableCBuffer* const engineDefinedGlobalCBuffer)
+		void setEngineGlobalCBuffer(Resource::ImmutableCBuffer* const engineGlobalCBuffer)
 		{
-			impl.engineDefinedGlobalCBuffer = engineDefinedGlobalCBuffer;
+			impl.engineGlobalCBuffer = engineGlobalCBuffer;
 		}
 
 		void imGUICall()
@@ -152,8 +152,8 @@ namespace Gear::Core::Graphics
 		return Internal::impl.backBufferHandle;
 	}
 
-	Resource::ImmutableCBuffer* getEngineDefinedGlobalCBuffer()
+	Resource::ImmutableCBuffer* getEngineGlobalCBuffer()
 	{
-		return Internal::impl.engineDefinedGlobalCBuffer;
+		return Internal::impl.engineGlobalCBuffer;
 	}
 }

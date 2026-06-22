@@ -77,7 +77,7 @@ namespace Gear::Core::RenderEngine
 
 			void submitCommandList(D3D12Core::CommandList* const commandList);
 
-			GPUVendor getVendor() const;
+			AdapterVendor getVendor() const;
 
 			D3D12Resource::Texture* getRenderTexture() const;
 
@@ -133,7 +133,7 @@ namespace Gear::Core::RenderEngine
 
 			UniquePtr<RenderThreadGlobal::Internal::InitializeToken> renderThreadGlobalToken;
 
-			UniquePtr<Resource::DynamicCBuffer> engineDefinedGlobalCBuffer;
+			UniquePtr<Resource::DynamicCBuffer> engineGlobalCBuffer;
 
 			UniquePtr<ResourceManager> resManager;
 
@@ -149,7 +149,7 @@ namespace Gear::Core::RenderEngine
 
 			bool displayImGUISurface;
 
-			GPUVendor vendor;
+			AdapterVendor vendor;
 
 			std::vector<D3D12Core::CommandList*> recordCommandLists;
 
@@ -172,7 +172,7 @@ namespace Gear::Core::RenderEngine
 
 		RenderEngineImpl::RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface) :
 			fenceEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)),
-			vendor(GPUVendor::UNKNOWN),
+			vendor(AdapterVendor::UNKNOWN),
 			initializeImGuiSurface(initializeImGuiSurface),
 			displayImGUISurface(false),
 			syncInterval(1),
@@ -243,9 +243,9 @@ namespace Gear::Core::RenderEngine
 			renderThreadGlobalToken = makeUnique<RenderThreadGlobal::Internal::InitializeToken>();
 
 			//引擎需要使用一个动态常量缓冲为每一帧的渲染提供有用的信息
-			engineDefinedGlobalCBuffer = ResourceManager::createDynamicCBuffer(sizeof(perframeResource));
+			engineGlobalCBuffer = ResourceManager::createDynamicCBuffer(sizeof(perframeResource));
 
-			Graphics::Internal::setEngineDefinedGlobalCBuffer(engineDefinedGlobalCBuffer.get());
+			Graphics::Internal::setEngineGlobalCBuffer(engineGlobalCBuffer.get());
 
 			//把准备命令列表推入容器中，因为资源的初始化可能需要动态常量缓冲
 			//而动态常量缓冲更新的指令记录是由prepareCommandList负责的
@@ -400,7 +400,7 @@ namespace Gear::Core::RenderEngine
 			recordCommandLists.push_back(commandList);
 		}
 
-		GPUVendor RenderEngineImpl::getVendor() const
+		AdapterVendor RenderEngineImpl::getVendor() const
 		{
 			return vendor;
 		}
@@ -457,7 +457,8 @@ namespace Gear::Core::RenderEngine
 
 			recordCommandLists.push_back(prepareCommandList.get());
 
-			engineDefinedGlobalCBuffer->acquireDataPtr();
+			//先获取可用的位置，供这一帧的RenderTask使用
+			engineGlobalCBuffer->acquireDataPtr();
 
 			//把后备缓冲转变到STATE_RENDER_TARGET，并暂存资源屏障
 			prepareCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -525,7 +526,7 @@ namespace Gear::Core::RenderEngine
 				//如果数据原封不动上传到显存上，那么这个矩阵会被HLSL用另一种方式来解释，我们因此需要的数学运算是 matrix*vec，即mul(matrix,vec)
 				//然而，mul(vec,matrix)是有一些性能优势的，为了利用这个性能优势，矩阵在上传前要被转置
 
-				engineDefinedGlobalCBuffer->updateData(&perframeResource);
+				engineGlobalCBuffer->updateData(&perframeResource);
 			}
 
 			//使用最后一个命令列表做些收尾工作
@@ -647,25 +648,25 @@ namespace Gear::Core::RenderEngine
 
 					if (vendorID == 0x10DE)
 					{
-						vendor = GPUVendor::NVIDIA;
+						vendor = AdapterVendor::NVIDIA;
 
 						vendorName = L"NVIDIA";
 					}
 					else if (vendorID == 0x1002 || vendorID == 0x1022)
 					{
-						vendor = GPUVendor::AMD;
+						vendor = AdapterVendor::AMD;
 
 						vendorName = L"AMD";
 					}
 					else if (vendorID == 0x163C || vendorID == 0x8086 || vendorID == 0x8087)
 					{
-						vendor = GPUVendor::INTEL;
+						vendor = AdapterVendor::INTEL;
 
 						vendorName = L"INTEL";
 					}
 					else
 					{
-						vendor = GPUVendor::UNKNOWN;
+						vendor = AdapterVendor::UNKNOWN;
 
 						vendorName = L"UNKNOWN";
 					}
@@ -817,7 +818,7 @@ namespace Gear::Core::RenderEngine
 		Internal::impl->submitCommandList(commandList);
 	}
 
-	GPUVendor getVendor()
+	AdapterVendor getVendor()
 	{
 		return Internal::impl->getVendor();
 	}

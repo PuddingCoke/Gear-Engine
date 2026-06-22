@@ -37,7 +37,7 @@ TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) 
 	spriteVS(Shader::create(File::getRootFolder() + L"SpriteVS.cso")),
 	spriteGS(Shader::create(File::getRootFolder() + L"SpriteGS.cso")),
 	spritePS(Shader::create(File::getRootFolder() + L"SpritePS.cso")),
-	textBuffer(ResourceManager::createStructuredBufferView(sizeof(Text), sizeof(Text)* maxTextNum, false, false, true, true, true)),
+	textBuffer(ResourceManager::createStructuredBufferView(textArray.elementByteSize(), textArray.totalByteSize(), false, false, true, true, true)),
 	scale(1.f)
 {
 	spriteState = PipelineStateBuilder()

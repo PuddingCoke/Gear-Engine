@@ -33,9 +33,9 @@ namespace Gear::Core::D3D12Core
 
 		ID3D12RootSignature* get() const;
 
-		static uint32_t getEngineDefinedGlobalConstantBufferParameterIndex();
+		static uint32_t getEngineGlobalConstantBufferParameterIndex();
 
-		static uint32_t getUserDefinedGlobalConstantBufferParameterIndex();
+		static uint32_t getUserGlobalConstantBufferParameterIndex();
 
 		uint32_t getVSConstantsParameterIndex() const;
 
