@@ -350,6 +350,8 @@ namespace Gear::Core
 
 		D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
 
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopologyType;
+
 		const D3D12Core::RootSignature* graphicsRootSignature;
 
 		const D3D12Core::RootSignature* computeRootSignature;

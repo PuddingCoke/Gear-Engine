@@ -6,6 +6,61 @@
 
 namespace Gear::Core
 {
+	constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE getTopologyType(const D3D_PRIMITIVE_TOPOLOGY topology)
+	{
+		switch (topology)
+		{
+		case TOPOLOGY::POINTLIST:
+			return TOPOLOGY::TYPE::POINT;
+		case TOPOLOGY::LINELIST:
+		case TOPOLOGY::LINESTRIP:
+		case TOPOLOGY::LINELISTADJ:
+		case TOPOLOGY::LINESTRIPADJ:
+			return TOPOLOGY::TYPE::LINE;
+		case TOPOLOGY::TRIANGLELIST:
+		case TOPOLOGY::TRIANGLESTRIP:
+		case TOPOLOGY::TRIANGLEFAN:
+		case TOPOLOGY::TRIANGLELISTADJ:
+		case TOPOLOGY::TRIANGLESTRIPADJ:
+			return TOPOLOGY::TYPE::TRIANGLE;
+		case TOPOLOGY::PATCH1CONTROL:
+		case TOPOLOGY::PATCH2CONTROL:
+		case TOPOLOGY::PATCH3CONTROL:
+		case TOPOLOGY::PATCH4CONTROL:
+		case TOPOLOGY::PATCH5CONTROL:
+		case TOPOLOGY::PATCH6CONTROL:
+		case TOPOLOGY::PATCH7CONTROL:
+		case TOPOLOGY::PATCH8CONTROL:
+		case TOPOLOGY::PATCH9CONTROL:
+		case TOPOLOGY::PATCH10CONTROL:
+		case TOPOLOGY::PATCH11CONTROL:
+		case TOPOLOGY::PATCH12CONTROL:
+		case TOPOLOGY::PATCH13CONTROL:
+		case TOPOLOGY::PATCH14CONTROL:
+		case TOPOLOGY::PATCH15CONTROL:
+		case TOPOLOGY::PATCH16CONTROL:
+		case TOPOLOGY::PATCH17CONTROL:
+		case TOPOLOGY::PATCH18CONTROL:
+		case TOPOLOGY::PATCH19CONTROL:
+		case TOPOLOGY::PATCH20CONTROL:
+		case TOPOLOGY::PATCH21CONTROL:
+		case TOPOLOGY::PATCH22CONTROL:
+		case TOPOLOGY::PATCH23CONTROL:
+		case TOPOLOGY::PATCH24CONTROL:
+		case TOPOLOGY::PATCH25CONTROL:
+		case TOPOLOGY::PATCH26CONTROL:
+		case TOPOLOGY::PATCH27CONTROL:
+		case TOPOLOGY::PATCH28CONTROL:
+		case TOPOLOGY::PATCH29CONTROL:
+		case TOPOLOGY::PATCH30CONTROL:
+		case TOPOLOGY::PATCH31CONTROL:
+		case TOPOLOGY::PATCH32CONTROL:
+			return TOPOLOGY::TYPE::PATCH;
+		}
+
+		return TOPOLOGY::TYPE::UNDEFINED;
+	}
+
 	GraphicsContext::GraphicsContext() :
 		commandList(makeUnique<D3D12Core::CommandList>(D3D12_COMMAND_LIST_TYPE_DIRECT)),
 		vp{ 0.f,0.f,0.f,0.f,0.f,1.f },
@@ -450,6 +505,8 @@ namespace Gear::Core
 		{
 			primitiveTopology = topology;
 
+			primitiveTopologyType = getTopologyType(topology);
+
 			commandList->setPrimitiveTopology(primitiveTopology);
 		}
 	}
@@ -857,6 +914,8 @@ namespace Gear::Core
 	void GraphicsContext::resetPrimitiveTopology()
 	{
 		primitiveTopology = TOPOLOGY::UNDEFINED;
+
+		primitiveTopologyType = TOPOLOGY::TYPE::UNDEFINED;
 	}
 
 	void GraphicsContext::resetComputeRootSignature()
