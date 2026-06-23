@@ -28,11 +28,11 @@ public:
 	{
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
-		bloomEffect->imGUICall();
+		bloomEffect->imGuiCall();
 
-		fxaaEffect->imGUICall();
+		fxaaEffect->imGuiCall();
 	}
 
 protected:

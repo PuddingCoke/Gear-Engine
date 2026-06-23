@@ -21,7 +21,7 @@ namespace Gear::Effect
 
 		RenderTextureView* process(RenderTextureView& inputTexture) const;
 
-		void imGUICall() override;
+		void imGuiCall() override;
 
 		void setFXAAQualitySubpix(const float fxaaQualitySubpix);
 

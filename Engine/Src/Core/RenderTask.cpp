@@ -31,7 +31,7 @@ namespace Gear::Core
 		return context->getCommandList();
 	}
 
-	void RenderTask::imGUICall()
+	void RenderTask::imGuiCall()
 	{
 
 	}

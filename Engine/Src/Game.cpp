@@ -1,5 +1,7 @@
 ﻿#include<Gear/Game.h>
 
+#include<Gear/Core/RenderEngine.h>
+
 namespace Gear
 {
 	Game::Game()
@@ -10,7 +12,7 @@ namespace Gear
 	{
 	}
 
-	void Game::imGUICall()
+	void Game::imGuiCall()
 	{
 	}
 
@@ -18,7 +20,7 @@ namespace Gear
 	{
 		if (RenderEngine::getDisplayImGuiSurface())
 		{
-			renderTask.imGUICall();
+			renderTask.imGuiCall();
 		}
 
 		renderTask.beginTask();

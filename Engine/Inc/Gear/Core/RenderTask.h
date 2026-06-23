@@ -3,8 +3,6 @@
 #ifndef _GEAR_CORE_RENDERTASK_H_
 #define _GEAR_CORE_RENDERTASK_H_
 
-#include<Gear/Core/RenderEngine.h>
-
 #include<Gear/Core/ResourceManager.h>
 
 namespace Gear::Core
@@ -27,7 +25,7 @@ namespace Gear::Core
 
 		D3D12Core::CommandList* getCommandList() const;
 
-		virtual void imGUICall();
+		virtual void imGuiCall();
 
 		std::string getErrorStr() const;
 

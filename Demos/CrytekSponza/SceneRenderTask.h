@@ -223,9 +223,9 @@ public:
 	{
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
-		hbaoPlusEffect->imGUICall();
+		hbaoPlusEffect->imGuiCall();
 
 		ImGui::Begin("SSR Parameters");
 		ImGui::SliderFloat("ExponentA", &ssrParameters.exponentA, 0.f, 5.f);

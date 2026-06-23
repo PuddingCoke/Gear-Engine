@@ -21,7 +21,7 @@ namespace Gear::Effect
 
 		~HBAOPlusEffect();
 
-		void imGUICall() override;
+		void imGuiCall() override;
 
 		RenderTextureView* process(DepthTextureView& depthTexture, RenderTextureView& gNormal);
 

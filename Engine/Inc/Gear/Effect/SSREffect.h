@@ -25,7 +25,7 @@ namespace Gear::Effect
 			RenderTextureView& gPosition,
 			RenderTextureView& gNormal);
 
-		void imGUICall() override;
+		void imGuiCall() override;
 
 	private:
 

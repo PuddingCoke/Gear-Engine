@@ -2,6 +2,8 @@
 
 #include<Gear/Core/Internal/RenderThreadLocalInternal.h>
 
+#include<Gear/Core/RenderEngine.h>
+
 namespace Gear::Core
 {
 	RenderThread::RenderThread(const std::function<void(RenderTask**)>& createFunc) :

@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
 		ImGui::Begin("Simulation Parameters");
 		ImGui::SliderFloat("scale", &param.scale, 0.f, 1.f);
@@ -41,7 +41,7 @@ public:
 		ImGui::Text("Scale %f", param.scale);
 		ImGui::End();
 
-		effect->imGUICall();
+		effect->imGuiCall();
 	}
 
 protected:

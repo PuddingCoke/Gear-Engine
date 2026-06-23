@@ -78,7 +78,7 @@ namespace Gear::Core::Graphics
 			impl.engineGlobalCBuffer = engineGlobalCBuffer;
 		}
 
-		void imGUICall()
+		void imGuiCall()
 		{
 			ImGui::Begin("Graphcis Settings");
 			ImGui::SliderFloat("Exposure", &impl.exposure, 0.f, 10.f);

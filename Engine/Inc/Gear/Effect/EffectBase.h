@@ -40,7 +40,7 @@ namespace Gear::Effect
 
 		virtual ~EffectBase();
 
-		virtual void imGUICall() = 0;
+		virtual void imGuiCall() = 0;
 
 	protected:
 

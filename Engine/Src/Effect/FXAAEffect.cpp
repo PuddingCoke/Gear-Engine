@@ -65,7 +65,7 @@ namespace Gear::Effect
 		return outputTexture.get();
 	}
 
-	void FXAAEffect::imGUICall()
+	void FXAAEffect::imGuiCall()
 	{
 		ImGui::Begin("FXAA Effect");
 		ImGui::SliderFloat("FXAAQualitySubpix", &fxaaParam.fxaaQualitySubpix, 0.0f, 1.f);

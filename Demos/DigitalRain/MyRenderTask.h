@@ -37,9 +37,9 @@ public:
 
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
-		bloomEffect->imGUICall();
+		bloomEffect->imGuiCall();
 
 		ImGui::Begin("Rain Parameters");
 		ImGui::SliderFloat(TOSTRING(colorFactor), &colorFactor, 0.f, 3.f);

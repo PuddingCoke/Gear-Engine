@@ -21,7 +21,7 @@ namespace Gear::Core::Graphics::Internal
 
 	void setEngineGlobalCBuffer(Resource::ImmutableCBuffer* const engineGlobalCBuffer);
 
-	void imGUICall();
+	void imGuiCall();
 }
 
 #endif // !_GEAR_CORE_GRAPHICS_INTERNAL_H_

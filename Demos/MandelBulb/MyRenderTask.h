@@ -42,7 +42,7 @@ public:
 
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
 		ImGui::Begin("Parameters");
 		ImGui::SliderFloat("POWER", &cameraParam.POWER, 0.f, 12.f);

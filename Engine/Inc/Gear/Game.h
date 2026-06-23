@@ -19,7 +19,7 @@ namespace Gear
 
 		virtual ~Game();
 
-		virtual void imGUICall();
+		virtual void imGuiCall();
 
 		Game(const Game&) = delete;
 

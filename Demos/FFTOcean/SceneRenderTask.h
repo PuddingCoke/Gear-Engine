@@ -156,7 +156,7 @@ public:
 	{
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
 		ImGui::Begin("RenderParam");
 		ImGui::SliderFloat("Lod Scale", &renderParam.lodScale, 1.0f, 10.f);

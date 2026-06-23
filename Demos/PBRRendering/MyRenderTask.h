@@ -205,7 +205,7 @@ protected:
 		blit(*gammaCorrectedTexture);
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
 		ImGui::Begin("Scene Info");
 		ImGui::SliderFloat("Metallic", &scene.sceneInfo.metallic, 0.f, 1.f);

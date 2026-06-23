@@ -359,6 +359,11 @@ namespace Gear::Core
 
 		reflection->GetThreadGroupSize(&groupDimension.x, &groupDimension.y, &groupDimension.z);
 
+		if (groupDimension.x == 0 || groupDimension.y == 0 || groupDimension.z == 0)
+		{
+			LOGERROR(L"无法获取计算着色器的线程组维度信息");
+		}
+
 		pipelineStateData.computeData.groupDimension = groupDimension;
 
 		return makeUnique<D3D12Core::ComputeState>(std::move(cs), id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE, pipelineStateData);

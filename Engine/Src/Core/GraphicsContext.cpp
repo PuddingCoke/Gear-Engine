@@ -643,13 +643,6 @@ namespace Gear::Core
 	{
 		const DirectX::XMUINT3 groupDimension = currentPipelineState->getPipelineStateData().computeData.groupDimension;
 
-#ifdef _DEBUG
-		if (groupDimension.x == 0 || groupDimension.y == 0 || groupDimension.z == 0)
-		{
-			LOGERROR(L"无法获取计算着色器的线程组维度信息");
-		}
-#endif // _DEBUG
-
 		dispatchGrp(
 			dispatchCeil(dispatchThreadCountX, groupDimension.x),
 			dispatchCeil(dispatchThreadCountY, groupDimension.y),

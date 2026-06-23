@@ -29,7 +29,7 @@ namespace Gear::Effect
 
 		RenderTextureView* process(RenderTextureView& inputTexture);
 
-		void imGUICall() override;
+		void imGuiCall() override;
 
 		void setThreshold(const float threshold);
 

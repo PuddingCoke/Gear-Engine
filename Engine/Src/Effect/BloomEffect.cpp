@@ -219,7 +219,7 @@ namespace Gear::Effect
 		return outputTexture.get();
 	}
 
-	void BloomEffect::imGUICall()
+	void BloomEffect::imGuiCall()
 	{
 		ImGui::Begin("Bloom Effect");
 		ImGui::SliderFloat("Threshold", &bloomParam.threshold, 0.0f, 1.f);

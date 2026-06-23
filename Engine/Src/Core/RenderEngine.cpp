@@ -147,7 +147,7 @@ namespace Gear::Core::RenderEngine
 
 			const bool initializeImGuiSurface;
 
-			bool displayImGUISurface;
+			bool displayImGuiSurface;
 
 			AdapterVendor vendor;
 
@@ -174,7 +174,7 @@ namespace Gear::Core::RenderEngine
 			fenceEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)),
 			vendor(AdapterVendor::UNKNOWN),
 			initializeImGuiSurface(initializeImGuiSurface),
-			displayImGUISurface(false),
+			displayImGuiSurface(false),
 			syncInterval(1),
 			resManager(nullptr),
 			perframeResource{}
@@ -417,7 +417,7 @@ namespace Gear::Core::RenderEngine
 
 		bool RenderEngineImpl::getDisplayImGuiSurface() const
 		{
-			return displayImGUISurface;
+			return displayImGuiSurface;
 		}
 
 		void RenderEngineImpl::waitForCurrentFrame()
@@ -468,7 +468,7 @@ namespace Gear::Core::RenderEngine
 
 		void RenderEngineImpl::endFrame()
 		{
-			if (displayImGUISurface)
+			if (displayImGuiSurface)
 			{
 				ImGui::Begin("Frame Profile");
 				ImGui::Text("TimeElapsed %.2f", Graphics::getTimeElapsed());
@@ -477,7 +477,7 @@ namespace Gear::Core::RenderEngine
 				ImGui::SliderInt("Sync Interval", &syncInterval, 0, 3);
 				ImGui::End();
 
-				Graphics::Internal::imGUICall();
+				Graphics::Internal::imGuiCall();
 			}
 
 			//把后备缓冲转变到STATE_RENDER_TARGET，并更新所有动态常量缓冲
@@ -715,13 +715,13 @@ namespace Gear::Core::RenderEngine
 		{
 			if (initializeImGuiSurface)
 			{
-				displayImGUISurface = !displayImGUISurface;
+				displayImGuiSurface = !displayImGuiSurface;
 			}
 		}
 
 		void RenderEngineImpl::beginImGuiFrame() const
 		{
-			if (displayImGUISurface)
+			if (displayImGuiSurface)
 			{
 				ImGui_ImplDX12_NewFrame();
 				ImGui_ImplWin32_NewFrame();
@@ -731,7 +731,7 @@ namespace Gear::Core::RenderEngine
 
 		void RenderEngineImpl::drawImGuiFrame(D3D12Core::CommandList* const targetCommandList)
 		{
-			if (displayImGUISurface)
+			if (displayImGuiSurface)
 			{
 				targetCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
 

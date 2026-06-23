@@ -106,7 +106,7 @@ public:
 		Input::Keyboard::removeKeyDownEvent(Input::Keyboard::K, kDownEventID);
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
 		ImGui::Begin("Parameters");
 		ImGui::SliderFloat("color change speed", &config.colorChangeSpeed, 0.f, 50.f);
@@ -125,7 +125,7 @@ public:
 		ImGui::Checkbox("vortex", &config.vortex);
 		ImGui::End();
 
-		effect->imGUICall();
+		effect->imGuiCall();
 	}
 
 	void splatVelocityAndColor()

@@ -63,7 +63,7 @@ namespace Gear::Effect
 			aoContext->Release();
 	}
 
-	void HBAOPlusEffect::imGUICall()
+	void HBAOPlusEffect::imGuiCall()
 	{
 		ImGui::Begin("HBAOPlusEffect");
 		ImGui::SliderFloat("AO Radius", &aoParameters.Radius, 0.f, 16.f);

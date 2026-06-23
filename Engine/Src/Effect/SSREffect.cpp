@@ -42,7 +42,7 @@ namespace Gear::Effect
 	{
 	}
 
-	void SSREffect::imGUICall()
+	void SSREffect::imGuiCall()
 	{
 
 	}

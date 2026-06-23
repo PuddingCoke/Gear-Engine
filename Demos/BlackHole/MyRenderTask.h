@@ -42,9 +42,9 @@ public:
 	{
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
-		effect->imGUICall();
+		effect->imGuiCall();
 
 		ImGui::Begin("Black Hole Parameters");
 		ImGui::Text("Time Elapsed %f", perframeData.timeElapsed);

@@ -85,7 +85,7 @@ public:
 	{
 	}
 
-	void imGUICall() override
+	void imGuiCall() override
 	{
 		ImGui::Begin("Simulation Param & Particle Param");
 
@@ -95,9 +95,9 @@ public:
 
 		ImGui::End();
 
-		bloomEffect->imGUICall();
+		bloomEffect->imGuiCall();
 
-		fxaaEffect->imGUICall();
+		fxaaEffect->imGuiCall();
 	}
 
 protected:

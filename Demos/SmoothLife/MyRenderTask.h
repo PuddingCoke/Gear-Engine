@@ -36,7 +36,7 @@ public:
 		float alpha_n = 0.028f;
 		float alpha_m = 0.147f;
 	*/
-	void imGUICall() override
+	void imGuiCall() override
 	{
 		ImGui::Begin("Simulation Parameters");
 		ImGui::SliderFloat("ra", &simulationParam.ra, 0.f, 16.f);

@@ -3,8 +3,6 @@
 #ifndef _DEVESSENTIAL_H_
 #define _DEVESSENTIAL_H_
 
-#include<Gear/Core/RenderTask.h>
-
 #include<Gear/Core/PipelineStateHelper.h>
 
 #include<Gear/Core/PipelineStateBuilder.h>
@@ -14,6 +12,8 @@
 #include<Gear/Core/MainCamera.h>
 
 #include<Gear/Core/GlobalShader.h>
+
+#include<Gear/Core/D3D12Core/Shader.h>
 
 #include<Gear/Effect/BloomEffect.h>
 
@@ -30,8 +30,6 @@
 #include<Gear/Camera/FPSCamera.h>
 
 #include<Gear/Camera/OrbitCamera.h>
-
-#include<Gear/Core/D3D12Core/Shader.h>
 
 #include<Gear/Input/Mouse.h>
 
