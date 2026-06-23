@@ -38,7 +38,7 @@ namespace Gear::Resource
 
 		ShaderResourceDesc getStencilMipIndex(const uint32_t mipSlice) const;
 
-		DepthStencilDesc getDSVMipHandle(const uint32_t mipSlice) const;
+		DepthStencilDesc getDSVMip(const uint32_t mipSlice) const;
 
 		D3D12Resource::Texture* getTexture() const;
 

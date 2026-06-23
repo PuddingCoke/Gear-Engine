@@ -38,7 +38,7 @@ namespace Gear::Effect
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ colorLumaTexture->getRTVMipHandle(0) });
+		context->setRenderTargets({ colorLumaTexture->getRTVMip(0) });
 
 		SETCONSTS({
 		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
@@ -52,7 +52,7 @@ namespace Gear::Effect
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ outputTexture->getRTVMipHandle(0) });
+		context->setRenderTargets({ outputTexture->getRTVMip(0) });
 
 		SETCONSTS({
 		context->setPSConstants({ colorLumaTexture->getAllSRVIndex() }, co);

@@ -37,7 +37,7 @@ namespace Gear::Resource
 
 		ShaderResourceDesc getUAVMipIndex(const uint32_t mipSlice) const;
 
-		RenderTargetDesc getRTVMipHandle(const uint32_t mipSlice) const;
+		RenderTargetDesc getRTVMip(const uint32_t mipSlice) const;
 
 		UAVClearDesc getUAVMipClearDesc(const uint32_t mipSlice) const;
 

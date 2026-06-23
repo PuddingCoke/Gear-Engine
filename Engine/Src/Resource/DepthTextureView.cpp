@@ -452,7 +452,7 @@ namespace Gear::Resource
 		return desc;
 	}
 
-	DepthStencilDesc DepthTextureView::getDSVMipHandle(const uint32_t mipSlice) const
+	DepthStencilDesc DepthTextureView::getDSVMip(const uint32_t mipSlice) const
 	{
 		const DepthStencilDesc desc = {
 		.texture = texture.get(),

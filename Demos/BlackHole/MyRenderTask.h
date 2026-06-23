@@ -66,7 +66,7 @@ protected:
 
 	void recordCommand() override
 	{
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) });
+		context->setRenderTargets({ originTexture->getRTVMip(0) });
 
 		context->setPipelineState(*pipelineState);
 
@@ -95,7 +95,7 @@ protected:
 
 		context->setPipelineState(*colorGradingState);
 
-		context->setRenderTargets({ colorGradingTexture->getRTVMipHandle(0) });
+		context->setRenderTargets({ colorGradingTexture->getRTVMip(0) });
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 

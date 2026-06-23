@@ -135,7 +135,7 @@ protected:
 
 			context->setViewportSimple(width, height);
 
-			context->setRenderTargets({ prefilterCube->getRTVMipHandle(i) });
+			context->setRenderTargets({ prefilterCube->getRTVMip(i) });
 
 			context->setVSConstantBuffer(*viewProjMatrixBuffer);
 
@@ -159,7 +159,7 @@ protected:
 
 		context->setViewportSimple(irradianceCube->get2Dimension());
 
-		context->setRenderTargets({ irradianceCube->getRTVMipHandle(0) });
+		context->setRenderTargets({ irradianceCube->getRTVMip(0) });
 
 		context->setVSConstantBuffer(*viewProjMatrixBuffer);
 
@@ -172,11 +172,11 @@ protected:
 
 	void recordCommand() override
 	{
-		context->setRenderTargets({ renderTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
+		context->setRenderTargets({ renderTexture->getRTVMip(0) }, depthTexture->getDSVMip(0));
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
-		context->clearRenderTarget(renderTexture->getRTVMipHandle(0), DirectX::Colors::Black);
+		context->clearRenderTarget(renderTexture->getRTVMip(0), DirectX::Colors::Black);
 
 		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
@@ -190,7 +190,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ renderTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
+		context->setRenderTargets({ renderTexture->getRTVMip(0) }, depthTexture->getDSVMip(0));
 
 		SETCONSTS({
 		context->setPSConstants({ envCube->getAllSRVIndex() }, co);

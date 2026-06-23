@@ -127,7 +127,7 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 
 			context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-			context->setRenderTargets({ outputTexture.getRTVMipHandle(0) }, {});
+			context->setRenderTargets({ outputTexture.getRTVMip(0) }, {});
 
 			context->setVSConstantBuffer(*matricesBuffer);
 

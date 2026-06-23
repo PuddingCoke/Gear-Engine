@@ -325,7 +325,7 @@ namespace Gear::Resource
 		return desc;
 	}
 
-	RenderTargetDesc RenderTextureView::getRTVMipHandle(const uint32_t mipSlice) const
+	RenderTargetDesc RenderTextureView::getRTVMip(const uint32_t mipSlice) const
 	{
 		const RenderTargetDesc desc = {
 		.texture = texture.get(),

@@ -100,7 +100,7 @@ namespace Gear::Effect
 
 		GFSDK_SSAO_RenderTargetView_D3D12 rtv{};
 
-		auto renderTargetDesc = outputTexture->getRTVMipHandle(0);
+		auto renderTargetDesc = outputTexture->getRTVMip(0);
 
 		rtv.pResource = outputTexture->getTexture()->getResource();
 

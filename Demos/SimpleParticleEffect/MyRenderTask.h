@@ -116,7 +116,7 @@ protected:
 
 		context->setPipelineState(*particleRenderState);
 
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
+		context->setRenderTargets({ originTexture->getRTVMip(0) }, depthTexture->getDSVMip(0));
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
@@ -131,7 +131,7 @@ protected:
 		context->setGSConstants(simulationParam, co);
 			});
 
-		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
+		context->clearRenderTarget(originTexture->getRTVMip(0), DirectX::Colors::Black);
 
 		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 

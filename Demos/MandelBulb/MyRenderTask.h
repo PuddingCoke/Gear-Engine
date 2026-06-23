@@ -75,7 +75,7 @@ protected:
 		context->setPSConstants(cameraParam, co);
 			});
 
-		context->setRenderTargets({ accumulatedTexture->getRTVMipHandle(0) }, {});
+		context->setRenderTargets({ accumulatedTexture->getRTVMip(0) }, {});
 
 		context->drawQuad();
 

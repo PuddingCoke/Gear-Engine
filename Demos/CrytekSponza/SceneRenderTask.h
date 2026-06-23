@@ -279,7 +279,7 @@ protected:
 
 		context->setPipelineState(*shadowPipelineState);
 
-		context->setRenderTargets(shadowTexture->getDSVMipHandle(0));
+		context->setRenderTargets(shadowTexture->getDSVMip(0));
 
 		context->setViewportSimple(shadowTextureResolution, shadowTextureResolution);
 
@@ -309,7 +309,7 @@ protected:
 
 		context->setViewportSimple(probeCaptureResolution, probeCaptureResolution);
 
-		context->setRenderTargets({ radianceCube->getRTVMipHandle(0),distanceCube->getRTVMipHandle(0) }, depthCube->getDSVMipHandle(0));
+		context->setRenderTargets({ radianceCube->getRTVMip(0),distanceCube->getRTVMip(0) }, depthCube->getDSVMip(0));
 
 		context->setVSConstantBuffer(cubeRenderBuffer);
 
@@ -323,9 +323,9 @@ protected:
 
 		context->setPSConstantBuffer(cubeRenderBuffer);
 
-		context->clearRenderTarget(radianceCube->getRTVMipHandle(0), radianceCubeClearColor);
+		context->clearRenderTarget(radianceCube->getRTVMip(0), radianceCubeClearColor);
 
-		context->clearRenderTarget(distanceCube->getRTVMipHandle(0), distanceCubeClearColor);
+		context->clearRenderTarget(distanceCube->getRTVMip(0), distanceCubeClearColor);
 
 		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
@@ -364,7 +364,7 @@ protected:
 
 		context->setViewportSimple(probeCaptureResolution, probeCaptureResolution);
 
-		context->setRenderTargets({ radianceCube->getRTVMipHandle(0) }, depthCube->getDSVMipHandle(0));
+		context->setRenderTargets({ radianceCube->getRTVMip(0) }, depthCube->getDSVMip(0));
 
 		context->setVSConstantBuffer(cubeRenderBuffer);
 
@@ -380,7 +380,7 @@ protected:
 
 		context->setPSConstantBuffer(cubeRenderBuffer);
 
-		context->clearRenderTarget(radianceCube->getRTVMipHandle(0), radianceCubeClearColor);
+		context->clearRenderTarget(radianceCube->getRTVMip(0), radianceCubeClearColor);
 
 		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
@@ -407,21 +407,21 @@ protected:
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());
 
 		context->setRenderTargets({
-			gPositionMetallic->getRTVMipHandle(0),
-			gNormalRoughness->getRTVMipHandle(0),
-			gBaseColor->getRTVMipHandle(0)
-			}, depthTexture->getDSVMipHandle(0));
+			gPositionMetallic->getRTVMip(0),
+			gNormalRoughness->getRTVMip(0),
+			gBaseColor->getRTVMip(0)
+			}, depthTexture->getDSVMip(0));
 
 		SETCONSTS({
 		co = 3;
 		context->setPSConstants(clipParameters, co);
 			});
 
-		context->clearRenderTarget(gPositionMetallic->getRTVMipHandle(0), DirectX::g_XMHalfPi);
+		context->clearRenderTarget(gPositionMetallic->getRTVMip(0), DirectX::g_XMHalfPi);
 
-		context->clearRenderTarget(gNormalRoughness->getRTVMipHandle(0), DirectX::Colors::Transparent);
+		context->clearRenderTarget(gNormalRoughness->getRTVMip(0), DirectX::Colors::Transparent);
 
-		context->clearRenderTarget(gBaseColor->getRTVMipHandle(0), DirectX::Colors::Transparent);
+		context->clearRenderTarget(gBaseColor->getRTVMip(0), DirectX::Colors::Transparent);
 
 		context->clearDepthStencil(CLEARFLAG::DEPTH, 1.0f, 0);
 
@@ -435,7 +435,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) });
+		context->setRenderTargets({ originTexture->getRTVMip(0) });
 
 		SETCONSTS({
 		context->setPSConstants({
@@ -451,7 +451,7 @@ protected:
 
 		context->setPSConstantBuffer(*irradianceVolumeBuffer);
 
-		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
+		context->clearRenderTarget(originTexture->getRTVMip(0), DirectX::Colors::Black);
 
 		context->drawQuad();
 
@@ -461,7 +461,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
+		context->setRenderTargets({ originTexture->getRTVMip(0) }, depthTexture->getDSVMip(0));
 
 		SETCONSTS({
 		context->setPSConstants({ skybox->getAllSRVIndex() }, co);
@@ -477,7 +477,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ ssrCombinedTexture->getRTVMipHandle(0) });
+		context->setRenderTargets({ ssrCombinedTexture->getRTVMip(0) });
 
 		SETCONSTS({
 		context->setPSConstants({ originTexture->getAllSRVIndex(),ssrUVVisibilityTexture->getAllSRVIndex(),gNormalRoughness->getAllSRVIndex() }, co);
@@ -485,7 +485,7 @@ protected:
 		context->setPSConstants(ssrParameters, co);
 			});
 
-		context->clearRenderTarget(ssrCombinedTexture->getRTVMipHandle(0), DirectX::Colors::Black);
+		context->clearRenderTarget(ssrCombinedTexture->getRTVMip(0), DirectX::Colors::Black);
 
 		context->drawQuad();
 	}

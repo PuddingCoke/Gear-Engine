@@ -187,7 +187,7 @@ void TextBatch::render(GraphicsContext& context, RenderTextureView& outputTextur
 
 	context.setPipelineState(*spriteState);
 
-	context.setRenderTargets({ outputTexture.getRTVMipHandle(0) });
+	context.setRenderTargets({ outputTexture.getRTVMip(0) });
 
 	context.setViewportSimple(outputTexture.get2Dimension());
 

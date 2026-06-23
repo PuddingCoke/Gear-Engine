@@ -80,7 +80,7 @@ protected:
 			}
 		}
 
-		context->clearRenderTarget(originTexture->getRTVMipHandle(0), DirectX::Colors::Black);
+		context->clearRenderTarget(originTexture->getRTVMip(0), DirectX::Colors::Black);
 
 		textBatch->render(*context, *originTexture);
 

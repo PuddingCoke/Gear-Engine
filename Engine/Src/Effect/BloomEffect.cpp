@@ -111,7 +111,7 @@ namespace Gear::Effect
 
 		context->setViewportSimple(width, height);
 		context->setPipelineState(*bloomFilterState);
-		context->setRenderTargets({ filteredTexture->getRTVMipHandle(0) }, {});
+		context->setRenderTargets({ filteredTexture->getRTVMip(0) }, {});
 		SETCONSTS({
 		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
 		context->setPSConstants(5, &bloomParam, co);
@@ -120,7 +120,7 @@ namespace Gear::Effect
 
 		context->setViewportSimple(swapTexture[0]->write()->get2Dimension());
 		context->setPipelineState(*bloomKarisAverageState);
-		context->setRenderTargets({ swapTexture[0]->write()->getRTVMipHandle(0) }, {});
+		context->setRenderTargets({ swapTexture[0]->write()->getRTVMip(0) }, {});
 		SETCONSTS({
 		context->setPSConstants({ filteredTexture->getAllSRVIndex() }, co);
 		context->setPSConstants(4, &bloomParam, co);
@@ -133,7 +133,7 @@ namespace Gear::Effect
 		for (uint32_t i = 0; i < blurSteps - 1; i++)
 		{
 			context->setViewportSimple(swapTexture[i + 1]->write()->get2Dimension());
-			context->setRenderTargets({ swapTexture[i + 1]->write()->getRTVMipHandle(0) }, {});
+			context->setRenderTargets({ swapTexture[i + 1]->write()->getRTVMip(0) }, {});
 			SETCONSTS({
 			context->setPSConstants({ swapTexture[i]->read()->getAllSRVIndex() }, co);
 				});
@@ -196,7 +196,7 @@ namespace Gear::Effect
 
 			context->setViewportSimple(swapTexture[blurSteps - 2 - i]->write()->get2Dimension());
 			context->setPipelineState(*bloomUpSampleState);
-			context->setRenderTargets({ swapTexture[blurSteps - 2 - i]->write()->getRTVMipHandle(0) }, {});
+			context->setRenderTargets({ swapTexture[blurSteps - 2 - i]->write()->getRTVMip(0) }, {});
 			SETCONSTS({
 			context->setPSConstants({ swapTexture[blurSteps - 1 - i]->read()->getAllSRVIndex() }, co);
 				});
@@ -206,7 +206,7 @@ namespace Gear::Effect
 
 		context->setViewportSimple(width, height);
 		context->setPipelineState(*bloomFinalState);
-		context->setRenderTargets({ outputTexture->getRTVMipHandle(0) }, {});
+		context->setRenderTargets({ outputTexture->getRTVMip(0) }, {});
 		SETCONSTS({
 		context->setPSConstants({
 			inputTexture.getAllSRVIndex(),

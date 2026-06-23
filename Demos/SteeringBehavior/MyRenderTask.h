@@ -90,9 +90,9 @@ protected:
 
 		context->setPipelineState(*vehicleRenderState);
 
-		context->setRenderTargets({ renderTexture->getRTVMipHandle(0) });
+		context->setRenderTargets({ renderTexture->getRTVMip(0) });
 
-		context->clearRenderTarget(renderTexture->getRTVMipHandle(0), DirectX::Colors::White);
+		context->clearRenderTarget(renderTexture->getRTVMip(0), DirectX::Colors::White);
 
 		context->setViewportSimple(renderTexture->get2Dimension());
 

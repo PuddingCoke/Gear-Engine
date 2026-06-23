@@ -278,7 +278,7 @@ private:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, {});
+		context->setRenderTargets({ originTexture->getRTVMip(0) }, {});
 
 		SETCONSTS({
 		context->setPSConstants({
@@ -299,7 +299,7 @@ private:
 
 			context->setIndexBuffer(indexBuffer->getIndexBuffer());
 
-			context->setRenderTargets({ originTexture->getRTVMipHandle(0) }, depthTexture->getDSVMipHandle(0));
+			context->setRenderTargets({ originTexture->getRTVMip(0) }, depthTexture->getDSVMip(0));
 
 			SETCONSTS({
 			context->setDSConstants({

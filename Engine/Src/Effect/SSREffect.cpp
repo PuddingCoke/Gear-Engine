@@ -75,7 +75,7 @@ namespace Gear::Effect
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		context->setRenderTargets({ outputTexture->getRTVMipHandle(0) });
+		context->setRenderTargets({ outputTexture->getRTVMip(0) });
 
 		int maxLevel = static_cast<int>(hiZTexture->getTexture()->getMipLevels() - 1u);
 

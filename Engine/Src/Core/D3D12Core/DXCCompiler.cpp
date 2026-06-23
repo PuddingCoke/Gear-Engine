@@ -158,7 +158,7 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 
 			CHECKERROR(dxcContainerReflection->GetPartContent(partIndex, &reflectionBlob));
 
-			DxcBuffer reflectionBuffer = { reflectionBlob->GetBufferPointer(),reflectionBlob->GetBufferSize(),0 };
+			const DxcBuffer reflectionBuffer = { reflectionBlob->GetBufferPointer(),reflectionBlob->GetBufferSize(),0 };
 
 			CHECKERROR(dxcUtils->CreateReflection(&reflectionBuffer, IID_PPV_ARGS(&shaderReflection)));
 
