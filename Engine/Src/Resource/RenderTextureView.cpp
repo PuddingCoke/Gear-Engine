@@ -373,6 +373,8 @@ namespace Gear::Resource
 			{
 				(*srvMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
 
+				(*srvMipGPUHandles)[i] = shaderVisibleHandle.getCurrentGPUHandle();
+
 				shaderVisibleHandle.move();
 			}
 

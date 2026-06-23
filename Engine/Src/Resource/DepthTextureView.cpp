@@ -487,6 +487,8 @@ namespace Gear::Resource
 				{
 					(*depthSRVMipIndices)[i] = shaderVisibleHandle.getCurrentIndex();
 
+					(*depthSRVMipGPUHandles)[i] = shaderVisibleHandle.getCurrentGPUHandle();
+
 					shaderVisibleHandle.move();
 				}
 			}
