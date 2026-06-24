@@ -3,9 +3,9 @@
 #ifndef _GEAR_INPUT_KEYBOARD_H_
 #define _GEAR_INPUT_KEYBOARD_H_
 
-#include<unordered_map>
+#include<cstdint>
 
-#include"Event.h"
+#include<functional>
 
 namespace Gear::Input::Keyboard
 {

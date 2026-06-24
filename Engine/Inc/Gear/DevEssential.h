@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _DEVESSENTIAL_H_
-#define _DEVESSENTIAL_H_
+#ifndef _GEAR_DEVESSENTIAL_H_
+#define _GEAR_DEVESSENTIAL_H_
 
 #include<Gear/Core/PipelineStateHelper.h>
 
@@ -49,11 +49,13 @@
 
 using namespace Gear;
 
+using namespace Gear::Camera;
+
 using namespace Gear::Core;
 
-using namespace Gear::Resource;
-
 using namespace Gear::Effect;
+
+using namespace Gear::Resource;
 
 using namespace Gear::Utils;
 
@@ -61,4 +63,4 @@ using namespace Gear::Core::D3D12Core;
 
 using Gear::Core::D3D12Core::DXCCompiler::ShaderProfile;
 
-#endif // !_DEVESSENTIAL_H_
+#endif // !_GEAR_DEVESSENTIAL_H_

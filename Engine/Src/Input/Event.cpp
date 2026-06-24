@@ -3,7 +3,7 @@
 namespace Gear::Input
 {
 	Event::Event() :
-		idx(0)
+		idx(0ull)
 	{
 	}
 
@@ -18,12 +18,10 @@ namespace Gear::Input
 
 	uint64_t Event::operator+=(const std::function<void(void)>& func)
 	{
-		uint64_t retIndex;
+		const uint64_t retIndex = idx.fetch_add(1ull, std::memory_order_relaxed);
 
 		{
 			std::lock_guard<std::mutex> lockGuard(containerMutex);
-
-			retIndex = idx++;
 
 			functions.emplace(retIndex, func);
 		}

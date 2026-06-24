@@ -439,7 +439,7 @@ namespace Gear::Core
 	template<typename StructType>
 	inline void GraphicsContext::setVSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
 
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
@@ -449,7 +449,7 @@ namespace Gear::Core
 	template<typename StructType>
 	inline void GraphicsContext::setHSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
 
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
@@ -459,7 +459,7 @@ namespace Gear::Core
 	template<typename StructType>
 	inline void GraphicsContext::setDSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
 
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
@@ -469,7 +469,7 @@ namespace Gear::Core
 	template<typename StructType>
 	inline void GraphicsContext::setGSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
 
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
@@ -479,7 +479,7 @@ namespace Gear::Core
 	template<typename StructType>
 	inline void GraphicsContext::setPSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
 
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
@@ -489,7 +489,7 @@ namespace Gear::Core
 	template<typename StructType>
 	inline void GraphicsContext::setCSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "StructType must be a struct/class type");
+		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
 
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 

@@ -20,6 +20,10 @@ namespace Gear::Utils
 
 		float a;
 
+		Color(const float* const color);
+
+		Color(const float r, const float g, const float b, const float a = 1.f);
+
 		uint32_t toUint() const;
 
 		bool operator==(const Color& color) const;
@@ -27,6 +31,10 @@ namespace Gear::Utils
 		bool operator!=(const Color& color) const;
 
 		operator const float* () const;
+
+		Color& operator=(const Color&) = default;
+
+		Color& operator=(const float* const color);
 
 		static Color random();
 

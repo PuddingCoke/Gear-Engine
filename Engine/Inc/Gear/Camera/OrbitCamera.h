@@ -1,49 +1,52 @@
 ﻿#pragma once
 
-#ifndef _GEAR_ORBITCAMERA_H_
-#define _GEAR_ORBITCAMERA_H_
+#ifndef _GEAR_CAMERA_ORBITCAMERA_H_
+#define _GEAR_CAMERA_ORBITCAMERA_H_
 
 #include<Gear/Utils/Math.h>
 
 namespace Gear
 {
-	class OrbitCamera
+	namespace Camera
 	{
-	public:
+		class OrbitCamera
+		{
+		public:
 
-		OrbitCamera() = delete;
+			OrbitCamera() = delete;
 
-		OrbitCamera(const OrbitCamera&) = delete;
+			OrbitCamera(const OrbitCamera&) = delete;
 
-		void operator=(const OrbitCamera&) = delete;
+			void operator=(const OrbitCamera&) = delete;
 
-		OrbitCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& up, const float zoomSpeed);
+			OrbitCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& up, const float zoomSpeed);
 
-		~OrbitCamera();
+			~OrbitCamera();
 
-		void applyInput(const float dt);
+			void applyInput(const float dt);
 
-		void rotateX(const float dTheta);
+			void rotateX(const float dTheta);
 
-		void rotateY(const float dTheta);
+			void rotateY(const float dTheta);
 
-	private:
+		private:
 
-		DirectX::XMVECTOR eye;
+			DirectX::XMVECTOR eye;
 
-		float currentRadius;
+			float currentRadius;
 
-		float targetRadius;
+			float targetRadius;
 
-		const float zoomSpeed;
+			const float zoomSpeed;
 
-		const DirectX::XMVECTOR up;
+			const DirectX::XMVECTOR up;
 
-		uint64_t moveEventID;
+			uint64_t moveEventID;
 
-		uint64_t scrollEventID;
+			uint64_t scrollEventID;
 
-	};
+		};
+	}
 }
 
-#endif // !_GEAR_ORBITCAMERA_H_
+#endif // !_GEAR_CAMERA_ORBITCAMERA_H_

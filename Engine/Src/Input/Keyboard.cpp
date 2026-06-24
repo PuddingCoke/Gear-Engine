@@ -2,6 +2,8 @@
 
 #include<Gear/Input/Internal/KeyboardInternal.h>
 
+#include<Gear/Input/Event.h>
+
 namespace Gear::Input::Keyboard
 {
 	namespace Internal

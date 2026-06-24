@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef _GEAR_CORE_COMPUTESTATE_H_
-#define _GEAR_CORE_COMPUTESTATE_H_
+#ifndef _GEAR_CORE_D3D12CORE_COMPUTESTATE_H_
+#define _GEAR_CORE_D3D12CORE_COMPUTESTATE_H_
 
 #include"Shader.h"
 
@@ -24,4 +24,4 @@ namespace Gear::Core::D3D12Core
 	};
 }
 
-#endif // !_GEAR_CORE_COMPUTESTATE_H_
+#endif // !_GEAR_CORE_D3D12CORE_COMPUTESTATE_H_

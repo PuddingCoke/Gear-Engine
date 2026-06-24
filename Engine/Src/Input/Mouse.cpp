@@ -2,6 +2,8 @@
 
 #include<Gear/Input/Internal/MouseInternal.h>
 
+#include<Gear/Input/Event.h>
+
 namespace Gear::Input::Mouse
 {
 	namespace Internal

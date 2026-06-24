@@ -2,11 +2,23 @@
 
 #include<Gear/Utils/Random.h>
 
+#include<memory.h>
+
 namespace Gear::Utils
 {
+	Color::Color(const float* const color)
+	{
+		memcpy(&r, color, sizeof(float) * 4);
+	}
+
+	Color::Color(const float r, const float g, const float b, const float a) :
+		r(r), g(g), b(b), a(a)
+	{
+	}
+
 	uint32_t Color::toUint() const
 	{
-		return (static_cast<uint32_t>(255 * a) << 24) | (static_cast<uint32_t>(255 * b) << 16) | (static_cast<uint32_t>(255 * g) << 8) | (static_cast<uint32_t>(255 * r));
+		return (static_cast<uint32_t>(255.f * a) << 24) | (static_cast<uint32_t>(255.f * b) << 16) | (static_cast<uint32_t>(255.f * g) << 8) | (static_cast<uint32_t>(255.f * r));
 	}
 
 	Color Color::random()
@@ -55,5 +67,12 @@ namespace Gear::Utils
 	Color::operator const float* () const
 	{
 		return reinterpret_cast<const float*>(this);
+	}
+
+	Color& Color::operator=(const float* const color)
+	{
+		memcpy(&r, color, sizeof(float) * 4);
+
+		return *this;
 	}
 }

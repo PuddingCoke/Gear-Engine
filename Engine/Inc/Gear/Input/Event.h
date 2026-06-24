@@ -3,13 +3,15 @@
 #ifndef _GEAR_INPUT_EVENT_H_
 #define _GEAR_INPUT_EVENT_H_
 
-#include<map>
+#include<unordered_map>
 
 #include<functional>
 
 #include<cstdint>
 
 #include<mutex>
+
+#include<atomic>
 
 namespace Gear::Input
 {
@@ -27,9 +29,9 @@ namespace Gear::Input
 
 	private:
 
-		uint64_t idx;
+		std::atomic<uint64_t> idx;
 
-		std::map<uint64_t, std::function<void(void)>> functions;
+		std::unordered_map<uint64_t, std::function<void(void)>> functions;
 
 		std::mutex containerMutex;
 

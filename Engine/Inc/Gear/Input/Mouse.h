@@ -3,7 +3,9 @@
 #ifndef _GEAR_INPUT_MOUSE_H_
 #define _GEAR_INPUT_MOUSE_H_
 
-#include"Event.h"
+#include<cstdint>
+
+#include<functional>
 
 namespace Gear::Input::Mouse
 {
