@@ -9,13 +9,13 @@ namespace Gear::Core::FMT
 		case RGBA32TL:
 		case RGBA32F:
 		case RGBA32UI:
-		case RGBA32I:
+		case RGBA32SI:
 			return 16;
 
 		case RGB32TL:
 		case RGB32F:
 		case RGB32UI:
-		case RGB32I:
+		case RGB32SI:
 			return 12;
 
 		case RGBA16TL:
@@ -23,11 +23,11 @@ namespace Gear::Core::FMT
 		case RGBA16UN:
 		case RGBA16UI:
 		case RGBA16SN:
-		case RGBA16I:
+		case RGBA16SI:
 		case RG32TL:
 		case RG32F:
 		case RG32UI:
-		case RG32I:
+		case RG32SI:
 		case DXGI_FORMAT_R32G8X24_TYPELESS:
 		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
 		case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS:
@@ -46,18 +46,18 @@ namespace Gear::Core::FMT
 		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
 		case RGBA8UI:
 		case RGBA8SN:
-		case RGBA8I:
+		case RGBA8SI:
 		case RG16TL:
 		case RG16F:
 		case RG16UN:
 		case RG16UI:
 		case RG16SN:
-		case RG16I:
+		case RG16SI:
 		case R32TL:
 		case D32F:
 		case R32F:
 		case R32UI:
-		case R32I:
+		case R32SI:
 		case DXGI_FORMAT_R24G8_TYPELESS:
 		case DXGI_FORMAT_D24_UNORM_S8_UINT:
 		case DXGI_FORMAT_R24_UNORM_X8_TYPELESS:
@@ -86,14 +86,14 @@ namespace Gear::Core::FMT
 		case RG8UN:
 		case RG8UI:
 		case RG8SN:
-		case RG8I:
+		case RG8SI:
 		case R16TL:
 		case R16F:
 		case D16UN:
 		case R16UN:
 		case R16UI:
 		case R16SN:
-		case R16I:
+		case R16SI:
 		case DXGI_FORMAT_B5G6R5_UNORM:
 		case DXGI_FORMAT_B5G5R5A1_UNORM:
 		case DXGI_FORMAT_A8P8:
@@ -106,7 +106,7 @@ namespace Gear::Core::FMT
 		case R8UN:
 		case R8UI:
 		case R8SN:
-		case R8I:
+		case R8SI:
 		case DXGI_FORMAT_A8_UNORM:
 		case DXGI_FORMAT_BC2_TYPELESS:
 		case DXGI_FORMAT_BC2_UNORM:

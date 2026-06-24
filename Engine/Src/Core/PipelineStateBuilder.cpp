@@ -42,9 +42,9 @@ namespace Gear::Core
 			case D3D10_REGISTER_COMPONENT_FLOAT32:
 				return FMT::R32F;
 			case D3D10_REGISTER_COMPONENT_SINT16:
-				return FMT::R16I;
+				return FMT::R16SI;
 			case D3D10_REGISTER_COMPONENT_SINT32:
-				return FMT::R32I;
+				return FMT::R32SI;
 			case D3D10_REGISTER_COMPONENT_UINT16:
 				return FMT::R16UI;
 			case D3D10_REGISTER_COMPONENT_UINT32:
@@ -63,9 +63,9 @@ namespace Gear::Core
 			case D3D10_REGISTER_COMPONENT_FLOAT32:
 				return FMT::RG32F;
 			case D3D10_REGISTER_COMPONENT_SINT16:
-				return FMT::RG16I;
+				return FMT::RG16SI;
 			case D3D10_REGISTER_COMPONENT_SINT32:
-				return FMT::RG32I;
+				return FMT::RG32SI;
 			case D3D10_REGISTER_COMPONENT_UINT16:
 				return FMT::RG16UI;
 			case D3D10_REGISTER_COMPONENT_UINT32:
@@ -82,7 +82,7 @@ namespace Gear::Core
 			case D3D10_REGISTER_COMPONENT_FLOAT32:
 				return FMT::RGB32F;
 			case D3D10_REGISTER_COMPONENT_SINT32:
-				return FMT::RGB32I;
+				return FMT::RGB32SI;
 			case D3D10_REGISTER_COMPONENT_UINT32:
 				return FMT::RGB32UI;
 			default:
@@ -99,9 +99,9 @@ namespace Gear::Core
 			case D3D10_REGISTER_COMPONENT_FLOAT32:
 				return FMT::RGBA32F;
 			case D3D10_REGISTER_COMPONENT_SINT16:
-				return FMT::RGBA16I;
+				return FMT::RGBA16SI;
 			case D3D10_REGISTER_COMPONENT_SINT32:
-				return FMT::RGBA32I;
+				return FMT::RGBA32SI;
 			case D3D10_REGISTER_COMPONENT_UINT16:
 				return FMT::RGBA16UI;
 			case D3D10_REGISTER_COMPONENT_UINT32:
