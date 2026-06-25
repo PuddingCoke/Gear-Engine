@@ -46,18 +46,18 @@ namespace Gear::Core::GlobalShader
 		}
 	}
 
-	const D3D12Core::Shader& getFullScreenVS()
+	const D3D12Core::Shader* getFullScreenVS()
 	{
-		return *Internal::impl->fullScreenVS;
+		return Internal::impl->fullScreenVS.get();
 	}
 
-	const D3D12Core::Shader& getFullScreenPS()
+	const D3D12Core::Shader* getFullScreenPS()
 	{
-		return *Internal::impl->fullScreenPS;
+		return Internal::impl->fullScreenPS.get();
 	}
 
-	const D3D12Core::Shader& getTextureCubeVS()
+	const D3D12Core::Shader* getTextureCubeVS()
 	{
-		return *Internal::impl->textureCubeVS;
+		return Internal::impl->textureCubeVS.get();
 	}
 }

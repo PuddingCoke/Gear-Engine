@@ -35,7 +35,7 @@ public:
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
-			.setVS(GlobalShader::getTextureCubeVS())
+			.setVS(*GlobalShader::getTextureCubeVS())
 			.setPS(*skyboxPS)
 			.build();
 

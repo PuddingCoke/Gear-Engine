@@ -1,5 +1,7 @@
 ﻿#include<Gear/Resource/RenderTextureView.h>
 
+#include<Gear/Core/FMT.h>
+
 namespace Gear::Resource
 {
 	RenderTextureView::RenderTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat) :

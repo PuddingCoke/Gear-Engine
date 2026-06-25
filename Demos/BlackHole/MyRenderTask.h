@@ -29,7 +29,7 @@ public:
 			.setPS(*colorGradingShader)
 			.build();
 
-		Input::Keyboard::addKeyDownEvent(Input::Keyboard::K, [this]() {perframeData.useOriginalVer = ~perframeData.useOriginalVer; });
+		Keyboard::addKeyDownEvent(Keyboard::K, [this]() {perframeData.useOriginalVer = ~perframeData.useOriginalVer; });
 
 		effect->setIntensity(0.55f);
 

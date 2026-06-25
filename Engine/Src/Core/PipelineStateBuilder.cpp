@@ -265,7 +265,7 @@ namespace Gear::Core
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setVS(GlobalShader::getFullScreenVS());
+			.setVS(*GlobalShader::getFullScreenVS());
 	}
 
 	D3D12Core::PipelineStatePtr PipelineStateBuilder::build()

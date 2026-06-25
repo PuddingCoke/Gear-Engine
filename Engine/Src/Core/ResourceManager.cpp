@@ -477,13 +477,13 @@ namespace Gear::Core
 		case FMT::R16TL:
 			clearValueFormat = FMT::D16UN;
 			break;
-		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
-		case DXGI_FORMAT_R32G8X24_TYPELESS:
-			clearValueFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+		case FMT::D32FS8X24UI:
+		case FMT::R32G8X24TL:
+			clearValueFormat = FMT::D32FS8X24UI;
 			break;
-		case DXGI_FORMAT_D24_UNORM_S8_UINT:
-		case DXGI_FORMAT_R24G8_TYPELESS:
-			clearValueFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		case FMT::D24UNS8UI:
+		case FMT::R24G8TL:
+			clearValueFormat = FMT::D24UNS8UI;
 			break;
 		default:
 			LOGERROR(L"不被支持的深度模板纹理格式！");

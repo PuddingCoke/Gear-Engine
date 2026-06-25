@@ -327,7 +327,6 @@
     <ClCompile Include="Src\Input\Keyboard.cpp" />
     <ClCompile Include="Src\Input\Mouse.cpp" />
     <ClCompile Include="Src\Utils\Color.cpp" />
-    <ClCompile Include="Src\Core\FMT.cpp" />
     <ClCompile Include="Src\Utils\Logger.cpp" />
     <ClCompile Include="Src\Utils\Logger\LogColor.cpp" />
     <ClCompile Include="Src\Utils\Logger\LogContext.cpp" />

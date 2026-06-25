@@ -106,7 +106,7 @@ public:
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
 			.setDSVFormat(FMT::D32F)
-			.setVS(GlobalShader::getTextureCubeVS())
+			.setVS(*GlobalShader::getTextureCubeVS())
 			.setPS(*skyboxPShader)
 			.build();
 
@@ -116,7 +116,7 @@ public:
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
-			.setVS(GlobalShader::getFullScreenVS())
+			.setVS(*GlobalShader::getFullScreenVS())
 			.setPS(*ssrCombinePS)
 			.build();
 

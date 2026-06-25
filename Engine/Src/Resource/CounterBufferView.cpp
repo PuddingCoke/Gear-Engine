@@ -1,5 +1,7 @@
 ﻿#include<Gear/Resource/CounterBufferView.h>
 
+#include<Gear/Core/FMT.h>
+
 namespace Gear::Resource
 {
 	CounterBufferView::CounterBufferView(const bool persistent) :

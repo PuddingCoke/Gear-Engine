@@ -1,5 +1,7 @@
 ﻿#include<Gear/Core/D3D12Resource/Buffer.h>
 
+#include<Gear/Utils/Math.h>
+
 namespace Gear::Core::D3D12Resource
 {
 	Buffer::Buffer(const uint64_t size, const bool stateTracking, const D3D12_RESOURCE_FLAGS resFlags, const uint32_t initialState) :
@@ -57,7 +59,7 @@ namespace Gear::Core::D3D12Resource
 
 			pushToPendingList(pendingResources);
 		}
-		else if (!bitFlagSubset(internalState, transitionState))
+		else if (!Utils::Math::bitFlagSubset(internalState, transitionState))
 		{
 			D3D12_RESOURCE_BARRIER barrier = {};
 			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

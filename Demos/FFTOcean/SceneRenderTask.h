@@ -38,7 +38,7 @@ public:
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ FMT::RGBA16F })
-			.setVS(GlobalShader::getTextureCubeVS())
+			.setVS(*GlobalShader::getTextureCubeVS())
 			.setPS(*textureCubePS)
 			.build();
 

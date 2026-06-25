@@ -75,7 +75,7 @@ namespace Gear::Effect
 			{
 				return PipelineStateBuilder()
 					.setBlendState(PipelineStateHelper::blendReplace)
-					.setVS(GlobalShader::getFullScreenVS())
+					.setVS(*GlobalShader::getFullScreenVS())
 					.setRasterizerState(PipelineStateHelper::rasterCullNone)
 					.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 					.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
@@ -88,7 +88,7 @@ namespace Gear::Effect
 
 		bloomDownSampleState = getDefaultBuilder().setPS(*bloomDownSample).build();
 
-		bloomUpSampleState = getDefaultBuilder().setPS(GlobalShader::getFullScreenPS()).setBlendState(PipelineStateHelper::blendAddtive).build();
+		bloomUpSampleState = getDefaultBuilder().setPS(*GlobalShader::getFullScreenPS()).setBlendState(PipelineStateHelper::blendAddtive).build();
 
 		bloomFinalState = getDefaultBuilder().setPS(*bloomFinal).build();
 

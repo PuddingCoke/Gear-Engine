@@ -1,5 +1,7 @@
 ﻿#include<Gear/Core/D3D12Resource/Texture.h>
 
+#include<Gear/Utils/Math.h>
+
 namespace Gear::Core::D3D12Resource
 {
 	Texture::Texture(const uint32_t width, const uint32_t height, const DXGI_FORMAT format, const uint32_t arraySize, const uint32_t mipLevels, const bool stateTracking, const D3D12_RESOURCE_FLAGS resFlags, const D3D12_CLEAR_VALUE* const clearValue) :
@@ -110,7 +112,7 @@ namespace Gear::Core::D3D12Resource
 				//这是最好的情况，transitionState和internalState的allState都是已知的
 				if (internalState->allState != D3D12_RESOURCE_STATE_UNKNOWN)
 				{
-					if (!bitFlagSubset(internalState->allState, transitionState->allState))
+					if (!Utils::Math::bitFlagSubset(internalState->allState, transitionState->allState))
 					{
 						D3D12_RESOURCE_BARRIER barrier = {};
 						barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -167,7 +169,7 @@ namespace Gear::Core::D3D12Resource
 							//已知
 							else
 							{
-								if (!bitFlagSubset(internalState->mipLevelStates[mipSlice], transitionState->mipLevelStates[mipSlice]))
+								if (!Utils::Math::bitFlagSubset(internalState->mipLevelStates[mipSlice], transitionState->mipLevelStates[mipSlice]))
 								{
 									finalStateChecking = true;
 
@@ -211,7 +213,7 @@ namespace Gear::Core::D3D12Resource
 				}
 				else
 				{
-					if (!bitFlagSubset(internalState->allState, transitionState->allState))
+					if (!Utils::Math::bitFlagSubset(internalState->allState, transitionState->allState))
 					{
 						D3D12_RESOURCE_BARRIER barrier = {};
 						barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -259,7 +261,7 @@ namespace Gear::Core::D3D12Resource
 						//已知
 						else
 						{
-							if (!bitFlagSubset(internalState->mipLevelStates[mipSlice], transitionState->mipLevelStates[mipSlice]))
+							if (!Utils::Math::bitFlagSubset(internalState->mipLevelStates[mipSlice], transitionState->mipLevelStates[mipSlice]))
 							{
 								finalStateChecking = true;
 
@@ -516,7 +518,7 @@ namespace Gear::Core::D3D12Resource
 				transitionState->set(state);
 			}
 		}
-		else if (!bitFlagSubset(internalState->allState, state))
+		else if (!Utils::Math::bitFlagSubset(internalState->allState, state))
 		{
 			transitionState->combine(state);
 		}
@@ -532,7 +534,7 @@ namespace Gear::Core::D3D12Resource
 
 				transitionState->mipLevelStates[mipSlice] = state;
 			}
-			else if (!bitFlagSubset(transitionState->mipLevelStates[mipSlice], state))
+			else if (!Utils::Math::bitFlagSubset(transitionState->mipLevelStates[mipSlice], state))
 			{
 				transitionState->allState = D3D12_RESOURCE_STATE_UNKNOWN;
 

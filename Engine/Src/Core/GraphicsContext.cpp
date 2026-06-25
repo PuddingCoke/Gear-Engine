@@ -4,6 +4,8 @@
 
 #include<Gear/Core/TOPOLOGY.h>
 
+#include<Gear/Utils/Math.h>
+
 namespace Gear::Core
 {
 	constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE getTopologyType(const D3D_PRIMITIVE_TOPOLOGY topology)
@@ -644,9 +646,9 @@ namespace Gear::Core
 		const DirectX::XMUINT3 groupDimension = currentPipelineState->getPipelineStateData().computeData.groupDimension;
 
 		dispatchGrp(
-			dispatchCeil(dispatchThreadCountX, groupDimension.x),
-			dispatchCeil(dispatchThreadCountY, groupDimension.y),
-			dispatchCeil(dispatchThreadCountZ, groupDimension.z)
+			Utils::Math::ceil(dispatchThreadCountX, groupDimension.x),
+			Utils::Math::ceil(dispatchThreadCountY, groupDimension.y),
+			Utils::Math::ceil(dispatchThreadCountZ, groupDimension.z)
 		);
 	}
 

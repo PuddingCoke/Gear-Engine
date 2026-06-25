@@ -21,21 +21,21 @@ public:
 			.setPS(*accumulateShader)
 			.build();
 
-		Input::Mouse::addMoveEvent([this]()
+		Mouse::addMoveEvent([this]()
 			{
-				if (Input::Mouse::getLeftDown())
+				if (Mouse::getLeftDown())
 				{
-					cameraParam.phi -= Input::Mouse::getDY() * Graphics::getDeltaTime();
-					cameraParam.theta += Input::Mouse::getDX() * Graphics::getDeltaTime();
+					cameraParam.phi -= Mouse::getDY() * Graphics::getDeltaTime();
+					cameraParam.theta += Mouse::getDX() * Graphics::getDeltaTime();
 					cameraParam.phi = Math::clamp(cameraParam.phi, -Math::halfPi + 0.01f, Math::halfPi - 0.01f);
 
 					accumulateParam.frameIndex = 0;
 				}
 			});
 
-		Input::Mouse::addScrollEvent([this]()
+		Mouse::addScrollEvent([this]()
 			{
-				cameraParam.radius -= Input::Mouse::getWheelDelta() * 1.f;
+				cameraParam.radius -= Mouse::getWheelDelta() * 1.f;
 
 				accumulateParam.frameIndex = 0;
 			});

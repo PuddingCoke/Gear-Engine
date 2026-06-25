@@ -7,11 +7,11 @@
 
 namespace Gear::Core::GlobalShader
 {
-	const D3D12Core::Shader& getFullScreenVS();
+	const D3D12Core::Shader* getFullScreenVS();
 
-	const D3D12Core::Shader& getFullScreenPS();
+	const D3D12Core::Shader* getFullScreenPS();
 
-	const D3D12Core::Shader& getTextureCubeVS();
+	const D3D12Core::Shader* getTextureCubeVS();
 }
 
 #endif // !_GEAR_CORE_GLOBALSHADER_H_

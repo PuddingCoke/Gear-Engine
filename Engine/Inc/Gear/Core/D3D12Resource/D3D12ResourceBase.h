@@ -5,8 +5,6 @@
 
 #include<Gear/Core/GraphicsDevice.h>
 
-#include<Gear/Core/FMT.h>
-
 namespace Gear::Core::D3D12Resource
 {
 	//用于内部状态、转变状态、全局状态、待定状态
@@ -14,12 +12,6 @@ namespace Gear::Core::D3D12Resource
 
 	//用于Texture
 	constexpr uint32_t D3D12_TRANSITION_ALL_MIPLEVELS = 0xFFFFFFFF;
-
-	//a是否拥有b？
-	constexpr bool bitFlagSubset(const uint32_t a, const uint32_t b)
-	{
-		return b && ((a & b) == b);
-	}
 
 	class D3D12ResourceBase
 	{

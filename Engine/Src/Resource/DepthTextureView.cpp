@@ -1,5 +1,7 @@
 ﻿#include<Gear/Resource/DepthTextureView.h>
 
+#include<Gear/Core/FMT.h>
+
 namespace Gear::Resource
 {
 	DepthTextureView::DepthTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent) :
@@ -22,16 +24,10 @@ namespace Gear::Resource
 		switch (texture->getFormat())
 		{
 		case FMT::D32F:
-			dsvFormat = FMT::D32F;
-			break;
 		case FMT::D16UN:
-			dsvFormat = FMT::D16UN;
-			break;
-		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
-			dsvFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
-			break;
-		case DXGI_FORMAT_D24_UNORM_S8_UINT:
-			dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		case FMT::D32FS8X24UI:
+		case FMT::D24UNS8UI:
+			dsvFormat = texture->getFormat();
 			break;
 		case FMT::R32TL:
 			depthSRVFormat = FMT::R32F;
@@ -41,15 +37,15 @@ namespace Gear::Resource
 			depthSRVFormat = FMT::R16UN;
 			dsvFormat = FMT::D16UN;
 			break;
-		case DXGI_FORMAT_R32G8X24_TYPELESS:
-			depthSRVFormat = DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
-			stencilSRVFormat = DXGI_FORMAT_X32_TYPELESS_G8X24_UINT;
-			dsvFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+		case FMT::R32G8X24TL:
+			depthSRVFormat = FMT::R32FX8X24TL;
+			stencilSRVFormat = FMT::X32TLG8X24UI;
+			dsvFormat = FMT::D32FS8X24UI;
 			break;
-		case DXGI_FORMAT_R24G8_TYPELESS:
-			depthSRVFormat = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-			stencilSRVFormat = DXGI_FORMAT_X24_TYPELESS_G8_UINT;
-			dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		case FMT::R24G8TL:
+			depthSRVFormat = FMT::R24UNX8TL;
+			stencilSRVFormat = FMT::X24TLG8UI;
+			dsvFormat = FMT::D24UNS8UI;
 			break;
 		default:
 			LOGERROR(L"不支持的深度模板纹理格式！");

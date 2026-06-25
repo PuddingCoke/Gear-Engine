@@ -71,7 +71,7 @@ protected:
 
 	void recordCommand() override
 	{
-		simulationParam.mousePos = DirectX::XMFLOAT2(Input::Mouse::getX(), Input::Mouse::getY());
+		simulationParam.mousePos = DirectX::XMFLOAT2(Mouse::getX(), Mouse::getY());
 
 		context->setPipelineState(*stepState);
 

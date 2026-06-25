@@ -57,6 +57,8 @@ using namespace Gear::Effect;
 
 using namespace Gear::Resource;
 
+using namespace Gear::Input;
+
 using namespace Gear::Utils;
 
 using namespace Gear::Core::D3D12Core;

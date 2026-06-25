@@ -716,9 +716,6 @@
     <ClCompile Include="Src\Utils\Logger\LogContext.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\FMT.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Utils\WallpaperHelper.cpp">
       <Filter>Source</Filter>
     </ClCompile>

@@ -28,7 +28,7 @@ namespace Gear::Effect::BackBufferBlitEffect
 		{
 			backBufferBlitState = PipelineStateBuilder()
 				.setDefaultFullScreenState()
-				.setPS(GlobalShader::getFullScreenPS())
+				.setPS(*GlobalShader::getFullScreenPS())
 				.setRTVFormats({ Graphics::backBufferFormat })
 				.build();
 

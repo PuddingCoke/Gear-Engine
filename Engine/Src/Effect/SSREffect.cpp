@@ -29,7 +29,7 @@ namespace Gear::Effect
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
 			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRTVFormats({ outputTextureFormat })
-			.setVS(GlobalShader::getFullScreenVS())
+			.setVS(*GlobalShader::getFullScreenVS())
 			.setPS(*hiZProcessPS)
 			.build();
 
