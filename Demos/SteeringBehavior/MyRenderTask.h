@@ -75,8 +75,8 @@ protected:
 
 		SETCONSTS({
 		context->setCSConstants({
-			positionVelocity->write()->getUAVIndex(),
-			positionVelocity->read()->getSRVIndex(),
+			positionVelocity->getUAVIndex(),
+			positionVelocity->getSRVIndex(),
 			maxSpeedMaxForce->getSRVIndex() }, co);
 
 		context->setCSConstants(simulationParam, co);
@@ -96,7 +96,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::POINTLIST);
 
-		context->setVertexBuffers(0, { positionVelocity->read()->getVertexBuffer() });
+		context->setVertexBuffers(0, { positionVelocity->getVertexBuffer() });
 
 		SETCONSTS({
 		context->setPSConstants({ arrowTexture->getAllSRVIndex() }, co);

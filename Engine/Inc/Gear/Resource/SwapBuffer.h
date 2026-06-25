@@ -9,9 +9,28 @@
 
 namespace Gear::Resource
 {
-	using SwapBuffer = SwappableBase<BufferView>;
+	CREATESAFETYPE(SwapBuffer);
 
-	using SwapBufferPtr = UniquePtr<SwapBuffer>;
+	class SwapBuffer :public SwappableBase<BufferView>
+	{
+	public:
+
+		SwapBuffer() = delete;
+
+		SwapBuffer(const std::function<BufferViewPtr(void)>& readBufferFunc, const std::function<BufferViewPtr(void)>& writeBufferFunc);
+
+		VertexBufferDesc getVertexBuffer() const;
+
+		IndexBufferDesc getIndexBuffer() const;
+
+		ShaderResourceDesc getSRVIndex() const;
+
+		ShaderResourceDesc getUAVIndex() const;
+
+		UAVClearDesc getUAVClearDesc() const;
+
+	};
+
 }
 
 #endif // !_GEAR_RESOURCE_SWAPBUFFER_H_

@@ -15,29 +15,23 @@ public:
 
 		velocityTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true); });
 
-		velocityTex->read()->getTexture()->getResource()->SetName(L"Velocity Texture (0)");
-
-		velocityTex->write()->getTexture()->getResource()->SetName(L"Velocity Texture (1)");
+		velocityTex->setName(L"Velocity Texture");
 
 		colorTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true); });
 
-		colorTex->read()->getTexture()->getResource()->SetName(L"Color Texture (0)");
-
-		colorTex->write()->getTexture()->getResource()->SetName(L"Color Texture (1)");
+		colorTex->setName(L"Color Texture");
 
 		divergenceTex = ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
 
-		divergenceTex->getTexture()->getResource()->SetName(L"Divergence Texture");
+		divergenceTex->getTexture()->setName(L"Divergence Texture");
 
 		pressureTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true); });
 
-		pressureTex->read()->getTexture()->getResource()->SetName(L"Pressure Texture (0)");
-
-		pressureTex->write()->getTexture()->getResource()->SetName(L"Pressure Texture (1)");
+		pressureTex->setName(L"Pressure Texture");
 
 		vorticityTex = ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
 
-		vorticityTex->getTexture()->getResource()->SetName(L"Vorticity Texture");
+		vorticityTex->getTexture()->setName(L"Vorticity Texture");
 
 		phongShadeTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true);
 
@@ -134,16 +128,16 @@ public:
 		{
 			context->setPipelineState(*splatVelocityState);
 			SETCONSTS({
-			context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, co);
+			context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
 				});
-			context->dispatchDim(velocityTex->write()->get3Dimension());
+			context->dispatchDim(velocityTex->get3Dimension());
 			velocityTex->swap();
 
 			context->setPipelineState(*splatColorState);
 			SETCONSTS({
-			context->setCSConstants({ colorTex->read()->getAllSRVIndex(),colorTex->write()->getUAVMipIndex(0) }, co);
+			context->setCSConstants({ colorTex->getAllSRVIndex(),colorTex->getUAVMipIndex(0) }, co);
 				});
-			context->dispatchDim(colorTex->write()->get3Dimension());
+			context->dispatchDim(colorTex->get3Dimension());
 			colorTex->swap();
 		}
 	}
@@ -153,24 +147,24 @@ public:
 		//calculate vorticity
 		context->setPipelineState(*vorticityState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),vorticityTex->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ velocityTex->getAllSRVIndex(),vorticityTex->getUAVMipIndex(0) }, co);
 			});
 		context->dispatchDim(vorticityTex->get3Dimension());
 
 		//apply vorticity confinement
 		context->setPipelineState(*vorticityConfinementState);
 		SETCONSTS({
-		context->setCSConstants({ vorticityTex->getAllSRVIndex(),velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ vorticityTex->getAllSRVIndex(),velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
 			});
-		context->dispatchDim(velocityTex->write()->get3Dimension());
+		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
 			});
-		context->dispatchDim(velocityTex->write()->get3Dimension());
+		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 	}
 
@@ -179,16 +173,16 @@ public:
 		//calculate divergence
 		context->setPipelineState(*divergenceState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),divergenceTex->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ velocityTex->getAllSRVIndex(),divergenceTex->getUAVMipIndex(0) }, co);
 			});
 		context->dispatchDim(divergenceTex->get3Dimension());
 
 		//reset pressure
 		context->setPipelineState(*pressureResetState);
 		SETCONSTS({
-		context->setCSConstants({ pressureTex->write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ pressureTex->getUAVMipIndex(0) }, co);
 			});
-		context->dispatchDim(pressureTex->write()->get3Dimension());
+		context->dispatchDim(pressureTex->get3Dimension());
 		pressureTex->swap();
 
 		//calculate pressure
@@ -196,34 +190,34 @@ public:
 		{
 			context->setPipelineState(*pressureState);
 			SETCONSTS({
-			context->setCSConstants({ divergenceTex->getAllSRVIndex(),pressureTex->read()->getAllSRVIndex(),pressureTex->write()->getUAVMipIndex(0) }, co);
+			context->setCSConstants({ divergenceTex->getAllSRVIndex(),pressureTex->getAllSRVIndex(),pressureTex->getUAVMipIndex(0) }, co);
 				});
-			context->dispatchDim(pressureTex->write()->get3Dimension());
+			context->dispatchDim(pressureTex->get3Dimension());
 			pressureTex->swap();
 
 			//obstacle
 			context->setPipelineState(*pressureBoundaryState);
 			SETCONSTS({
-			context->setCSConstants({ pressureTex->read()->getAllSRVIndex(),pressureTex->write()->getUAVMipIndex(0) }, co);
+			context->setCSConstants({ pressureTex->getAllSRVIndex(),pressureTex->getUAVMipIndex(0) }, co);
 				});
-			context->dispatchDim(pressureTex->write()->get3Dimension());
+			context->dispatchDim(pressureTex->get3Dimension());
 			pressureTex->swap();
 		}
 
 		//velocity subtract gradient of pressure
 		context->setPipelineState(*gradientSubtractState);
 		SETCONSTS({
-		context->setCSConstants({ pressureTex->read()->getAllSRVIndex(),velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ pressureTex->getAllSRVIndex(),velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
 			});
-		context->dispatchDim(velocityTex->write()->get3Dimension());
+		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
 			});
-		context->dispatchDim(velocityTex->write()->get3Dimension());
+		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 	}
 
@@ -232,25 +226,25 @@ public:
 		//velocity advection
 		context->setPipelineState(*velocityAdvectionState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
 			});
-		context->dispatchDim(velocityTex->write()->get3Dimension());
+		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),velocityTex->write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
 			});
-		context->dispatchDim(velocityTex->write()->get3Dimension());
+		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 
 		//color advection
 		context->setPipelineState(*colorAdvectionState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->read()->getAllSRVIndex(),colorTex->read()->getAllSRVIndex(),colorTex->write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ velocityTex->getAllSRVIndex(),colorTex->getAllSRVIndex(),colorTex->getUAVMipIndex(0) }, co);
 			});
-		context->dispatchDim(colorTex->write()->get3Dimension());
+		context->dispatchDim(colorTex->get3Dimension());
 		colorTex->swap();
 	}
 
@@ -311,7 +305,7 @@ public:
 		{
 			context->setPipelineState(*phongShadeState);
 			SETCONSTS({
-			context->setCSConstants({ colorTex->read()->getAllSRVIndex(),phongShadeTexture->getUAVMipIndex(0) }, co);
+			context->setCSConstants({ colorTex->getAllSRVIndex(),phongShadeTexture->getUAVMipIndex(0) }, co);
 				});
 			context->dispatchDim(phongShadeTexture->get3Dimension());
 

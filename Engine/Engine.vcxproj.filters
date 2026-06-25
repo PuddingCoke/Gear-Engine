@@ -797,6 +797,9 @@
     <ClCompile Include="Src\Core\D3D12Core\GraphicsState.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Resource\SwapBuffer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomDownSamplePS.hlsl">

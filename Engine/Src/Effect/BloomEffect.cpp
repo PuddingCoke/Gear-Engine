@@ -116,9 +116,9 @@ namespace Gear::Effect
 			});
 		context->drawQuad();
 
-		context->setViewportSimple(swapTexture[0]->write()->get2Dimension());
+		context->setViewportSimple(swapTexture[0]->get2Dimension());
 		context->setPipelineState(*bloomKarisAverageState);
-		context->setRenderTargets({ swapTexture[0]->write()->getRTVMip(0) }, {});
+		context->setRenderTargets({ swapTexture[0]->getRTVMip(0) }, {});
 		SETCONSTS({
 		context->setPSConstants({ filteredTexture->getAllSRVIndex() }, co);
 		context->setPSConstants(4, &bloomParam, co);
@@ -130,10 +130,10 @@ namespace Gear::Effect
 
 		for (uint32_t i = 0; i < blurSteps - 1; i++)
 		{
-			context->setViewportSimple(swapTexture[i + 1]->write()->get2Dimension());
-			context->setRenderTargets({ swapTexture[i + 1]->write()->getRTVMip(0) }, {});
+			context->setViewportSimple(swapTexture[i + 1]->get2Dimension());
+			context->setRenderTargets({ swapTexture[i + 1]->getRTVMip(0) }, {});
 			SETCONSTS({
-			context->setPSConstants({ swapTexture[i]->read()->getAllSRVIndex() }, co);
+			context->setPSConstants({ swapTexture[i]->getAllSRVIndex() }, co);
 				});
 			context->drawQuad();
 			swapTexture[i + 1]->swap();
@@ -143,26 +143,26 @@ namespace Gear::Effect
 
 		SETCONSTS({
 		context->setCSConstants({
-			swapTexture[blurSteps - 1]->read()->getAllSRVIndex(),
-			swapTexture[blurSteps - 1]->write()->getUAVMipIndex(0) }, co);
+			swapTexture[blurSteps - 1]->getAllSRVIndex(),
+			swapTexture[blurSteps - 1]->getUAVMipIndex(0) }, co);
 			});
 
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
-		context->dispatchDim(swapTexture[blurSteps - 1]->write()->get3Dimension());
+		context->dispatchDim(swapTexture[blurSteps - 1]->get3Dimension());
 		swapTexture[blurSteps - 1]->swap();
 
 		context->setPipelineState(*bloomVBlurState);
 
 		SETCONSTS({
 		context->setCSConstants({
-			swapTexture[blurSteps - 1]->read()->getAllSRVIndex(),
-			swapTexture[blurSteps - 1]->write()->getUAVMipIndex(0) }, co);
+			swapTexture[blurSteps - 1]->getAllSRVIndex(),
+			swapTexture[blurSteps - 1]->getUAVMipIndex(0) }, co);
 			});
 
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
-		context->dispatchDim(swapTexture[blurSteps - 1]->write()->get3Dimension());
+		context->dispatchDim(swapTexture[blurSteps - 1]->get3Dimension());
 		swapTexture[blurSteps - 1]->swap();
 
 		for (uint32_t i = 0; i < blurSteps - 1; i++)
@@ -171,32 +171,32 @@ namespace Gear::Effect
 
 			SETCONSTS({
 			context->setCSConstants({
-				swapTexture[blurSteps - 2 - i]->read()->getAllSRVIndex(),
-				swapTexture[blurSteps - 2 - i]->write()->getUAVMipIndex(0) }, co);
+				swapTexture[blurSteps - 2 - i]->getAllSRVIndex(),
+				swapTexture[blurSteps - 2 - i]->getUAVMipIndex(0) }, co);
 				});
 
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
-			context->dispatchDim(swapTexture[blurSteps - 2 - i]->write()->get3Dimension());
+			context->dispatchDim(swapTexture[blurSteps - 2 - i]->get3Dimension());
 			swapTexture[blurSteps - 2 - i]->swap();
 
 			context->setPipelineState(*bloomVBlurState);
 
 			SETCONSTS({
 			context->setCSConstants({
-				swapTexture[blurSteps - 2 - i]->read()->getAllSRVIndex(),
-				swapTexture[blurSteps - 2 - i]->write()->getUAVMipIndex(0) }, co);
+				swapTexture[blurSteps - 2 - i]->getAllSRVIndex(),
+				swapTexture[blurSteps - 2 - i]->getUAVMipIndex(0) }, co);
 				});
 
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
-			context->dispatchDim(swapTexture[blurSteps - 2 - i]->write()->get3Dimension());
+			context->dispatchDim(swapTexture[blurSteps - 2 - i]->get3Dimension());
 
-			context->setViewportSimple(swapTexture[blurSteps - 2 - i]->write()->get2Dimension());
+			context->setViewportSimple(swapTexture[blurSteps - 2 - i]->get2Dimension());
 			context->setPipelineState(*bloomUpSampleState);
-			context->setRenderTargets({ swapTexture[blurSteps - 2 - i]->write()->getRTVMip(0) }, {});
+			context->setRenderTargets({ swapTexture[blurSteps - 2 - i]->getRTVMip(0) }, {});
 			SETCONSTS({
-			context->setPSConstants({ swapTexture[blurSteps - 1 - i]->read()->getAllSRVIndex() }, co);
+			context->setPSConstants({ swapTexture[blurSteps - 1 - i]->getAllSRVIndex() }, co);
 				});
 			context->drawQuad();
 			swapTexture[blurSteps - 2 - i]->swap();
@@ -208,7 +208,7 @@ namespace Gear::Effect
 		SETCONSTS({
 		context->setPSConstants({
 			inputTexture.getAllSRVIndex(),
-			swapTexture[0]->read()->getAllSRVIndex(),
+			swapTexture[0]->getAllSRVIndex(),
 			lensDirtTexture->getAllSRVIndex() }, co);
 		context->setPSConstants(6, &bloomParam, co);
 			});

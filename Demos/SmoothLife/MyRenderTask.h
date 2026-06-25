@@ -58,12 +58,12 @@ protected:
 		const uint32_t uintSeed = Random::genUint();
 
 		SETCONSTS({
-		context->setCSConstants({ swapTexture.write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ swapTexture.getUAVMipIndex(0) }, co);
 
 		context->setCSConstants(1, &uintSeed, co);
 			});
 
-		context->dispatchDim(swapTexture.write()->get3Dimension());
+		context->dispatchDim(swapTexture.get3Dimension());
 
 		swapTexture.swap();
 	}
@@ -73,13 +73,13 @@ protected:
 		context->setPipelineState(*evolveState);
 
 		SETCONSTS({
-		context->setCSConstants({ swapTexture.read()->getAllSRVIndex(),
-			swapTexture.write()->getUAVMipIndex(0) }, co);
+		context->setCSConstants({ swapTexture.getAllSRVIndex(),
+			swapTexture.getUAVMipIndex(0) }, co);
 
 		context->setCSConstants(simulationParam, co);
 			});
 
-		context->dispatchDim(swapTexture.write()->get3Dimension());
+		context->dispatchDim(swapTexture.get3Dimension());
 
 		swapTexture.swap();
 	}
@@ -103,10 +103,10 @@ protected:
 
 		SETCONSTS({
 		context->setCSConstants({ originTexture->getUAVMipIndex(0),
-			swapTexture->read()->getAllSRVIndex() }, co);
+			swapTexture->getAllSRVIndex() }, co);
 			});
 
-		context->dispatchDim(swapTexture->write()->get3Dimension());
+		context->dispatchDim(swapTexture->get3Dimension());
 
 		blit(*originTexture);
 	}

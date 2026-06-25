@@ -19,6 +19,22 @@ namespace Gear::Resource
 
 		SwapTexture(const std::function<RenderTextureViewPtr(void)>& readTextureFunc, const std::function<RenderTextureViewPtr(void)>& writeTextureFunc);
 
+		RenderTargetDesc getRTVMip(const uint32_t mipSlice) const;
+
+		ShaderResourceDesc getUAVMipIndex(const uint32_t mipSlice) const;
+
+		ShaderResourceDesc getAllSRVIndex() const;
+
+		ShaderResourceDesc getSRVMipIndex(const uint32_t mipSlice) const;
+
+		UAVClearDesc getUAVMipClearDesc(const uint32_t mipSlice) const;
+
+		DirectX::XMUINT2 get2Dimension(const uint32_t mipSlice = 0u) const;
+
+		DirectX::XMUINT3 get3Dimension(const uint32_t mipSlice = 0u) const;
+
+		void setName(const std::wstring& name) const;
+
 		~SwapTexture();
 
 		const uint32_t width;

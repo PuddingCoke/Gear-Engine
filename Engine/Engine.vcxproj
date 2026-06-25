@@ -255,6 +255,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Src\Resource\SwapBuffer.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\GraphicsState.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp" />
     <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp" />
