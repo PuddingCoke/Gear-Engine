@@ -186,12 +186,12 @@ namespace Gear::Core::D3D12Core
 		{
 			const uint64_t formatIndex = rtvFormatToIndex(graphicsDesc.RTVFormats[i]);
 
-			//7比特位
-			uid |= (formatIndex << (i * 7u));
+			//6比特位
+			uid |= (formatIndex << (i * 6u));
 		}
 
 		//3比特位
-		uid |= (static_cast<uint64_t>(dsvFormatToIndex(graphicsDesc.DSVFormat)) << 56);
+		uid |= (static_cast<uint64_t>(dsvFormatToIndex(graphicsDesc.DSVFormat)) << 48);
 
 		if (static_cast<uint64_t>(graphicsDesc.PrimitiveTopologyType) == 0ull)
 		{
@@ -200,7 +200,7 @@ namespace Gear::Core::D3D12Core
 
 		//2比特位
 		//这里减一可以省一个比特位
-		uid |= ((static_cast<uint64_t>(graphicsDesc.PrimitiveTopologyType) - 1ull) << 59);
+		uid |= ((static_cast<uint64_t>(graphicsDesc.PrimitiveTopologyType) - 1ull) << 51);
 
 		return uid;
 	}
