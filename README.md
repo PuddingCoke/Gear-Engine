@@ -52,7 +52,7 @@ static RWTexture2D<float4> colorWriteTex = ResourceDescriptorHeap[colorWriteTexI
 
 Bindless 让着色器侧的编程体验极为自然，也让引擎侧的资源绑定框架得以简化——不再需要为每种着色器阶段管理烦人的描述符表。
 
-**资源绑定与资源屏障插入自动化** — 用户调用 `setVSConstants`、`setPSConstants` 等方法时传入的是 `ShaderResourceDesc` 等描述结构体（定义于 [PipelineResourceDesc.h](Engine/Inc/Gear/Resource/PipelineResourceDesc.h)中）。这些结构体不仅记录了资源在描述符堆中的索引，还携带了低级资源（如 `D3D12Resource::Texture` ）的指针和子资源范围信息（如 `mipslice` 等），它们由高级资源类（如 `RenderTextureView`）通过 `getAllSRVIndex()`、`getRTVMipHandle()` 等方法对外提供。`GraphicsContext` 根据结构体中的信息自动完成三件事：① 解析目标资源状态；② 追踪并插入资源转换屏障；③ 将资源绑定至对应的着色器阶段。draw call 和 dispatch call 前资源屏障自动 flush，用户无需手动管理任何一个 `D3D12_RESOURCE_BARRIER`。
+**资源绑定与资源屏障插入自动化** — 用户调用 `setVSConstants`、`setPSConstants` 等方法时传入的是 `ShaderResourceDesc` 等描述结构体（定义于 [PipelineResourceDesc.h](Engine/Inc/Gear/Resource/PipelineResourceDesc.h)中）。这些结构体不仅记录了资源在描述符堆中的索引，还携带了低级资源（如 `D3D12Resource::Texture` ）的指针和子资源范围信息（如 `mipslice` 等），它们由高级资源类（如 `RenderTextureView`）通过 `getAllSRVIndex()`、`getRTVMip()` 等方法对外提供。`GraphicsContext` 根据结构体中的信息自动完成三件事：① 解析目标资源状态；② 追踪并插入资源转换屏障；③ 将资源绑定至对应的着色器阶段。draw call 和 dispatch call 前资源屏障自动 flush，用户无需手动管理任何一个 `D3D12_RESOURCE_BARRIER`。
 
 **类 D3D11 API** — 一次 `draw()` / `drawIndexed()` / `dispatch()` 调用内部自动完成资源屏障提交、根常量缓冲刷新、延迟的 RTV/DSV 清理。配合 FMT 和 TOPOLOGY 命名空间提供的短格式别名（如 `FMT::RGBA16F`、`TOPOLOGY::TRIANGLELIST`），日常敲代码的流畅度非常接近 D3D11 时代，但底层运行的是完整的 D3D12 管线。
 
@@ -65,7 +65,7 @@ context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 context->setViewportSimple(irradianceCube->get2Dimension());
 
-context->setRenderTargets({ irradianceCube->getRTVMipHandle(0) });
+context->setRenderTargets({ irradianceCube->getRTVMip(0) });
 
 context->setVSConstantBuffer(*viewProjMatrixBuffer);
 
