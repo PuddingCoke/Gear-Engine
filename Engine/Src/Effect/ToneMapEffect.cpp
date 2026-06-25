@@ -20,7 +20,7 @@ namespace Gear::Effect::ToneMapEffect
 
 		private:
 
-			PipelineStatePtr toneMapState;
+			ComputeStatePtr toneMapState;
 
 			RenderTextureViewPtr outputTexture;
 

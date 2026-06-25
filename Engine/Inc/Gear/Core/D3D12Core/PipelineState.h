@@ -7,17 +7,9 @@
 
 namespace Gear::Core::D3D12Core
 {
-	CREATESAFETYPE(PipelineState);
-
 	class PipelineState
 	{
 	public:
-
-		enum class PipelineStateType
-		{
-			GRAPHICS,
-			COMPUTE
-		};
 
 		union PipelineStateData
 		{
@@ -32,26 +24,25 @@ namespace Gear::Core::D3D12Core
 			}graphicsData;
 		};
 
-		PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType, const PipelineStateData pipelineStateData);
+		PipelineState(const RootSignature* const rootSignature, const PipelineStateData pipelineStateData);
 
 		virtual ~PipelineState();
 
 		const RootSignature* getRootSignature() const;
 
-		ID3D12PipelineState* get() const;
-
-		PipelineStateType getPipelineStateType() const;
+		ID3D12PipelineState* getPipelineState() const;
 
 		PipelineStateData getPipelineStateData() const;
 
-	private:
+	protected:
 
-		ComPtr<ID3D12PipelineState> pipelineState;
+		//引用
+		ID3D12PipelineState* currentPipelineState;
+
+	private:
 
 		//引用
 		const RootSignature* const rootSignature;
-
-		const PipelineStateType pipelineStateType;
 
 		const PipelineStateData pipelineStateData;
 

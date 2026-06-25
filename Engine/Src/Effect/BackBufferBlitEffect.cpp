@@ -20,7 +20,7 @@ namespace Gear::Effect::BackBufferBlitEffect
 
 		private:
 
-			PipelineStatePtr backBufferBlitState;
+			GraphicsStatePtr backBufferBlitState;
 
 		};
 
@@ -29,7 +29,6 @@ namespace Gear::Effect::BackBufferBlitEffect
 			backBufferBlitState = PipelineStateBuilder()
 				.setDefaultFullScreenState()
 				.setPS(*GlobalShader::getFullScreenPS())
-				.setRTVFormats({ Graphics::backBufferFormat })
 				.build();
 
 			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(BackBufferBlitEffect));

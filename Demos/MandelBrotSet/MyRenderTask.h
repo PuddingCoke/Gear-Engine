@@ -98,7 +98,7 @@ protected:
 
 private:
 
-	PipelineStatePtr computeState;
+	ComputeStatePtr computeState;
 
 	RenderTextureViewPtr originTexture;
 

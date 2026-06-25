@@ -18,7 +18,7 @@ namespace Gear::Effect::HDRClampEffect
 
 		private:
 
-			PipelineStatePtr hdrClampState;
+			ComputeStatePtr hdrClampState;
 
 		};
 

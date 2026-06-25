@@ -422,23 +422,20 @@ namespace Gear::Core
 		setCSConstantBuffer(immutableIndexCBuffer);
 	}
 
-	void GraphicsContext::setPipelineState(const D3D12Core::PipelineState& pipelineState)
+	void GraphicsContext::setPipelineState(D3D12Core::ComputeState& computeState)
 	{
-		if (&pipelineState != currentPipelineState)
-		{
-			currentPipelineState = &pipelineState;
+		this->computeState = &computeState;
 
-			commandList->setPipelineState(currentPipelineState->get());
+		setPipelineState(computeState.getPipelineState());
 
-			if (currentPipelineState->getPipelineStateType() == D3D12Core::PipelineState::PipelineStateType::GRAPHICS)
-			{
-				setGraphicsRootSignature(currentPipelineState->getRootSignature());
-			}
-			else
-			{
-				setComputeRootSignature(currentPipelineState->getRootSignature());
-			}
-		}
+		setComputeRootSignature(computeState.getRootSignature());
+	}
+
+	void GraphicsContext::setPipelineState(D3D12Core::GraphicsState& graphicsState)
+	{
+		this->graphicsState = &graphicsState;
+
+		setGraphicsRootSignature(graphicsState.getRootSignature());
 	}
 
 	void GraphicsContext::setRenderTargets(const Resource::DepthStencilDesc& depthStencil)
@@ -447,12 +444,26 @@ namespace Gear::Core
 
 		depthStencilClearDesc.setHandle(depthStencil.dsvHandle);
 
+		switchGraphicsPipelineState = true;
+
+		transientNumRTV = 0;
+
+		transientDSVFormat = depthStencil.dsvFormat;
+
 		commandList->setRenderTargets(0, nullptr, FALSE, &depthStencil.dsvHandle);
 	}
 
-	void GraphicsContext::setDefRenderTarget() const
+	void GraphicsContext::setDefRenderTarget()
 	{
 		commandList->setDefRenderTarget();
+
+		switchGraphicsPipelineState = true;
+
+		transientNumRTV = 1;
+
+		transientRTVFormats[0] = Graphics::backBufferFormat;
+
+		transientDSVFormat = FMT::UNKNOWN;
 	}
 
 	void GraphicsContext::clearDefRenderTarget(const float clearValue[4]) const
@@ -510,6 +521,8 @@ namespace Gear::Core
 			primitiveTopologyType = getTopologyType(topology);
 
 			commandList->setPrimitiveTopology(primitiveTopology);
+
+			//不能在这里调用grahicsState->setTopologyType，因为setPipelineState可能没被调用
 		}
 	}
 
@@ -611,6 +624,18 @@ namespace Gear::Core
 
 		resetDepthStencilClearDesc();
 
+		//只有调用setRenderTargets后才需要检测是否需要并绑定新的管线状态
+		//setPipelineState调用后必定跟随至少一次setRenderTargets
+		//所以能保证切换图形管线状态时setPipelineState被调用
+		if (switchGraphicsPipelineState)
+		{
+			graphicsState->updatePipelineState(transientRTVFormats.data(), transientNumRTV, transientDSVFormat, primitiveTopologyType);
+
+			setPipelineState(graphicsState->getPipelineState());
+
+			switchGraphicsPipelineState = false;
+		}
+
 		commandList->drawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 	}
 
@@ -629,6 +654,15 @@ namespace Gear::Core
 
 		resetDepthStencilClearDesc();
 
+		if (switchGraphicsPipelineState)
+		{
+			graphicsState->updatePipelineState(transientRTVFormats.data(), transientNumRTV, transientDSVFormat, primitiveTopologyType);
+
+			setPipelineState(graphicsState->getPipelineState());
+
+			switchGraphicsPipelineState = false;
+		}
+
 		commandList->drawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 	}
 
@@ -643,7 +677,7 @@ namespace Gear::Core
 
 	void GraphicsContext::dispatchDim(const uint32_t dispatchThreadCountX, const uint32_t dispatchThreadCountY, const uint32_t dispatchThreadCountZ)
 	{
-		const DirectX::XMUINT3 groupDimension = currentPipelineState->getPipelineStateData().computeData.groupDimension;
+		const DirectX::XMUINT3 groupDimension = computeState->getPipelineStateData().computeData.groupDimension;
 
 		dispatchGrp(
 			Utils::Math::ceil(dispatchThreadCountX, groupDimension.x),
@@ -702,6 +736,16 @@ namespace Gear::Core
 	void GraphicsContext::transitionResources()
 	{
 		commandList->flushResourceBarriers();
+	}
+
+	void GraphicsContext::setPipelineState(ID3D12PipelineState* const pipelineState)
+	{
+		if (pipelineState != currentPipelineState)
+		{
+			currentPipelineState = pipelineState;
+
+			commandList->setPipelineState(currentPipelineState);
+		}
 	}
 
 	void GraphicsContext::setShaderResources(const std::vector<Resource::ShaderResourceDesc>& descs, const uint32_t targetSRVState)

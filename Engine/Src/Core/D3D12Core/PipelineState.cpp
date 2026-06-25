@@ -2,8 +2,8 @@
 
 namespace Gear::Core::D3D12Core
 {
-	PipelineState::PipelineState(const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType, const PipelineStateData pipelineStateData) :
-		pipelineState(pipelineState), rootSignature(rootSignature), pipelineStateType(pipelineStateType), pipelineStateData(pipelineStateData)
+	PipelineState::PipelineState(const RootSignature* const rootSignature, const PipelineStateData pipelineStateData) :
+		currentPipelineState(nullptr), rootSignature(rootSignature), pipelineStateData(pipelineStateData)
 	{
 	}
 
@@ -16,14 +16,9 @@ namespace Gear::Core::D3D12Core
 		return rootSignature;
 	}
 
-	ID3D12PipelineState* PipelineState::get() const
+	ID3D12PipelineState* PipelineState::getPipelineState() const
 	{
-		return pipelineState.Get();
-	}
-
-	PipelineState::PipelineStateType PipelineState::getPipelineStateType() const
-	{
-		return pipelineStateType;
+		return currentPipelineState;
 	}
 
 	PipelineState::PipelineStateData PipelineState::getPipelineStateData() const

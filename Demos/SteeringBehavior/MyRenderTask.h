@@ -54,8 +54,6 @@ public:
 			.setVS(*vehicleVS)
 			.setGS(*vehicleGS)
 			.setPS(*vehiclePS)
-			.setRTVFormats({ renderTexture->getRTVFormat() })
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::POINT)
 			.build();
 
 		simulationParam.numVehicle = numVehicle;
@@ -129,11 +127,9 @@ private:
 
 	static constexpr uint32_t numVehicle = 1000;
 
-	PipelineStatePtr stepState;
+	ComputeStatePtr stepState;
 
-	ShaderPtr stepCS;
-
-	PipelineStatePtr vehicleRenderState;
+	GraphicsStatePtr vehicleRenderState;
 
 	ShaderPtr vehicleVS;
 

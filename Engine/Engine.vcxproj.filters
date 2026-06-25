@@ -537,6 +537,9 @@
     <ClInclude Include="Inc\Gear\Resource\ImmutableIndexCBuffer.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\D3D12Core\GraphicsState.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -789,6 +792,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Resource\DefaultIndexCBuffer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\D3D12Core\GraphicsState.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,7 +6,9 @@
 
 #include<Gear/Core/GlobalShader.h>
 
-#include<Gear/Core/D3D12Core/ComputeState.h>
+#include<Gear/Core/FMT.h>
+
+#include<Gear/Core/TOPOLOGY.h>
 
 namespace Gear::Core
 {
@@ -217,27 +219,6 @@ namespace Gear::Core
 		return *this;
 	}
 
-	PipelineStateBuilder& PipelineStateBuilder::setRTVFormats()
-	{
-		graphicsDesc.NumRenderTargets = 0u;
-
-		return *this;
-	}
-
-	PipelineStateBuilder& PipelineStateBuilder::setDSVFormat(const DXGI_FORMAT format)
-	{
-		graphicsDesc.DSVFormat = format;
-
-		return *this;
-	}
-
-	PipelineStateBuilder& PipelineStateBuilder::setPrimitiveTopologyType(const D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopologyType)
-	{
-		graphicsDesc.PrimitiveTopologyType = primitiveTopologyType;
-
-		return *this;
-	}
-
 	PipelineStateBuilder& PipelineStateBuilder::setBlendState(const D3D12_BLEND_DESC& desc)
 	{
 		graphicsDesc.BlendState = desc;
@@ -264,11 +245,10 @@ namespace Gear::Core
 		return setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setVS(*GlobalShader::getFullScreenVS());
 	}
 
-	D3D12Core::PipelineStatePtr PipelineStateBuilder::build()
+	D3D12Core::GraphicsStatePtr PipelineStateBuilder::build()
 	{
 		ComPtr<ID3D12PipelineState> id3d12PipelineState;
 
@@ -321,12 +301,10 @@ namespace Gear::Core
 			graphicsDesc.InputLayout = { inputElements.data(),static_cast<uint32_t>(inputElements.size()) };
 		}
 
-		CHECKERROR(GraphicsDevice::get()->CreateGraphicsPipelineState(&graphicsDesc, IID_PPV_ARGS(&id3d12PipelineState)));
-
-		return makeUnique<D3D12Core::PipelineState>(id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::GRAPHICS, pipelineStateData);
+		return makeUnique<D3D12Core::GraphicsState>(std::move(inputElements), std::move(semanticNames), std::move(graphicsDesc), selectedRootSignature, pipelineStateData);
 	}
 
-	D3D12Core::PipelineStatePtr PipelineStateBuilder::build(D3D12Core::ShaderPtr cs)
+	D3D12Core::ComputeStatePtr PipelineStateBuilder::build(D3D12Core::ShaderPtr cs)
 	{
 		ComPtr<ID3D12ShaderReflection> reflection = cs->getReflection();
 
@@ -366,6 +344,6 @@ namespace Gear::Core
 
 		pipelineStateData.computeData.groupDimension = groupDimension;
 
-		return makeUnique<D3D12Core::ComputeState>(std::move(cs), id3d12PipelineState, selectedRootSignature, D3D12Core::PipelineState::PipelineStateType::COMPUTE, pipelineStateData);
+		return makeUnique<D3D12Core::ComputeState>(std::move(cs), id3d12PipelineState, selectedRootSignature, pipelineStateData);
 	}
 }

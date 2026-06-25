@@ -139,11 +139,11 @@ private:
 		float alpha_m = 0.147f;
 	}simulationParam;
 
-	PipelineStatePtr whiteNoiseState;
+	ComputeStatePtr whiteNoiseState;
 
-	PipelineStatePtr evolveState;
+	ComputeStatePtr evolveState;
 
-	PipelineStatePtr visualizeState;
+	ComputeStatePtr visualizeState;
 
 	SwapTexturePtr swapTexture;
 

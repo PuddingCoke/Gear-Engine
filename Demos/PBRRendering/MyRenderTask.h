@@ -32,9 +32,6 @@ public:
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLessEqual)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setRTVFormats({ FMT::RGBA16F })
-			.setDSVFormat(FMT::D32F)
 			.setVS(*GlobalShader::getTextureCubeVS())
 			.setPS(*skyboxPS)
 			.build();
@@ -90,8 +87,6 @@ public:
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setRTVFormats({ FMT::RGBA16F })
 			.build();
 
 		irradianceCube = ResourceManager::createGraphicsTexture(128, 128, FMT::RGBA16F, 6, 1, true, true);
@@ -104,8 +99,6 @@ public:
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setRTVFormats({ FMT::RGBA16F })
 			.build();
 
 		calcPrefilterCube();
@@ -233,17 +226,17 @@ private:
 
 	ShaderPtr skyboxPS;
 
-	PipelineStatePtr skyboxState;
+	GraphicsStatePtr skyboxState;
 
 	ShaderPtr irradiancePS;
 
-	PipelineStatePtr irradianceState;
+	GraphicsStatePtr irradianceState;
 
 	ShaderPtr prefilterVS;
 
 	ShaderPtr prefilterPS;
 
-	PipelineStatePtr prefilterState;
+	GraphicsStatePtr prefilterState;
 
 	//使用SV_RenderTargetIndex一次性绘制到六个面上分别需要六个对应的矩阵
 	ImmutableCBufferPtr viewProjMatrixBuffer;

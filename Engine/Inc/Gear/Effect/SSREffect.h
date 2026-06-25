@@ -33,11 +33,11 @@ namespace Gear::Effect
 
 		ShaderPtr hiZProcessPS;
 
-		PipelineStatePtr hiZCopyState;
+		ComputeStatePtr hiZCopyState;
 
-		PipelineStatePtr hiZCreateState;
+		ComputeStatePtr hiZCreateState;
 
-		PipelineStatePtr hiZProcessState;
+		GraphicsStatePtr hiZProcessState;
 
 		static constexpr uint32_t hiZMiplvel = 4u;
 

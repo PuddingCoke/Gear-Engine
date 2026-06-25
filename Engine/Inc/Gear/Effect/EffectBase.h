@@ -13,6 +13,8 @@
 
 #include<Gear/Core/PipelineStateHelper.h>
 
+#include<Gear/Core/TOPOLOGY.h>
+
 #include<ImGUI/imgui.h>
 
 namespace Gear::Effect

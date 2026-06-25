@@ -43,11 +43,11 @@ namespace Gear::Effect
 
 		ShaderPtr colorToColorLumaPS;
 
-		PipelineStatePtr colorToColorLumaState;
+		GraphicsStatePtr colorToColorLumaState;
 
 		ShaderPtr fxaaPS;
 
-		PipelineStatePtr fxaaState;
+		GraphicsStatePtr fxaaState;
 
 	};
 }

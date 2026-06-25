@@ -48,19 +48,17 @@ namespace Gear::Utils::Math
 	}
 
 	template<typename T>
+		requires std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
 	constexpr T ceil(const T a, const T b)
 	{
-		static_assert(std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>, "Math::ceil only support uint32_t and uint64_t");
-
 		return (a + b - static_cast<T>(1)) / b;
 	}
 
 	//a是否拥有b？
 	template<typename T>
+		requires std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
 	constexpr bool bitFlagSubset(const T a, const T b)
 	{
-		static_assert(std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>, "Math::bitFlagSubset only support uint32_t and uint64_t");
-
 		return b && ((a & b) == b);
 	}
 

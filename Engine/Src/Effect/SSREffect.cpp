@@ -27,8 +27,6 @@ namespace Gear::Effect
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setRTVFormats({ outputTextureFormat })
 			.setVS(*GlobalShader::getFullScreenVS())
 			.setPS(*hiZProcessPS)
 			.build();

@@ -77,9 +77,7 @@ namespace Gear::Effect
 					.setBlendState(PipelineStateHelper::blendReplace)
 					.setVS(*GlobalShader::getFullScreenVS())
 					.setRasterizerState(PipelineStateHelper::rasterCullNone)
-					.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-					.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-					.setRTVFormats({ FMT::RGBA16F });
+					.setDepthStencilState(PipelineStateHelper::depthCompareNone);
 			};
 
 		bloomFilterState = getDefaultBuilder().setPS(*bloomFilter).build();

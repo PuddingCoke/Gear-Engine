@@ -6,7 +6,7 @@ class Scene
 {
 public:
 
-	PipelineStatePtr pipelineState;
+	GraphicsStatePtr pipelineState;
 
 	ShaderPtr vertexShader;
 
@@ -37,11 +37,8 @@ public:
 
 		pipelineState = PipelineStateBuilder()
 			.setBlendState(PipelineStateHelper::blendReplace)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setRTVFormats({ rtvFormat })
-			.setDSVFormat(FMT::D32F)
 			.setVS(*vertexShader)
 			.setPS(*pixelShader)
 			.build();

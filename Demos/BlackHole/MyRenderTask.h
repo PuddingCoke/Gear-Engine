@@ -19,13 +19,11 @@ public:
 	{
 		pipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
-			.setRTVFormats({ originTexture->getRTVFormat() })
 			.setPS(*blackHoleShader)
 			.build();
 
 		colorGradingState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
-			.setRTVFormats({ FMT::RGBA16UN })
 			.setPS(*colorGradingShader)
 			.build();
 
@@ -114,11 +112,11 @@ protected:
 
 private:
 
-	PipelineStatePtr pipelineState;
+	GraphicsStatePtr pipelineState;
 
 	ShaderPtr blackHoleShader;
 
-	PipelineStatePtr colorGradingState;
+	GraphicsStatePtr colorGradingState;
 
 	ShaderPtr colorGradingShader;
 

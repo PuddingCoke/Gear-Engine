@@ -19,9 +19,9 @@ namespace Gear::Effect
 
 		fxaaPS = Shader::create(g_FXAABytes, sizeof(g_FXAABytes));
 
-		colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*colorToColorLumaPS).setRTVFormats({ FMT::RGBA16UN }).build();
+		colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*colorToColorLumaPS).build();
 
-		fxaaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*fxaaPS).setRTVFormats({ FMT::RGBA16UN }).build();
+		fxaaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*fxaaPS).build();
 
 		outputTexture->getTexture()->setName(L"FXAA Processed Texture");
 	}

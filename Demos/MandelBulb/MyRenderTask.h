@@ -17,7 +17,6 @@ public:
 		accumulateState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
 			.setBlendState(PipelineStateHelper::blendDefault)
-			.setRTVFormats({ accumulatedTexture->getRTVFormat() })
 			.setPS(*accumulateShader)
 			.build();
 
@@ -88,7 +87,7 @@ private:
 
 	RenderTextureViewPtr accumulatedTexture;
 
-	PipelineStatePtr accumulateState;
+	GraphicsStatePtr accumulateState;
 
 	struct CameraParam
 	{

@@ -26,11 +26,7 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 
 			ShaderPtr equirectangularPS;
 
-			PipelineStatePtr equirectangularR8State;
-
-			PipelineStatePtr equirectangularR16State;
-
-			PipelineStatePtr equirectangularR32State;
+			GraphicsStatePtr equirectangularState;
 
 			ImmutableCBufferPtr matricesBuffer;
 
@@ -42,23 +38,13 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 
 			equirectangularPS = Shader::create(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes));
 
-			{
-				auto getBuilder = [&] {
-					return PipelineStateBuilder()
-						.setVS(*equirectangularVS)
-						.setPS(*equirectangularPS)
-						.setRasterizerState(PipelineStateHelper::rasterCullNone)
-						.setBlendState(PipelineStateHelper::blendReplace)
-						.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-						.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE);
-					};
-
-				equirectangularR8State = getBuilder().setRTVFormats({ FMT::RGBA8UN }).build();
-
-				equirectangularR16State = getBuilder().setRTVFormats({ FMT::RGBA16F }).build();
-
-				equirectangularR32State = getBuilder().setRTVFormats({ FMT::RGBA32F }).build();
-			}
+			equirectangularState = PipelineStateBuilder()
+				.setVS(*equirectangularVS)
+				.setPS(*equirectangularPS)
+				.setRasterizerState(PipelineStateHelper::rasterCullNone)
+				.setBlendState(PipelineStateHelper::blendReplace)
+				.setDepthStencilState(PipelineStateHelper::depthCompareNone)
+				.build();
 
 			{
 				struct Matrices
@@ -110,20 +96,9 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 		{
 			GraphicsContext* const context = &contextRef;
 
-			switch (outputTexture.getTexture()->getFormat())
-			{
-			case FMT::RGBA8UN:
-				context->setPipelineState(*equirectangularR8State);
-				break;
-			case FMT::RGBA16F:
-				context->setPipelineState(*equirectangularR16State);
-				break;
-			case FMT::RGBA32F:
-				context->setPipelineState(*equirectangularR32State);
-				break;
-			}
+			context->setPipelineState(*equirectangularState);
 
-			context->setViewportSimple(outputTexture.getTexture()->getWidth(), outputTexture.getTexture()->getHeight());
+			context->setViewportSimple(outputTexture.get2Dimension());
 
 			context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
@@ -149,7 +124,7 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 		{
 			impl.reset();
 		}
-}
+	}
 
 	void process(GraphicsContext& contextRef, RenderTextureView& inputTexture, RenderTextureView& outputTexture)
 	{

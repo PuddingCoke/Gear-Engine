@@ -36,8 +36,6 @@ public:
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setRTVFormats({ FMT::RGBA16F })
 			.setVS(*GlobalShader::getTextureCubeVS())
 			.setPS(*textureCubePS)
 			.build();
@@ -46,8 +44,6 @@ public:
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setRTVFormats({ Graphics::backBufferFormat })
 			.setVS(*gridDebugVS)
 			.setPS(*gridDebugPS)
 			.build();
@@ -56,9 +52,6 @@ public:
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::PATCH)
-			.setRTVFormats({ FMT::RGBA16F })
-			.setDSVFormat(FMT::D32F)
 			.setVS(*oceanVS)
 			.setHS(*oceanHS)
 			.setDS(*oceanDS)
@@ -148,8 +141,6 @@ public:
 		tildeh0Texture->getTexture()->setName(L"tildeh0Texture");
 
 		depthTexture->getTexture()->setName(L"depthTexture");
-
-		oceanState->get()->SetName(L"oceanState");
 	}
 
 	~SceneRenderTask()
@@ -631,13 +622,13 @@ private:
 
 	ShaderPtr textureCubePS;
 
-	PipelineStatePtr textureCubeState;
+	GraphicsStatePtr textureCubeState;
 
 	ShaderPtr gridDebugVS;
 
 	ShaderPtr gridDebugPS;
 
-	PipelineStatePtr gridDebugState;
+	GraphicsStatePtr gridDebugState;
 
 	ShaderPtr oceanVS;
 
@@ -647,20 +638,20 @@ private:
 
 	ShaderPtr oceanPS;
 
-	PipelineStatePtr oceanState;
+	GraphicsStatePtr oceanState;
 
-	PipelineStatePtr spectrumState;
+	ComputeStatePtr spectrumState;
 
-	PipelineStatePtr conjugateState;
+	ComputeStatePtr conjugateState;
 
-	PipelineStatePtr displacementSpectrumState;
+	ComputeStatePtr displacementSpectrumState;
 
-	PipelineStatePtr ifftState;
+	ComputeStatePtr ifftState;
 
 	//sign correction
-	PipelineStatePtr permutationState;
+	ComputeStatePtr permutationState;
 
-	PipelineStatePtr waveMergeState;
+	ComputeStatePtr waveMergeState;
 
 	RenderTextureViewPtr enviromentCube;
 

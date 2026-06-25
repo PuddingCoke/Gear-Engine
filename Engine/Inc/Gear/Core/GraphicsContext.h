@@ -7,7 +7,9 @@
 
 #include<Gear/Core/D3D12Core/RootSignature.h>
 
-#include<Gear/Core/D3D12Core/PipelineState.h>
+#include<Gear/Core/D3D12Core/GraphicsState.h>
+
+#include<Gear/Core/D3D12Core/ComputeState.h>
 
 #include<Gear/Resource/BufferView.h>
 
@@ -83,21 +85,27 @@ namespace Gear::Core
 		void setCSConstants(const Resource::ShaderResourceDesc(&descs)[N], uint32_t& offset);
 
 		template<typename StructType>
+			requires std::is_class_v<StructType>
 		void setVSConstants(const StructType& structVal, uint32_t& offset) const;
 
 		template<typename StructType>
+			requires std::is_class_v<StructType>
 		void setHSConstants(const StructType& structVal, uint32_t& offset) const;
 
 		template<typename StructType>
+			requires std::is_class_v<StructType>
 		void setDSConstants(const StructType& structVal, uint32_t& offset) const;
 
 		template<typename StructType>
+			requires std::is_class_v<StructType>
 		void setGSConstants(const StructType& structVal, uint32_t& offset) const;
 
 		template<typename StructType>
+			requires std::is_class_v<StructType>
 		void setPSConstants(const StructType& structVal, uint32_t& offset) const;
 
 		template<typename StructType>
+			requires std::is_class_v<StructType>
 		void setCSConstants(const StructType& structVal, uint32_t& offset) const;
 
 		void constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const;
@@ -152,7 +160,9 @@ namespace Gear::Core
 
 		void setCSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
 
-		void setPipelineState(const D3D12Core::PipelineState& pipelineState);
+		void setPipelineState(D3D12Core::ComputeState& computeState);
+
+		void setPipelineState(D3D12Core::GraphicsState& graphicsState);
 
 		//以下的方法用于设置渲染目标
 
@@ -162,7 +172,7 @@ namespace Gear::Core
 		void setRenderTargets(const Resource::DepthStencilDesc& depthStencil);
 
 		//将后备缓冲设置为渲染目标
-		void setDefRenderTarget() const;
+		void setDefRenderTarget();
 
 		//清理后备缓冲
 		void clearDefRenderTarget(const float clearValue[4]) const;
@@ -288,6 +298,8 @@ namespace Gear::Core
 
 		void transitionResources();
 
+		void setPipelineState(ID3D12PipelineState* const pipelineState);
+
 		void setShaderResources(const std::vector<Resource::ShaderResourceDesc>& descs, const uint32_t targetSRVState);
 
 		template<size_t N>
@@ -344,7 +356,7 @@ namespace Gear::Core
 		D3D12Core::CommandListPtr commandList;
 
 		//以下是内部追踪的状态，用于减少图形API的调用
-		const D3D12Core::PipelineState* currentPipelineState;
+		ID3D12PipelineState* currentPipelineState;
 
 		const Resource::ImmutableCBuffer* userGlobalCBuffer;
 
@@ -372,7 +384,22 @@ namespace Gear::Core
 
 		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> transientRTVHandles;
 
+		std::array<DXGI_FORMAT, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> transientRTVFormats;
+
+		uint32_t transientNumRTV;
+
+		DXGI_FORMAT transientDSVFormat;
+
+		bool switchGraphicsPipelineState;
+
 		std::array<D3D12_VERTEX_BUFFER_VIEW, D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT> transientVBViews;
+
+		union
+		{
+			D3D12Core::GraphicsState* graphicsState;
+
+			D3D12Core::ComputeState* computeState;
+		};
 
 	};
 
@@ -437,60 +464,54 @@ namespace Gear::Core
 	}
 
 	template<typename StructType>
+		requires std::is_class_v<StructType>
 	inline void GraphicsContext::setVSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
-
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
 		setVSConstants(numElements, &structVal, offset);
 	}
 
 	template<typename StructType>
+		requires std::is_class_v<StructType>
 	inline void GraphicsContext::setHSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
-
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
 		setHSConstants(numElements, &structVal, offset);
 	}
 
 	template<typename StructType>
+		requires std::is_class_v<StructType>
 	inline void GraphicsContext::setDSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
-
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
 		setDSConstants(numElements, &structVal, offset);
 	}
 
 	template<typename StructType>
+		requires std::is_class_v<StructType>
 	inline void GraphicsContext::setGSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
-
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
 		setGSConstants(numElements, &structVal, offset);
 	}
 
 	template<typename StructType>
+		requires std::is_class_v<StructType>
 	inline void GraphicsContext::setPSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
-
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
 		setPSConstants(numElements, &structVal, offset);
 	}
 
 	template<typename StructType>
+		requires std::is_class_v<StructType>
 	inline void GraphicsContext::setCSConstants(const StructType& structVal, uint32_t& offset) const
 	{
-		static_assert(std::is_class<StructType>::value, "structVal must be a struct/class type");
-
 		const uint32_t numElements = sizeof(StructType) / sizeof(uint32_t);
 
 		setCSConstants(numElements, &structVal, offset);
@@ -522,9 +543,15 @@ namespace Gear::Core
 		}
 #endif // _DEBUG
 
+		switchGraphicsPipelineState = true;
+
+		transientNumRTV = N;
+
 		for (uint32_t i = 0; i < N; i++)
 		{
 			transientRTVHandles[i] = renderTargets[i].rtvHandle;
+
+			transientRTVFormats[i] = renderTargets[i].rtvFormat;
 
 			setResourceState(renderTargets[i]);
 		}
@@ -535,10 +562,14 @@ namespace Gear::Core
 
 			depthStencilClearDesc.setHandle(depthStencil.dsvHandle);
 
+			transientDSVFormat = depthStencil.dsvFormat;
+
 			commandList->setRenderTargets(static_cast<uint32_t>(N), transientRTVHandles.data(), FALSE, &(depthStencil.dsvHandle));
 		}
 		else
 		{
+			transientDSVFormat = FMT::UNKNOWN;
+
 			commandList->setRenderTargets(static_cast<uint32_t>(N), transientRTVHandles.data(), FALSE, nullptr);
 		}
 	}

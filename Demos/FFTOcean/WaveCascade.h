@@ -141,17 +141,17 @@ public:
 		context->dispatchDim(size, size, 1);
 	}
 
-	static PipelineState* spectrumState;
+	static ComputeState* spectrumState;
 
-	static PipelineState* conjugateState;
+	static ComputeState* conjugateState;
 
-	static PipelineState* displacementSpectrumState;
+	static ComputeState* displacementSpectrumState;
 
-	static PipelineState* ifftState;
+	static ComputeState* ifftState;
 
-	static PipelineState* permutationState;
+	static ComputeState* permutationState;
 
-	static PipelineState* waveMergeState;
+	static ComputeState* waveMergeState;
 
 	static RenderTextureView* tempTexture;
 
@@ -203,17 +203,17 @@ private:
 
 };
 
-PipelineState* WaveCascade::spectrumState = nullptr;
+ComputeState* WaveCascade::spectrumState = nullptr;
 
-PipelineState* WaveCascade::conjugateState = nullptr;
+ComputeState* WaveCascade::conjugateState = nullptr;
 
-PipelineState* WaveCascade::displacementSpectrumState = nullptr;
+ComputeState* WaveCascade::displacementSpectrumState = nullptr;
 
-PipelineState* WaveCascade::ifftState = nullptr;
+ComputeState* WaveCascade::ifftState = nullptr;
 
-PipelineState* WaveCascade::permutationState = nullptr;
+ComputeState* WaveCascade::permutationState = nullptr;
 
-PipelineState* WaveCascade::waveMergeState = nullptr;
+ComputeState* WaveCascade::waveMergeState = nullptr;
 
 RenderTextureView* WaveCascade::tempTexture = nullptr;
 

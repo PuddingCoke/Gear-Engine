@@ -141,6 +141,7 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ComputeState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DescriptorHandle.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DXCCompiler.h" />
+    <ClInclude Include="Inc\Gear\Core\D3D12Core\GraphicsState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\Internal\DXCCompilerInternal.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\PipelineState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
@@ -254,6 +255,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Src\Core\D3D12Core\GraphicsState.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp" />
     <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp" />
     <ClCompile Include="Src\Core\RenderThreadGlobal.cpp" />

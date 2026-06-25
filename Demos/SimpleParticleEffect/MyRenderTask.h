@@ -26,9 +26,6 @@ public:
 			.setBlendState(PipelineStateHelper::blendAddtive)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::POINT)
-			.setRTVFormats({ FMT::RGBA16F })
-			.setDSVFormat(FMT::D32F)
 			.setVS(*particleVS)
 			.setGS(*particleGS)
 			.setPS(*particlePS)
@@ -160,9 +157,9 @@ private:
 
 	FXAAEffectPtr fxaaEffect;
 
-	PipelineStatePtr particleComputeState;
+	ComputeStatePtr particleComputeState;
 
-	PipelineStatePtr particleRenderState;
+	GraphicsStatePtr particleRenderState;
 
 	ShaderPtr particleVS;
 

@@ -52,49 +52,36 @@ public:
 
 		shadowPipelineState = PipelineStateBuilder()
 			.setBlendState(PipelineStateHelper::blendReplace)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterShadow)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setRTVFormats()
-			.setDSVFormat(FMT::D32F)
 			.setVS(*shadowVS)
 			.build();
 
 		deferredPipelineState = PipelineStateBuilder()
 			.setBlendState(PipelineStateHelper::blendReplace)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setRTVFormats({ FMT::RGBA32F,FMT::RGBA32F,FMT::RGBA8UN })
-			.setDSVFormat(FMT::D32F)
 			.setVS(*deferredVShader)
 			.setPS(*deferredPShader)
 			.build();
 
 		deferredFinalPipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
-			.setRTVFormats({ FMT::RGBA16F })
 			.setPS(*deferredFinal)
 			.build();
 
 		probeCapturePipelineState = PipelineStateBuilder()
 			.setBlendState(PipelineStateHelper::blendReplace)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setRTVFormats({ FMT::RGBA16F,FMT::R32F })
-			.setDSVFormat(FMT::D32F)
 			.setVS(*cubeRenderVS)
 			.setPS(*cubeRenderPS)
 			.build();
 
 		probeCaptureBouncePipelineState = PipelineStateBuilder()
 			.setBlendState(PipelineStateHelper::blendReplace)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setRTVFormats({ FMT::RGBA16F })
-			.setDSVFormat(FMT::D32F)
 			.setVS(*cubeRenderVS)
 			.setPS(*cubeRenderBouncePS)
 			.build();
@@ -103,9 +90,6 @@ public:
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)
 			.setDepthStencilState(PipelineStateHelper::depthCompareLessEqual)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setRTVFormats({ FMT::RGBA16F })
-			.setDSVFormat(FMT::D32F)
 			.setVS(*GlobalShader::getTextureCubeVS())
 			.setPS(*skyboxPShader)
 			.build();
@@ -114,8 +98,6 @@ public:
 			.setBlendState(PipelineStateHelper::blendReplace)
 			.setRasterizerState(PipelineStateHelper::rasterCullNone)
 			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setPrimitiveTopologyType(TOPOLOGY::TYPE::TRIANGLE)
-			.setRTVFormats({ FMT::RGBA16F })
 			.setVS(*GlobalShader::getFullScreenVS())
 			.setPS(*ssrCombinePS)
 			.build();
@@ -575,23 +557,23 @@ protected:
 
 	RenderTextureViewPtr skybox;
 
-	PipelineStatePtr shadowPipelineState;
+	GraphicsStatePtr shadowPipelineState;
 
-	PipelineStatePtr deferredPipelineState;
+	GraphicsStatePtr deferredPipelineState;
 
-	PipelineStatePtr deferredFinalPipelineState;
+	GraphicsStatePtr deferredFinalPipelineState;
 
-	PipelineStatePtr probeCapturePipelineState;
+	GraphicsStatePtr probeCapturePipelineState;
 
-	PipelineStatePtr probeCaptureBouncePipelineState;
+	GraphicsStatePtr probeCaptureBouncePipelineState;
 
-	PipelineStatePtr irradianceOctahedralEncodeState;
+	ComputeStatePtr irradianceOctahedralEncodeState;
 
-	PipelineStatePtr depthOctahedralEncodeState;
+	ComputeStatePtr depthOctahedralEncodeState;
 
-	PipelineStatePtr skyboxState;
+	GraphicsStatePtr skyboxState;
 
-	PipelineStatePtr ssrCombineState;
+	GraphicsStatePtr ssrCombineState;
 
 	ShaderPtr shadowVS;
 

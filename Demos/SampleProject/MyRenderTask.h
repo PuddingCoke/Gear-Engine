@@ -14,7 +14,6 @@ public:
 
 		pipelineState = PipelineStateBuilder()
 			.setDefaultFullScreenState()
-			.setRTVFormats({ Graphics::backBufferFormat })
 			.setPS(*pixelShader)
 			.build();
 	}
@@ -40,7 +39,7 @@ protected:
 
 private:
 
-	PipelineStatePtr pipelineState;
+	GraphicsStatePtr pipelineState;
 
 	ShaderPtr pixelShader;
 

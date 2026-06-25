@@ -20,7 +20,7 @@ namespace Gear::Effect::GammaCorrectEffect
 
 		private:
 
-			PipelineStatePtr gammaCorrectState;
+			ComputeStatePtr gammaCorrectState;
 
 			RenderTextureViewPtr outputTexture;
 

@@ -3,13 +3,11 @@
 #ifndef _GEAR_CORE_PIPELINESTATEBUILDER_H_
 #define _GEAR_CORE_PIPELINESTATEBUILDER_H_
 
-#include<Gear/Core/D3D12Core/PipelineState.h>
+#include<Gear/Core/D3D12Core/GraphicsState.h>
+
+#include<Gear/Core/D3D12Core/ComputeState.h>
 
 #include<Gear/Core/D3D12Core/Shader.h>
-
-#include"FMT.h"
-
-#include"TOPOLOGY.h"
 
 namespace Gear::Core
 {
@@ -56,16 +54,7 @@ namespace Gear::Core
 		PipelineStateBuilder& setPS(const D3D12Core::Shader& ps);
 
 		template<size_t N>
-		PipelineStateBuilder& setRTVFormats(const DXGI_FORMAT(&rtvFormats)[N]);
-
-		PipelineStateBuilder& setRTVFormats();
-
-		PipelineStateBuilder& setDSVFormat(const DXGI_FORMAT format);
-
-		template<size_t N>
 		PipelineStateBuilder& setInputElements(const InputElementDesc(&descs)[N]);
-
-		PipelineStateBuilder& setPrimitiveTopologyType(const D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopologyType);
 
 		PipelineStateBuilder& setBlendState(const D3D12_BLEND_DESC& desc);
 
@@ -75,10 +64,10 @@ namespace Gear::Core
 
 		PipelineStateBuilder& setDefaultFullScreenState();
 
-		D3D12Core::PipelineStatePtr build();
+		D3D12Core::GraphicsStatePtr build();
 
 		//用于计算管线状态
-		static D3D12Core::PipelineStatePtr build(D3D12Core::ShaderPtr cs);
+		static D3D12Core::ComputeStatePtr build(D3D12Core::ShaderPtr cs);
 
 	private:
 
@@ -89,16 +78,6 @@ namespace Gear::Core
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsDesc;
 
 	};
-
-	template<size_t N>
-	inline PipelineStateBuilder& PipelineStateBuilder::setRTVFormats(const DXGI_FORMAT(&rtvFormats)[N])
-	{
-		memcpy(graphicsDesc.RTVFormats, rtvFormats, sizeof(DXGI_FORMAT) * N);
-
-		graphicsDesc.NumRenderTargets = N;
-
-		return *this;
-	}
 
 	template<size_t N>
 	inline PipelineStateBuilder& PipelineStateBuilder::setInputElements(const InputElementDesc(&descs)[N])

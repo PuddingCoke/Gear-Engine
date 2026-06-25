@@ -15,11 +15,13 @@ namespace Gear::Core::D3D12Core
 	{
 	public:
 
-		ComputeState(ShaderPtr computeShader, const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateType pipelineStateType, const PipelineStateData pipelineStateData);
+		ComputeState(ShaderPtr computeShader, const ComPtr<ID3D12PipelineState>& pipelineState, const RootSignature* const rootSignature, const PipelineStateData pipelineStateData);
 
 	private:
 
 		ShaderPtr computeShader;
+
+		ComPtr<ID3D12PipelineState> pipelineState;
 
 	};
 }

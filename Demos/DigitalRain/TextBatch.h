@@ -22,7 +22,7 @@ private:
 
 	ShaderPtr spritePS;
 
-	PipelineStatePtr spriteState;
+	GraphicsStatePtr spriteState;
 
 	RenderTextureViewPtr fontTexture;
 

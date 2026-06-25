@@ -43,25 +43,25 @@ namespace Gear::Effect
 
 		ShaderPtr bloomFilter;
 
-		PipelineStatePtr bloomFilterState;
+		GraphicsStatePtr bloomFilterState;
 
-		PipelineStatePtr bloomHBlurState;
+		ComputeStatePtr bloomHBlurState;
 
-		PipelineStatePtr bloomVBlurState;
+		ComputeStatePtr bloomVBlurState;
 
 		ShaderPtr bloomFinal;
 
-		PipelineStatePtr bloomFinalState;
+		GraphicsStatePtr bloomFinalState;
 
 		ShaderPtr bloomDownSample;
 
-		PipelineStatePtr bloomDownSampleState;
+		GraphicsStatePtr bloomDownSampleState;
 
 		ShaderPtr bloomKarisAverage;
 
-		PipelineStatePtr bloomKarisAverageState;
+		GraphicsStatePtr bloomKarisAverageState;
 
-		PipelineStatePtr bloomUpSampleState;
+		GraphicsStatePtr bloomUpSampleState;
 
 		RenderTextureViewPtr lensDirtTexture;
 

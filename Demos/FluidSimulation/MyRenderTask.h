@@ -407,32 +407,32 @@ private:
 
 	Timer colorUpdateTimer;
 
-	PipelineStatePtr splatVelocityState;
+	ComputeStatePtr splatVelocityState;
 
-	PipelineStatePtr splatColorState;
+	ComputeStatePtr splatColorState;
 
-	PipelineStatePtr vorticityState;
+	ComputeStatePtr vorticityState;
 
-	PipelineStatePtr vorticityConfinementState;
+	ComputeStatePtr vorticityConfinementState;
 
-	PipelineStatePtr divergenceState;
+	ComputeStatePtr divergenceState;
 
-	PipelineStatePtr pressureResetState;
+	ComputeStatePtr pressureResetState;
 
-	PipelineStatePtr pressureState;
+	ComputeStatePtr pressureState;
 
-	PipelineStatePtr gradientSubtractState;
+	ComputeStatePtr gradientSubtractState;
 
-	PipelineStatePtr velocityAdvectionState;
+	ComputeStatePtr velocityAdvectionState;
 
-	PipelineStatePtr colorAdvectionState;
+	ComputeStatePtr colorAdvectionState;
 
-	PipelineStatePtr velocityBoundaryState;
+	ComputeStatePtr velocityBoundaryState;
 
-	PipelineStatePtr pressureBoundaryState;
+	ComputeStatePtr pressureBoundaryState;
 
-	PipelineStatePtr phongShadeState;
+	ComputeStatePtr phongShadeState;
 
-	PipelineStatePtr edgeHighlightState;
+	ComputeStatePtr edgeHighlightState;
 
 };
