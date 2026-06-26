@@ -1,14 +1,10 @@
 ﻿#include<Gear/Gear.h>
 
-#include<iostream>
-
 #include"MyGame.h"
-
-using namespace Gear;
 
 int wmain(int argc, const wchar_t* argv[])
 {
-	const InitializationParam param = InitializationParam::RealTime(520, 560, L"TODO APP");
+	const InitializationParam param = InitializationParam::RealTime(600, 700, L"TODO APP");
 
 	try
 	{

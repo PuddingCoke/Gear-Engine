@@ -43,6 +43,8 @@
 
 #include<Gear/Utils/File.h>
 
+#include<Gear/Utils/String.h>
+
 #include<Gear/Utils/Timer.h>
 
 #include<Gear/Utils/Color.h>

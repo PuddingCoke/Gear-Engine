@@ -1,10 +1,6 @@
 ﻿#include<Gear/Gear.h>
 
-#include<iostream>
-
 #include"MyGame.h"
-
-using namespace Gear;
 
 int wmain(int argc, const wchar_t* argv[])
 {
