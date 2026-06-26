@@ -15,11 +15,9 @@
 
 #include<Gear/Resource/DefaultCBuffer.h>
 
-#include<Gear/Resource/ImmutableIndexCBuffer.h>
-
-#include<Gear/Resource/DefaultIndexCBuffer.h>
-
 #include<Gear/Utils/StaticVector.h>
+
+#include<Gear/Core/FMT.h>
 
 #include<type_traits>
 
@@ -135,30 +133,6 @@ namespace Gear::Core
 		void setPSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
 		void setCSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-		void setVSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer);
-
-		void setHSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer);
-
-		void setDSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer);
-
-		void setGSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer);
-
-		void setPSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer);
-
-		void setCSConstantBuffer(const Resource::ImmutableIndexCBuffer& immutableIndexCBuffer);
-
-		void setVSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
-
-		void setHSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
-
-		void setDSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
-
-		void setGSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
-
-		void setPSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
-
-		void setCSConstantBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer);
 
 		void setPipelineState(D3D12Core::ComputeState& computeState);
 
@@ -304,8 +278,6 @@ namespace Gear::Core
 
 		template<size_t N>
 		void setShaderResources(const Resource::ShaderResourceDesc(&descs)[N], const uint32_t targetSRVState);
-
-		void updateBuffer(Resource::DefaultIndexCBuffer& defaultIndexCBuffer) const;
 
 		//从提供的ShaderResourceDesc提取索引
 		template<size_t N>

@@ -5,6 +5,8 @@
 
 #include<Gear/Core/GraphicsContext.h>
 
+#include<Gear/Core/FMT.h>
+
 #include<Gear/Resource/SwapTexture.h>
 
 #include<Gear/Resource/SwapBuffer.h>
@@ -20,8 +22,6 @@
 #include<Gear/Resource/RenderTextureView.h>
 
 #include<Gear/Resource/DepthTextureView.h>
-
-#include<Gear/Resource/ImmutableIndexCBuffer.h>
 
 namespace Gear::Core
 {
@@ -124,12 +124,6 @@ namespace Gear::Core
 
 		static Resource::SwapTexturePtr createSwapTexture(const std::function<Resource::RenderTextureViewPtr(void)>& textureFunc);
 
-		template<size_t N>
-		Resource::ImmutableIndexCBufferPtr createImmutableIndexCBuffer(const Resource::ResourceDescPair(&pairs)[N]);
-
-		template<size_t N>
-		Resource::DefaultIndexCBufferPtr createDefaultIndexCBuffer(const Resource::ResourceDescPair(&pairs)[N]);
-
 	protected:
 
 		//处理高级任务，比如从等距柱状图创建立方体贴图
@@ -146,60 +140,6 @@ namespace Gear::Core
 		UniquePtr<std::vector<UniquePtr<Resource::ResourceBase>>[]> resources;
 
 	};
-
-	template<size_t N>
-	inline Resource::ImmutableIndexCBufferPtr ResourceManager::createImmutableIndexCBuffer(const Resource::ResourceDescPair(&pairs)[N])
-	{
-#ifdef _DEBUG
-		for (uint32_t i = 0; i < N; i++)
-		{
-			if (!(pairs[i].first->getPersistent()))
-			{
-				LOGERROR(L"侦测到传入的资源中有非持久性资源，无法为非持久性资源创建不可变索引常量缓冲");
-			}
-		}
-#endif // _DEBUG
-
-		const uint64_t byteSize = Resource::getCBufferByteSizeFromPairs(pairs);
-
-		const uint64_t numElement = byteSize / sizeof(uint32_t);
-
-		std::vector<uint32_t> resourceIndices = std::vector<uint32_t>(numElement);
-
-		for (uint32_t i = 0; i < N; i++)
-		{
-			resourceIndices[i] = *pairs[i].second.resourceIndex;
-		}
-
-		D3D12Resource::BufferPtr buffer = createBuffer(resourceIndices.data(), byteSize, D3D12_RESOURCE_FLAG_NONE);
-
-		commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-
-		commandList->flushResourceBarriers();
-
-		buffer->setStateTracking(false);
-
-		return makeUnique<Resource::ImmutableIndexCBuffer>(pairs, std::move(buffer));
-	}
-
-	template<size_t N>
-	inline Resource::DefaultIndexCBufferPtr ResourceManager::createDefaultIndexCBuffer(const Resource::ResourceDescPair(&pairs)[N])
-	{
-		const uint64_t byteSize = Resource::getCBufferByteSizeFromPairs(pairs);
-
-		const uint64_t numElement = byteSize / sizeof(uint32_t);
-
-		std::vector<uint32_t> resourceIndices = std::vector<uint32_t>(numElement);
-
-		for (uint32_t i = 0; i < N; i++)
-		{
-			resourceIndices[i] = *pairs[i].second.resourceIndex;
-		}
-
-		D3D12Resource::BufferPtr buffer = createBuffer(resourceIndices.data(), byteSize, D3D12_RESOURCE_FLAG_NONE);
-
-		return makeUnique<Resource::DefaultIndexCBuffer>(pairs, std::move(buffer));
-	}
 }
 
 #endif // !_GEAR_CORE_RESOURCEMANAGER_H_

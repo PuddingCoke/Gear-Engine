@@ -146,7 +146,6 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\PipelineState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h" />
-    <ClInclude Include="Inc\Gear\Resource\DefaultIndexCBuffer.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadGlobalInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadLocalInternal.h" />
     <ClInclude Include="Inc\Gear\Core\RenderThreadGlobal.h" />
@@ -171,8 +170,6 @@
     <ClInclude Include="Inc\Gear\Core\PipelineStateBuilder.h" />
     <ClInclude Include="Inc\Gear\Core\RenderTask.h" />
     <ClInclude Include="Inc\Gear\Core\RenderThread.h" />
-    <ClInclude Include="Inc\Gear\Resource\ImmutableIndexCBuffer.h" />
-    <ClInclude Include="Inc\Gear\Resource\DefaultIndexCBufferBase.h" />
     <ClInclude Include="Inc\Gear\Resource\PipelineResourceDesc.h" />
     <ClInclude Include="Inc\Gear\Resource\DynamicCBuffer.h" />
     <ClInclude Include="Inc\Gear\Resource\DefaultCBuffer.h" />
@@ -272,7 +269,6 @@
     <ClCompile Include="Src\Core\D3D12Core\PipelineState.cpp" />
     <ClCompile Include="Src\Core\GlobalShader.cpp" />
     <ClCompile Include="Src\Core\PipelineStateBuilder.cpp" />
-    <ClCompile Include="Src\Resource\DefaultIndexCBuffer.cpp" />
     <ClCompile Include="Src\Resource\DynamicCBuffer.cpp" />
     <ClCompile Include="Src\Resource\DefaultCBuffer.cpp" />
     <ClCompile Include="Src\Effect\BackBufferBlitEffect.cpp" />
@@ -292,8 +288,6 @@
     <ClCompile Include="Src\Core\RenderTask.cpp" />
     <ClCompile Include="Src\Effect\HDRClampEffect.cpp" />
     <ClCompile Include="Src\Core\LocalDescriptorHeap.cpp" />
-    <ClCompile Include="Src\Resource\ImmutableIndexCBuffer.cpp" />
-    <ClCompile Include="Src\Resource\DefaultIndexCBufferBase.cpp" />
     <ClCompile Include="Src\Utils\DeltaTimeEstimator.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\DescriptorHeap.cpp" />
     <ClCompile Include="Src\Core\D3D12Resource\ReadbackHeap.cpp" />
