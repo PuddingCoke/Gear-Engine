@@ -8,6 +8,8 @@
 
 #include<Gear/Utils/Random.h>
 
+#include<Gear/Utils/File.h>
+
 #include<Gear/Core/D3D12Core/CommonShaderLayout.h>
 
 #include<Gear/Core/Internal/GraphicsInternal.h>
@@ -44,7 +46,7 @@ namespace Gear::Core::RenderEngine
 	{
 		struct ImGuiToken
 		{
-			ImGuiToken(const HWND hWnd)
+			ImGuiToken(const HWND hWnd, ImFont** mediumFont, ImFont** largeFont)
 			{
 				IMGUI_CHECKVERSION();
 				ImGui::CreateContext();
@@ -58,6 +60,32 @@ namespace Gear::Core::RenderEngine
 				ImGui_ImplWin32_Init(hWnd);
 				ImGui_ImplDX12_Init(GraphicsDevice::get(), Graphics::getFrameBufferCount(), Graphics::backBufferFormat,
 					GlobalDescriptorHeap::getResourceHeap()->get(), handle.getCurrentCPUHandle(), handle.getCurrentGPUHandle());
+
+				//显示输入法的待选框
+				ImGui::GetMainViewport()->PlatformHandleRaw = (void*)hWnd;
+
+				ImFontGlyphRangesBuilder builder;
+
+				//加载常用汉字，GetGlyphRangesChineseSimplifiedCommon提供的汉字完全不够
+				std::vector<uint8_t> chineseCharacters = Utils::File::readAllBinary(Utils::File::getRootFolder() + L"7000+symbols.txt");
+
+				chineseCharacters.push_back('\0');
+
+				builder.AddText(reinterpret_cast<const char*>(chineseCharacters.data()));
+
+				//加载常用字符
+				builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
+
+				ImVector<ImWchar> ranges;
+
+				builder.BuildRanges(&ranges);
+
+				//加载微软雅黑字体
+				*mediumFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 18.f, nullptr, ranges.Data);
+
+				*largeFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 24.f, nullptr, ranges.Data);
+
+				io.FontDefault = *mediumFont;
 
 				io.Fonts->GetTexDataAsRGBA32(nullptr, nullptr, nullptr);
 			}
@@ -111,8 +139,6 @@ namespace Gear::Core::RenderEngine
 
 			ID3D12CommandQueue* getCommandQueue() const;
 
-			bool getDisplayImGuiSurface() const;
-
 			void waitForCurrentFrame();
 
 			void waitForNextFrame();
@@ -135,6 +161,16 @@ namespace Gear::Core::RenderEngine
 
 			void saveBackBuffer(D3D12Resource::ReadbackHeap* const readbackHeap);
 
+			bool getDisplayImGuiSurface() const;
+
+			void toggleImGuiSurface();
+
+			void toggleEngineImGuiSurface();
+
+			ImFont* getMediumFont() const;
+
+			ImFont* getLargeFont() const;
+
 		private:
 
 			ComPtr<IDXGIAdapter4> getBestAdapterAndVendor(IDXGIFactory7* const factory);
@@ -142,8 +178,6 @@ namespace Gear::Core::RenderEngine
 			void processCommandLists();
 
 			void updateDynamicCBuffers() const;
-
-			void toggleImGuiSurface();
 
 			void beginImGuiFrame() const;
 
@@ -177,6 +211,8 @@ namespace Gear::Core::RenderEngine
 
 			bool displayImGuiSurface;
 
+			bool displayEngineImGuiSurface;
+
 			AdapterVendor vendor;
 
 			std::vector<D3D12Core::CommandList*> recordCommandLists;
@@ -186,6 +222,10 @@ namespace Gear::Core::RenderEngine
 			HANDLE fenceEvent;
 
 			UniquePtr<ImGuiToken> imGuiToken;
+
+			ImFont* mediumFont;
+
+			ImFont* largeFont;
 
 			//引用
 			D3D12Resource::Texture* renderTexture;
@@ -205,6 +245,7 @@ namespace Gear::Core::RenderEngine
 			vendor(AdapterVendor::UNKNOWN),
 			initializeImGuiSurface(initializeImGuiSurface),
 			displayImGuiSurface(false),
+			displayEngineImGuiSurface(true),
 			syncInterval(1),
 			resManager(nullptr),
 			perframeResource{}
@@ -352,7 +393,7 @@ namespace Gear::Core::RenderEngine
 			{
 				LOGENGINE(LogColor::brightGreen, L"开启", LogColor::brightMagenta, L"ImGui");
 
-				imGuiToken = makeUnique<ImGuiToken>(hWnd);
+				imGuiToken = makeUnique<ImGuiToken>(hWnd, &mediumFont, &largeFont);
 			}
 			else
 			{
@@ -425,11 +466,6 @@ namespace Gear::Core::RenderEngine
 			return commandQueue.Get();
 		}
 
-		bool RenderEngineImpl::getDisplayImGuiSurface() const
-		{
-			return displayImGuiSurface;
-		}
-
 		void RenderEngineImpl::waitForCurrentFrame()
 		{
 			commandQueue->Signal(fence.Get(), fenceValues[Graphics::getFrameIndex()]);
@@ -467,7 +503,7 @@ namespace Gear::Core::RenderEngine
 
 			recordCommandLists.push_back(prepareCommandList.get());
 
-			//先获取可用的位置，供这一帧的RenderTask使用
+			//先获取可用的位置，供GraphicsContext在这一帧使用
 			engineGlobalCBuffer->acquireDataPtr();
 
 			//把后备缓冲转变到STATE_RENDER_TARGET，并暂存资源屏障
@@ -478,7 +514,7 @@ namespace Gear::Core::RenderEngine
 
 		void RenderEngineImpl::endFrame()
 		{
-			if (displayImGuiSurface)
+			if (displayImGuiSurface && displayEngineImGuiSurface)
 			{
 				ImGui::Begin("Frame Profile");
 				ImGui::Text("TimeElapsed %.2f", Graphics::getTimeElapsed());
@@ -633,6 +669,34 @@ namespace Gear::Core::RenderEngine
 			id3d12LastCommandList->CopyTextureRegion(&copyDest, 0, 0, 0, &copySrc, nullptr);
 		}
 
+		bool RenderEngineImpl::getDisplayImGuiSurface() const
+		{
+			return displayImGuiSurface;
+		}
+
+		void RenderEngineImpl::toggleImGuiSurface()
+		{
+			if (initializeImGuiSurface)
+			{
+				displayImGuiSurface = !displayImGuiSurface;
+			}
+		}
+
+		void RenderEngineImpl::toggleEngineImGuiSurface()
+		{
+			displayEngineImGuiSurface = !displayEngineImGuiSurface;
+		}
+
+		ImFont* RenderEngineImpl::getMediumFont() const
+		{
+			return mediumFont;
+		}
+
+		ImFont* RenderEngineImpl::getLargeFont() const
+		{
+			return largeFont;
+		}
+
 		ComPtr<IDXGIAdapter4> RenderEngineImpl::getBestAdapterAndVendor(IDXGIFactory7* const factory)
 		{
 			ComPtr<IDXGIAdapter4> adapter;
@@ -719,14 +783,6 @@ namespace Gear::Core::RenderEngine
 		void RenderEngineImpl::updateDynamicCBuffers() const
 		{
 			DynamicCBufferManager::Internal::recordCommands(prepareCommandList.get());
-		}
-
-		void RenderEngineImpl::toggleImGuiSurface()
-		{
-			if (initializeImGuiSurface)
-			{
-				displayImGuiSurface = !displayImGuiSurface;
-			}
 		}
 
 		void RenderEngineImpl::beginImGuiFrame() const
@@ -846,5 +902,25 @@ namespace Gear::Core::RenderEngine
 	bool getDisplayImGuiSurface()
 	{
 		return Internal::impl->getDisplayImGuiSurface();
+	}
+
+	void toggleImGuiSurface()
+	{
+		Internal::impl->toggleImGuiSurface();
+	}
+
+	void toggleEngineImGuiSurface()
+	{
+		Internal::impl->toggleEngineImGuiSurface();
+	}
+
+	ImFont* getMediumFont()
+	{
+		return Internal::impl->getMediumFont();
+	}
+
+	ImFont* getLargeFont()
+	{
+		return Internal::impl->getLargeFont();
 	}
 }

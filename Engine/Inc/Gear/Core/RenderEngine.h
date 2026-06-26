@@ -5,6 +5,8 @@
 
 #include<Gear/Core/D3D12Core/CommandList.h>
 
+struct ImFont;
+
 namespace Gear::Core
 {
 	enum class AdapterVendor
@@ -26,6 +28,15 @@ namespace Gear::Core
 		ID3D12CommandQueue* getCommandQueue();
 
 		bool getDisplayImGuiSurface();
+
+		void toggleImGuiSurface();
+
+		void toggleEngineImGuiSurface();
+
+		ImFont* getMediumFont();
+
+		ImFont* getLargeFont();
+
 	}
 }
 

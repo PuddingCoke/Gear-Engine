@@ -1,1 +1,2 @@
-python TODOAPP/TODO.py
+cd TODOAPP
+start "" "../Build/TODOAPP/TODOAPP.exe"

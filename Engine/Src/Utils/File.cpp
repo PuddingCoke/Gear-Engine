@@ -103,7 +103,6 @@ namespace Gear::Utils::File
 
 		if (!file.is_open())
 		{
-			
 			LOGERROR(L"打开文件", filePath, L"失败！");
 		}
 

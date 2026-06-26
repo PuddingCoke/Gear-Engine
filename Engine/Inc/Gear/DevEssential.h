@@ -7,6 +7,8 @@
 
 #include<Gear/Core/PipelineStateBuilder.h>
 
+#include<Gear/Core/RenderEngine.h>
+
 #include<Gear/Core/Graphics.h>
 
 #include<Gear/Core/MainCamera.h>
