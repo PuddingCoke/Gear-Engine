@@ -68,21 +68,6 @@ namespace Gear::Utils::Logger
 		template<typename... Args>
 		LogMessage getLogMessage(const wchar_t* const functionName, const LogType& type, const Args&... args);
 
-		template<typename T>
-		struct isNativeString :std::false_type {};
-
-		template<size_t N>
-		struct isNativeString<const char[N]> : std::true_type {};
-
-		template<size_t N>
-		struct isNativeString<char[N]> : std::true_type {};
-
-		template<>
-		struct isNativeString<const char*> : std::true_type {};
-
-		template<>
-		struct isNativeString<char*> : std::true_type {};
-
 		template<typename First, typename... Rest>
 		void packRestArgument(const First& first, const Rest&... rest);
 
@@ -97,6 +82,12 @@ namespace Gear::Utils::Logger
 
 		//原生宽字符串
 		void packArgument(const wchar_t* arg);
+
+		//窄字符串
+		void packArgument(const std::string& arg);
+
+		//原生窄字符串
+		void packArgument(const char* arg);
 
 		//有符号32位整数
 		void packArgument(const int32_t& arg);
@@ -252,10 +243,6 @@ namespace Gear::Utils::Logger
 	template<typename First, typename ...Rest>
 	inline void LogContext::packRestArgument(const First& first, const Rest& ...rest)
 	{
-		static_assert(!std::is_same<std::string, First>::value, "error input type is std::string");
-
-		static_assert(!isNativeString<First>::value, "error input type is native string");
-
 		packArgument(first);
 
 		packRestArgument(rest...);

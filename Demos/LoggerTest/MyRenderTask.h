@@ -10,7 +10,9 @@ public:
 
 	MyRenderTask()
 	{
-		LOGUSER(L"日志测试", L"Log testing", L"Проверка журнала");
+		LOGUSER(L"宽字符串测试", L"日志测试", L"Log Testing", L"Проверка журнала");
+
+		LOGUSER("窄字符串测试", "日志测试", "Log Testing", "Проверка журнала");
 
 		LOGUSER(L"单线程测试");
 

@@ -8,6 +8,8 @@
 namespace Gear::Utils::String
 {
 	std::string wstringToString(const std::wstring& wstr);
+
+	std::wstring stringToWstring(const std::string& str);
 }
 
 #endif // !_GEAR_UTILS_STRING_H_

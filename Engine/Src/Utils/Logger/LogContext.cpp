@@ -1,5 +1,7 @@
 ﻿#include<Gear/Utils/Logger/LogContext.h>
 
+#include<Gear/Utils/String.h>
+
 namespace Gear::Utils::Logger
 {
 	LogContext::FloatPrecision::FloatPrecision(const int32_t precision) :
@@ -42,6 +44,24 @@ namespace Gear::Utils::Logger
 		setDisplayColor(textColor);
 
 		*messageStr += arg;
+
+		*messageStr += L" ";
+	}
+
+	void LogContext::packArgument(const std::string& arg)
+	{
+		setDisplayColor(textColor);
+
+		*messageStr += String::stringToWstring(arg);
+
+		*messageStr += L" ";
+	}
+
+	void LogContext::packArgument(const char* arg)
+	{
+		setDisplayColor(textColor);
+
+		*messageStr += String::stringToWstring(arg);
 
 		*messageStr += L" ";
 	}

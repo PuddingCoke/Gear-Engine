@@ -27,12 +27,8 @@ namespace Gear::Utils::Logger
 			LoggerImpl() :
 				isRunning(true)
 			{
-				//为了支持多语言
-				//首先设置locale为.UTF-8
-				//接着设置控制台输出代码页为CP_UTF8
+				//设置locale为.UTF-8用于多语言支持
 				std::locale::global(std::locale(".UTF-8"));
-
-				SetConsoleOutputCP(CP_UTF8);
 
 				file = std::wofstream(L"log.txt", std::ios_base::out | std::ios_base::trunc);
 
