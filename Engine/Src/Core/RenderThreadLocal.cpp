@@ -12,6 +12,8 @@ namespace Gear::Core::RenderThreadLocal
 {
 	namespace Internal
 	{
+		struct CoInitializeToken { CoInitializeToken() { CHECKERROR(CoInitializeEx(0, COINIT_MULTITHREADED)); } ~CoInitializeToken() { CoUninitialize(); } };
+
 		struct RenderThreadLocalImpl
 		{
 			//初始化COM组件，DirectXTex需要

@@ -42,6 +42,34 @@ namespace Gear::Core::RenderEngine
 {
 	namespace Internal
 	{
+		struct ImGuiToken
+		{
+			ImGuiToken(const HWND hWnd)
+			{
+				IMGUI_CHECKVERSION();
+				ImGui::CreateContext();
+				ImGuiIO& io = ImGui::GetIO();
+				(void)io;
+
+				ImGui::StyleColorsDark();
+
+				const D3D12Core::DescriptorHandle handle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(1);
+
+				ImGui_ImplWin32_Init(hWnd);
+				ImGui_ImplDX12_Init(GraphicsDevice::get(), Graphics::getFrameBufferCount(), Graphics::backBufferFormat,
+					GlobalDescriptorHeap::getResourceHeap()->get(), handle.getCurrentCPUHandle(), handle.getCurrentGPUHandle());
+
+				io.Fonts->GetTexDataAsRGBA32(nullptr, nullptr, nullptr);
+			}
+
+			~ImGuiToken()
+			{
+				ImGui_ImplDX12_Shutdown();
+				ImGui_ImplWin32_Shutdown();
+				ImGui::DestroyContext();
+			}
+		};
+
 		struct RenderResourceToken
 		{
 			RenderResourceToken(ResourceManager* const resManager) :
@@ -71,7 +99,7 @@ namespace Gear::Core::RenderEngine
 
 			void operator=(const RenderEngineImpl&) = delete;
 
-			RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface);
+			RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hWnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface);
 
 			~RenderEngineImpl();
 
@@ -157,6 +185,8 @@ namespace Gear::Core::RenderEngine
 
 			HANDLE fenceEvent;
 
+			UniquePtr<ImGuiToken> imGuiToken;
+
 			//引用
 			D3D12Resource::Texture* renderTexture;
 
@@ -170,7 +200,7 @@ namespace Gear::Core::RenderEngine
 
 		};
 
-		RenderEngineImpl::RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hwnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface) :
+		RenderEngineImpl::RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hWnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface) :
 			fenceEvent(CreateEvent(nullptr, FALSE, FALSE, nullptr)),
 			vendor(AdapterVendor::UNKNOWN),
 			initializeImGuiSurface(initializeImGuiSurface),
@@ -279,9 +309,9 @@ namespace Gear::Core::RenderEngine
 
 				ComPtr<IDXGISwapChain1> swapChain1;
 
-				factory->CreateSwapChainForHwnd(commandQueue.Get(), hwnd, &swapChainDesc, nullptr, nullptr, &swapChain1);
+				factory->CreateSwapChainForHwnd(commandQueue.Get(), hWnd, &swapChainDesc, nullptr, nullptr, &swapChain1);
 
-				factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
+				factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER);
 
 				swapChain1.As(&swapChain);
 			}
@@ -317,25 +347,12 @@ namespace Gear::Core::RenderEngine
 				}
 			}
 
-			//初始化ImGUI，如果有需要
+			//如果有需要，那么初始化ImGUI
 			if (initializeImGuiSurface)
 			{
 				LOGENGINE(LogColor::brightGreen, L"开启", LogColor::brightMagenta, L"ImGui");
 
-				IMGUI_CHECKVERSION();
-				ImGui::CreateContext();
-				ImGuiIO& io = ImGui::GetIO();
-				(void)io;
-
-				ImGui::StyleColorsDark();
-
-				const D3D12Core::DescriptorHandle handle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(1);
-
-				ImGui_ImplWin32_Init(hwnd);
-				ImGui_ImplDX12_Init(GraphicsDevice::get(), Graphics::getFrameBufferCount(), Graphics::backBufferFormat,
-					GlobalDescriptorHeap::getResourceHeap()->get(), handle.getCurrentCPUHandle(), handle.getCurrentGPUHandle());
-
-				io.Fonts->GetTexDataAsRGBA32(nullptr, nullptr, nullptr);
+				imGuiToken = makeUnique<ImGuiToken>(hWnd);
 			}
 			else
 			{
@@ -351,13 +368,6 @@ namespace Gear::Core::RenderEngine
 
 		RenderEngineImpl::~RenderEngineImpl()
 		{
-			if (initializeImGuiSurface)
-			{
-				ImGui_ImplDX12_Shutdown();
-				ImGui_ImplWin32_Shutdown();
-				ImGui::DestroyContext();
-			}
-
 			if (fenceEvent)
 			{
 				CloseHandle(fenceEvent);
