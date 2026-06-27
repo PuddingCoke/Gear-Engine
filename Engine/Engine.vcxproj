@@ -145,11 +145,13 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\Internal\DXCCompilerInternal.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\PipelineState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
+    <ClInclude Include="Inc\Gear\Core\D3D12Resource\VideoTexture.h" />
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadGlobalInternal.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadLocalInternal.h" />
     <ClInclude Include="Inc\Gear\Core\RenderThreadGlobal.h" />
     <ClInclude Include="Inc\Gear\Core\RenderThreadLocal.h" />
+    <ClInclude Include="Inc\Gear\Core\VideoEncoder\D3D12Encoder.h" />
     <ClInclude Include="Inc\Gear\Effect\FXAAEffect.h" />
     <ClInclude Include="Inc\Gear\Effect\HBAOPlusEffect.h" />
     <ClInclude Include="Inc\Gear\Effect\SSREffect.h" />
@@ -252,6 +254,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
+    <ClCompile Include="Src\Core\D3D12Resource\VideoTexture.cpp" />
     <ClCompile Include="Src\Resource\SwapBuffer.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\GraphicsState.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp" />

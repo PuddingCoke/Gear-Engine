@@ -7,6 +7,8 @@
 
 #include<Gear/Core/D3D12Resource/Texture.h>
 
+#include<Gear/Core/D3D12Resource/VideoTexture.h>
+
 namespace Gear::Core::D3D12Core
 {
 	class ResourceStateTracker
@@ -18,6 +20,9 @@ namespace Gear::Core::D3D12Core
 
 		//追踪并设置资源状态
 		void trackAndSetResourceState(D3D12Resource::Buffer* const buffer, const uint32_t state);
+
+		//追踪并设置资源状态
+		void trackAndSetResourceState(D3D12Resource::VideoTexture* const videoTexture, const uint32_t state);
 
 		//清空BEFORE STATE待定的资源
 		void flushPendingResources(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers);

@@ -29,6 +29,16 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
+	void ResourceStateTracker::trackAndSetResourceState(D3D12Resource::VideoTexture* const videoTexture, const uint32_t state)
+	{
+		if (videoTexture->getStateTracking())
+		{
+			pushResourceToTrackList(videoTexture);
+
+			videoTexture->setState(state);
+		}
+	}
+
 	void ResourceStateTracker::flushPendingResources(std::vector<D3D12_RESOURCE_BARRIER>& outBarriers)
 	{
 		if (pendingResources.size())

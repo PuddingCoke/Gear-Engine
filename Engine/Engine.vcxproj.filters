@@ -531,6 +531,12 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\GraphicsState.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\VideoEncoder\D3D12Encoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\D3D12Resource\VideoTexture.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -780,6 +786,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Resource\SwapBuffer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\D3D12Resource\VideoTexture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

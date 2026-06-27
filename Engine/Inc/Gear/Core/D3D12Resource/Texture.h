@@ -57,10 +57,6 @@ namespace Gear::Core::D3D12Resource
 
 		void setMipSliceState(const uint32_t mipSlice, const uint32_t state);
 
-		uint32_t getAllState() const;
-
-		uint32_t getMipSliceState(const uint32_t mipSlice) const;
-
 	private:
 
 		uint32_t width;

@@ -554,16 +554,6 @@ namespace Gear::Core::D3D12Resource
 		}
 	}
 
-	uint32_t Texture::getAllState() const
-	{
-		return internalState->allState;
-	}
-
-	uint32_t Texture::getMipSliceState(const uint32_t mipSlice) const
-	{
-		return internalState->mipLevelStates[mipSlice];
-	}
-
 	Texture::States::States(const uint32_t initialState, const uint32_t mipLevels) :
 		mipLevels(mipLevels), mipLevelStates(makeUnique<uint32_t[]>(mipLevels))
 	{
