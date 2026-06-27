@@ -223,18 +223,31 @@ private:
 		{
 			size_t removeIndex = SIZE_MAX;
 
-			for (size_t i = 0; i < taskManager.size(); i++)
+			if (ImGui::BeginTable("##TaskTable", 2,
+				ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_NoPadInnerX))
 			{
-				ImGui::PushID(static_cast<int>(i));
+				ImGui::TableSetupColumn("##Text", ImGuiTableColumnFlags_WidthStretch);
+				ImGui::TableSetupColumn("##Btn", ImGuiTableColumnFlags_WidthFixed, 30.0f);
 
-				ImGui::TextWrapped("%s", taskManager.tasks[i].c_str());
-				ImGui::SameLine(ImGui::GetWindowWidth() - 32.0f);
-				if (ImGui::SmallButton("×"))
+				for (size_t i = 0; i < taskManager.size(); i++)
 				{
-					removeIndex = i;
+					ImGui::PushID(static_cast<int>(i));
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+					ImGui::TextWrapped("%s", taskManager.tasks[i].c_str());
+
+					ImGui::TableSetColumnIndex(1);
+					if (ImGui::SmallButton("×"))
+					{
+						removeIndex = i;
+					}
+
+					ImGui::PopID();
 				}
 
-				ImGui::PopID();
+				ImGui::EndTable();
 			}
 
 			// 在循环外删除，避免迭代器失效
