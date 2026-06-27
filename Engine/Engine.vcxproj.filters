@@ -165,7 +165,7 @@
     <ClInclude Include="Inc\Gear\Effect\FXAAEffect.h">
       <Filter>Header\Core\Effect</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\VideoEncoder\NvidiaEncoder.h">
+    <ClInclude Include="Inc\Gear\Core\VideoEncoder\NVIDIAEncoder.h">
       <Filter>Header\Core\VideoEncoder</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Resource\BufferView.h">
@@ -596,7 +596,7 @@
     <ClCompile Include="Src\Resource\RenderTextureView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\VideoEncoder\NvidiaEncoder.cpp">
+    <ClCompile Include="Src\Core\VideoEncoder\NVIDIAEncoder.cpp">
       <Filter>Source\Core\VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="Src\Input\Event.cpp">

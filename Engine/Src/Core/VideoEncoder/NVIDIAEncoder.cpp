@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/VideoEncoder/NvidiaEncoder.h>
+﻿#include<Gear/Core/VideoEncoder/NVIDIAEncoder.h>
 
 #include<iostream>
 
@@ -17,7 +17,7 @@ __debugbreak();\
 
 namespace Gear::Core::VideoEncoder
 {
-	NvidiaEncoder::NvidiaEncoder(const uint32_t frameToEncode) :
+	NVIDIAEncoder::NVIDIAEncoder(const uint32_t frameToEncode) :
 		Encoder(frameToEncode, outputVideoFormat), encoder(nullptr),
 		readbackHeap(makeUnique<D3D12Resource::ReadbackHeap>(2 * 4 * Graphics::getWidth() * Graphics::getHeight())),
 		nvencAPI{ NV_ENCODE_API_FUNCTION_LIST_VER },
@@ -119,7 +119,7 @@ namespace Gear::Core::VideoEncoder
 		mappedOutputResourcePtr = mapOutputResource.mappedResource;
 	}
 
-	NvidiaEncoder::~NvidiaEncoder()
+	NVIDIAEncoder::~NVIDIAEncoder()
 	{
 		if (moduleNvEncAPI)
 		{
@@ -147,7 +147,7 @@ namespace Gear::Core::VideoEncoder
 		}
 	}
 
-	bool NvidiaEncoder::encode(D3D12Resource::Texture* const inputTexture)
+	bool NVIDIAEncoder::encode(D3D12Resource::Texture* const inputTexture)
 	{
 		bool encoding = true;
 

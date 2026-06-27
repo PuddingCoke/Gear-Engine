@@ -22,7 +22,7 @@
 
 #include<Gear/Utils/DeltaTimeEstimator.h>
 
-#include<Gear/Core/VideoEncoder/NvidiaEncoder.h>
+#include<Gear/Core/VideoEncoder/NVIDIAEncoder.h>
 
 #include<iostream>
 
@@ -296,7 +296,7 @@ namespace Gear
 		switch (vendor)
 		{
 		case AdapterVendor::NVIDIA:
-			encoder = makeUnique<VideoEncoder::NvidiaEncoder>(frameToEncode);
+			encoder = makeUnique<VideoEncoder::NVIDIAEncoder>(frameToEncode);
 			break;
 		case AdapterVendor::AMD:
 		case AdapterVendor::INTEL:
@@ -309,7 +309,7 @@ namespace Gear
 
 		if (vendor == AdapterVendor::NVIDIA)
 		{
-			const uint32_t numTextures = VideoEncoder::NvidiaEncoder::lookaheadDepth + 1;
+			const uint32_t numTextures = VideoEncoder::NVIDIAEncoder::lookaheadDepth + 1;
 
 			UniquePtr<D3D12Resource::Texture> renderTextures[numTextures] = {};
 

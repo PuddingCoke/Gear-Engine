@@ -235,7 +235,7 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\Shader.h" />
     <ClInclude Include="Inc\Gear\Resource\SwapTexture.h" />
     <ClInclude Include="Inc\Gear\Core\VideoEncoder\Encoder.h" />
-    <ClInclude Include="Inc\Gear\Core\VideoEncoder\NvidiaEncoder.h" />
+    <ClInclude Include="Inc\Gear\Core\VideoEncoder\NVIDIAEncoder.h" />
     <ClInclude Include="Inc\Gear\Game.h" />
     <ClInclude Include="Inc\Gear\Gear.h" />
     <ClInclude Include="Inc\Gear\Input\Event.h" />
@@ -317,7 +317,7 @@
     <ClCompile Include="Src\Core\D3D12Core\RootSignature.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\Shader.cpp" />
     <ClCompile Include="Src\Core\VideoEncoder\Encoder.cpp" />
-    <ClCompile Include="Src\Core\VideoEncoder\NvidiaEncoder.cpp" />
+    <ClCompile Include="Src\Core\VideoEncoder\NVIDIAEncoder.cpp" />
     <ClCompile Include="Src\Game.cpp" />
     <ClCompile Include="Src\Gear.cpp" />
     <ClCompile Include="Src\Input\Event.cpp" />

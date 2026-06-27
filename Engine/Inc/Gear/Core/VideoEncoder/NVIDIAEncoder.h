@@ -33,17 +33,17 @@
 
 namespace Gear::Core::VideoEncoder
 {
-	class NvidiaEncoder :public Encoder
+	class NVIDIAEncoder :public Encoder
 	{
 	public:
 
-		NvidiaEncoder() = delete;
+		NVIDIAEncoder() = delete;
 
-		NvidiaEncoder(const NvidiaEncoder&) = delete;
+		NVIDIAEncoder(const NVIDIAEncoder&) = delete;
 
-		NvidiaEncoder(const uint32_t frameToEncode);
+		NVIDIAEncoder(const uint32_t frameToEncode);
 
-		~NvidiaEncoder();
+		~NVIDIAEncoder();
 
 		bool encode(D3D12Resource::Texture* const inputTexture) override;
 
