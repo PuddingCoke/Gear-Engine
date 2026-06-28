@@ -21,9 +21,9 @@ namespace Gear::Core::D3D12Core
 
 		virtual ~CommandList() = default;
 
-		virtual void open() const = 0;
+		virtual void open() = 0;
 
-		virtual void close() const = 0;
+		virtual void close() = 0;
 
 		virtual void resourceBarrier(const uint32_t numBarriers, const D3D12_RESOURCE_BARRIER* const pBarriers) const = 0;
 

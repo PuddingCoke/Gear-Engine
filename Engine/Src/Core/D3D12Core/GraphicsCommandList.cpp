@@ -5,8 +5,20 @@
 namespace Gear::Core::D3D12Core
 {
 	GraphicsCommandList::GraphicsCommandList(const D3D12_COMMAND_LIST_TYPE commandListType) :
-		CommandList(commandListType)
+		CommandList(commandListType), currentDescriptorHeaps{ nullptr,nullptr }
 	{
+		if (commandListType != D3D12_COMMAND_LIST_TYPE_BUNDLE &&
+			commandListType != D3D12_COMMAND_LIST_TYPE_COMPUTE &&
+			commandListType != D3D12_COMMAND_LIST_TYPE_COPY &&
+			commandListType != D3D12_COMMAND_LIST_TYPE_DIRECT)
+		{
+			LOGERROR(L"对于图形命令列表来说命令列表类型只能为",
+				TOWSTRING(D3D12_COMMAND_LIST_TYPE_BUNDLE),
+				TOWSTRING(D3D12_COMMAND_LIST_TYPE_COMPUTE),
+				TOWSTRING(D3D12_COMMAND_LIST_TYPE_COPY),
+				TOWSTRING(D3D12_COMMAND_LIST_TYPE_DIRECT));
+		}
+
 		CHECKERROR(GraphicsDevice::get()->CreateCommandList(0, commandListType, getCommandAllocator(), nullptr, IID_PPV_ARGS(&commandList)));
 
 		setCommandList(commandList.Get());
@@ -19,14 +31,18 @@ namespace Gear::Core::D3D12Core
 		commandList->ResourceBarrier(numBarriers, pBarriers);
 	}
 
-	void GraphicsCommandList::open() const
+	void GraphicsCommandList::open()
 	{
+		currentDescriptorHeaps[0] = nullptr;
+
+		currentDescriptorHeaps[1] = nullptr;
+
 		resetCommandAllocator();
 
 		commandList->Reset(getCommandAllocator(), nullptr);
 	}
 
-	void GraphicsCommandList::close() const
+	void GraphicsCommandList::close()
 	{
 		commandList->Close();
 	}
@@ -36,11 +52,17 @@ namespace Gear::Core::D3D12Core
 		return commandList.Get();
 	}
 
-	void GraphicsCommandList::setDescriptorHeap(ID3D12DescriptorHeap* const resourceHeap, ID3D12DescriptorHeap* const samplerHeap) const
+	void GraphicsCommandList::setDescriptorHeap(ID3D12DescriptorHeap* const resourceHeap, ID3D12DescriptorHeap* const samplerHeap)
 	{
-		ID3D12DescriptorHeap* const descriptorHeaps[2] = { resourceHeap,samplerHeap };
+		//SetDescriptorHeaps开销高，因此这里一定要去重
+		if (resourceHeap != currentDescriptorHeaps[0] || samplerHeap != currentDescriptorHeaps[1])
+		{
+			currentDescriptorHeaps[0] = resourceHeap;
 
-		commandList->SetDescriptorHeaps(2, descriptorHeaps);
+			currentDescriptorHeaps[1] = samplerHeap;
+
+			commandList->SetDescriptorHeaps(_countof(currentDescriptorHeaps), currentDescriptorHeaps);
+		}
 	}
 
 	void GraphicsCommandList::setPipelineState(ID3D12PipelineState* const pipelineState) const

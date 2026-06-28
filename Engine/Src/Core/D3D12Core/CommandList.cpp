@@ -11,7 +11,7 @@ namespace Gear::Core::D3D12Core
 
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
-			GraphicsDevice::get()->CreateCommandAllocator(type, IID_PPV_ARGS(&allocators[i]));
+			CHECKERROR(GraphicsDevice::get()->CreateCommandAllocator(type, IID_PPV_ARGS(&allocators[i])));
 		}
 	}
 

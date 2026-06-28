@@ -21,13 +21,13 @@ namespace Gear::Core::D3D12Core
 
 		void resourceBarrier(const uint32_t numBarriers, const D3D12_RESOURCE_BARRIER* const pBarriers) const override;
 
-		void open() const override;
+		void open() override;
 
-		void close() const override;
+		void close() override;
 
 		ID3D12GraphicsCommandList6* get() const;
 
-		void setDescriptorHeap(ID3D12DescriptorHeap* const resourceHeap, ID3D12DescriptorHeap* const samplerHeap) const;
+		void setDescriptorHeap(ID3D12DescriptorHeap* const resourceHeap, ID3D12DescriptorHeap* const samplerHeap);
 
 		void setPipelineState(ID3D12PipelineState* const pipelineState) const;
 
@@ -82,6 +82,9 @@ namespace Gear::Core::D3D12Core
 		void copyTextureRegion(D3D12Resource::Texture* const dstTexture, const uint32_t dstSubresource, D3D12Resource::Texture* const srcTexture, const uint32_t srcSubresource);
 
 	private:
+
+		//{ resource, sampler }
+		ID3D12DescriptorHeap* currentDescriptorHeaps[2];
 
 		ComPtr<ID3D12GraphicsCommandList6> commandList;
 
