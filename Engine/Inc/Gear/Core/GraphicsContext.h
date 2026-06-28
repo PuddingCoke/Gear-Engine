@@ -261,13 +261,11 @@ namespace Gear::Core
 
 			D3D12_CPU_DESCRIPTOR_HANDLE handle = {};
 
-			D3D12_CLEAR_FLAGS flags = CLEARFLAG::ALL;
+			uint32_t flags = 0;
 
 			float depth = 0;
 
 			uint8_t stencil = 0;
-
-			bool needClear = false;
 		};
 
 		void transitionResources();

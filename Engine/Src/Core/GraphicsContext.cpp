@@ -666,9 +666,9 @@ namespace Gear::Core
 
 	void GraphicsContext::resetDepthStencilClearDesc()
 	{
-		if (depthStencilClearDesc.needClear)
+		if (depthStencilClearDesc.flags)
 		{
-			commandList->clearDepthStencil(depthStencilClearDesc.handle, depthStencilClearDesc.flags, depthStencilClearDesc.depth, depthStencilClearDesc.stencil, 0, nullptr);
+			commandList->clearDepthStencil(depthStencilClearDesc.handle, static_cast<D3D12_CLEAR_FLAGS>(depthStencilClearDesc.flags), depthStencilClearDesc.depth, depthStencilClearDesc.stencil, 0, nullptr);
 
 			depthStencilClearDesc.reset();
 		}
@@ -834,12 +834,10 @@ namespace Gear::Core
 		this->depth = depth;
 
 		this->stencil = stencil;
-
-		this->needClear = true;
 	}
 
 	void GraphicsContext::DepthStencilClearDesc::reset()
 	{
-		this->needClear = false;
+		this->flags = 0;
 	}
 }
