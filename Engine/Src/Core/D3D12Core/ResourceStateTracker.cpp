@@ -90,18 +90,6 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::flushResourceBarriers(ID3D12GraphicsCommandList6* const commandList)
-	{
-		flushTransitionResources();
-
-		if (resourceBarriers.size())
-		{
-			commandList->ResourceBarrier(static_cast<uint32_t>(resourceBarriers.size()), resourceBarriers.data());
-
-			resourceBarriers.clear();
-		}
-	}
-
 	void ResourceStateTracker::pushResourceBarrier(const D3D12_RESOURCE_BARRIER& barrier)
 	{
 		resourceBarriers.push_back(barrier);

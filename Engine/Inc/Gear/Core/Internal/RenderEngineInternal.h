@@ -32,6 +32,8 @@ namespace Gear::Core::RenderEngine::Internal
 
 	void endFrame();
 
+	void processCommandLists();
+
 	void present();
 
 	void setDeltaTime(const float deltaTime);

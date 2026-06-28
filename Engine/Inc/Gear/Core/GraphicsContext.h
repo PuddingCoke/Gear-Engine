@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_GRAPHICSCONTEXT_H_
 #define _GEAR_CORE_GRAPHICSCONTEXT_H_
 
-#include<Gear/Core/D3D12Core/CommandList.h>
+#include<Gear/Core/D3D12Core/GraphicsCommandList.h>
 
 #include<Gear/Core/D3D12Core/RootSignature.h>
 
@@ -233,7 +233,7 @@ namespace Gear::Core
 		void resetTrackedComputeStates();
 		/////////////////
 
-		D3D12Core::CommandList* getCommandList() const;
+		D3D12Core::GraphicsCommandList* getCommandList() const;
 
 	private:
 
@@ -325,7 +325,7 @@ namespace Gear::Core
 
 		D3D12_RECT rt;
 
-		D3D12Core::CommandListPtr commandList;
+		D3D12Core::GraphicsCommandListPtr commandList;
 
 		//以下是内部追踪的状态，用于减少图形API的调用
 		ID3D12PipelineState* currentPipelineState;

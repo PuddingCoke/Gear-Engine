@@ -236,6 +236,8 @@ namespace Gear
 
 			RenderEngine::Internal::endFrame();
 
+			RenderEngine::Internal::processCommandLists();
+
 			RenderEngine::Internal::present();
 
 			if (needScreenGrab)
@@ -354,6 +356,8 @@ namespace Gear
 
 				RenderEngine::Internal::endFrame();
 
+				RenderEngine::Internal::processCommandLists();
+
 				RenderEngine::Internal::waitForCurrentFrame();
 
 				RenderEngine::Internal::updateTimeElapsed();
@@ -395,6 +399,8 @@ namespace Gear
 			game->render();
 
 			RenderEngine::Internal::endFrame();
+
+			RenderEngine::Internal::processCommandLists();
 
 			RenderEngine::Internal::present();
 

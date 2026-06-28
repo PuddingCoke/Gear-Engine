@@ -116,7 +116,7 @@ namespace Gear::Effect
 		//    * The input depth & normal textures are assumed to have state D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE.
 		//    * The output AO render target is assumed to have state D3D12_RESOURCE_STATE_RENDER_TARGET.
 
-		CommandList* const commandList = context->getCommandList();
+		GraphicsCommandList* const commandList = context->getCommandList();
 
 		commandList->trackAndSetResourceState(depthTexture.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 

@@ -109,7 +109,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 			DynamicCBufferManager::AvailableLocation requestLocation(const uint32_t regionIndex);
 
-			void recordCommands(D3D12Core::CommandList* const commandList);
+			void recordCommands(D3D12Core::GraphicsCommandList* const commandList);
 
 			//每个区域的子区域数量
 			//256bytes 512bytes 1024bytes .....
@@ -209,7 +209,7 @@ namespace Gear::Core::DynamicCBufferManager
 			return { location.dataPtr,baseAddressOffsets[regionIndex] + (256u << regionIndex) * location.subregionIndex,baseDescriptorIndices[regionIndex] + location.subregionIndex };
 		}
 
-		void DynamicCBufferManagerImpl::recordCommands(D3D12Core::CommandList* const commandList)
+		void DynamicCBufferManagerImpl::recordCommands(D3D12Core::GraphicsCommandList* const commandList)
 		{
 			//把大常量缓冲转变到STATE_COPY_DEST状态，用于内容更新
 			commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_COPY_DEST);
@@ -247,7 +247,7 @@ namespace Gear::Core::DynamicCBufferManager
 			impl.reset();
 		}
 
-		void recordCommands(D3D12Core::CommandList* const commandList)
+		void recordCommands(D3D12Core::GraphicsCommandList* const commandList)
 		{
 			impl->recordCommands(commandList);
 		}

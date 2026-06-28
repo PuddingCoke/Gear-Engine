@@ -131,7 +131,7 @@ namespace Gear::Core
 
 		//处理低级任务，比如用数据初始化纹理
 		//注意：这个指针只是引用
-		D3D12Core::CommandList* const commandList;
+		D3D12Core::GraphicsCommandList* const commandList;
 
 	private:
 

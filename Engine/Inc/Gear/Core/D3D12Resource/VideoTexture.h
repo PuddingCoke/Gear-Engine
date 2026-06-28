@@ -5,6 +5,8 @@
 
 #include"D3D12ResourceBase.h"
 
+#include<D3D12Headers/d3d12video.h>
+
 namespace Gear::Core::D3D12Resource
 {
 	CREATESAFETYPE(VideoTexture);

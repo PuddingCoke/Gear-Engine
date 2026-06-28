@@ -15,13 +15,12 @@ namespace Gear::Core::D3D12Core
 	{
 	public:
 
-		//追踪并设置资源状态
+		//以下的方法会追踪并设置资源状态
+
 		void trackAndSetResourceState(D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state);
 
-		//追踪并设置资源状态
 		void trackAndSetResourceState(D3D12Resource::Buffer* const buffer, const uint32_t state);
 
-		//追踪并设置资源状态
 		void trackAndSetResourceState(D3D12Resource::VideoTexture* const videoTexture, const uint32_t state);
 
 		//清空BEFORE STATE待定的资源
@@ -33,9 +32,6 @@ namespace Gear::Core::D3D12Core
 		//清空需要状态转变的资源
 		void flushTransitionResources();
 
-		//清空需要状态转变的资源并调用cmd->ResourceBarrier
-		void flushResourceBarriers(ID3D12GraphicsCommandList6* const commandList);
-
 		//手动插入资源屏障
 		void pushResourceBarrier(const D3D12_RESOURCE_BARRIER& barrier);
 
@@ -44,6 +40,11 @@ namespace Gear::Core::D3D12Core
 
 		//是否有待定资源
 		bool hasPendingResource() const;
+
+	protected:
+
+		//暂存资源屏障
+		std::vector<D3D12_RESOURCE_BARRIER> resourceBarriers;
 
 	private:
 
@@ -57,9 +58,6 @@ namespace Gear::Core::D3D12Core
 
 		//暂存BEFORE STATE待定的资源，需要主渲染线程帮忙解决
 		std::vector<D3D12Resource::D3D12ResourceBase*> pendingResources;
-
-		//暂存资源屏障
-		std::vector<D3D12_RESOURCE_BARRIER> resourceBarriers;
 
 	};
 }

@@ -47,6 +47,10 @@ namespace Gear::Utils
 
 		T* end();
 
+		T& front();
+
+		T& back();
+
 	private:
 
 		std::array<T, N> arr;
@@ -143,6 +147,32 @@ namespace Gear::Utils
 	inline T* StaticVector<T, N>::end()
 	{
 		return arr.data() + idx;
+	}
+
+	template<typename T, size_t N>
+	inline T& StaticVector<T, N>::front()
+	{
+#ifdef _DEBUG
+		if (idx == 0ull)
+		{
+			LOGERROR(L"无法获取起始元素");
+		}
+#endif // _DEBUG
+
+		return arr[0];
+	}
+
+	template<typename T, size_t N>
+	inline T& StaticVector<T, N>::back()
+	{
+#ifdef _DEBUG
+		if (idx == 0ull)
+		{
+			LOGERROR(L"无法获取末尾元素");
+		}
+#endif // _DEBUG
+
+		return arr[idx - 1ull];
 	}
 }
 

@@ -147,6 +147,8 @@ namespace Gear::Core::RenderEngine
 
 			void endFrame();
 
+			void processCommandLists();
+
 			void present() const;
 
 			void setDeltaTime(const float deltaTime) const;
@@ -175,13 +177,11 @@ namespace Gear::Core::RenderEngine
 
 			ComPtr<IDXGIAdapter4> getBestAdapterAndVendor(IDXGIFactory7* const factory);
 
-			void processCommandLists();
-
 			void updateDynamicCBuffers() const;
 
 			void beginImGuiFrame() const;
 
-			void drawImGuiFrame(D3D12Core::CommandList* const targetCommandList);
+			void drawImGuiFrame();
 
 			UniquePtr<GraphicsDevice::Internal::InitializeToken> graphicsDeviceToken;
 
@@ -189,7 +189,9 @@ namespace Gear::Core::RenderEngine
 
 			ComPtr<ID3D12Fence> fence;
 
-			UniquePtr<D3D12Core::CommandList> prepareCommandList;
+			UniquePtr<D3D12Core::GraphicsCommandList> prepareCommandList;
+
+			UniquePtr<D3D12Core::GraphicsCommandList> finishCommandList;
 
 			UniquePtr<RenderThreadLocal::Internal::InitializeToken> renderThreadLocalToken;
 
@@ -215,7 +217,9 @@ namespace Gear::Core::RenderEngine
 
 			AdapterVendor vendor;
 
-			std::vector<D3D12Core::CommandList*> recordCommandLists;
+			Utils::StaticVector<D3D12Core::CommandList*, 32> recordCommandLists;
+
+			Utils::StaticVector<ID3D12CommandList*, 32> id3d12CommandLists;
 
 			UniquePtr<uint64_t[]> fenceValues;
 
@@ -305,7 +309,10 @@ namespace Gear::Core::RenderEngine
 			fenceValues[Graphics::getFrameIndex()]++;
 
 			//创建准备命令列表
-			prepareCommandList = makeUnique<D3D12Core::CommandList>(D3D12_COMMAND_LIST_TYPE_DIRECT);
+			prepareCommandList = makeUnique<D3D12Core::GraphicsCommandList>();
+
+			//创建收尾命令列表
+			finishCommandList = makeUnique<D3D12Core::GraphicsCommandList>();
 
 			//初始化线程局部资源
 			renderThreadLocalToken = makeUnique<RenderThreadLocal::Internal::InitializeToken>();
@@ -322,7 +329,7 @@ namespace Gear::Core::RenderEngine
 			//而动态常量缓冲更新的指令记录是由prepareCommandList负责的
 			prepareCommandList->open();
 
-			recordCommandLists.push_back(prepareCommandList.get());
+			recordCommandLists.push(prepareCommandList.get());
 
 			resManager = makeUnique<ResourceManager>();
 
@@ -448,7 +455,7 @@ namespace Gear::Core::RenderEngine
 				helperCommandList->close();
 			}
 
-			recordCommandLists.push_back(commandList);
+			recordCommandLists.push(commandList);
 		}
 
 		AdapterVendor RenderEngineImpl::getVendor() const
@@ -501,7 +508,9 @@ namespace Gear::Core::RenderEngine
 
 			prepareCommandList->open();
 
-			recordCommandLists.push_back(prepareCommandList.get());
+			finishCommandList->open();
+
+			recordCommandLists.push(prepareCommandList.get());
 
 			//先获取可用的位置，供GraphicsContext在这一帧使用
 			engineGlobalCBuffer->acquireDataPtr();
@@ -514,82 +523,80 @@ namespace Gear::Core::RenderEngine
 
 		void RenderEngineImpl::endFrame()
 		{
-			if (displayImGuiSurface && displayEngineImGuiSurface)
-			{
-				ImGui::Begin("Frame Profile");
-				ImGui::Text("TimeElapsed %.2f", Graphics::getTimeElapsed());
-				ImGui::Text("FrameTime %.8f", ImGui::GetIO().DeltaTime * 1000.f);
-				ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
-				ImGui::SliderInt("Sync Interval", &syncInterval, 0, 3);
-				ImGui::End();
+			//到这里我们已经知道了哪些动态常量缓冲需要更新
+			updateDynamicCBuffers();
 
-				Graphics::Internal::imGuiCall();
+			//一些比较基础的信息的设置
+			{
+				perframeResource.deltaTime = Graphics::getDeltaTime();
+
+				perframeResource.timeElapsed = Graphics::getTimeElapsed();
+
+				perframeResource.uintSeed = Utils::Random::genUint();
+
+				perframeResource.floatSeed = Utils::Random::genFloat();
+
+				perframeResource.screenSize = DirectX::XMFLOAT2(
+					static_cast<float>(Graphics::getWidth()),
+					static_cast<float>(Graphics::getHeight()));
+
+				perframeResource.screenTexelSize = DirectX::XMFLOAT2(
+					1.f / perframeResource.screenSize.x,
+					1.f / perframeResource.screenSize.y);
 			}
 
-			//把后备缓冲转变到STATE_RENDER_TARGET，并更新所有动态常量缓冲
+			//主相机相关信息的设置
 			{
-				updateDynamicCBuffers();
+				perframeResource.prevViewProj = perframeResource.viewProj;
 
-				//一些比较基础的信息的设置
-				{
-					perframeResource.deltaTime = Graphics::getDeltaTime();
+				perframeResource.proj = DirectX::XMMatrixTranspose(MainCamera::getProj());
 
-					perframeResource.timeElapsed = Graphics::getTimeElapsed();
+				perframeResource.view = DirectX::XMMatrixTranspose(MainCamera::getView());
 
-					perframeResource.uintSeed = Utils::Random::genUint();
+				perframeResource.viewProj = DirectX::XMMatrixTranspose(MainCamera::getView() * MainCamera::getProj());
 
-					perframeResource.floatSeed = Utils::Random::genFloat();
+				//逆的转置的转置等于没有转置
+				perframeResource.normalMatrix = DirectX::XMMatrixInverse(nullptr, MainCamera::getView());
 
-					perframeResource.screenSize = DirectX::XMFLOAT2(
-						static_cast<float>(Graphics::getWidth()),
-						static_cast<float>(Graphics::getHeight()));
+				DirectX::XMStoreFloat4(&perframeResource.eyePos, MainCamera::getEyePos());
+			}
+			//关于为什么要转置我找到了一篇有关的文章
+			//https://www.douduck08.com/zh-tw/why-dx11-need-matrix-transpose-before-cbuffer-mapping/
+			//这里简要说一下，其实和矩阵如何被解释有关，矩阵实际上是以一维数组的形式被存储的
+			//DirectXMath默认其为Row Major，而HLSL默认其为Column Major
+			//在DirectXMath中我们一般使用DirectX::XMVector4Transform，它背后的数学运算是 vec*matrix
+			//如果数据原封不动上传到显存上，那么这个矩阵会被HLSL用另一种方式来解释，我们因此需要的数学运算是 matrix*vec，即mul(matrix,vec)
+			//然而，mul(vec,matrix)是有一些性能优势的，为了利用这个性能优势，矩阵在上传前要被转置
 
-					perframeResource.screenTexelSize = DirectX::XMFLOAT2(
-						1.f / perframeResource.screenSize.x,
-						1.f / perframeResource.screenSize.y);
-				}
+			engineGlobalCBuffer->updateData(&perframeResource);
 
-				//主相机相关信息的设置
-				{
-					perframeResource.prevViewProj = perframeResource.viewProj;
+			//使用收尾命令列表绘制ImGui界面
+			drawImGuiFrame();
 
-					perframeResource.proj = DirectX::XMMatrixTranspose(MainCamera::getProj());
+			//使用收尾命令列表把后备缓冲转变到STATE_PRESENT
+			finishCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_PRESENT);
 
-					perframeResource.view = DirectX::XMMatrixTranspose(MainCamera::getView());
+			finishCommandList->flushResourceBarriers();
 
-					perframeResource.viewProj = DirectX::XMMatrixTranspose(MainCamera::getView() * MainCamera::getProj());
+			submitCommandList(finishCommandList.get());
+		}
 
-					//逆的转置的转置等于没有转置
-					perframeResource.normalMatrix = DirectX::XMMatrixInverse(nullptr, MainCamera::getView());
+		void RenderEngineImpl::processCommandLists()
+		{
+			recordCommandLists.front()->close();
 
-					DirectX::XMStoreFloat4(&perframeResource.eyePos, MainCamera::getEyePos());
-				}
-				//关于为什么要转置我找到了一篇有关的文章
-				//https://www.douduck08.com/zh-tw/why-dx11-need-matrix-transpose-before-cbuffer-mapping/
-				//这里简要说一下，其实和矩阵如何被解释有关，矩阵实际上是以一维数组的形式被存储的
-				//DirectXMath默认其为Row Major，而HLSL默认其为Column Major
-				//在DirectXMath中我们一般使用DirectX::XMVector4Transform，它背后的数学运算是 vec*matrix
-				//如果数据原封不动上传到显存上，那么这个矩阵会被HLSL用另一种方式来解释，我们因此需要的数学运算是 matrix*vec，即mul(matrix,vec)
-				//然而，mul(vec,matrix)是有一些性能优势的，为了利用这个性能优势，矩阵在上传前要被转置
+			recordCommandLists.back()->close();
 
-				engineGlobalCBuffer->updateData(&perframeResource);
+			id3d12CommandLists.clear();
+
+			for (const D3D12Core::CommandList* const commandList : recordCommandLists)
+			{
+				id3d12CommandLists.push(commandList->get());
 			}
 
-			//使用最后一个命令列表做些收尾工作
-			//如果需要ImGUI界面，那么把后备缓冲转变到STATE_PRESENT并绘制ImGUI帧
-			{
-				D3D12Core::CommandList* const finishCommandList = recordCommandLists.back();
+			recordCommandLists.clear();
 
-				drawImGuiFrame(finishCommandList);
-
-				finishCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_PRESENT);
-
-				finishCommandList->flushResourceBarriers();
-			}
-
-			processCommandLists();
-
-			Graphics::Internal::renderedFrameCountInc();
+			commandQueue->ExecuteCommandLists(static_cast<uint32_t>(id3d12CommandLists.size()), id3d12CommandLists.data());
 		}
 
 		void RenderEngineImpl::present() const
@@ -605,6 +612,8 @@ namespace Gear::Core::RenderEngine
 		void RenderEngineImpl::updateTimeElapsed() const
 		{
 			Graphics::Internal::updateTimeElapsed();
+
+			Graphics::Internal::renderedFrameCountInc();
 		}
 
 		void RenderEngineImpl::setDefRenderTexture()
@@ -614,10 +623,10 @@ namespace Gear::Core::RenderEngine
 
 		void RenderEngineImpl::setRenderTexture(D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
 		{
-			//状态转变
+			//接管renderTexture的状态转变
 			this->renderTexture = renderTexture;
 
-			//渲染目标
+			//获取CPU描述符句柄供GraphicsContext在这一帧使用
 			Graphics::Internal::setBackBufferHandle(handle);
 		}
 
@@ -658,15 +667,11 @@ namespace Gear::Core::RenderEngine
 
 			const CD3DX12_TEXTURE_COPY_LOCATION copySrc(getRenderTexture()->getResource(), 0);
 
-			D3D12Core::CommandList* const lastCommandList = recordCommandLists.back();
+			finishCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-			ID3D12GraphicsCommandList6* const id3d12LastCommandList = lastCommandList->get();
+			finishCommandList->flushResourceBarriers();
 
-			lastCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
-
-			lastCommandList->flushResourceBarriers();
-
-			id3d12LastCommandList->CopyTextureRegion(&copyDest, 0, 0, 0, &copySrc, nullptr);
+			finishCommandList->get()->CopyTextureRegion(&copyDest, 0, 0, 0, &copySrc, nullptr);
 		}
 
 		bool RenderEngineImpl::getDisplayImGuiSurface() const
@@ -762,24 +767,6 @@ namespace Gear::Core::RenderEngine
 			return adapter;
 		}
 
-		void RenderEngineImpl::processCommandLists()
-		{
-			recordCommandLists.front()->close();
-
-			recordCommandLists.back()->close();
-
-			std::vector<ID3D12CommandList*> commandLists;
-
-			for (const D3D12Core::CommandList* const commandList : recordCommandLists)
-			{
-				commandLists.push_back(commandList->get());
-			}
-
-			recordCommandLists.clear();
-
-			commandQueue->ExecuteCommandLists(static_cast<uint32_t>(commandLists.size()), commandLists.data());
-		}
-
 		void RenderEngineImpl::updateDynamicCBuffers() const
 		{
 			DynamicCBufferManager::Internal::recordCommands(prepareCommandList.get());
@@ -795,19 +782,33 @@ namespace Gear::Core::RenderEngine
 			}
 		}
 
-		void RenderEngineImpl::drawImGuiFrame(D3D12Core::CommandList* const targetCommandList)
+		void RenderEngineImpl::drawImGuiFrame()
 		{
 			if (displayImGuiSurface)
 			{
-				targetCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
+				if (displayEngineImGuiSurface)
+				{
+					ImGui::Begin("Frame Profile");
+					ImGui::Text("TimeElapsed %.2f", Graphics::getTimeElapsed());
+					ImGui::Text("FrameTime %.8f", ImGui::GetIO().DeltaTime * 1000.f);
+					ImGui::Text("FrameRate %.1f", ImGui::GetIO().Framerate);
+					ImGui::SliderInt("Sync Interval", &syncInterval, 0, 3);
+					ImGui::End();
 
-				targetCommandList->flushResourceBarriers();
+					Graphics::Internal::imGuiCall();
+				}
+
+				finishCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+				finishCommandList->flushResourceBarriers();
+
+				finishCommandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap()->get(), GlobalDescriptorHeap::getSamplerHeap()->get());
 
 				ImGui::Render();
 
-				targetCommandList->setDefRenderTarget();
+				finishCommandList->setDefRenderTarget();
 
-				ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), targetCommandList->get());
+				ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), finishCommandList->get());
 			}
 		}
 
@@ -841,6 +842,11 @@ namespace Gear::Core::RenderEngine
 		void endFrame()
 		{
 			impl->endFrame();
+		}
+
+		void processCommandLists()
+		{
+			impl->processCommandLists();
 		}
 
 		void present()

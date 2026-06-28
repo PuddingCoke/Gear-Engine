@@ -64,7 +64,7 @@ namespace Gear::Core
 	}
 
 	GraphicsContext::GraphicsContext() :
-		commandList(makeUnique<D3D12Core::CommandList>(D3D12_COMMAND_LIST_TYPE_DIRECT)),
+		commandList(makeUnique<D3D12Core::GraphicsCommandList>()),
 		vp{ 0.f,0.f,0.f,0.f,0.f,1.f },
 		rt{ 0,0,0,0 }
 	{
@@ -583,7 +583,7 @@ namespace Gear::Core
 		resetComputeRootSignature();
 	}
 
-	D3D12Core::CommandList* GraphicsContext::getCommandList() const
+	D3D12Core::GraphicsCommandList* GraphicsContext::getCommandList() const
 	{
 		return commandList.get();
 	}
