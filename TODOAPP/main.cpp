@@ -4,7 +4,7 @@
 
 int wmain(int argc, const wchar_t* argv[])
 {
-	const InitializationParam param = InitializationParam::RealTime(600, 700, L"TODO APP");
+	const InitializationParam param = InitializationParam::RealTime(700, 800, L"TODO APP");
 
 	try
 	{

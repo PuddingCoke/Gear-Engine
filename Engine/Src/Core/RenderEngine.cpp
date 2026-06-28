@@ -81,9 +81,9 @@ namespace Gear::Core::RenderEngine
 				builder.BuildRanges(&ranges);
 
 				//加载微软雅黑字体
-				*mediumFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 18.f, nullptr, ranges.Data);
+				*mediumFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 22.f, nullptr, ranges.Data);
 
-				*largeFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 24.f, nullptr, ranges.Data);
+				*largeFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 28.f, nullptr, ranges.Data);
 
 				io.FontDefault = *mediumFont;
 

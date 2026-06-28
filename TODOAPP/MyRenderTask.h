@@ -182,7 +182,7 @@ private:
 	{
 		static char inputBuffer[512] = "";
 
-		ImGui::PushItemWidth(-ImGui::GetFrameHeightWithSpacing() - 60.0f);
+		ImGui::PushItemWidth(-ImGui::GetFrameHeightWithSpacing() - 70.0f);
 		bool enterPressed = ImGui::InputTextWithHint("##TaskInput", "输入一项任务后按 Enter...",
 			inputBuffer, sizeof(inputBuffer),
 			ImGuiInputTextFlags_EnterReturnsTrue);
