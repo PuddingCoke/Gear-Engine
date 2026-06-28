@@ -3,9 +3,13 @@
 #ifndef _GEAR_CORE_D3D12CORE_VIDEOPROCESSCOMMANDLIST_H_
 #define _GEAR_CORE_D3D12CORE_VIDEOPROCESSCOMMANDLIST_H_
 
+#include"CommandList.h"
+
 namespace Gear::Core::D3D12Core
 {
-	class VideoProcessCommandList
+	CREATESAFETYPE(VideoProcessCommandList);
+
+	class VideoProcessCommandList :public CommandList
 	{
 	public:
 
@@ -13,11 +17,15 @@ namespace Gear::Core::D3D12Core
 
 		~VideoProcessCommandList() = default;
 
+		void open() override;
+
+		void close() override;
+
+		void resourceBarrier(const uint32_t numBarriers, const D3D12_RESOURCE_BARRIER* const pBarriers) const override;
+
 	private:
 
-		UniquePtr<ComPtr<ID3D12CommandAllocator>[]> allocators;
-
-		ComPtr<ID3D12GraphicsCommandList6> commandList;
+		ComPtr<ID3D12VideoProcessCommandList2> commandList;
 
 	};
 }

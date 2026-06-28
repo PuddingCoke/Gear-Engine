@@ -146,6 +146,7 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\Internal\DXCCompilerInternal.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\PipelineState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ResourceStateTracker.h" />
+    <ClInclude Include="Inc\Gear\Core\D3D12Core\VideoProcessCommandList.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Resource\VideoTexture.h" />
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h" />
     <ClInclude Include="Inc\Gear\Core\Internal\RenderThreadGlobalInternal.h" />
@@ -256,6 +257,7 @@
   <ItemGroup>
     <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\GraphicsCommandList.cpp" />
+    <ClCompile Include="Src\Core\D3D12Core\VideoProcessCommandList.cpp" />
     <ClCompile Include="Src\Core\D3D12Resource\VideoTexture.cpp" />
     <ClCompile Include="Src\Resource\SwapBuffer.cpp" />
     <ClCompile Include="Src\Core\D3D12Core\GraphicsState.cpp" />

@@ -295,13 +295,13 @@ private:
 			ImGui::Text("确定要清空所有未完成任务吗？");
 			ImGui::Spacing();
 
-			if (ImGui::Button("确定", ImVec2(120.0f, 0.0f)))
+			if (ImGui::Button("确定", ImVec2(150.0f, 0.0f)))
 			{
 				taskManager.clearAll();
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("取消", ImVec2(120.0f, 0.0f)))
+			if (ImGui::Button("取消", ImVec2(150.0f, 0.0f)))
 			{
 				ImGui::CloseCurrentPopup();
 			}

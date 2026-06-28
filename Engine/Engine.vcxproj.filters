@@ -540,6 +540,9 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\GraphicsCommandList.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\D3D12Core\VideoProcessCommandList.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\InitializationParam.cpp">
@@ -795,6 +798,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\D3D12Core\GraphicsCommandList.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\D3D12Core\VideoProcessCommandList.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
