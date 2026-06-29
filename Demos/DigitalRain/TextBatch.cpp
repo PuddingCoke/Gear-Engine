@@ -191,7 +191,7 @@ void TextBatch::render(GraphicsContext& context, RenderTextureView& outputTextur
 
 	context.setPrimitiveTopology(TOPOLOGY::POINTLIST);
 
-	context.setVertexBuffers(0, { textBuffer->getVertexBuffer() });
+	context.setVertexBuffers({ textBuffer->getVertexBuffer() }, 0);
 
 	SETCONSTS({
 	context.setPSConstants({fontTexture->getAllSRVIndex()},co);

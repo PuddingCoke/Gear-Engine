@@ -7,9 +7,7 @@ namespace Gear::Core::D3D12Core
 	{
 		CHECKERROR(GraphicsDevice::get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_VIDEO_PROCESS, getCommandAllocator(), nullptr, IID_PPV_ARGS(&commandList)));
 
-		setCommandList(commandList.Get());
-
-		close();
+		setAndCloseCommandList(commandList.Get());
 	}
 
 	void VideoProcessCommandList::open()

@@ -36,7 +36,7 @@ namespace Gear::Core::D3D12Core
 
 	protected:
 
-		void setCommandList(ID3D12CommandList* const commandList);
+		void setAndCloseCommandList(ID3D12CommandList* const commandList);
 
 		void resetCommandAllocator() const;
 

@@ -301,7 +301,7 @@ namespace Gear::Core
 			graphicsDesc.InputLayout = { inputElements.data(),static_cast<uint32_t>(inputElements.size()) };
 		}
 
-		return makeUnique<D3D12Core::GraphicsState>(std::move(inputElements), std::move(semanticNames), std::move(graphicsDesc), selectedRootSignature, pipelineStateData);
+		return makeUnique<D3D12Core::GraphicsState>(std::move(inputElements), std::move(semanticNames), graphicsDesc, selectedRootSignature, pipelineStateData);
 	}
 
 	D3D12Core::ComputeStatePtr PipelineStateBuilder::build(D3D12Core::ShaderPtr cs)

@@ -286,7 +286,7 @@ private:
 
 			context->setPrimitiveTopology(TOPOLOGY::PATCH3CONTROL);
 
-			context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
+			context->setVertexBuffers({ vertexBuffer->getVertexBuffer() }, 0);
 
 			context->setIndexBuffer(indexBuffer->getIndexBuffer());
 

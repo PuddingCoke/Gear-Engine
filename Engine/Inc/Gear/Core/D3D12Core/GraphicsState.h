@@ -15,7 +15,7 @@ namespace Gear::Core::D3D12Core
 	{
 	public:
 
-		GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements, std::vector<std::string> semanticNames, D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsDesc, const RootSignature* const rootSignature, const PipelineStateData pipelineStateData);
+		GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements, std::vector<std::string> semanticNames,const D3D12_GRAPHICS_PIPELINE_STATE_DESC& graphicsDesc, const RootSignature* const rootSignature, const PipelineStateData pipelineStateData);
 
 		void updatePipelineState(const DXGI_FORMAT* const rtvFormats, const uint32_t numRenderTargets, const DXGI_FORMAT dsvFormat, const D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType);
 

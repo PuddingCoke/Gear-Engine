@@ -103,60 +103,6 @@ namespace Gear::Core
 		}
 	}
 
-	void GraphicsContext::constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const
-	{
-		uint32_t numShaderConstants = 0u;
-
-		switch (shaderType)
-		{
-		case D3D12Core::RootSignature::ShaderType::VERTEX:
-		case D3D12Core::RootSignature::ShaderType::HULL:
-		case D3D12Core::RootSignature::ShaderType::DOMAIN:
-		case D3D12Core::RootSignature::ShaderType::GEOMETRY:
-		case D3D12Core::RootSignature::ShaderType::PIXEL:
-			numShaderConstants = getGraphicsRootSignature()->getNumShaderConstants(shaderType);
-			break;
-		case D3D12Core::RootSignature::ShaderType::COMPUTE:
-			numShaderConstants = getComputeRootSignature()->getNumShaderConstants(shaderType);
-			break;
-		default:
-			break;
-		}
-
-		if (numShaderConstants < numWrite)
-		{
-			std::wstring errorString = L"";
-
-			switch (shaderType)
-			{
-			case D3D12Core::RootSignature::ShaderType::VERTEX:
-				errorString += L"顶点着色器";
-				break;
-			case D3D12Core::RootSignature::ShaderType::HULL:
-				errorString += L"外壳着色器";
-				break;
-			case D3D12Core::RootSignature::ShaderType::DOMAIN:
-				errorString += L"域着色器";
-				break;
-			case D3D12Core::RootSignature::ShaderType::GEOMETRY:
-				errorString += L"几何着色器";
-				break;
-			case D3D12Core::RootSignature::ShaderType::PIXEL:
-				errorString += L"像素着色器";
-				break;
-			case D3D12Core::RootSignature::ShaderType::COMPUTE:
-				errorString += L"计算着色器";
-				break;
-			default:
-				break;
-			}
-
-			errorString += L"分配了" + std::to_wstring(numShaderConstants) + L"个可写入常数，但侦测到了" + std::to_wstring(numWrite) + L"个常量写入。请检查你的代码实现！";
-
-			LOGERROR(errorString);
-		}
-	}
-
 	void GraphicsContext::setVSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 #ifdef _DEBUG
@@ -666,9 +612,9 @@ namespace Gear::Core
 
 	void GraphicsContext::resetDepthStencilClearDesc()
 	{
-		if (depthStencilClearDesc.flags)
+		if (depthStencilClearDesc.getFlags())
 		{
-			commandList->clearDepthStencil(depthStencilClearDesc.handle, static_cast<D3D12_CLEAR_FLAGS>(depthStencilClearDesc.flags), depthStencilClearDesc.depth, depthStencilClearDesc.stencil, 0, nullptr);
+			commandList->clearDepthStencil(depthStencilClearDesc.getHandle(), depthStencilClearDesc.getFlags(), depthStencilClearDesc.getDepth(), depthStencilClearDesc.getStencil(), 0, nullptr);
 
 			depthStencilClearDesc.reset();
 		}
@@ -685,7 +631,9 @@ namespace Gear::Core
 			commandList->setGraphicsRootConstantBuffer(D3D12Core::RootSignature::getEngineGlobalConstantBufferParameterIndex(), Graphics::getEngineGlobalCBuffer()->getGPUAddress());
 
 			if (userGlobalCBuffer)
+			{
 				commandList->setGraphicsRootConstantBuffer(D3D12Core::RootSignature::getUserGlobalConstantBufferParameterIndex(), userGlobalCBuffer->getGPUAddress());
+			}
 		}
 	}
 
@@ -700,7 +648,9 @@ namespace Gear::Core
 			commandList->setComputeRootConstantBuffer(D3D12Core::RootSignature::getEngineGlobalConstantBufferParameterIndex(), Graphics::getEngineGlobalCBuffer()->getGPUAddress());
 
 			if (userGlobalCBuffer)
+			{
 				commandList->setComputeRootConstantBuffer(D3D12Core::RootSignature::getUserGlobalConstantBufferParameterIndex(), userGlobalCBuffer->getGPUAddress());
+			}
 		}
 	}
 
@@ -822,12 +772,66 @@ namespace Gear::Core
 		userGlobalCBuffer = nullptr;
 	}
 
-	void GraphicsContext::DepthStencilClearDesc::setHandle(const D3D12_CPU_DESCRIPTOR_HANDLE& handle)
+	void GraphicsContext::constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const
+	{
+		uint32_t numShaderConstants = 0u;
+
+		switch (shaderType)
+		{
+		case D3D12Core::RootSignature::ShaderType::VERTEX:
+		case D3D12Core::RootSignature::ShaderType::HULL:
+		case D3D12Core::RootSignature::ShaderType::DOMAIN:
+		case D3D12Core::RootSignature::ShaderType::GEOMETRY:
+		case D3D12Core::RootSignature::ShaderType::PIXEL:
+			numShaderConstants = getGraphicsRootSignature()->getNumShaderConstants(shaderType);
+			break;
+		case D3D12Core::RootSignature::ShaderType::COMPUTE:
+			numShaderConstants = getComputeRootSignature()->getNumShaderConstants(shaderType);
+			break;
+		default:
+			break;
+		}
+
+		if (numShaderConstants < numWrite)
+		{
+			std::wstring errorString = L"";
+
+			switch (shaderType)
+			{
+			case D3D12Core::RootSignature::ShaderType::VERTEX:
+				errorString += L"顶点着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::HULL:
+				errorString += L"外壳着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::DOMAIN:
+				errorString += L"域着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::GEOMETRY:
+				errorString += L"几何着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::PIXEL:
+				errorString += L"像素着色器";
+				break;
+			case D3D12Core::RootSignature::ShaderType::COMPUTE:
+				errorString += L"计算着色器";
+				break;
+			default:
+				break;
+			}
+
+			errorString += L"分配了" + std::to_wstring(numShaderConstants) + L"个可写入常数，但侦测到了" + std::to_wstring(numWrite) + L"个常量写入。请检查你的代码实现！";
+
+			LOGERROR(errorString);
+		}
+	}
+
+	void GraphicsContext::DepthStencilClearDesc::setHandle(const D3D12_CPU_DESCRIPTOR_HANDLE handle) noexcept
 	{
 		this->handle = handle;
 	}
 
-	void GraphicsContext::DepthStencilClearDesc::setClearData(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
+	void GraphicsContext::DepthStencilClearDesc::setClearData(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil) noexcept
 	{
 		this->flags = flags;
 
@@ -836,8 +840,28 @@ namespace Gear::Core
 		this->stencil = stencil;
 	}
 
-	void GraphicsContext::DepthStencilClearDesc::reset()
+	void GraphicsContext::DepthStencilClearDesc::reset() noexcept
 	{
 		this->flags = 0;
+	}
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GraphicsContext::DepthStencilClearDesc::getHandle() const noexcept
+	{
+		return handle;
+	}
+
+	D3D12_CLEAR_FLAGS GraphicsContext::DepthStencilClearDesc::getFlags() const noexcept
+	{
+		return static_cast<D3D12_CLEAR_FLAGS>(flags);
+	}
+
+	float GraphicsContext::DepthStencilClearDesc::getDepth() const noexcept
+	{
+		return depth;
+	}
+
+	uint8_t GraphicsContext::DepthStencilClearDesc::getStencil() const noexcept
+	{
+		return stencil;
 	}
 }

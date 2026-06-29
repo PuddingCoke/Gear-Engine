@@ -132,8 +132,8 @@ static constexpr uint32_t dsvFormatToIndex(const DXGI_FORMAT format)
 
 namespace Gear::Core::D3D12Core
 {
-	GraphicsState::GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements, std::vector<std::string> semanticNames, D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsDesc, const RootSignature* const rootSignature, const PipelineStateData pipelineStateData) :
-		PipelineState(rootSignature, pipelineStateData), inputElements(std::move(inputElements)), semanticNames(std::move(semanticNames)), graphicsDesc(std::move(graphicsDesc)), currentUID(UINT64_MAX)
+	GraphicsState::GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements, std::vector<std::string> semanticNames, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& graphicsDesc, const RootSignature* const rootSignature, const PipelineStateData pipelineStateData) :
+		PipelineState(rootSignature, pipelineStateData), inputElements(std::move(inputElements)), semanticNames(std::move(semanticNames)), graphicsDesc(graphicsDesc), currentUID(UINT64_MAX)
 	{
 	}
 

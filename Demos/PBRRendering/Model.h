@@ -68,7 +68,7 @@ public:
 	{
 		context->setPSConstantBuffer(*materialBuffer);
 
-		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
+		context->setVertexBuffers({ vertexBuffer->getVertexBuffer() }, 0);
 
 		context->draw(vertexNum, 1, 0, 0);
 	}

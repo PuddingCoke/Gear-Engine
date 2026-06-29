@@ -106,8 +106,6 @@ namespace Gear::Core
 			requires std::is_class_v<StructType>
 		void setCSConstants(const StructType& structVal, uint32_t& offset) const;
 
-		void constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const;
-
 		void setVSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
 
 		void setHSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const;
@@ -165,7 +163,7 @@ namespace Gear::Core
 
 		//设置顶点缓冲
 		template<size_t N>
-		void setVertexBuffers(const uint32_t startSlot, const Resource::VertexBufferDesc(&vertexBuffers)[N]);
+		void setVertexBuffers(const Resource::VertexBufferDesc(&vertexBuffers)[N], const uint32_t startSlot);
 
 		//设置索引缓冲
 		void setIndexBuffer(const Resource::IndexBufferDesc& indexBuffers);
@@ -251,13 +249,29 @@ namespace Gear::Core
 			float clearValue[4];
 		};
 
-		struct DepthStencilClearDesc
+		class DepthStencilClearDesc
 		{
-			void setHandle(const D3D12_CPU_DESCRIPTOR_HANDLE& handle);
+		public:
 
-			void setClearData(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil);
+			DepthStencilClearDesc() = default;
 
-			void reset();
+			~DepthStencilClearDesc() = default;
+
+			void setHandle(const D3D12_CPU_DESCRIPTOR_HANDLE handle) noexcept;
+
+			void setClearData(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil) noexcept;
+
+			void reset() noexcept;
+
+			D3D12_CPU_DESCRIPTOR_HANDLE getHandle() const noexcept;
+
+			D3D12_CLEAR_FLAGS getFlags() const noexcept;
+
+			float getDepth() const noexcept;
+
+			uint8_t getStencil() const noexcept;
+
+		private:
 
 			D3D12_CPU_DESCRIPTOR_HANDLE handle = {};
 
@@ -318,6 +332,9 @@ namespace Gear::Core
 		void resetComputeRootSignature();
 
 		void resetUserGlobalCBuffer();
+
+		//调试用
+		void constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const;
 
 		D3D12_VIEWPORT vp;
 
@@ -545,7 +562,7 @@ namespace Gear::Core
 	}
 
 	template<size_t N>
-	inline void GraphicsContext::setVertexBuffers(const uint32_t startSlot, const Resource::VertexBufferDesc(&vertexBuffers)[N])
+	inline void GraphicsContext::setVertexBuffers(const Resource::VertexBufferDesc(&vertexBuffers)[N], const uint32_t startSlot)
 	{
 #ifdef _DEBUG
 		if (startSlot + N > D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)

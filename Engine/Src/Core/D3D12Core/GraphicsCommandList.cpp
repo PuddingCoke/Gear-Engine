@@ -21,9 +21,7 @@ namespace Gear::Core::D3D12Core
 
 		CHECKERROR(GraphicsDevice::get()->CreateCommandList(0, commandListType, getCommandAllocator(), nullptr, IID_PPV_ARGS(&commandList)));
 
-		setCommandList(commandList.Get());
-
-		close();
+		setAndCloseCommandList(commandList.Get());
 	}
 
 	void GraphicsCommandList::resourceBarrier(const uint32_t numBarriers, const D3D12_RESOURCE_BARRIER* const pBarriers) const
