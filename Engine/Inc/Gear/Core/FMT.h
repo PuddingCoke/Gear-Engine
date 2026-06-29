@@ -11,7 +11,7 @@
 
 #include<cstdint>
 
-#include<dxgiformat.h>
+#include<D3D12Headers/dxgiformat.h>
 
 /// <summary>
 /// 通道顺序 + 每通道比特 + 类型

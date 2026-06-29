@@ -3,12 +3,22 @@
 #ifndef _GEAR_CORE_RENDERENGINE_H_
 #define _GEAR_CORE_RENDERENGINE_H_
 
-#include<Gear/Core/D3D12Core/CommandList.h>
-
 struct ImFont;
+
+struct ID3D12CommandQueue;
 
 namespace Gear::Core
 {
+	namespace D3D12Core
+	{
+		class CommandList;
+	}
+
+	namespace D3D12Resource
+	{
+		class Texture;
+	}
+
 	enum class AdapterVendor
 	{
 		NVIDIA,

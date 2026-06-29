@@ -323,7 +323,7 @@ namespace Gear::Core::D3D12Resource
 		{
 			const uint32_t tempState = pendingState->mipLevelStates[0];
 
-			const bool uniformState = pendingState->allOfEqual(tempState);
+			const bool uniformState = ((tempState == D3D12_RESOURCE_STATE_UNKNOWN) ? false : pendingState->allOfEqual(tempState));
 
 			if (uniformState)
 			{
@@ -364,7 +364,7 @@ namespace Gear::Core::D3D12Resource
 
 					for (uint32_t mipSlice = 0; mipSlice < mipLevels; mipSlice++)
 					{
-						//未知
+						//检测到状态不相等就进行转换
 						if (globalState->mipLevelStates[mipSlice] != pendingState->mipLevelStates[mipSlice])
 						{
 							for (uint32_t arraySlice = 0; arraySlice < arraySize; arraySlice++)
@@ -501,17 +501,7 @@ namespace Gear::Core::D3D12Resource
 		{
 			if (mipLevels > 1)
 			{
-				transitionState->forEach([state](uint32_t& element)
-					{
-						if (element == D3D12_RESOURCE_STATE_UNKNOWN)
-						{
-							element = state;
-						}
-						else
-						{
-							element = (element | state);
-						}
-					});
+				transitionState->combine(state);
 			}
 			else
 			{
@@ -520,7 +510,7 @@ namespace Gear::Core::D3D12Resource
 		}
 		else if (!Utils::Math::bitFlagSubset(internalState->allState, state))
 		{
-			transitionState->combine(state);
+			transitionState->combineSimple(state);
 		}
 	}
 
@@ -549,7 +539,7 @@ namespace Gear::Core::D3D12Resource
 			}
 			else
 			{
-				transitionState->combine(state);
+				transitionState->combineSimple(state);
 			}
 		}
 	}
@@ -564,34 +554,56 @@ namespace Gear::Core::D3D12Resource
 	{
 	}
 
-	void Texture::States::set(const uint32_t state)
+	void Texture::States::set(const uint32_t state) noexcept
 	{
 		allState = state;
 
-		std::fill(mipLevelStates.get(), mipLevelStates.get() + mipLevels, state);
+		for (uint32_t i = 0; i < mipLevels; i++)
+		{
+			mipLevelStates[i] = state;
+		}
 	}
 
-	void Texture::States::reset()
+	void Texture::States::reset() noexcept
 	{
 		set(D3D12_RESOURCE_STATE_UNKNOWN);
 	}
 
-	void Texture::States::combine(const uint32_t state)
+	void Texture::States::combineSimple(const uint32_t state) noexcept
 	{
 		allState = (allState | state);
 
-		forEach([state](uint32_t& element)
-			{
-				element = (element | state);
-			});
+		for (uint32_t i = 0; i < mipLevels; i++)
+		{
+			mipLevelStates[i] = mipLevelStates[i] | state;
+		}
 	}
 
-	bool Texture::States::allOfEqual(const uint32_t state) const
+	void Texture::States::combine(const uint32_t state) noexcept
 	{
-		return std::all_of(mipLevelStates.get(), mipLevelStates.get() + mipLevels,
-			[state](const uint32_t element)
+		for (uint32_t i = 0; i < mipLevels; i++)
+		{
+			if (mipLevelStates[i] == D3D12_RESOURCE_STATE_UNKNOWN)
 			{
-				return element == state;
-			});
+				mipLevelStates[i] = state;
+			}
+			else
+			{
+				mipLevelStates[i] = mipLevelStates[i] | state;
+			}
+		}
+	}
+
+	bool Texture::States::allOfEqual(const uint32_t state) const noexcept
+	{
+		for (uint32_t i = 0; i < mipLevels; i++)
+		{
+			if (state != mipLevelStates[i])
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

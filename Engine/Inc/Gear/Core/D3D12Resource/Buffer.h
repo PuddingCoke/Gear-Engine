@@ -5,8 +5,6 @@
 
 #include"D3D12ResourceBase.h"
 
-#include<vector>
-
 namespace Gear::Core::D3D12Resource
 {
 	CREATESAFETYPE(Buffer);

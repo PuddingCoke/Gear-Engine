@@ -5,6 +5,8 @@
 
 #include<Gear/Core/GraphicsDevice.h>
 
+#include<vector>
+
 namespace Gear::Core::D3D12Resource
 {
 	//用于内部状态、转变状态、全局状态、待定状态

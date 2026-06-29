@@ -5,10 +5,6 @@
 
 #include"D3D12ResourceBase.h"
 
-#include<vector>
-
-#include<algorithm>
-
 namespace Gear::Core::D3D12Resource
 {
 	CREATESAFETYPE(Texture);
@@ -81,16 +77,20 @@ namespace Gear::Core::D3D12Resource
 
 			~States();
 
-			void set(const uint32_t state);
+			//直接设置状态
+			void set(const uint32_t state) noexcept;
 
-			void combine(const uint32_t state);
+			//不考虑D3D12_RESOURCE_STATE_UNKNOWN的情况
+			void combineSimple(const uint32_t state) noexcept;
 
-			void reset();
+			//考虑D3D12_RESOURCE_STATE_UNKNOWN的情况
+			void combine(const uint32_t state) noexcept;
 
-			bool allOfEqual(const uint32_t state) const;
+			//重置状态为D3D12_RESOURCE_STATE_UNKNOWN
+			void reset() noexcept;
 
-			template<typename Func>
-			void forEach(const Func& func) const;
+			//检查各个miplevel的状态是否都为state状态
+			bool allOfEqual(const uint32_t state) const noexcept;
 
 			const uint32_t mipLevels;
 
@@ -108,12 +108,6 @@ namespace Gear::Core::D3D12Resource
 		UniquePtr<States> pendingState;
 
 	};
-
-	template<typename Func>
-	inline void Texture::States::forEach(const Func& func) const
-	{
-		std::for_each(mipLevelStates.get(), mipLevelStates.get() + mipLevels, func);
-	}
 }
 
 #endif // !_GEAR_CORE_D3D12RESOURCE_TEXTURE_H_
