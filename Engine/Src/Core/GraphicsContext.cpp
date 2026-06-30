@@ -106,7 +106,7 @@ namespace Gear::Core
 	void GraphicsContext::setVSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 #ifdef _DEBUG
-		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::VERTEX, numValues);
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::VERTEX, numValues, offset);
 #endif // _DEBUG
 
 		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getVSConstantsParameterIndex(), numValues, data, offset);
@@ -117,7 +117,7 @@ namespace Gear::Core
 	void GraphicsContext::setHSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 #ifdef _DEBUG
-		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::HULL, numValues);
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::HULL, numValues, offset);
 #endif // _DEBUG
 
 		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getHSConstantsParameterIndex(), numValues, data, offset);
@@ -128,7 +128,7 @@ namespace Gear::Core
 	void GraphicsContext::setDSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 #ifdef _DEBUG
-		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::DOMAIN, numValues);
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::DOMAIN, numValues, offset);
 #endif // _DEBUG
 
 		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getDSConstantsParameterIndex(), numValues, data, offset);
@@ -139,7 +139,7 @@ namespace Gear::Core
 	void GraphicsContext::setGSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 #ifdef _DEBUG
-		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::GEOMETRY, numValues);
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::GEOMETRY, numValues, offset);
 #endif // _DEBUG
 
 		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getGSConstantsParameterIndex(), numValues, data, offset);
@@ -150,7 +150,7 @@ namespace Gear::Core
 	void GraphicsContext::setPSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 #ifdef _DEBUG
-		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::PIXEL, numValues);
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::PIXEL, numValues, offset);
 #endif // _DEBUG
 
 		commandList->setGraphicsRootConstants(getGraphicsRootSignature()->getPSConstantsParameterIndex(), numValues, data, offset);
@@ -161,7 +161,7 @@ namespace Gear::Core
 	void GraphicsContext::setCSConstants(const uint32_t numValues, const void* const data, uint32_t& offset) const
 	{
 #ifdef _DEBUG
-		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::COMPUTE, numValues);
+		constantsWriteCheck(D3D12Core::RootSignature::ShaderType::COMPUTE, numValues, offset);
 #endif // _DEBUG
 
 		commandList->setComputeRootConstants(getComputeRootSignature()->getCSConstantsParameterIndex(), numValues, data, offset);
@@ -772,7 +772,7 @@ namespace Gear::Core
 		userGlobalCBuffer = nullptr;
 	}
 
-	void GraphicsContext::constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const
+	void GraphicsContext::constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite, const uint32_t offset) const
 	{
 		uint32_t numShaderConstants = 0u;
 
@@ -792,37 +792,35 @@ namespace Gear::Core
 			break;
 		}
 
-		if (numShaderConstants < numWrite)
+		if (numShaderConstants < numWrite + offset)
 		{
-			std::wstring errorString = L"";
+			std::wstring shaderName = L"";
 
 			switch (shaderType)
 			{
 			case D3D12Core::RootSignature::ShaderType::VERTEX:
-				errorString += L"顶点着色器";
+				shaderName = L"顶点着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::HULL:
-				errorString += L"外壳着色器";
+				shaderName = L"外壳着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::DOMAIN:
-				errorString += L"域着色器";
+				shaderName = L"域着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::GEOMETRY:
-				errorString += L"几何着色器";
+				shaderName = L"几何着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::PIXEL:
-				errorString += L"像素着色器";
+				shaderName = L"像素着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::COMPUTE:
-				errorString += L"计算着色器";
+				shaderName = L"计算着色器";
 				break;
 			default:
 				break;
 			}
 
-			errorString += L"分配了" + std::to_wstring(numShaderConstants) + L"个可写入常数，但侦测到了" + std::to_wstring(numWrite) + L"个常量写入。请检查你的代码实现！";
-
-			LOGERROR(errorString);
+			LOGERROR(L"侦测到常量写入终止位置", offset + numWrite - 1u, L"越界", shaderName, L"的常量写入终止位置最高为", numShaderConstants - 1u);
 		}
 	}
 

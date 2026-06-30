@@ -333,8 +333,8 @@ namespace Gear::Core
 
 		void resetUserGlobalCBuffer();
 
-		//调试用
-		void constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite) const;
+		//DEBUG用
+		void constantsWriteCheck(const D3D12Core::RootSignature::ShaderType shaderType, const uint32_t numWrite, const uint32_t offset) const;
 
 		D3D12_VIEWPORT vp;
 
