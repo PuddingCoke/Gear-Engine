@@ -10,6 +10,8 @@
 
 #include<Gear/Utils/File.h>
 
+#include<Gear/Utils/MainMonitor.h>
+
 #include<Gear/Core/D3D12Core/CommonShaderLayout.h>
 
 #include<Gear/Core/Internal/GraphicsInternal.h>
@@ -55,6 +57,8 @@ namespace Gear::Core::RenderEngine
 
 				ImGui::StyleColorsDark();
 
+				ImGui::GetStyle().ScaleAllSizes(Utils::MainMonitor::getScale());
+
 				const D3D12Core::DescriptorHandle handle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(1);
 
 				ImGui_ImplWin32_Init(hWnd);
@@ -81,9 +85,9 @@ namespace Gear::Core::RenderEngine
 				builder.BuildRanges(&ranges);
 
 				//加载微软雅黑字体
-				*mediumFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 22.f, nullptr, ranges.Data);
+				*mediumFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 18.f * Utils::MainMonitor::getScale(), nullptr, ranges.Data);
 
-				*largeFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 28.f, nullptr, ranges.Data);
+				*largeFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 22.f * Utils::MainMonitor::getScale(), nullptr, ranges.Data);
 
 				io.FontDefault = *mediumFont;
 

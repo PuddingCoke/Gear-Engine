@@ -1,29 +1,11 @@
 ﻿#include<Gear/Utils/WallpaperHelper.h>
 
+#include<Gear/Utils/MainMonitor.h>
+
 #include<Gear/Utils/Logger.h>
 
 namespace Gear::Utils::WallpaperHelper
 {
-	void getSystemResolution(uint32_t& width, uint32_t& height)
-	{
-		HMONITOR monitor = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
-
-		MONITORINFOEX monitorInfo;
-		monitorInfo.cbSize = sizeof(MONITORINFOEX);
-
-		GetMonitorInfo(monitor, &monitorInfo);
-
-		DEVMODE devMode;
-		devMode.dmSize = sizeof(DEVMODE);
-		devMode.dmDriverExtra = 0;
-
-		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
-
-		width = devMode.dmPelsWidth;
-
-		height = devMode.dmPelsHeight;
-	}
-
 	HWND getWallpaperHWND()
 	{
 		const HWND progman = FindWindow(L"ProgMan", nullptr);
@@ -55,13 +37,11 @@ namespace Gear::Utils::WallpaperHelper
 		ObscureDetectThread() :
 			obscured(false), running(true)
 		{
-			getSystemResolution(w, h);
-
 			RECT workArea;
 
 			if (SystemParametersInfoW(SPI_GETWORKAREA, 0, &workArea, 0))
 			{
-				taskBarHeight = static_cast<uint32_t>(h - workArea.bottom);
+				taskBarHeight = static_cast<uint32_t>(MainMonitor::getHeight() - workArea.bottom);
 			}
 			else
 			{
@@ -92,10 +72,6 @@ namespace Gear::Utils::WallpaperHelper
 		std::atomic<bool> obscured;
 
 		std::atomic<bool> running;
-
-		uint32_t w;
-
-		uint32_t h;
 
 		uint32_t taskBarHeight;
 
@@ -148,9 +124,9 @@ namespace Gear::Utils::WallpaperHelper
 		{
 			const float marginRatio = 90.0f / 1600.0f;
 
-			const float topY_f = h * marginRatio;
+			const float topY_f = MainMonitor::getHeight() * marginRatio;
 
-			const float bottomBoundary_f = h - taskBarHeight - h * marginRatio;
+			const float bottomBoundary_f = MainMonitor::getHeight() - taskBarHeight - MainMonitor::getHeight() * marginRatio;
 
 			const float vRange_f = bottomBoundary_f - topY_f;
 
@@ -170,9 +146,9 @@ namespace Gear::Utils::WallpaperHelper
 
 			const float xMarginRatio = 90.0f / 2560.0f;         // 水平边距比例
 
-			const float leftX_f = w * xMarginRatio;
+			const float leftX_f = MainMonitor::getWidth() * xMarginRatio;
 
-			const float rightX_f = w - w * xMarginRatio;
+			const float rightX_f = MainMonitor::getWidth() - MainMonitor::getWidth() * xMarginRatio;
 
 			const float hRange_f = rightX_f - leftX_f;
 

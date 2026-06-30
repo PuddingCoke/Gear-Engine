@@ -11,8 +11,6 @@
 
 namespace Gear::Utils::WallpaperHelper
 {
-	void getSystemResolution(uint32_t& width, uint32_t& height);
-
 	HWND getWallpaperHWND();
 
 	bool isDesktopObscured();

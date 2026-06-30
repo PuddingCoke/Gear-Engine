@@ -89,6 +89,9 @@ namespace Gear::Utils::Logger
 		//原生窄字符串
 		void packArgument(const char* arg);
 
+		//布尔类型
+		void packArgument(const bool& arg);
+
 		//有符号32位整数
 		void packArgument(const int32_t& arg);
 

@@ -319,7 +319,7 @@ namespace Gear::Core
 		{
 			primitiveTopology = topology;
 
-			primitiveTopologyType = getTopologyType(topology);
+			transientPrimitiveTopologyType = getTopologyType(topology);
 
 			commandList->setPrimitiveTopology(primitiveTopology);
 
@@ -430,7 +430,7 @@ namespace Gear::Core
 		//所以能保证切换图形管线状态时setPipelineState被调用
 		if (switchGraphicsPipelineState)
 		{
-			graphicsState->updatePipelineState(transientRTVFormats.data(), transientNumRTV, transientDSVFormat, primitiveTopologyType);
+			graphicsState->updatePipelineState(transientRTVFormats.data(), transientNumRTV, transientDSVFormat, transientPrimitiveTopologyType);
 
 			setPipelineState(graphicsState->getPipelineState());
 
@@ -457,7 +457,7 @@ namespace Gear::Core
 
 		if (switchGraphicsPipelineState)
 		{
-			graphicsState->updatePipelineState(transientRTVFormats.data(), transientNumRTV, transientDSVFormat, primitiveTopologyType);
+			graphicsState->updatePipelineState(transientRTVFormats.data(), transientNumRTV, transientDSVFormat, transientPrimitiveTopologyType);
 
 			setPipelineState(graphicsState->getPipelineState());
 
@@ -759,7 +759,7 @@ namespace Gear::Core
 	{
 		primitiveTopology = TOPOLOGY::UNDEFINED;
 
-		primitiveTopologyType = TOPOLOGY::TYPE::UNDEFINED;
+		transientPrimitiveTopologyType = TOPOLOGY::TYPE::UNDEFINED;
 	}
 
 	void GraphicsContext::resetComputeRootSignature()

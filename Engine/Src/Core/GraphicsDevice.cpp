@@ -107,9 +107,9 @@ namespace Gear::Core::GraphicsDevice
 			}
 
 			{
-				const BOOL typedUAVLoad = features.TypedUAVLoadAdditionalFormats();
+				const bool typedUAVLoad = features.TypedUAVLoadAdditionalFormats();
 
-				LOGENGINE(L"有类型UAV读取", (typedUAVLoad ? LogColor::brightGreen : LogColor::brightRed), (typedUAVLoad ? L"YES" : L"NO"));
+				LOGENGINE(L"有类型UAV读取", typedUAVLoad);
 
 				if (!typedUAVLoad)
 				{

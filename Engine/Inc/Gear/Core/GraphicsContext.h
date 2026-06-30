@@ -349,8 +349,6 @@ namespace Gear::Core
 
 		D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
 
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE primitiveTopologyType;
-
 		const D3D12Core::RootSignature* graphicsRootSignature;
 
 		const D3D12Core::RootSignature* computeRootSignature;
@@ -374,6 +372,8 @@ namespace Gear::Core
 		std::array<DXGI_FORMAT, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> transientRTVFormats;
 
 		uint32_t transientNumRTV;
+
+		D3D12_PRIMITIVE_TOPOLOGY_TYPE transientPrimitiveTopologyType;
 
 		DXGI_FORMAT transientDSVFormat;
 

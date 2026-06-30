@@ -66,6 +66,22 @@ namespace Gear::Utils::Logger
 		*messageStr += L" ";
 	}
 
+	void LogContext::packArgument(const bool& arg)
+	{
+		if (arg)
+		{
+			setDisplayColor(LogColor::brightGreen);
+
+			*messageStr += L"TRUE ";
+		}
+		else
+		{
+			setDisplayColor(LogColor::brightRed);
+
+			*messageStr += L"FALSE ";
+		}
+	}
+
 	void LogContext::packArgument(const int32_t& arg)
 	{
 		setDisplayColor(LogColor::numericColor);

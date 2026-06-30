@@ -193,11 +193,13 @@
     <ClInclude Include="Inc\Gear\Resource\BufferView.h" />
     <ClInclude Include="Inc\Gear\Resource\CounterBufferView.h" />
     <ClInclude Include="Inc\Gear\Core\FMT.h" />
+    <ClInclude Include="Inc\Gear\Utils\Internal\MainMonitorInternal.h" />
     <ClInclude Include="Inc\Gear\Utils\Logger.h" />
     <ClInclude Include="Inc\Gear\Utils\Internal\LoggerInternal.h" />
     <ClInclude Include="Inc\Gear\Utils\Logger\LogColor.h" />
     <ClInclude Include="Inc\Gear\Utils\Logger\LogContext.h" />
     <ClInclude Include="Inc\Gear\Utils\Internal\FileInternal.h" />
+    <ClInclude Include="Inc\Gear\Utils\MainMonitor.h" />
     <ClInclude Include="Inc\Gear\Utils\Memory.h" />
     <ClInclude Include="Inc\Gear\Utils\StaticVector.h" />
     <ClInclude Include="Inc\Gear\Utils\String.h" />
@@ -334,6 +336,7 @@
     <ClCompile Include="Src\Utils\Logger.cpp" />
     <ClCompile Include="Src\Utils\Logger\LogColor.cpp" />
     <ClCompile Include="Src\Utils\Logger\LogContext.cpp" />
+    <ClCompile Include="Src\Utils\MainMonitor.cpp" />
     <ClCompile Include="Src\Utils\Math.cpp" />
     <ClCompile Include="Src\Utils\Random.cpp" />
     <ClCompile Include="Src\Utils\String.cpp" />

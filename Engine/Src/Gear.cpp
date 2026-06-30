@@ -10,6 +10,10 @@
 
 #include<Gear/Input/Keyboard.h>
 
+#include<Gear/Utils/MainMonitor.h>
+
+#include<Gear/Utils/Internal/MainMonitorInternal.h>
+
 #include<Gear/Utils/File.h>
 
 #include<Gear/Utils/Internal/FileInternal.h>
@@ -120,9 +124,7 @@ namespace Gear
 
 		usage = param.usage;
 
-		DirectX::XMUINT2 systemResolution = {};
-
-		WallpaperHelper::getSystemResolution(systemResolution.x, systemResolution.y);
+		MainMonitor::Internal::getSettings();
 
 		switch (usage)
 		{
@@ -130,7 +132,8 @@ namespace Gear
 
 			realTimeRender = param.realTimeRender;
 
-			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, (systemResolution.x - realTimeRender.width) / 2, (systemResolution.y - realTimeRender.height) / 2,
+			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title,
+				(MainMonitor::getWidth() - realTimeRender.width) / 2, (MainMonitor::getHeight() - realTimeRender.height) / 2,
 				realTimeRender.width, realTimeRender.height, Window::Win32Form::normalWindowStyle, Window::Win32Form::windowCallback);
 
 			renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(realTimeRender.width, realTimeRender.height, Window::Win32Form::getHandle(), true, realTimeRender.enableImGuiSurface);
@@ -159,7 +162,7 @@ namespace Gear
 
 		case InitializationParam::EngineUsage::WALLPAPER:
 
-			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, 0, 0, systemResolution.x, systemResolution.y, Window::Win32Form::wallpaperWindowStyle, Window::Win32Form::wallpaperCallBack);
+			windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, 0, 0, MainMonitor::getWidth(), MainMonitor::getHeight(), Window::Win32Form::wallpaperWindowStyle, Window::Win32Form::wallpaperCallBack);
 
 			{
 				const HWND parentHWND = WallpaperHelper::getWallpaperHWND();
@@ -167,7 +170,7 @@ namespace Gear
 				SetParent(Window::Win32Form::getHandle(), parentHWND);
 			}
 
-			renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(systemResolution.x, systemResolution.y, Window::Win32Form::getHandle(), true, false);
+			renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(MainMonitor::getWidth(), MainMonitor::getHeight(), Window::Win32Form::getHandle(), true, false);
 
 			LOGENGINE(L"引擎用途", L"动态壁纸");
 
@@ -214,6 +217,8 @@ namespace Gear
 	void GearImpl::runRealTimeRender()
 	{
 		DeltaTimeEstimator dtEstimator;
+
+		RenderEngine::Internal::setDeltaTime(1.f / static_cast<float>(MainMonitor::getRefreshRate()));
 
 		while (Window::Win32Form::pollEvents())
 		{
@@ -377,6 +382,8 @@ namespace Gear
 		DeltaTimeEstimator dtEstimator;
 
 		WallpaperHelper::DetectThreadToken detectThreadToken;
+
+		RenderEngine::Internal::setDeltaTime(1.f / static_cast<float>(MainMonitor::getRefreshRate()));
 
 		while (Window::Win32Form::pollEvents())
 		{
