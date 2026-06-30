@@ -3,9 +3,9 @@
 #ifndef _GEAR_UTILS_WALLPAPERHELPER_H_
 #define _GEAR_UTILS_WALLPAPERHELPER_H_
 
-#include<cstdint>
-
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif // !NOMINMAX
 
 #include<Windows.h>
 

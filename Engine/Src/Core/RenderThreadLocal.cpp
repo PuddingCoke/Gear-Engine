@@ -2,8 +2,6 @@
 
 #include<Gear/Core/Internal/RenderThreadLocalInternal.h>
 
-#include<Gear/Core/RenderEngine.h>
-
 #include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
 
 #include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>

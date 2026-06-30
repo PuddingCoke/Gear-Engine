@@ -3,7 +3,9 @@
 #ifndef _GEAR_WINDOW_WIN32FORM_H_
 #define _GEAR_WINDOW_WIN32FORM_H_
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif // !NOMINMAX
 
 #include<Windows.h>
 

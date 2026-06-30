@@ -7,8 +7,6 @@
 
 #include<vector>
 
-#define NOMINMAX
-
 namespace Gear::Utils::File
 {
 	//获取EXE执行目录

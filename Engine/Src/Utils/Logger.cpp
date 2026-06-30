@@ -8,10 +8,6 @@
 
 #include<queue>
 
-#define NOMINMAX
-
-#include<Windows.h>
-
 namespace Gear::Utils::Logger
 {
 	namespace Internal

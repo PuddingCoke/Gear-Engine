@@ -4,6 +4,8 @@
 
 #include<Gear/Utils/Logger.h>
 
+#include<cstdint>
+
 namespace Gear::Utils::WallpaperHelper
 {
 	HWND getWallpaperHWND()

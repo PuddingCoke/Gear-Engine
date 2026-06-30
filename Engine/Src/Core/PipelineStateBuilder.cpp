@@ -8,8 +8,6 @@
 
 #include<Gear/Core/FMT.h>
 
-#include<Gear/Core/TOPOLOGY.h>
-
 namespace Gear::Core
 {
 	PipelineStateBuilder::PipelineStateBuilder() :

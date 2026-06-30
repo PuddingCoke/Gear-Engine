@@ -1,5 +1,9 @@
 ﻿#include<Gear/Utils/String.h>
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif // !NOMINMAX
+
 #include<Windows.h>
 
 namespace Gear::Utils::String
