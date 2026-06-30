@@ -167,8 +167,8 @@ public:
 	void render(GraphicsContext* const context)
 	{
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
-		context->setVertexBuffers({ modelBuffer->getVertexBuffer() }, 0);
-		context->setIndexBuffer(indexBuffer->getIndexBuffer());
+		context->setVertexBuffers({ *modelBuffer }, 0);
+		context->setIndexBuffer(*indexBuffer);
 
 		for (uint32_t i = 0; i < models.size(); i++)
 		{
@@ -181,8 +181,8 @@ public:
 	void renderCube(GraphicsContext* const context)
 	{
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
-		context->setVertexBuffers({ modelBuffer->getVertexBuffer() }, 0);
-		context->setIndexBuffer(indexBuffer->getIndexBuffer());
+		context->setVertexBuffers({ *modelBuffer }, 0);
+		context->setIndexBuffer(*indexBuffer);
 
 		for (uint32_t i = 0; i < models.size(); i++)
 		{

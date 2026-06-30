@@ -48,6 +48,10 @@ namespace Gear::Resource
 
 		UpdateStruct getUpdateStruct(const void* const data, const uint64_t size);
 
+		operator VertexBufferDesc() const;
+
+		operator IndexBufferDesc() const;
+
 	private:
 
 		const bool hasSRV;

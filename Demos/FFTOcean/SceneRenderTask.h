@@ -251,7 +251,7 @@ private:
 
 		context->setVertexBuffers(0, { vertexBuffer->getVertexBuffer() });
 
-		context->setIndexBuffer(indexBuffer->getIndexBuffer());
+		context->setIndexBuffer(*indexBuffer);
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
@@ -286,9 +286,9 @@ private:
 
 			context->setPrimitiveTopology(TOPOLOGY::PATCH3CONTROL);
 
-			context->setVertexBuffers({ vertexBuffer->getVertexBuffer() }, 0);
+			context->setVertexBuffers({ *vertexBuffer }, 0);
 
-			context->setIndexBuffer(indexBuffer->getIndexBuffer());
+			context->setIndexBuffer(*indexBuffer);
 
 			context->setRenderTargets({ originTexture->getRTVMip(0) }, depthTexture->getDSVMip(0));
 

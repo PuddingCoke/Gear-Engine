@@ -289,4 +289,14 @@ namespace Gear::Resource
 
 		return updateStruct;
 	}
+
+	BufferView::operator VertexBufferDesc() const
+	{
+		return getVertexBuffer();
+	}
+
+	BufferView::operator IndexBufferDesc() const
+	{
+		return getIndexBuffer();
+	}
 }

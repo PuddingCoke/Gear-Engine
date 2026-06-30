@@ -119,10 +119,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::POINTLIST);
 
-		context->setVertexBuffers({
-			positionBuffer->getVertexBuffer(),
-			colorBuffer->getVertexBuffer()
-			}, 0);
+		context->setVertexBuffers({ *positionBuffer,*colorBuffer }, 0);
 
 		SETCONSTS({
 		context->setGSConstants(simulationParam, co);

@@ -29,6 +29,10 @@ namespace Gear::Resource
 
 		UAVClearDesc getUAVClearDesc() const;
 
+		operator VertexBufferDesc() const;
+
+		operator IndexBufferDesc() const;
+
 	};
 
 }

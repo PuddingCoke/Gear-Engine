@@ -31,4 +31,14 @@ namespace Gear::Resource
 	{
 		return write()->getUAVClearDesc();
 	}
+
+	SwapBuffer::operator VertexBufferDesc() const
+	{
+		return getVertexBuffer();
+	}
+
+	SwapBuffer::operator IndexBufferDesc() const
+	{
+		return getIndexBuffer();
+	}
 }

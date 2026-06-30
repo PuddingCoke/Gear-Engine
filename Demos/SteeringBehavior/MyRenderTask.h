@@ -96,7 +96,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::POINTLIST);
 
-		context->setVertexBuffers({ positionVelocity->getVertexBuffer() }, 0);
+		context->setVertexBuffers({ *positionVelocity }, 0);
 
 		SETCONSTS({
 		context->setPSConstants({ arrowTexture->getAllSRVIndex() }, co);
