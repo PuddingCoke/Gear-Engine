@@ -59,7 +59,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Inc;$(ProjectDir)External;$(ProjectDir)Inc\D3D12Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Inc;$(ProjectDir)External;$(ProjectDir)External\D3D12Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -92,7 +92,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Inc;$(ProjectDir)External;$(ProjectDir)Inc\D3D12Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Inc;$(ProjectDir)External;$(ProjectDir)External\D3D12Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,29 +114,6 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Inc\D3D12Headers\d3d12.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3d12compatibility.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3d12sdklayers.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3d12shader.h" />
-    <ClInclude Include="Inc\D3D12Headers\D3D12TokenizedProgramFormat.hpp" />
-    <ClInclude Include="Inc\D3D12Headers\d3d12video.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dcommon.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_barriers.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_check_feature_support.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_core.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_default.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_pipeline_state_stream.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_property_format_table.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_render_pass.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_resource_helpers.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_root_signature.h" />
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_state_object.h" />
-    <ClInclude Include="Inc\D3D12Headers\dxcore.h" />
-    <ClInclude Include="Inc\D3D12Headers\dxcore_interface.h" />
-    <ClInclude Include="Inc\D3D12Headers\dxgicommon.h" />
-    <ClInclude Include="Inc\D3D12Headers\dxgiformat.h" />
-    <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader12.h" />
     <ClInclude Include="Inc\Gear\Camera\OrbitCamera.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ComputeState.h" />
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DescriptorHandle.h" />
@@ -204,15 +181,6 @@
     <ClInclude Include="Inc\Gear\Utils\StaticVector.h" />
     <ClInclude Include="Inc\Gear\Utils\String.h" />
     <ClInclude Include="Inc\Gear\Utils\WallpaperHelper.h" />
-    <ClInclude Include="Inc\ImGUI\imconfig.h" />
-    <ClInclude Include="Inc\ImGUI\imgui.h" />
-    <ClInclude Include="Inc\ImGUI\imgui_impl_dx12.h" />
-    <ClInclude Include="Inc\ImGUI\imgui_impl_win32.h" />
-    <ClInclude Include="Inc\ImGUI\imgui_internal.h" />
-    <ClInclude Include="Inc\ImGUI\imstb_rectpack.h" />
-    <ClInclude Include="Inc\ImGUI\imstb_textedit.h" />
-    <ClInclude Include="Inc\ImGUI\imstb_truetype.h" />
-    <ClInclude Include="External\stb_image\stb_image_write.h" />
     <ClInclude Include="Inc\Gear\Camera\FPSCamera.h" />
     <ClInclude Include="Inc\Gear\InitializationParam.h" />
     <ClInclude Include="Inc\Gear\Core\MainCamera.h" />
@@ -253,97 +221,94 @@
     <ClInclude Include="Inc\Gear\Utils\Timer.h" />
     <ClInclude Include="Inc\Gear\Utils\File.h" />
     <ClInclude Include="Inc\Gear\Window\Win32Form.h" />
-    <ClInclude Include="Inc\stb_image_write.h" />
-    <ClInclude Include="Inc\WICTextureLoader\WICTextureLoader12.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\GraphicsCommandList.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\VideoProcessCommandList.cpp" />
-    <ClCompile Include="Src\Core\D3D12Resource\VideoTexture.cpp" />
-    <ClCompile Include="Src\Resource\SwapBuffer.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\GraphicsState.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp" />
-    <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp" />
-    <ClCompile Include="Src\Core\RenderThreadGlobal.cpp" />
-    <ClCompile Include="Src\Core\RenderThreadLocal.cpp" />
-    <ClCompile Include="Src\Effect\HBAOPlusEffect.cpp" />
-    <ClCompile Include="Src\Effect\SSREffect.cpp" />
-    <ClCompile Include="Src\Effect\GammaCorrectEffect.cpp" />
-    <ClCompile Include="Src\Effect\ToneMapEffect.cpp" />
-    <ClCompile Include="Src\Core\RenderThread.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\ResourceStateTracker.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\DescriptorHandle.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\DXCCompiler.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\PipelineState.cpp" />
-    <ClCompile Include="Src\Core\GlobalShader.cpp" />
-    <ClCompile Include="Src\Core\PipelineStateBuilder.cpp" />
-    <ClCompile Include="Src\Resource\DynamicCBuffer.cpp" />
-    <ClCompile Include="Src\Resource\DefaultCBuffer.cpp" />
-    <ClCompile Include="Src\Effect\BackBufferBlitEffect.cpp" />
-    <ClCompile Include="Src\Effect\LatLongMapToCubeMapEffect.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_demo.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_draw.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_impl_dx12.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_tables.cpp" />
-    <ClCompile Include="Inc\ImGUI\imgui_widgets.cpp" />
-    <ClCompile Include="Src\Camera\FPSCamera.cpp" />
-    <ClCompile Include="Src\Camera\OrbitCamera.cpp" />
-    <ClCompile Include="Src\Core\MainCamera.cpp" />
-    <ClCompile Include="Src\Core\DynamicCBufferManager.cpp" />
-    <ClCompile Include="Src\Effect\FXAAEffect.cpp" />
-    <ClCompile Include="Src\Core\RenderTask.cpp" />
-    <ClCompile Include="Src\Effect\HDRClampEffect.cpp" />
-    <ClCompile Include="Src\Core\LocalDescriptorHeap.cpp" />
-    <ClCompile Include="Src\Utils\DeltaTimeEstimator.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\DescriptorHeap.cpp" />
-    <ClCompile Include="Src\Core\D3D12Resource\ReadbackHeap.cpp" />
-    <ClCompile Include="Src\Effect\BloomEffect.cpp" />
-    <ClCompile Include="Src\Effect\EffectBase.cpp" />
-    <ClCompile Include="Src\Core\Gear2D\PrimitiveBatch.cpp" />
-    <ClCompile Include="Src\Core\GlobalDescriptorHeap.cpp" />
-    <ClCompile Include="Src\Core\GlobalRootSignature.cpp" />
-    <ClCompile Include="Src\Core\GraphicsContext.cpp" />
-    <ClCompile Include="Src\Core\RenderEngine.cpp" />
-    <ClCompile Include="Src\Core\D3D12Resource\Texture.cpp" />
-    <ClCompile Include="Src\Core\Graphics.cpp" />
-    <ClCompile Include="Src\Core\D3D12Resource\Buffer.cpp" />
-    <ClCompile Include="Src\InitializationParam.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\CommandList.cpp" />
-    <ClCompile Include="Src\Core\D3D12Resource\D3D12ResourceBase.cpp" />
-    <ClCompile Include="Src\Core\D3D12Resource\UploadHeap.cpp" />
-    <ClCompile Include="Src\Core\GraphicsDevice.cpp" />
-    <ClCompile Include="Src\Core\ResourceManager.cpp" />
-    <ClCompile Include="Src\Resource\BufferView.cpp" />
-    <ClCompile Include="Src\Resource\ImmutableCBuffer.cpp" />
-    <ClCompile Include="Src\Resource\CounterBufferView.cpp" />
-    <ClCompile Include="Src\Resource\ResourceBase.cpp" />
-    <ClCompile Include="Src\Resource\SwapTexture.cpp" />
-    <ClCompile Include="Src\Resource\DepthTextureView.cpp" />
-    <ClCompile Include="Src\Resource\RenderTextureView.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\RootSignature.cpp" />
-    <ClCompile Include="Src\Core\D3D12Core\Shader.cpp" />
-    <ClCompile Include="Src\Core\VideoEncoder\Encoder.cpp" />
-    <ClCompile Include="Src\Core\VideoEncoder\NVIDIAEncoder.cpp" />
-    <ClCompile Include="Src\Game.cpp" />
-    <ClCompile Include="Src\Gear.cpp" />
-    <ClCompile Include="Src\Input\Event.cpp" />
-    <ClCompile Include="Src\Input\Keyboard.cpp" />
-    <ClCompile Include="Src\Input\Mouse.cpp" />
-    <ClCompile Include="Src\Utils\Color.cpp" />
-    <ClCompile Include="Src\Utils\Logger.cpp" />
-    <ClCompile Include="Src\Utils\Logger\LogColor.cpp" />
-    <ClCompile Include="Src\Utils\Logger\LogContext.cpp" />
-    <ClCompile Include="Src\Utils\MainMonitor.cpp" />
-    <ClCompile Include="Src\Utils\Math.cpp" />
-    <ClCompile Include="Src\Utils\Random.cpp" />
-    <ClCompile Include="Src\Utils\String.cpp" />
-    <ClCompile Include="Src\Utils\Timer.cpp" />
-    <ClCompile Include="Src\Utils\File.cpp" />
-    <ClCompile Include="Src\Utils\WallpaperHelper.cpp" />
-    <ClCompile Include="Src\Window\Win32Form.cpp" />
+    <ClCompile Include="External\DDSTextureLoader\DDSTextureLoader12.cpp" />
+    <ClCompile Include="External\ImGUI\imgui.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_impl_dx12.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_tables.cpp" />
+    <ClCompile Include="External\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="External\WICTextureLoader\WICTextureLoader12.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\GraphicsCommandList.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\VideoProcessCommandList.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\VideoTexture.cpp" />
+    <ClCompile Include="Src\Gear\Resource\SwapBuffer.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\GraphicsState.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\ComputeState.cpp" />
+    <ClCompile Include="Src\Gear\Core\RenderThreadGlobal.cpp" />
+    <ClCompile Include="Src\Gear\Core\RenderThreadLocal.cpp" />
+    <ClCompile Include="Src\Gear\Effect\HBAOPlusEffect.cpp" />
+    <ClCompile Include="Src\Gear\Effect\SSREffect.cpp" />
+    <ClCompile Include="Src\Gear\Effect\GammaCorrectEffect.cpp" />
+    <ClCompile Include="Src\Gear\Effect\ToneMapEffect.cpp" />
+    <ClCompile Include="Src\Gear\Core\RenderThread.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\ResourceStateTracker.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\DescriptorHandle.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\DXCCompiler.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\PipelineState.cpp" />
+    <ClCompile Include="Src\Gear\Core\GlobalShader.cpp" />
+    <ClCompile Include="Src\Gear\Core\PipelineStateBuilder.cpp" />
+    <ClCompile Include="Src\Gear\Resource\DynamicCBuffer.cpp" />
+    <ClCompile Include="Src\Gear\Resource\DefaultCBuffer.cpp" />
+    <ClCompile Include="Src\Gear\Effect\BackBufferBlitEffect.cpp" />
+    <ClCompile Include="Src\Gear\Effect\LatLongMapToCubeMapEffect.cpp" />
+    <ClCompile Include="Src\Gear\Camera\FPSCamera.cpp" />
+    <ClCompile Include="Src\Gear\Camera\OrbitCamera.cpp" />
+    <ClCompile Include="Src\Gear\Core\MainCamera.cpp" />
+    <ClCompile Include="Src\Gear\Core\DynamicCBufferManager.cpp" />
+    <ClCompile Include="Src\Gear\Effect\FXAAEffect.cpp" />
+    <ClCompile Include="Src\Gear\Core\RenderTask.cpp" />
+    <ClCompile Include="Src\Gear\Effect\HDRClampEffect.cpp" />
+    <ClCompile Include="Src\Gear\Core\LocalDescriptorHeap.cpp" />
+    <ClCompile Include="Src\Gear\Utils\DeltaTimeEstimator.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\DescriptorHeap.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\ReadbackHeap.cpp" />
+    <ClCompile Include="Src\Gear\Effect\BloomEffect.cpp" />
+    <ClCompile Include="Src\Gear\Effect\EffectBase.cpp" />
+    <ClCompile Include="Src\Gear\Core\Gear2D\PrimitiveBatch.cpp" />
+    <ClCompile Include="Src\Gear\Core\GlobalDescriptorHeap.cpp" />
+    <ClCompile Include="Src\Gear\Core\GlobalRootSignature.cpp" />
+    <ClCompile Include="Src\Gear\Core\GraphicsContext.cpp" />
+    <ClCompile Include="Src\Gear\Core\RenderEngine.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\Texture.cpp" />
+    <ClCompile Include="Src\Gear\Core\Graphics.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\Buffer.cpp" />
+    <ClCompile Include="Src\Gear\InitializationParam.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\CommandList.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\D3D12ResourceBase.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\UploadHeap.cpp" />
+    <ClCompile Include="Src\Gear\Core\GraphicsDevice.cpp" />
+    <ClCompile Include="Src\Gear\Core\ResourceManager.cpp" />
+    <ClCompile Include="Src\Gear\Resource\BufferView.cpp" />
+    <ClCompile Include="Src\Gear\Resource\ImmutableCBuffer.cpp" />
+    <ClCompile Include="Src\Gear\Resource\CounterBufferView.cpp" />
+    <ClCompile Include="Src\Gear\Resource\ResourceBase.cpp" />
+    <ClCompile Include="Src\Gear\Resource\SwapTexture.cpp" />
+    <ClCompile Include="Src\Gear\Resource\DepthTextureView.cpp" />
+    <ClCompile Include="Src\Gear\Resource\RenderTextureView.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\RootSignature.cpp" />
+    <ClCompile Include="Src\Gear\Core\D3D12Core\Shader.cpp" />
+    <ClCompile Include="Src\Gear\Core\VideoEncoder\Encoder.cpp" />
+    <ClCompile Include="Src\Gear\Core\VideoEncoder\NVIDIAEncoder.cpp" />
+    <ClCompile Include="Src\Gear\Game.cpp" />
+    <ClCompile Include="Src\Gear\Gear.cpp" />
+    <ClCompile Include="Src\Gear\Input\Event.cpp" />
+    <ClCompile Include="Src\Gear\Input\Keyboard.cpp" />
+    <ClCompile Include="Src\Gear\Input\Mouse.cpp" />
+    <ClCompile Include="Src\Gear\Utils\Color.cpp" />
+    <ClCompile Include="Src\Gear\Utils\Logger.cpp" />
+    <ClCompile Include="Src\Gear\Utils\Logger\LogColor.cpp" />
+    <ClCompile Include="Src\Gear\Utils\Logger\LogContext.cpp" />
+    <ClCompile Include="Src\Gear\Utils\MainMonitor.cpp" />
+    <ClCompile Include="Src\Gear\Utils\Math.cpp" />
+    <ClCompile Include="Src\Gear\Utils\Random.cpp" />
+    <ClCompile Include="Src\Gear\Utils\String.cpp" />
+    <ClCompile Include="Src\Gear\Utils\Timer.cpp" />
+    <ClCompile Include="Src\Gear\Utils\File.cpp" />
+    <ClCompile Include="Src\Gear\Utils\WallpaperHelper.cpp" />
+    <ClCompile Include="Src\Gear\Window\Win32Form.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Bloom\BloomDownSamplePS.hlsl">

@@ -261,33 +261,6 @@
     <ClInclude Include="Inc\Gear\Core\D3D12Core\DescriptorHeap.h">
       <Filter>Header\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imconfig.h">
-      <Filter>Header\ExternalHeader\ImGUi</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imgui.h">
-      <Filter>Header\ExternalHeader\ImGUi</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imgui_impl_dx12.h">
-      <Filter>Header\ExternalHeader\ImGUi</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imgui_impl_win32.h">
-      <Filter>Header\ExternalHeader\ImGUi</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imgui_internal.h">
-      <Filter>Header\ExternalHeader\ImGUi</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imstb_rectpack.h">
-      <Filter>Header\ExternalHeader\ImGUi</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imstb_textedit.h">
-      <Filter>Header\ExternalHeader\ImGUi</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\ImGUI\imstb_truetype.h">
-      <Filter>Header\ExternalHeader\ImGUi</Filter>
-    </ClInclude>
-    <ClInclude Include="External\stb_image\stb_image_write.h">
-      <Filter>Header\ExternalHeader\stbi</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Gear\Core\DynamicCBufferManager.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -303,79 +276,10 @@
     <ClInclude Include="Inc\Gear\Effect\BackBufferBlitEffect.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3d12.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3d12compatibility.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3d12sdklayers.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3d12shader.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\D3D12TokenizedProgramFormat.hpp">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3d12video.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dcommon.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_barriers.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_check_feature_support.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_core.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_default.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_pipeline_state_stream.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_property_format_table.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_render_pass.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_resource_helpers.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_root_signature.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\d3dx12_state_object.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\dxcore.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\dxcore_interface.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\dxgicommon.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\D3D12Headers\dxgiformat.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Gear\Utils\Logger\LogColor.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Utils\Logger\LogContext.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\stb_image_write.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Core\FMT.h">
@@ -507,12 +411,6 @@
     <ClInclude Include="Inc\Gear\Utils\String.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\DDSTextureLoader\DDSTextureLoader12.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Inc\WICTextureLoader\WICTextureLoader12.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Gear\Core\D3D12Core\ComputeState.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -551,265 +449,262 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\InitializationParam.cpp">
+    <ClCompile Include="Src\Gear\InitializationParam.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Gear.cpp">
+    <ClCompile Include="Src\Gear\Gear.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Game.cpp">
+    <ClCompile Include="Src\Gear\Game.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Camera\FPSCamera.cpp">
+    <ClCompile Include="Src\Gear\Camera\FPSCamera.cpp">
       <Filter>Source\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Camera\OrbitCamera.cpp">
+    <ClCompile Include="Src\Gear\Camera\OrbitCamera.cpp">
       <Filter>Source\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Resource\Buffer.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\Buffer.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Resource\ReadbackHeap.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\ReadbackHeap.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Resource\D3D12ResourceBase.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\D3D12ResourceBase.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Resource\Texture.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\Texture.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Resource\UploadHeap.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\UploadHeap.cpp">
       <Filter>Source\Core\DX</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\BloomEffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\BloomEffect.cpp">
       <Filter>Source\Core\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\EffectBase.cpp">
+    <ClCompile Include="Src\Gear\Effect\EffectBase.cpp">
       <Filter>Source\Core\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\FXAAEffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\FXAAEffect.cpp">
       <Filter>Source\Core\Effect</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Gear2D\PrimitiveBatch.cpp">
+    <ClCompile Include="Src\Gear\Core\Gear2D\PrimitiveBatch.cpp">
       <Filter>Source\Core\Gear2D</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\BufferView.cpp">
+    <ClCompile Include="Src\Gear\Resource\BufferView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\ImmutableCBuffer.cpp">
+    <ClCompile Include="Src\Gear\Resource\ImmutableCBuffer.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\CounterBufferView.cpp">
+    <ClCompile Include="Src\Gear\Resource\CounterBufferView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\ResourceBase.cpp">
+    <ClCompile Include="Src\Gear\Resource\ResourceBase.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\SwapTexture.cpp">
+    <ClCompile Include="Src\Gear\Resource\SwapTexture.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\DepthTextureView.cpp">
+    <ClCompile Include="Src\Gear\Resource\DepthTextureView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\RenderTextureView.cpp">
+    <ClCompile Include="Src\Gear\Resource\RenderTextureView.cpp">
       <Filter>Source\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\VideoEncoder\NVIDIAEncoder.cpp">
+    <ClCompile Include="Src\Gear\Core\VideoEncoder\NVIDIAEncoder.cpp">
       <Filter>Source\Core\VideoEncoder</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Input\Event.cpp">
+    <ClCompile Include="Src\Gear\Input\Event.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Input\Mouse.cpp">
+    <ClCompile Include="Src\Gear\Input\Mouse.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Input\Keyboard.cpp">
+    <ClCompile Include="Src\Gear\Input\Keyboard.cpp">
       <Filter>Source\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\VideoEncoder\Encoder.cpp">
+    <ClCompile Include="Src\Gear\Core\VideoEncoder\Encoder.cpp">
       <Filter>Source\Core\VideoEncoder</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\Color.cpp">
+    <ClCompile Include="Src\Gear\Utils\Color.cpp">
       <Filter>Source\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\DeltaTimeEstimator.cpp">
+    <ClCompile Include="Src\Gear\Utils\DeltaTimeEstimator.cpp">
       <Filter>Source\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\Math.cpp">
+    <ClCompile Include="Src\Gear\Utils\Math.cpp">
       <Filter>Source\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\Random.cpp">
+    <ClCompile Include="Src\Gear\Utils\Random.cpp">
       <Filter>Source\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\Timer.cpp">
+    <ClCompile Include="Src\Gear\Utils\Timer.cpp">
       <Filter>Source\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\File.cpp">
+    <ClCompile Include="Src\Gear\Utils\File.cpp">
       <Filter>Source\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Window\Win32Form.cpp">
+    <ClCompile Include="Src\Gear\Window\Win32Form.cpp">
       <Filter>Source\Window</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\MainCamera.cpp">
+    <ClCompile Include="Src\Gear\Core\MainCamera.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\CommandList.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\CommandList.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\DescriptorHeap.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\DescriptorHeap.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GlobalDescriptorHeap.cpp">
+    <ClCompile Include="Src\Gear\Core\GlobalDescriptorHeap.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GlobalRootSignature.cpp">
+    <ClCompile Include="Src\Gear\Core\GlobalRootSignature.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Graphics.cpp">
+    <ClCompile Include="Src\Gear\Core\Graphics.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GraphicsContext.cpp">
+    <ClCompile Include="Src\Gear\Core\GraphicsContext.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GraphicsDevice.cpp">
+    <ClCompile Include="Src\Gear\Core\GraphicsDevice.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\RenderEngine.cpp">
+    <ClCompile Include="Src\Gear\Core\RenderEngine.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\ResourceManager.cpp">
+    <ClCompile Include="Src\Gear\Core\ResourceManager.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\RootSignature.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\RootSignature.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\Shader.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\Shader.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui.cpp">
-      <Filter>Source\ExternalSource\ImGUi</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_demo.cpp">
-      <Filter>Source\ExternalSource\ImGUi</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_draw.cpp">
-      <Filter>Source\ExternalSource\ImGUi</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_impl_dx12.cpp">
-      <Filter>Source\ExternalSource\ImGUi</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_impl_win32.cpp">
-      <Filter>Source\ExternalSource\ImGUi</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_tables.cpp">
-      <Filter>Source\ExternalSource\ImGUi</Filter>
-    </ClCompile>
-    <ClCompile Include="Inc\ImGUI\imgui_widgets.cpp">
-      <Filter>Source\ExternalSource\ImGUi</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Core\DynamicCBufferManager.cpp">
+    <ClCompile Include="Src\Gear\Core\DynamicCBufferManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\RenderTask.cpp">
+    <ClCompile Include="Src\Gear\Core\RenderTask.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\HDRClampEffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\HDRClampEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\LatLongMapToCubeMapEffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\LatLongMapToCubeMapEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\BackBufferBlitEffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\BackBufferBlitEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\Logger\LogColor.cpp">
+    <ClCompile Include="Src\Gear\Utils\Logger\LogColor.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\Logger\LogContext.cpp">
+    <ClCompile Include="Src\Gear\Utils\Logger\LogContext.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\WallpaperHelper.cpp">
+    <ClCompile Include="Src\Gear\Utils\WallpaperHelper.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\DynamicCBuffer.cpp">
+    <ClCompile Include="Src\Gear\Resource\DynamicCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\DefaultCBuffer.cpp">
+    <ClCompile Include="Src\Gear\Resource\DefaultCBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\Logger.cpp">
+    <ClCompile Include="Src\Gear\Utils\Logger.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\GlobalShader.cpp">
+    <ClCompile Include="Src\Gear\Core\GlobalShader.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\DXCCompiler.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\DXCCompiler.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\DescriptorHandle.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\DescriptorHandle.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\PipelineState.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\PipelineState.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\PipelineStateBuilder.cpp">
+    <ClCompile Include="Src\Gear\Core\PipelineStateBuilder.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\ResourceStateTracker.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\ResourceStateTracker.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\RenderThread.cpp">
+    <ClCompile Include="Src\Gear\Core\RenderThread.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\ToneMapEffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\ToneMapEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\GammaCorrectEffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\GammaCorrectEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\SSREffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\SSREffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Effect\HBAOPlusEffect.cpp">
+    <ClCompile Include="Src\Gear\Effect\HBAOPlusEffect.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\LocalDescriptorHeap.cpp">
+    <ClCompile Include="Src\Gear\Core\LocalDescriptorHeap.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\String.cpp">
+    <ClCompile Include="Src\Gear\Utils\String.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\DDSTextureLoader\DDSTextureLoader12.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\ComputeState.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Inc\WICTextureLoader\WICTextureLoader12.cpp">
+    <ClCompile Include="Src\Gear\Core\RenderThreadLocal.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\ComputeState.cpp">
+    <ClCompile Include="Src\Gear\Core\RenderThreadGlobal.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\RenderThreadLocal.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\GraphicsState.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\RenderThreadGlobal.cpp">
+    <ClCompile Include="Src\Gear\Resource\SwapBuffer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\GraphicsState.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Resource\VideoTexture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Resource\SwapBuffer.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\GraphicsCommandList.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Resource\VideoTexture.cpp">
+    <ClCompile Include="Src\Gear\Core\D3D12Core\VideoProcessCommandList.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\GraphicsCommandList.cpp">
+    <ClCompile Include="Src\Gear\Utils\MainMonitor.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\D3D12Core\VideoProcessCommandList.cpp">
+    <ClCompile Include="External\ImGUI\imgui.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utils\MainMonitor.cpp">
+    <ClCompile Include="External\ImGUI\imgui_draw.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="External\ImGUI\imgui_impl_dx12.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="External\ImGUI\imgui_impl_win32.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="External\ImGUI\imgui_tables.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="External\ImGUI\imgui_widgets.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="External\DDSTextureLoader\DDSTextureLoader12.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="External\WICTextureLoader\WICTextureLoader12.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
