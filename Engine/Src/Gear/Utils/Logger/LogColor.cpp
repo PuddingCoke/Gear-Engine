@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/Logger/LogColor.h>
+#include<Gear/Utils/Logger/LogColor.h>
 
 namespace Gear::Utils::Logger
 {

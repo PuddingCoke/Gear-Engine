@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/DefaultCBuffer.h>
+#include<Gear/Resource/DefaultCBuffer.h>
 
 #include<Gear/Core/Graphics.h>
 

@@ -1,4 +1,4 @@
-﻿//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 // File: DDSTextureLoader12.cpp
 //
 // Functions for loading a DDS texture and creating a Direct3D runtime resource for it

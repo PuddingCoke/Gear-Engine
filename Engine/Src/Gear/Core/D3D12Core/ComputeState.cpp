@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Core/ComputeState.h>
+#include<Gear/Core/D3D12Core/ComputeState.h>
 
 namespace Gear::Core::D3D12Core
 {

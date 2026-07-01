@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/FXAAEffect.h>
+#include<Gear/Effect/FXAAEffect.h>
 
 #include<Shaders/CompiledShaders/ColorToColorLuma.h>
 

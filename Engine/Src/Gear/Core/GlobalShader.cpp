@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/GlobalShader.h>
+#include<Gear/Core/GlobalShader.h>
 
 #include<Gear/Core/Internal/GlobalShaderInternal.h>
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_INPUT_MOUSE_H_
 #define _GEAR_INPUT_MOUSE_H_

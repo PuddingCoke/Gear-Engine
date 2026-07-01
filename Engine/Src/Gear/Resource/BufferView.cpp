@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/BufferView.h>
+#include<Gear/Resource/BufferView.h>
 
 #include<Gear/Core/Graphics.h>
 

@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/Random.h>
+#include<Gear/Utils/Random.h>
 
 #include<ctime>
 

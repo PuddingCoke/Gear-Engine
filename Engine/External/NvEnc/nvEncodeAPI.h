@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This copyright notice applies to this header file only:
  *
  * Copyright (c) 2010-2023 NVIDIA Corporation

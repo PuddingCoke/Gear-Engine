@@ -1,4 +1,4 @@
-﻿#include "TextBatch.h"
+#include "TextBatch.h"
 
 #include<fstream>
 

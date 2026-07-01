@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Resource/D3D12ResourceBase.h>
+#include<Gear/Core/D3D12Resource/D3D12ResourceBase.h>
 
 namespace Gear::Core::D3D12Resource
 {

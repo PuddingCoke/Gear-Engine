@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/LatLongMapToCubeMapEffect.h>
+#include<Gear/Effect/LatLongMapToCubeMapEffect.h>
 
 #include<Gear/Effect/Internal/LatLongMapToCubeMapEffectInternal.h>
 

@@ -1,4 +1,4 @@
-﻿//author:https://github.com/asylum2010
+//author:https://github.com/asylum2010
 
 #include"Predefine.hlsli"
 

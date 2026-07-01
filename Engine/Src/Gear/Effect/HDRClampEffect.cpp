@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/HDRClampEffect.h>
+#include<Gear/Effect/HDRClampEffect.h>
 
 #include<Gear/Effect/Internal/HDRClampEffectInternal.h>
 

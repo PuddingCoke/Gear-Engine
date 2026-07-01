@@ -1,4 +1,4 @@
-﻿struct VertexInput
+struct VertexInput
 {
     float2 circlePos : POSITION0;
     float circleLength : POSITION1;

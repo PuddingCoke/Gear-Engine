@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Core/DXCCompiler.h>
+#include<Gear/Core/D3D12Core/DXCCompiler.h>
 
 #include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
 

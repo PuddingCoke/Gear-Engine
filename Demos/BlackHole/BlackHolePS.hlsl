@@ -1,4 +1,4 @@
-﻿//修改自https://www.shadertoy.com/view/lstSRS 作者：sonicether
+//修改自https://www.shadertoy.com/view/lstSRS 作者：sonicether
 
 //可平铺噪声来自https://www.shadertoy.com/view/3dVXDc 作者：piyushslayer
 

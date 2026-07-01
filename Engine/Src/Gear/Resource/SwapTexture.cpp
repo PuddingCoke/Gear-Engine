@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/SwapTexture.h>
+#include<Gear/Resource/SwapTexture.h>
 
 namespace Gear::Resource
 {

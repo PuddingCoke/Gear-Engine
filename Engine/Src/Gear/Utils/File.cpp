@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/File.h>
+#include<Gear/Utils/File.h>
 
 #include<Gear/Utils/Internal/FileInternal.h>
 

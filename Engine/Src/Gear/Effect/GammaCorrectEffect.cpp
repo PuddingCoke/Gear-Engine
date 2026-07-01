@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/GammaCorrectEffect.h>
+#include<Gear/Effect/GammaCorrectEffect.h>
 
 #include<Gear/Effect/Internal/GammaCorrectEffectInternal.h>
 

@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/SwapBuffer.h>
+#include<Gear/Resource/SwapBuffer.h>
 
 namespace Gear::Resource
 {

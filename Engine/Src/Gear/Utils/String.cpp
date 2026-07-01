@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/String.h>
+#include<Gear/Utils/String.h>
 
 #ifndef NOMINMAX
 #define NOMINMAX

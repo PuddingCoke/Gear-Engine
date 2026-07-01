@@ -1,4 +1,4 @@
-﻿float GGXDistribution(float3 M, float3 N, float alphaG2)
+float GGXDistribution(float3 M, float3 N, float alphaG2)
 {
     float MdotN = saturate(dot(M, N));
     

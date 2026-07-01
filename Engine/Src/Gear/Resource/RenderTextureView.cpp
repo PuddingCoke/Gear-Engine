@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/RenderTextureView.h>
+#include<Gear/Resource/RenderTextureView.h>
 
 #include<Gear/Core/FMT.h>
 

@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/LocalDescriptorHeap.h>
+#include<Gear/Core/LocalDescriptorHeap.h>
 
 #include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
 

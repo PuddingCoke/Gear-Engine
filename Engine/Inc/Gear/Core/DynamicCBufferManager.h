@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_CORE_DYNAMICCBUFFERMANAGER_H_
 #define _GEAR_CORE_DYNAMICCBUFFERMANAGER_H_

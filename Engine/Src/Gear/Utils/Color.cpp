@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/Color.h>
+#include<Gear/Utils/Color.h>
 
 #include<Gear/Utils/Random.h>
 

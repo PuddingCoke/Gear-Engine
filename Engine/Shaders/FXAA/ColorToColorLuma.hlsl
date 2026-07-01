@@ -1,4 +1,4 @@
-﻿#include"Common.hlsli"
+#include"Common.hlsli"
 
 cbuffer TextureIndex : register(PER_INVOKE_CONSTANTS)
 {

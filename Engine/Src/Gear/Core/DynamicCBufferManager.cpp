@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/DynamicCBufferManager.h>
+#include<Gear/Core/DynamicCBufferManager.h>
 
 #include<Gear/Core/Internal/DynamicCBufferManagerInternal.h>
 

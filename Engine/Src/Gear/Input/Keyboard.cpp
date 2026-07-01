@@ -1,4 +1,4 @@
-﻿#include<Gear/Input/Keyboard.h>
+#include<Gear/Input/Keyboard.h>
 
 #include<Gear/Input/Internal/KeyboardInternal.h>
 

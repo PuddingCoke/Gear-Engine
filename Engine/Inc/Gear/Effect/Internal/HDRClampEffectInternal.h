@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_EFFECT_HDRCLAMPEFFECT_INTERNAL_H_
 #define _GEAR_EFFECT_HDRCLAMPEFFECT_INTERNAL_H_

@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/PipelineStateBuilder.h>
+#include<Gear/Core/PipelineStateBuilder.h>
 
 #include<Gear/Core/PipelineStateHelper.h>
 

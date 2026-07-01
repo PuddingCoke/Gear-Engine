@@ -1,4 +1,4 @@
-﻿#include<Gear/Camera/FPSCamera.h>
+#include<Gear/Camera/FPSCamera.h>
 
 #include<Gear/Core/MainCamera.h>
 

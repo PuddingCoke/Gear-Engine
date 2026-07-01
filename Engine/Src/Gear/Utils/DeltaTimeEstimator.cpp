@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/DeltaTimeEstimator.h>
+#include<Gear/Utils/DeltaTimeEstimator.h>
 
 #include<algorithm>
 

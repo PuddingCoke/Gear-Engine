@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Core/ResourceStateTracker.h>
+#include<Gear/Core/D3D12Core/ResourceStateTracker.h>
 
 namespace Gear::Core::D3D12Core
 {

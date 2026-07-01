@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/BloomEffect.h>
+#include<Gear/Effect/BloomEffect.h>
 
 #include<Gear/Core/GlobalShader.h>
 

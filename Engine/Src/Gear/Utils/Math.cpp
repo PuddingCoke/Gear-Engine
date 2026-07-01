@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/Math.h>
+#include<Gear/Utils/Math.h>
 
 namespace Gear::Utils::Math
 {

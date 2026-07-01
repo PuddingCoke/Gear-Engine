@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/VideoEncoder/NVIDIAEncoder.h>
+#include<Gear/Core/VideoEncoder/NVIDIAEncoder.h>
 
 #include<iostream>
 

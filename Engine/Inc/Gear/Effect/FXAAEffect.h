@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_EFFECT_FXAAEFFECT_H_
 #define _GEAR_EFFECT_FXAAEFFECT_H_

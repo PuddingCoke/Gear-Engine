@@ -1,4 +1,4 @@
-﻿struct VSInput
+struct VSInput
 {
     float2 position : POSITION;
     float2 velocity : VELOCITY;

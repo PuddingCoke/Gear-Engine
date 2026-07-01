@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/DepthTextureView.h>
+#include<Gear/Resource/DepthTextureView.h>
 
 #include<Gear/Core/FMT.h>
 

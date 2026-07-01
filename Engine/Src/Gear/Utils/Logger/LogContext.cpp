@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/Logger/LogContext.h>
+#include<Gear/Utils/Logger/LogContext.h>
 
 #include<Gear/Utils/String.h>
 

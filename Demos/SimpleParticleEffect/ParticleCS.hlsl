@@ -1,4 +1,4 @@
-﻿//编译测试utf-8
+//编译测试utf-8
 #include"Common.hlsli"
 
 cbuffer SimulationParam : register(PER_INVOKE_CONSTANTS)

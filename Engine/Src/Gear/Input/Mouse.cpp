@@ -1,4 +1,4 @@
-﻿#include<Gear/Input/Mouse.h>
+#include<Gear/Input/Mouse.h>
 
 #include<Gear/Input/Internal/MouseInternal.h>
 

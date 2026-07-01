@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_RESOURCE_SWAPBUFFER_H_
 #define _GEAR_RESOURCE_SWAPBUFFER_H_

@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/EffectBase.h>
+#include<Gear/Effect/EffectBase.h>
 
 namespace Gear::Effect
 {

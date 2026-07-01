@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_EFFECT_HBAOPLUSEFFECT_H_
 #define _GEAR_EFFECT_HBAOPLUSEFFECT_H_

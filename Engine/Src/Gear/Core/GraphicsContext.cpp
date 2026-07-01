@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/GraphicsContext.h>
+#include<Gear/Core/GraphicsContext.h>
 
 #include<Gear/Core/Graphics.h>
 

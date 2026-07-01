@@ -1,4 +1,4 @@
-﻿struct VertexInput
+struct VertexInput
 {
     float2 inPos : POSITION;
     float4 inColor : COLOR;

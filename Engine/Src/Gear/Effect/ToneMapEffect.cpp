@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/ToneMapEffect.h>
+#include<Gear/Effect/ToneMapEffect.h>
 
 #include<Gear/Effect/Internal/ToneMapEffectInternal.h>
 

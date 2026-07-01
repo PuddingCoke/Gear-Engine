@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/BackBufferBlitEffect.h>
+#include<Gear/Effect/BackBufferBlitEffect.h>
 
 #include<Gear/Effect/Internal/BackBufferBlitEffectInternal.h>
 

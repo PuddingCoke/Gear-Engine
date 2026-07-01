@@ -1,4 +1,4 @@
-﻿//来自https://www.shadertoy.com/view/lstSRS 作者：sonicether
+//来自https://www.shadertoy.com/view/lstSRS 作者：sonicether
 
 #include"Common.hlsli"
 

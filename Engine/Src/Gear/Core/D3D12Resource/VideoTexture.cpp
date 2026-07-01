@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Resource/VideoTexture.h>
+#include<Gear/Core/D3D12Resource/VideoTexture.h>
 
 #include<Gear/Utils/Math.h>
 

@@ -1,4 +1,4 @@
-﻿#include"Common.hlsli"
+#include"Common.hlsli"
 
 cbuffer StepParameters : register(PER_INVOKE_CONSTANTS)
 {

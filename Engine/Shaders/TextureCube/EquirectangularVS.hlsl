@@ -1,4 +1,4 @@
-﻿#include"Common.hlsli"
+#include"Common.hlsli"
 
 cbuffer ProjMatrices : register(PER_INVOKE_CBUFFER)
 {

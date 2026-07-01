@@ -1,4 +1,4 @@
-﻿#include<Gear/Input/Event.h>
+#include<Gear/Input/Event.h>
 
 namespace Gear::Input
 {

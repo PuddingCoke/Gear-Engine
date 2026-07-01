@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/MainMonitor.h>
+#include<Gear/Utils/MainMonitor.h>
 
 #include<Gear/Utils/Internal/MainMonitorInternal.h>
 

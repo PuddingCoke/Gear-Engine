@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/VideoEncoder/Encoder.h>
+#include<Gear/Core/VideoEncoder/Encoder.h>
 
 namespace Gear::Core::VideoEncoder
 {

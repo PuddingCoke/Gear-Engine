@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Resource/Texture.h>
+#include<Gear/Core/D3D12Resource/Texture.h>
 
 #include<Gear/Utils/Math.h>
 

@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/CounterBufferView.h>
+#include<Gear/Resource/CounterBufferView.h>
 
 #include<Gear/Core/FMT.h>
 

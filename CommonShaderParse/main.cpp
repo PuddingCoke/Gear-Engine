@@ -1,4 +1,4 @@
-﻿#include<D3D12Headers/d3d12shader.h>
+#include<D3D12Headers/d3d12shader.h>
 
 #include<dxccompiler/dxcapi.h>
 

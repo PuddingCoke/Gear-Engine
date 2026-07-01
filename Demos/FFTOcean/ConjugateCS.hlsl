@@ -1,4 +1,4 @@
-﻿#include"Predefine.hlsli"
+#include"Predefine.hlsli"
 
 #include"Common.hlsli"
 

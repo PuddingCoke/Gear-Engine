@@ -1,4 +1,4 @@
-﻿#include<Gear/InitializationParam.h>
+#include<Gear/InitializationParam.h>
 
 namespace Gear
 {

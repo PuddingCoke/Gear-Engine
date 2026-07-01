@@ -1,4 +1,4 @@
-﻿struct IrradianceVolume
+struct IrradianceVolume
 {
     float4 lightDir;
     float4 lightColor;

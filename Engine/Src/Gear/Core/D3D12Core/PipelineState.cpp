@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Core/PipelineState.h>
+#include<Gear/Core/D3D12Core/PipelineState.h>
 
 namespace Gear::Core::D3D12Core
 {

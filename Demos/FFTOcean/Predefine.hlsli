@@ -1,3 +1,3 @@
-﻿#define TEXTURESIZE 512
+#define TEXTURESIZE 512
 
 #define LOG2TEXTURESIZE 9

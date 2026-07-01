@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/ImmutableCBuffer.h>
+#include<Gear/Resource/ImmutableCBuffer.h>
 
 namespace Gear::Resource
 {

@@ -1,4 +1,4 @@
-﻿struct VS_CONTROL_POINT_OUTPUT
+struct VS_CONTROL_POINT_OUTPUT
 {
     float3 position : POSITION;
 };

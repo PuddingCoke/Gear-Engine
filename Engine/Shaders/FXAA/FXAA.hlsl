@@ -1,4 +1,4 @@
-﻿#define FXAA_PC 1
+#define FXAA_PC 1
 #define FXAA_HLSL_5 1
 #define FXAA_GREEN_AS_LUMA 0
 #define FXAA_QUALITY__PRESET 39

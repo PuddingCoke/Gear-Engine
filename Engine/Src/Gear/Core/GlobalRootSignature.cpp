@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/GlobalRootSignature.h>
+#include<Gear/Core/GlobalRootSignature.h>
 
 #include<Gear/Core/Internal/GlobalRootSignatureInternal.h>
 

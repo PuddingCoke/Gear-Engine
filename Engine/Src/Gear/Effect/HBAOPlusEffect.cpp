@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/HBAOPlusEffect.h>
+#include<Gear/Effect/HBAOPlusEffect.h>
 
 #include<Gear/Core/MainCamera.h>
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_UTILS_COLOR_H_
 #define _GEAR_UTILS_COLOR_H_

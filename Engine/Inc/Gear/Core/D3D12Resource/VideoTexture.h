@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_CORE_D3D12RESOURCE_VIDEOTEXTURE_H_
 #define _GEAR_CORE_D3D12RESOURCE_VIDEOTEXTURE_H_

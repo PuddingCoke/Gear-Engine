@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_WINDOW_WIN32FORM_H_
 #define _GEAR_WINDOW_WIN32FORM_H_

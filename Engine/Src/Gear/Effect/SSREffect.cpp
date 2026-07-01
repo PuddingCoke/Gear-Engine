@@ -1,4 +1,4 @@
-﻿#include<Gear/Effect/SSREffect.h>
+#include<Gear/Effect/SSREffect.h>
 
 #include<Shaders/CompiledShaders/HiZCopyCS.h>
 

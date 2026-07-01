@@ -1,4 +1,4 @@
-﻿#include<Gear/Gear.h>
+#include<Gear/Gear.h>
 
 #include"MyGame.h"
 

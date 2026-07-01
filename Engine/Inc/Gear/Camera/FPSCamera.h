@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_CAMERA_FPSCAMERA_H_
 #define _GEAR_CAMERA_FPSCAMERA_H_

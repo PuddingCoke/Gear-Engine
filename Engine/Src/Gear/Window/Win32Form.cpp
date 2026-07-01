@@ -1,4 +1,4 @@
-﻿#include<Gear/Window/Win32Form.h>
+#include<Gear/Window/Win32Form.h>
 
 #include<Gear/Utils/Logger.h>
 

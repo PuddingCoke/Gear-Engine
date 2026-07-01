@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Core/CommandList.h>
+#include<Gear/Core/D3D12Core/CommandList.h>
 
 #include<Gear/Core/Graphics.h>
 

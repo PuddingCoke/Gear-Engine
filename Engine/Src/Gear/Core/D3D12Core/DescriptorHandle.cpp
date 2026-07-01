@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Core/DescriptorHandle.h>
+#include<Gear/Core/D3D12Core/DescriptorHandle.h>
 
 namespace Gear::Core::D3D12Core
 {

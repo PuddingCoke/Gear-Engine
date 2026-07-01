@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/Timer.h>
+#include<Gear/Utils/Timer.h>
 
 #include<Gear/Utils/Math.h>
 

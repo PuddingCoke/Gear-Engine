@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/MainCamera.h>
+#include<Gear/Core/MainCamera.h>
 
 namespace Gear::Core::MainCamera
 {

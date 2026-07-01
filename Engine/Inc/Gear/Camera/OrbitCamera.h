@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_CAMERA_ORBITCAMERA_H_
 #define _GEAR_CAMERA_ORBITCAMERA_H_

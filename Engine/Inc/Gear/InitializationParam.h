@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_INITIALIZATIONPARAM_H_
 #define _GEAR_INITIALIZATIONPARAM_H_

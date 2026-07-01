@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/WallpaperHelper.h>
+#include<Gear/Utils/WallpaperHelper.h>
 
 #include<Gear/Utils/MainMonitor.h>
 

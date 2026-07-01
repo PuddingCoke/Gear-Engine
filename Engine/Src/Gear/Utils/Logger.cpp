@@ -1,4 +1,4 @@
-﻿#include<Gear/Utils/Logger.h>
+#include<Gear/Utils/Logger.h>
 
 #include<Gear/Utils/Internal/LoggerInternal.h>
 

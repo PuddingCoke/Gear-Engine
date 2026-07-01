@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_DEVESSENTIAL_H_
 #define _GEAR_DEVESSENTIAL_H_

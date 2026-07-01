@@ -1,4 +1,4 @@
-﻿#include<Gear/Resource/ResourceBase.h>
+#include<Gear/Resource/ResourceBase.h>
 
 #include<Gear/Core/RenderThreadLocal.h>
 

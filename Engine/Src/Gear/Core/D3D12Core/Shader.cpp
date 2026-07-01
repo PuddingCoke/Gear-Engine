@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Core/Shader.h>
+#include<Gear/Core/D3D12Core/Shader.h>
 
 #include<Gear/Utils/File.h>
 

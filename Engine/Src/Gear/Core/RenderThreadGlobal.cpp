@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/RenderThreadGlobal.h>
+#include<Gear/Core/RenderThreadGlobal.h>
 
 #include<Gear/Core/Internal/RenderThreadGlobalInternal.h>
 

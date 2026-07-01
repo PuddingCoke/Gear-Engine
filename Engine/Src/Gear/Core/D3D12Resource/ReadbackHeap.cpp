@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Resource/ReadbackHeap.h>
+#include<Gear/Core/D3D12Resource/ReadbackHeap.h>
 
 namespace Gear::Core::D3D12Resource
 {

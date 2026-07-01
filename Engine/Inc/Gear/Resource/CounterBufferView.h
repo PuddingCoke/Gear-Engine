@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_RESOURCE_COUNTERBUFFERVIEW_H_
 #define _GEAR_RESOURCE_COUNTERBUFFERVIEW_H_

@@ -1,4 +1,4 @@
-﻿#include<Gear/Core/D3D12Resource/UploadHeap.h>
+#include<Gear/Core/D3D12Resource/UploadHeap.h>
 
 namespace Gear::Core::D3D12Resource
 {

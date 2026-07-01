@@ -1,4 +1,4 @@
-﻿#include"Common.hlsli"
+#include"Common.hlsli"
 #include"Utility.hlsli"
 
 cbuffer SimulationParam : register(USER_GLOBAL_CBUFFER)

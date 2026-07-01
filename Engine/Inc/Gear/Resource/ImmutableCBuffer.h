@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _GEAR_RESOURCE_IMMUTABLECBUFFER_H_
 #define _GEAR_RESOURCE_IMMUTABLECBUFFER_H_
