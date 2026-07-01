@@ -8,7 +8,7 @@
 
 namespace Gear::Core
 {
-	constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE getTopologyType(const D3D_PRIMITIVE_TOPOLOGY topology)
+	static constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE getPrimitiveTopologyType(const D3D_PRIMITIVE_TOPOLOGY topology)
 	{
 		switch (topology)
 		{
@@ -58,10 +58,24 @@ namespace Gear::Core
 		case TOPOLOGY::PATCH31CONTROL:
 		case TOPOLOGY::PATCH32CONTROL:
 			return TOPOLOGY::TYPE::PATCH;
+		default:
+			return TOPOLOGY::TYPE::UNDEFINED;
 		}
-
-		return TOPOLOGY::TYPE::UNDEFINED;
 	}
+
+	static constexpr uint64_t primitiveTopologyTypeTableLength = 128;
+
+	static constexpr std::array<D3D12_PRIMITIVE_TOPOLOGY_TYPE, primitiveTopologyTypeTableLength> primitiveTopologyTypeTable = []() constexpr
+		{
+			std::array<D3D12_PRIMITIVE_TOPOLOGY_TYPE, primitiveTopologyTypeTableLength> table;
+
+			for (uint32_t i = 0; i < primitiveTopologyTypeTableLength; i++)
+			{
+				table[i] = getPrimitiveTopologyType(static_cast<D3D12_PRIMITIVE_TOPOLOGY>(i));
+			}
+
+			return table;
+		}();
 
 	GraphicsContext::GraphicsContext() :
 		commandList(makeUnique<D3D12Core::GraphicsCommandList>()),
@@ -319,11 +333,9 @@ namespace Gear::Core
 		{
 			primitiveTopology = topology;
 
-			transientPrimitiveTopologyType = getTopologyType(topology);
+			transientPrimitiveTopologyType = primitiveTopologyTypeTable[topology];
 
 			commandList->setPrimitiveTopology(primitiveTopology);
-
-			//不能在这里调用grahicsState->setTopologyType，因为setPipelineState可能没被调用
 		}
 	}
 
