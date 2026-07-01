@@ -4,6 +4,8 @@
 
 #include<Gear/Core/TOPOLOGY.h>
 
+#include<array>
+
 static constexpr uint32_t rtvFormatToIndex(const DXGI_FORMAT format)
 {
 	switch (format)
@@ -130,6 +132,32 @@ static constexpr uint32_t dsvFormatToIndex(const DXGI_FORMAT format)
 	}
 }
 
+static constexpr uint64_t formatIndexArrayLength = 256;
+
+static constexpr std::array<uint8_t, formatIndexArrayLength> rtvFormatIndices = []() constexpr
+	{
+		std::array<uint8_t, formatIndexArrayLength> arr;
+
+		for (uint64_t i = 0; i < formatIndexArrayLength; i++)
+		{
+			arr[i] = rtvFormatToIndex(static_cast<DXGI_FORMAT>(i));
+		}
+
+		return arr;
+	}();
+
+static constexpr std::array<uint8_t, formatIndexArrayLength> dsvFormatIndices = []() constexpr
+	{
+		std::array<uint8_t, formatIndexArrayLength> arr;
+
+		for (uint64_t i = 0; i < formatIndexArrayLength; i++)
+		{
+			arr[i] = dsvFormatToIndex(static_cast<DXGI_FORMAT>(i));
+		}
+
+		return arr;
+	}();
+
 namespace Gear::Core::D3D12Core
 {
 	GraphicsState::GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements, std::vector<std::string> semanticNames, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& graphicsDesc, const RootSignature* const rootSignature, const PipelineStateData pipelineStateData) :
@@ -154,9 +182,9 @@ namespace Gear::Core::D3D12Core
 
 		if (uid != currentUID)
 		{
-			auto it = pipelineStates.find(uid);
+			const auto it = pipelineStates.find(uid);
 
-			if (it != pipelineStates.end())
+			if (it != pipelineStates.cend())
 			{
 				currentPipelineState = it->second.Get();
 			}
@@ -177,21 +205,21 @@ namespace Gear::Core::D3D12Core
 
 	//前几天在研究unordered_map，看了boost那个魔法方法后感觉闹袋有点疼
 	//不过我仔细想了想，其实hash和高中学的双射有点联系
-	//于是突发奇想想到了这个方法，目前还不太完美，等后续有时间了再想想该怎么优化
+	//于是突发奇想想到了这个方法，目前性能还行但是功能还不太完善，等后续有时间了再想想该怎么优化
 	uint64_t GraphicsState::getUID() const
 	{
 		uint64_t uid = 0ull;
 
 		for (uint32_t i = 0; i < graphicsDesc.NumRenderTargets; i++)
 		{
-			const uint64_t formatIndex = rtvFormatToIndex(graphicsDesc.RTVFormats[i]);
+			const uint64_t formatIndex = static_cast<uint64_t>(rtvFormatIndices[graphicsDesc.RTVFormats[i]]);
 
 			//6比特位
 			uid |= (formatIndex << (i * 6u));
 		}
 
 		//3比特位
-		uid |= (static_cast<uint64_t>(dsvFormatToIndex(graphicsDesc.DSVFormat)) << 48);
+		uid |= (static_cast<uint64_t>(dsvFormatIndices[graphicsDesc.DSVFormat]) << 48);
 
 		if (static_cast<uint64_t>(graphicsDesc.PrimitiveTopologyType) == 0ull)
 		{
