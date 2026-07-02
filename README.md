@@ -122,9 +122,9 @@ d3d11Context->Draw(36, 6);
   ```cpp
   Gear::InitializeToken token;
 
-  if (!Gear::iniEngine(param, argc, argv))
+  if (!Gear::initEngine(param, argc, argv))
   {
-	  Gear::iniGame(makeUnique<MyGame>());
+	  Gear::initGame(makeUnique<MyGame>());
   }
   ```
 

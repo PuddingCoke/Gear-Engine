@@ -10,9 +10,9 @@
 namespace Gear
 {
 
-	int32_t iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[]);
+	int32_t initEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[]);
 
-	void iniGame(UniquePtr<Game> gamePtr);
+	void initGame(UniquePtr<Game> gamePtr);
 
 	void initialize();
 

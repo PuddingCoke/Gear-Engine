@@ -53,7 +53,7 @@ namespace Gear::Window::Win32Form
 
 		HWND hWnd;
 
-		const bool iniTrayIcon;
+		const bool initTrayIcon;
 
 		HMENU hMenu;
 
@@ -64,7 +64,7 @@ namespace Gear::Window::Win32Form
 	};
 
 	Win32FormImpl::Win32FormImpl(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam)) :
-		hWnd(nullptr), iniTrayIcon(windowCallback == wallpaperCallBack), hMenu(nullptr), nid{}, mouseHook(nullptr)
+		hWnd(nullptr), initTrayIcon(windowCallback == wallpaperCallBack), hMenu(nullptr), nid{}, mouseHook(nullptr)
 	{
 		SetProcessDPIAware();
 
@@ -97,7 +97,7 @@ namespace Gear::Window::Win32Form
 
 		ShowWindow(hWnd, SW_SHOW);
 
-		if (iniTrayIcon)
+		if (initTrayIcon)
 		{
 			nid.cbSize = sizeof(NOTIFYICONDATA);
 			nid.hWnd = hWnd;
@@ -119,7 +119,7 @@ namespace Gear::Window::Win32Form
 
 	Win32FormImpl::~Win32FormImpl()
 	{
-		if (iniTrayIcon)
+		if (initTrayIcon)
 		{
 			UnhookWindowsHookEx(mouseHook);
 

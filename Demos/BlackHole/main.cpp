@@ -12,9 +12,9 @@ int wmain(int argc, const wchar_t* argv[])
 	{
 		Gear::InitializeToken token;
 
-		if (!Gear::iniEngine(param, argc, argv))
+		if (!Gear::initEngine(param, argc, argv))
 		{
-			Gear::iniGame(makeUnique<MyGame>());
+			Gear::initGame(makeUnique<MyGame>());
 		}
 	}
 	catch (const std::exception& e)

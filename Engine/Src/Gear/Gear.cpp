@@ -52,9 +52,9 @@ namespace Gear
 
 		~GearImpl();
 
-		int32_t iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[]);
+		int32_t initEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[]);
 
-		void iniGame(UniquePtr<Game> gamePtr);
+		void initGame(UniquePtr<Game> gamePtr);
 
 	private:
 
@@ -116,7 +116,7 @@ namespace Gear
 		LOGENGINE("资源销毁完毕");
 	}
 
-	int32_t GearImpl::iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
+	int32_t GearImpl::initEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
 	{
 		loggerToken = makeUnique<Logger::Internal::InitializeToken>();
 
@@ -191,7 +191,7 @@ namespace Gear
 		return 0;
 	}
 
-	void GearImpl::iniGame(UniquePtr<Game> gamePtr)
+	void GearImpl::initGame(UniquePtr<Game> gamePtr)
 	{
 		game = std::move(gamePtr);
 
@@ -443,14 +443,14 @@ namespace Gear
 
 	UniquePtr<GearImpl> impl;
 
-	int32_t iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
+	int32_t initEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
 	{
-		return impl->iniEngine(param, argc, argv);
+		return impl->initEngine(param, argc, argv);
 	}
 
-	void iniGame(UniquePtr<Game> gamePtr)
+	void initGame(UniquePtr<Game> gamePtr)
 	{
-		impl->iniGame(std::move(gamePtr));
+		impl->initGame(std::move(gamePtr));
 	}
 
 	void initialize()
