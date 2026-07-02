@@ -467,7 +467,7 @@ namespace Gear
 	{
 		Logger::Internal::release();
 
-		std::cerr << e.what() << "\n";
+		std::cerr << e.what();
 
 		std::cin.get();
 

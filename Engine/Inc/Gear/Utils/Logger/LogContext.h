@@ -243,6 +243,8 @@ namespace Gear::Utils::Logger
 
 		packRestArgument(args...);
 
+		*messageStr += "\n";
+
 		return message;
 	}
 

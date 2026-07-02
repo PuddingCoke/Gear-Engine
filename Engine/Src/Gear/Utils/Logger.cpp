@@ -28,6 +28,23 @@ namespace Gear::Utils::Logger
 
 				file = std::ofstream("log.txt", std::ios_base::out | std::ios_base::trunc);
 
+				consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+				consoleEnabled = (INVALID_HANDLE_VALUE != consoleHandle);
+
+				if (consoleEnabled)
+				{
+					SetConsoleOutputCP(CP_UTF8);
+
+					DWORD consoleMode = 0;
+
+					GetConsoleMode(consoleHandle, &consoleMode);
+
+					consoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+
+					SetConsoleMode(consoleHandle, consoleMode);
+				}
+
 				worker = std::thread(&LoggerImpl::workerLoop, this);
 			}
 
@@ -70,6 +87,10 @@ namespace Gear::Utils::Logger
 
 			std::thread worker;
 
+			HANDLE consoleHandle;
+
+			bool consoleEnabled;
+
 			void shutdown()
 			{
 				{
@@ -103,7 +124,7 @@ namespace Gear::Utils::Logger
 
 					if (file.is_open())
 					{
-						file << temp << "\n";
+						file << temp;
 					}
 				}
 			}
@@ -139,12 +160,12 @@ namespace Gear::Utils::Logger
 
 						message.inUseCV.notify_one();
 
-						if (message.type != LogType::LOG_ERROR)
+						if (consoleEnabled && message.type != LogType::LOG_ERROR)
 						{
-							std::cout << temp << "\n";
+							WriteConsoleA(consoleHandle, temp.c_str(), static_cast<DWORD>(temp.size()), nullptr, nullptr);
 						}
 
-						file << temp << "\n";
+						file << temp;
 
 						lock.lock();
 					}
