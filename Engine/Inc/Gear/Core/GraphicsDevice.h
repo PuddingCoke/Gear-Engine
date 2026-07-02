@@ -23,7 +23,7 @@ const HRESULT _hr_ = x;\
 if(FAILED(_hr_))\
 {\
 _com_error _err_(_hr_);\
-LOGERROR(L"失败值",IntegerMode::HEX,static_cast<uint32_t>(_hr_),L"失败原因",_err_.ErrorMessage());\
+LOGERROR("失败值",IntegerMode::HEX,static_cast<uint32_t>(_hr_),"失败原因",_err_.ErrorMessage());\
 }\
 } while(0)\
 

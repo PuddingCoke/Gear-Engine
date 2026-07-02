@@ -418,7 +418,7 @@ namespace Gear::Resource
 #ifdef _DEBUG
 		if (mipSlice >= texture->getMipLevels())
 		{
-			LOGERROR(L"纹理没有这么多的mipLevel");
+			LOGERROR("纹理没有这么多的mipLevel");
 		}
 #endif // _DEBUG
 

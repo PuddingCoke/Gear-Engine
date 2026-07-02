@@ -92,7 +92,7 @@ namespace Gear::Window::Win32Form
 
 		if (!hWnd)
 		{
-			LOGERROR(L"创建窗体失败！");
+			LOGERROR("创建窗体失败！");
 		}
 
 		ShowWindow(hWnd, SW_SHOW);

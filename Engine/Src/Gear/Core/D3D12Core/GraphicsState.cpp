@@ -223,7 +223,7 @@ namespace Gear::Core::D3D12Core
 
 		if (static_cast<uint64_t>(graphicsDesc.PrimitiveTopologyType) == 0ull)
 		{
-			LOGERROR(L"图元拓扑类型不得为", TOWSTRING(TOPOLOGY::TYPE::UNDEFINED));
+			LOGERROR("图元拓扑类型不得为", TOSTRING(TOPOLOGY::TYPE::UNDEFINED));
 		}
 
 		//2比特位

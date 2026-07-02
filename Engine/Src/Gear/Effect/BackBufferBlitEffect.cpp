@@ -31,7 +31,7 @@ namespace Gear::Effect::BackBufferBlitEffect
 				.setPS(*GlobalShader::getFullScreenPS())
 				.build();
 
-			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(BackBufferBlitEffect));
+			LOGSUCCESS("创建", LogColor::brightMagenta, TOSTRING(BackBufferBlitEffect));
 		}
 
 		void BackBufferBlitEffectImpl::process(GraphicsContext& contextRef, RenderTextureView& inputTexture)

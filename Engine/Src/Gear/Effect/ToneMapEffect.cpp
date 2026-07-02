@@ -36,7 +36,7 @@ namespace Gear::Effect::ToneMapEffect
 
 			outputTexture->getTexture()->setName(L"Tone Mapped Texture");
 
-			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(ToneMapEffect));
+			LOGSUCCESS("创建", LogColor::brightMagenta, TOSTRING(ToneMapEffect));
 		}
 
 		RenderTextureView* ToneMapEffectImpl::process(GraphicsContext& contextRef, RenderTextureView& inputTexture)

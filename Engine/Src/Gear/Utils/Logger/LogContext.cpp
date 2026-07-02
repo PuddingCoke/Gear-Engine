@@ -10,8 +10,8 @@ namespace Gear::Utils::Logger
 	}
 
 	LogContext::LogContext() :
-		textColor{ L"" },
-		displayColor{ L"" },
+		textColor{ "" },
+		displayColor{ "" },
 		writeIndex(0),
 		readIndex(0),
 		messageStr(nullptr)
@@ -34,36 +34,36 @@ namespace Gear::Utils::Logger
 	{
 		setDisplayColor(textColor);
 
-		*messageStr += arg;
+		*messageStr += String::wstringToString(arg);
 
-		*messageStr += L" ";
+		*messageStr += " ";
 	}
 
 	void LogContext::packArgument(const wchar_t* arg)
 	{
 		setDisplayColor(textColor);
 
-		*messageStr += arg;
+		*messageStr += String::wstringToString(arg);
 
-		*messageStr += L" ";
+		*messageStr += " ";
 	}
 
 	void LogContext::packArgument(const std::string& arg)
 	{
 		setDisplayColor(textColor);
 
-		*messageStr += String::stringToWstring(arg);
+		*messageStr += arg;
 
-		*messageStr += L" ";
+		*messageStr += " ";
 	}
 
 	void LogContext::packArgument(const char* arg)
 	{
 		setDisplayColor(textColor);
 
-		*messageStr += String::stringToWstring(arg);
+		*messageStr += arg;
 
-		*messageStr += L" ";
+		*messageStr += " ";
 	}
 
 	void LogContext::packArgument(const bool& arg)
@@ -72,13 +72,13 @@ namespace Gear::Utils::Logger
 		{
 			setDisplayColor(LogColor::brightGreen);
 
-			*messageStr += L"TRUE ";
+			*messageStr += "TRUE ";
 		}
 		else
 		{
 			setDisplayColor(LogColor::brightRed);
 
-			*messageStr += L"FALSE ";
+			*messageStr += "FALSE ";
 		}
 	}
 
@@ -88,32 +88,32 @@ namespace Gear::Utils::Logger
 
 		if (integerMode == IntegerMode::HEX)
 		{
-			//0xFFFFFFFF 11
+			//0xFFFFFFFF\0 11
 			const size_t hexMaxLength = 11ull;
 
-			wchar_t buff[hexMaxLength] = {};
+			char buff[hexMaxLength] = {};
 
-			_itow_s(arg, buff + 2, hexMaxLength - 2ull, 16);
+			_itoa_s(arg, buff + 2, hexMaxLength - 2ull, 16);
 
-			buff[0] = L'0';
+			buff[0] = '0';
 
-			buff[1] = L'x';
+			buff[1] = 'x';
 
 			*messageStr += buff;
 		}
 		else
 		{
-			//-2147483648 12
+			//-2147483648\0 12
 			const size_t decMaxLength = 12ull;
 
-			wchar_t buff[decMaxLength] = {};
+			char buff[decMaxLength] = {};
 
-			_itow_s(arg, buff, decMaxLength, 10);
+			_itoa_s(arg, buff, decMaxLength, 10);
 
 			*messageStr += buff;
 		}
 
-		*messageStr += L" ";
+		*messageStr += " ";
 	}
 
 	void LogContext::packArgument(const int64_t& arg)
@@ -122,32 +122,32 @@ namespace Gear::Utils::Logger
 
 		if (integerMode == IntegerMode::HEX)
 		{
-			//0xFFFFFFFFFFFFFFFF 19
+			//0xFFFFFFFFFFFFFFFF\0 19
 			const size_t hexMaxLength = 19ull;
 
-			wchar_t buff[hexMaxLength] = {};
+			char buff[hexMaxLength] = {};
 
-			_i64tow_s(arg, buff + 2, hexMaxLength - 2ull, 16);
+			_i64toa_s(arg, buff + 2, hexMaxLength - 2ull, 16);
 
-			buff[0] = L'0';
+			buff[0] = '0';
 
-			buff[1] = L'x';
+			buff[1] = 'x';
 
 			*messageStr += buff;
 		}
 		else
 		{
-			//-9223372036854775808 21
+			//-9223372036854775808\0 21
 			const size_t decMaxLength = 21ull;
 
-			wchar_t buff[decMaxLength] = {};
+			char buff[decMaxLength] = {};
 
-			_i64tow_s(arg, buff, decMaxLength, 10);
+			_i64toa_s(arg, buff, decMaxLength, 10);
 
 			*messageStr += buff;
 		}
 
-		*messageStr += L" ";
+		*messageStr += " ";
 	}
 
 	void LogContext::packArgument(const uint32_t& arg)
@@ -156,32 +156,32 @@ namespace Gear::Utils::Logger
 
 		if (integerMode == IntegerMode::HEX)
 		{
-			//0xFFFFFFFF 11
+			//0xFFFFFFFF\0 11
 			const size_t hexMaxLength = 11ull;
 
-			wchar_t buff[hexMaxLength] = {};
+			char buff[hexMaxLength] = {};
 
-			_ultow_s(arg, buff + 2, hexMaxLength - 2ull, 16);
+			_ultoa_s(arg, buff + 2, hexMaxLength - 2ull, 16);
 
-			buff[0] = L'0';
+			buff[0] = '0';
 
-			buff[1] = L'x';
+			buff[1] = 'x';
 
 			*messageStr += buff;
 		}
 		else
 		{
-			//4294967295 11
+			//4294967295\0 11
 			const size_t decMaxLength = 11ull;
 
-			wchar_t buff[decMaxLength] = {};
+			char buff[decMaxLength] = {};
 
-			_ultow_s(arg, buff, decMaxLength, 10);
+			_ultoa_s(arg, buff, decMaxLength, 10);
 
 			*messageStr += buff;
 		}
 
-		*messageStr += L" ";
+		*messageStr += " ";
 	}
 
 	void LogContext::packArgument(const uint64_t& arg)
@@ -190,16 +190,16 @@ namespace Gear::Utils::Logger
 
 		if (integerMode == IntegerMode::HEX)
 		{
-			//0xFFFFFFFFFFFFFFFF 19
+			//0xFFFFFFFFFFFFFFFF\0 19
 			const size_t hexMaxLength = 19ull;
 
-			wchar_t buff[hexMaxLength] = {};
+			char buff[hexMaxLength] = {};
 
-			_ui64tow_s(arg, buff + 2, hexMaxLength - 2ull, 16);
+			_ui64toa_s(arg, buff + 2, hexMaxLength - 2ull, 16);
 
-			buff[0] = L'0';
+			buff[0] = '0';
 
-			buff[1] = L'x';
+			buff[1] = 'x';
 
 			*messageStr += buff;
 		}
@@ -208,14 +208,14 @@ namespace Gear::Utils::Logger
 			//18446744073709551615 21
 			const size_t decMaxLength = 21ull;
 
-			wchar_t buff[decMaxLength] = {};
+			char buff[decMaxLength] = {};
 
-			_ui64tow_s(arg, buff, decMaxLength, 10);
+			_ui64toa_s(arg, buff, decMaxLength, 10);
 
 			*messageStr += buff;
 		}
 
-		*messageStr += L" ";
+		*messageStr += " ";
 	}
 
 	void LogContext::packArgument(const float_t& arg)

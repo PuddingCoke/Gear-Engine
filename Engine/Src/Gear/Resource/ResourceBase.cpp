@@ -54,7 +54,7 @@ namespace Gear::Resource
 #ifdef _DEBUG
 		if (getNumCBVSRVUAVDescriptors() == 0u)
 		{
-			LOGERROR(L"调用", TOWSTRING(allocCBVSRVUAVDescriptors), L"前应该先调用", TOWSTRING(setNumCBVSRVUAVDescriptors));
+			LOGERROR("调用", TOSTRING(allocCBVSRVUAVDescriptors), "前应该先调用", TOSTRING(setNumCBVSRVUAVDescriptors));
 		}
 #endif // _DEBUG
 
@@ -75,7 +75,7 @@ namespace Gear::Resource
 #ifdef _DEBUG
 		if (getPersistent())
 		{
-			LOGERROR(L"对于持久性资源来说，调用", TOWSTRING(copyToResourceHeap), L"是非法的！");
+			LOGERROR("对于持久性资源来说，调用", TOSTRING(copyToResourceHeap), "是非法的！");
 		}
 #endif // _DEBUG
 

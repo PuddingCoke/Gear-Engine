@@ -111,7 +111,7 @@ namespace Gear
 
 #endif // _DEBUG
 
-		LOGENGINE(L"资源销毁完毕");
+		LOGENGINE("资源销毁完毕");
 	}
 
 	int32_t GearImpl::iniEngine(const InitializationParam& param, const int32_t argc, const wchar_t* argv[])
@@ -120,7 +120,7 @@ namespace Gear
 
 		File::Internal::setRootFolder(File::backslashToSlash(File::getParentFolder(argv[0])));
 
-		LOGENGINE(L"EXE根目录", LogColor::brightBlue, File::getRootFolder());
+		LOGENGINE("EXE根目录", LogColor::brightBlue, File::getRootFolder());
 
 		usage = param.usage;
 
@@ -142,7 +142,7 @@ namespace Gear
 
 			SetForegroundWindow(Window::Win32Form::getHandle());
 
-			LOGENGINE(L"引擎用途", L"实时渲染");
+			LOGENGINE("引擎用途", "实时渲染");
 
 			break;
 
@@ -156,7 +156,7 @@ namespace Gear
 
 			renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(videoRender.width, videoRender.height, Window::Win32Form::getHandle(), false, false);
 
-			LOGENGINE(L"引擎用途", L"视频渲染");
+			LOGENGINE("引擎用途", "视频渲染");
 
 			break;
 
@@ -172,7 +172,7 @@ namespace Gear
 
 			renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(MainMonitor::getWidth(), MainMonitor::getHeight(), Window::Win32Form::getHandle(), true, false);
 
-			LOGENGINE(L"引擎用途", L"动态壁纸");
+			LOGENGINE("引擎用途", "动态壁纸");
 
 			break;
 
@@ -180,11 +180,11 @@ namespace Gear
 			break;
 		}
 
-		LOGENGINE(L"分辨率", Graphics::getWidth(), L"x", Graphics::getHeight());
+		LOGENGINE("分辨率", Graphics::getWidth(), L"x", Graphics::getHeight());
 
-		LOGENGINE(L"横纵比", Graphics::getAspectRatio());
+		LOGENGINE("横纵比", Graphics::getAspectRatio());
 
-		LOGENGINE(L"后备缓冲数量", Graphics::getFrameBufferCount());
+		LOGENGINE("后备缓冲数量", Graphics::getFrameBufferCount());
 
 		return 0;
 	}
@@ -287,7 +287,7 @@ namespace Gear
 
 				stbi_write_png("output.png", realTimeRender.width, realTimeRender.height, 4, colors.get(), FMT::getByteSize(Graphics::backBufferFormat) * realTimeRender.width);
 
-				LOGSUCCESS(L"截屏保存到", L"output.png");
+				LOGSUCCESS("截屏保存到", "output.png");
 			}
 		}
 	}
@@ -308,7 +308,7 @@ namespace Gear
 		case AdapterVendor::AMD:
 		case AdapterVendor::INTEL:
 		case AdapterVendor::UNKNOWN:
-			LOGERROR(L"目前只为英伟达的GPU做了视频编码的适配");
+			LOGERROR("目前只为英伟达的GPU做了视频编码的适配");
 			break;
 		default:
 			break;

@@ -7,7 +7,7 @@ namespace Gear::Utils::Logger
 {
 	struct LogColor
 	{
-		const wchar_t* code;
+		const char* code;
 
 		bool operator!=(const LogColor& color) const;
 

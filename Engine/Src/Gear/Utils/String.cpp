@@ -24,7 +24,7 @@ namespace Gear::Utils::String
 		return result;
 	}
 
-	std::wstring stringToWstring(const std::string& str)
+	std::wstring stringToWString(const std::string& str)
 	{
 		if (str.empty())
 		{

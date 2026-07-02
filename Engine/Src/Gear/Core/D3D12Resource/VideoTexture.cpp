@@ -26,7 +26,7 @@ namespace Gear::Core::D3D12Resource
 			format != DXGI_FORMAT_Y216 &&
 			format != DXGI_FORMAT_420_OPAQUE)
 		{
-			LOGERROR(L"侦测到输入格式为非视频专用的纹理格式");
+			LOGERROR("侦测到输入格式为非视频专用的纹理格式");
 		}
 	}
 

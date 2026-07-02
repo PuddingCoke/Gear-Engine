@@ -106,7 +106,7 @@ namespace Gear::Utils
 #ifdef _DEBUG
 		if (idx >= N)
 		{
-			LOGERROR(L"超出", N, L"的存储上限");
+			LOGERROR("超出", N, "的存储上限");
 		}
 #endif // _DEBUG
 
@@ -155,7 +155,7 @@ namespace Gear::Utils
 #ifdef _DEBUG
 		if (idx == 0ull)
 		{
-			LOGERROR(L"无法获取起始元素");
+			LOGERROR("无法获取起始元素");
 		}
 #endif // _DEBUG
 
@@ -168,7 +168,7 @@ namespace Gear::Utils
 #ifdef _DEBUG
 		if (idx == 0ull)
 		{
-			LOGERROR(L"无法获取末尾元素");
+			LOGERROR("无法获取末尾元素");
 		}
 #endif // _DEBUG
 

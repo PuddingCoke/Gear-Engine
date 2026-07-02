@@ -27,12 +27,12 @@ namespace Gear::Core::VideoEncoder
 
 		if (moduleNvEncAPI == 0)
 		{
-			LOGERROR(L"无法读取nvEncodeAPI64.dll！");
+			LOGERROR("无法读取nvEncodeAPI64.dll！");
 		}
 
 		NVENCSTATUS(__stdcall * NVENCAPICreateInstance)(NV_ENCODE_API_FUNCTION_LIST*) = (NVENCSTATUS(*)(NV_ENCODE_API_FUNCTION_LIST*))GetProcAddress(moduleNvEncAPI, "NvEncodeAPICreateInstance");
 
-		LOGENGINE(TOWSTRING(NVENCAPICreateInstance), L"状态", static_cast<uint32_t>(NVENCAPICreateInstance(&nvencAPI)));
+		LOGENGINE(TOSTRING(NVENCAPICreateInstance), "状态", static_cast<uint32_t>(NVENCAPICreateInstance(&nvencAPI)));
 
 		NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS sessionParams = { NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER };
 		sessionParams.device = GraphicsDevice::get();
@@ -94,7 +94,7 @@ namespace Gear::Core::VideoEncoder
 
 		GraphicsDevice::get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&outputFence));
 
-		LOGENGINE(L"开始编码");
+		LOGENGINE("开始编码");
 
 		NV_ENC_REGISTER_RESOURCE registerOutputResource = { NV_ENC_REGISTER_RESOURCE_VER };
 		registerOutputResource.bufferFormat = NV_ENC_BUFFER_FORMAT_U8;

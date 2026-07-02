@@ -89,7 +89,7 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 				matricesBuffer->getBuffer()->setName(L"LatLongMap To Cubemap Matrices");
 			}
 
-			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(LatLongMapToCubeMapEffect));
+			LOGSUCCESS("创建", LogColor::brightMagenta, TOSTRING(LatLongMapToCubeMapEffect));
 		}
 
 		void LatLongMapToCubeMapEffectImpl::process(GraphicsContext& contextRef, RenderTextureView& inputTexture, RenderTextureView& outputTexture)

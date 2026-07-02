@@ -671,7 +671,7 @@ namespace Gear::Core
 #ifdef _DEBUG
 		if (nullptr == graphicsRootSignature)
 		{
-			LOGERROR(L"没有检测到图形根签名绑定，是否忘记设置管线状态？");
+			LOGERROR("没有检测到图形根签名绑定，是否忘记设置管线状态？");
 		}
 #endif // _DEBUG
 
@@ -683,7 +683,7 @@ namespace Gear::Core
 #ifdef _DEBUG
 		if (nullptr == computeRootSignature)
 		{
-			LOGERROR(L"没有检测到计算根签名绑定，是否忘记设置管线状态？");
+			LOGERROR("没有检测到计算根签名绑定，是否忘记设置管线状态？");
 		}
 #endif // _DEBUG
 
@@ -806,33 +806,33 @@ namespace Gear::Core
 
 		if (numShaderConstants < numWrite + offset)
 		{
-			std::wstring shaderName = L"";
+			std::string shaderName = "";
 
 			switch (shaderType)
 			{
 			case D3D12Core::RootSignature::ShaderType::VERTEX:
-				shaderName = L"顶点着色器";
+				shaderName = "顶点着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::HULL:
-				shaderName = L"外壳着色器";
+				shaderName = "外壳着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::DOMAIN:
-				shaderName = L"域着色器";
+				shaderName = "域着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::GEOMETRY:
-				shaderName = L"几何着色器";
+				shaderName = "几何着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::PIXEL:
-				shaderName = L"像素着色器";
+				shaderName = "像素着色器";
 				break;
 			case D3D12Core::RootSignature::ShaderType::COMPUTE:
-				shaderName = L"计算着色器";
+				shaderName = "计算着色器";
 				break;
 			default:
 				break;
 			}
 
-			LOGERROR(L"侦测到常量写入终止位置", offset + numWrite - 1u, L"越界", shaderName, L"的常量写入终止位置最高为", numShaderConstants - 1u);
+			LOGERROR("侦测到常量写入终止位置", offset + numWrite - 1u, "越界", shaderName, "的常量写入终止位置最高为", numShaderConstants - 1u);
 		}
 	}
 

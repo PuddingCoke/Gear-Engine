@@ -26,7 +26,7 @@ namespace Gear::Effect::HDRClampEffect
 		{
 			hdrClampState = PipelineStateBuilder::build(Shader::create(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes)));
 
-			LOGSUCCESS(L"创建", LogColor::brightMagenta, TOWSTRING(HDRClampEffect));
+			LOGSUCCESS("创建", LogColor::brightMagenta, TOSTRING(HDRClampEffect));
 		}
 
 		void HDRClampEffectImpl::process(GraphicsContext& contextRef, Resource::RenderTextureView& inOutTexture)

@@ -79,7 +79,7 @@ namespace Gear::Core
 	{
 		if (!Utils::File::exist(filePath))
 		{
-			LOGERROR(filePath, L"指定路径下未找到文件");
+			LOGERROR(filePath, "指定路径下未找到文件");
 		}
 
 		D3D12Resource::TexturePtr texture;
@@ -181,10 +181,10 @@ namespace Gear::Core
 		}
 		else
 		{
-			LOGERROR(fileExtension, L"是不被支持的文件扩展名！");
+			LOGERROR(fileExtension, "是不被支持的文件扩展名！");
 		}
 
-		LOGSUCCESS(L"读取", LogColor::brightBlue, filePath);
+		LOGSUCCESS("读取", LogColor::brightBlue, filePath);
 
 		return texture;
 	}
@@ -310,7 +310,7 @@ namespace Gear::Core
 	{
 		if (createVBV && createIBV)
 		{
-			LOGERROR(L"一个缓冲不能同时被用于顶点缓冲和索引缓冲！");
+			LOGERROR("一个缓冲不能同时被用于顶点缓冲和索引缓冲！");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -355,7 +355,7 @@ namespace Gear::Core
 	{
 		if (createVBV && createIBV)
 		{
-			LOGERROR(L"一个缓冲不能同时被用于顶点缓冲和索引缓冲！");
+			LOGERROR("一个缓冲不能同时被用于顶点缓冲和索引缓冲！");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -486,7 +486,7 @@ namespace Gear::Core
 			clearValueFormat = FMT::D24UNS8UI;
 			break;
 		default:
-			LOGERROR(L"不被支持的深度模板纹理格式！");
+			LOGERROR("不被支持的深度模板纹理格式！");
 			break;
 		}
 
@@ -609,7 +609,7 @@ namespace Gear::Core
 
 		if (FMT::UNKNOWN == srvFormat)
 		{
-			LOGERROR(TOWSTRING(srvFormat), L"不能为", TOWSTRING(FMT::UNKNOWN));
+			LOGERROR(TOSTRING(srvFormat), "不能为", TOSTRING(FMT::UNKNOWN));
 		}
 
 		const bool hasUAV = (FMT::UNKNOWN != uavFormat);
@@ -618,7 +618,7 @@ namespace Gear::Core
 
 		if (!hasUAV && !hasRTV)
 		{
-			LOGERROR(TOWSTRING(uavFormat), L"和", TOWSTRING(rtvFormat), L"其中一个必须为有效格式！");
+			LOGERROR(TOSTRING(uavFormat), "和", TOSTRING(rtvFormat), "其中一个必须为有效格式！");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -661,7 +661,7 @@ namespace Gear::Core
 		}
 		else if (FMT::UNKNOWN == srvFormat && FMT::UNKNOWN != rtvFormat || FMT::UNKNOWN != srvFormat && FMT::UNKNOWN == rtvFormat)
 		{
-			LOGERROR(TOWSTRING(srvFormat), L"和", TOWSTRING(rtvFormat), L"要么同时为", TOWSTRING(FMT::UNKNOWN), L"，要么同时得被设置成有效值！");
+			LOGERROR(TOSTRING(srvFormat), "和", TOSTRING(rtvFormat), "要么同时为", TOSTRING(FMT::UNKNOWN), "，要么同时得被设置成有效值！");
 		}
 
 		return createRenderTextureView(width, height, resFormat, arraySize, mipLevels, isTextureCube, persistent, srvFormat, FMT::UNKNOWN, rtvFormat, color);
@@ -677,7 +677,7 @@ namespace Gear::Core
 		}
 		else if (FMT::UNKNOWN == srvFormat && FMT::UNKNOWN != uavFormat || FMT::UNKNOWN != srvFormat && FMT::UNKNOWN == uavFormat)
 		{
-			LOGERROR(TOWSTRING(srvFormat), L"和", TOWSTRING(uavFormat), L"要么同时为", TOWSTRING(FMT::UNKNOWN), L"，要么同时得被设置成有效值！");
+			LOGERROR(TOSTRING(srvFormat), "和", TOSTRING(uavFormat), "要么同时为", TOSTRING(FMT::UNKNOWN), "，要么同时得被设置成有效值！");
 		}
 
 		return createRenderTextureView(width, height, resFormat, arraySize, mipLevels, isTextureCube, persistent, srvFormat, uavFormat, FMT::UNKNOWN);
@@ -713,7 +713,7 @@ namespace Gear::Core
 			resFormat = FMT::RGBA32F;
 			break;
 		default:
-			LOGERROR(L"不被支持的等距柱状图纹理格式！");
+			LOGERROR("不被支持的等距柱状图纹理格式！");
 			break;
 		}
 

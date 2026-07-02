@@ -26,7 +26,7 @@ namespace Gear::Utils::Logger
 				//设置locale为.UTF-8用于多语言支持
 				std::locale::global(std::locale(".UTF-8"));
 
-				file = std::wofstream(L"log.txt", std::ios_base::out | std::ios_base::trunc);
+				file = std::ofstream("log.txt", std::ios_base::out | std::ios_base::trunc);
 
 				worker = std::thread(&LoggerImpl::workerLoop, this);
 			}
@@ -56,7 +56,7 @@ namespace Gear::Utils::Logger
 
 		private:
 
-			std::wofstream file;
+			std::ofstream file;
 
 			std::queue<LogMessage> messages;
 
@@ -66,7 +66,7 @@ namespace Gear::Utils::Logger
 
 			std::condition_variable cv;
 
-			std::wstring temp;
+			std::string temp;
 
 			std::thread worker;
 
@@ -103,7 +103,7 @@ namespace Gear::Utils::Logger
 
 					if (file.is_open())
 					{
-						file << temp << L"\n";
+						file << temp << "\n";
 					}
 				}
 			}
@@ -141,10 +141,10 @@ namespace Gear::Utils::Logger
 
 						if (message.type != LogType::LOG_ERROR)
 						{
-							std::wcout << temp << L"\n";
+							std::cout << temp << "\n";
 						}
 
-						file << temp << L"\n";
+						file << temp << "\n";
 
 						lock.lock();
 					}

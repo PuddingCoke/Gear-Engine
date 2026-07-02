@@ -116,7 +116,7 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 				dxcUtils->BuildArguments(filePath.c_str(), L"", L"lib_6_6", nullptr, 0, nullptr, 0, &args);
 				break;
 			default:
-				LOGERROR(L"不被支持的着色器配置！");
+				LOGERROR("不被支持的着色器配置！");
 				break;
 			}
 

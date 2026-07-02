@@ -15,33 +15,33 @@ namespace Gear::Core::D3D12Core
 		{
 			if (numShaderConstants[i] > maxPerShaderConstants)
 			{
-				std::wstring errorString = L"";
+				std::string errorString = "";
 
 				switch (static_cast<ShaderType>(i))
 				{
 				case ShaderType::VERTEX:
-					errorString += L"顶点着色器";
+					errorString += "顶点着色器";
 					break;
 				case ShaderType::HULL:
-					errorString += L"外壳着色器";
+					errorString += "外壳着色器";
 					break;
 				case ShaderType::DOMAIN:
-					errorString += L"域着色器";
+					errorString += "域着色器";
 					break;
 				case ShaderType::GEOMETRY:
-					errorString += L"几何着色器";
+					errorString += "几何着色器";
 					break;
 				case ShaderType::PIXEL:
-					errorString += L"像素着色器";
+					errorString += "像素着色器";
 					break;
 				case ShaderType::COMPUTE:
-					errorString += L"计算着色器";
+					errorString += "计算着色器";
 					break;
 				default:
 					break;
 				}
 
-				LOGERROR(errorString, L"常量个数分配的限制为", maxPerShaderConstants, L"个");
+				LOGERROR(errorString, "常量个数分配的限制为", maxPerShaderConstants, "个");
 			}
 		}
 
@@ -251,33 +251,33 @@ namespace Gear::Core::D3D12Core
 #ifdef _DEBUG
 		if (localParameterIndices[index].perInvokeConstantsParameterIndex == 0)
 		{
-			std::wstring errorString = L"";
+			std::string errorString = "";
 
 			switch (shaderType)
 			{
 			case ShaderType::VERTEX:
-				errorString += L"顶点着色器";
+				errorString += "顶点着色器";
 				break;
 			case ShaderType::HULL:
-				errorString += L"外壳着色器";
+				errorString += "外壳着色器";
 				break;
 			case ShaderType::DOMAIN:
-				errorString += L"域着色器";
+				errorString += "域着色器";
 				break;
 			case ShaderType::GEOMETRY:
-				errorString += L"几何着色器";
+				errorString += "几何着色器";
 				break;
 			case ShaderType::PIXEL:
-				errorString += L"像素着色器";
+				errorString += "像素着色器";
 				break;
 			case ShaderType::COMPUTE:
-				errorString += L"计算着色器";
+				errorString += "计算着色器";
 				break;
 			default:
 				break;
 			}
 
-			errorString += L"没有被分配根参数！";
+			errorString += "没有被分配根参数！";
 
 			LOGERROR(errorString);
 		}

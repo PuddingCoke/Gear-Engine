@@ -38,11 +38,11 @@ namespace Gear::Effect
 
 		if (status == GFSDK_SSAO_OK)
 		{
-			LOGENGINE(L"初始化", LogColor::brightMagenta, TOWSTRING(HBAOPlusEffect));
+			LOGENGINE("初始化", LogColor::brightMagenta, TOSTRING(HBAOPlusEffect));
 		}
 		else
 		{
-			LOGERROR(L"初始化", TOWSTRING(HBAOPlusEffect), L"失败, 失败码 : ", static_cast<uint32_t>(status));
+			LOGERROR("初始化", TOSTRING(HBAOPlusEffect), "失败, 失败码 : ", static_cast<uint32_t>(status));
 		}
 
 		aoParameters.Radius = 2.f;
@@ -130,7 +130,7 @@ namespace Gear::Effect
 
 		if (status != GFSDK_SSAO_OK)
 		{
-			LOGERROR(TOWSTRING(aoContext->RenderAO), L"调用失败, 失败码", static_cast<uint32_t>(status));
+			LOGERROR(TOSTRING(aoContext->RenderAO), "调用失败, 失败码", static_cast<uint32_t>(status));
 		}
 
 		//使用Nsight调试后发现RenderAO不会恢复图形相关的状态

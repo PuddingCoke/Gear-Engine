@@ -19,13 +19,13 @@ namespace Gear::Resource
 	{
 		if (regionIndex >= DynamicCBufferManager::getNumRegion())
 		{
-			std::wstring errorString = L"动态常量缓冲的大小只能是以下这些";
+			std::string errorString = "动态常量缓冲的大小只能是以下这些";
 
 			uint32_t factor = 1u;
 
 			for (uint32_t i = 0; i < DynamicCBufferManager::getNumRegion(); i++)
 			{
-				errorString += L" " + std::to_wstring(256u * factor) + L"Bytes";
+				errorString += " " + std::to_string(256u * factor) + "Bytes";
 
 				factor <<= 1u;
 			}
@@ -48,12 +48,12 @@ namespace Gear::Resource
 #ifdef _DEBUG
 		if (Graphics::getRenderedFrameCount() == *acquireFrameIndex)
 		{
-			LOGERROR(L"对于动态常量缓冲来说，每帧的数据指针获取只能有一次！");
+			LOGERROR("对于动态常量缓冲来说，每帧的数据指针获取只能有一次！");
 		}
 
 		if (regionIndex >= DynamicCBufferManager::getNumRegion())
 		{
-			LOGERROR(L"这个动态常量缓冲没有被分配位置");
+			LOGERROR("这个动态常量缓冲没有被分配位置");
 		}
 #endif // _DEBUG
 
@@ -73,12 +73,12 @@ namespace Gear::Resource
 #ifdef _DEBUG
 		if (Graphics::getRenderedFrameCount() != *acquireFrameIndex)
 		{
-			LOGERROR(L"你还没有为这个动态常量缓冲获取这一帧可用的数据指针！");
+			LOGERROR("你还没有为这个动态常量缓冲获取这一帧可用的数据指针！");
 		}
 
 		if (Graphics::getRenderedFrameCount() == *updateFrameIndex)
 		{
-			LOGERROR(L"一个动态常量缓冲每帧只能更新一次！");
+			LOGERROR("一个动态常量缓冲每帧只能更新一次！");
 		}
 #endif // _DEBUG
 

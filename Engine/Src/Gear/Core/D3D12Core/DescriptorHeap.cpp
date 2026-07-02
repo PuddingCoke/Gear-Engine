@@ -38,7 +38,7 @@ namespace Gear::Core::D3D12Core
 #ifdef _DEBUG
 		if (retIndex + num > numDescriptors - numDynamicDescriptors)
 		{
-			LOGERROR(L"静态索引超出边界！是否分配了过多的静态资源？");
+			LOGERROR("静态索引超出边界！是否分配了过多的静态资源？");
 		}
 #endif // _DEBUG
 

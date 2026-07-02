@@ -510,7 +510,7 @@ namespace Gear::Core
 #ifdef _DEBUG
 		if (N > D3D12Core::RootSignature::maxPerShaderConstants)
 		{
-			LOGERROR(L"对于每个draw call和dispatch call来说，每个着色器的常量写入限制为", D3D12Core::RootSignature::maxPerShaderConstants, L"个！");
+			LOGERROR("对于每个draw call和dispatch call来说，每个着色器的常量写入限制为", D3D12Core::RootSignature::maxPerShaderConstants, "个！");
 		}
 #endif // _DEBUG
 
@@ -526,7 +526,7 @@ namespace Gear::Core
 #ifdef _DEBUG
 		if (N > D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT)
 		{
-			LOGERROR(L"无法绑定更多的渲染目标");
+			LOGERROR("无法绑定更多的渲染目标");
 		}
 #endif // _DEBUG
 
@@ -567,7 +567,7 @@ namespace Gear::Core
 #ifdef _DEBUG
 		if (startSlot + N > D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)
 		{
-			LOGERROR(L"无法绑定更多的顶点缓冲");
+			LOGERROR("无法绑定更多的顶点缓冲");
 		}
 #endif // _DEBUG
 

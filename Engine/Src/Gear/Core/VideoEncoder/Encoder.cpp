@@ -18,25 +18,25 @@ namespace Gear::Core::VideoEncoder
 		switch (format)
 		{
 		case OutputVideoFormat::H264:
-			LOGENGINE(L"输出视频格式", LogColor::brightMagenta, L"H264");
+			LOGENGINE("输出视频格式", LogColor::brightMagenta, "H264");
 			mediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_H264);
 			break;
 		case OutputVideoFormat::HEVC:
-			LOGENGINE(L"输出视频格式", LogColor::brightMagenta, L"HEVC");
+			LOGENGINE("输出视频格式", LogColor::brightMagenta, "HEVC");
 			mediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_HEVC);
 			break;
 		case OutputVideoFormat::AV1:
-			LOGENGINE(L"输出视频格式", LogColor::brightMagenta, L"AV1");
+			LOGENGINE("输出视频格式", LogColor::brightMagenta, "AV1");
 			mediaType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_AV1);
 			break;
 		default:
-			LOGERROR(L"不被支持的输出视频格式！");
+			LOGERROR("不被支持的输出视频格式！");
 			break;
 		}
 
-		LOGENGINE(L"视频帧率", frameRate);
+		LOGENGINE("视频帧率", frameRate);
 
-		LOGENGINE(L"待编码帧数", frameToEncode);
+		LOGENGINE("待编码帧数", frameToEncode);
 
 		MFSetAttributeSize(mediaType.Get(), MF_MT_FRAME_SIZE, Graphics::getWidth(), Graphics::getHeight());
 
@@ -106,11 +106,11 @@ namespace Gear::Core::VideoEncoder
 
 			const uint32_t buffLength = 12 + 2 + progressBarWidth + 1 + 6 + 1 + 1;
 
-			wchar_t str[buffLength] = {};
+			char str[buffLength] = {};
 
-			swprintf_s(str, buffLength, L"Encoding... [%.*s%.*s] %.2f%%",
-				num, L"********************************",
-				progressBarWidth - num, L"////////////////////////////////",
+			sprintf_s(str, buffLength, "Encoding... [%.*s%.*s] %.2f%%",
+				num, "********************************",
+				progressBarWidth - num, "////////////////////////////////",
 				100.f * static_cast<float>(frameEncoded) / static_cast<float>(frameToEncode));
 
 			LOGENGINE(str);

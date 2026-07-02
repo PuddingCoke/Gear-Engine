@@ -270,7 +270,7 @@ namespace Gear::Core::RenderEngine
 			ComPtr<IDXGIFactory7> factory;
 
 #ifdef _DEBUG
-			LOGENGINE(LogColor::brightGreen, L"开启", LogColor::brightMagenta, L"调试层");
+			LOGENGINE(LogColor::brightGreen, "开启", LogColor::brightMagenta, "调试层");
 
 			ComPtr<ID3D12Debug> debugController;
 
@@ -280,7 +280,7 @@ namespace Gear::Core::RenderEngine
 
 			CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&factory));
 #else
-			LOGENGINE(LogColor::brightRed, L"关闭", LogColor::brightMagenta, L"调试层");
+			LOGENGINE(LogColor::brightRed, "关闭", LogColor::brightMagenta, "调试层");
 
 			CreateDXGIFactory2(0, IID_PPV_ARGS(&factory));
 #endif // _DEBUG
@@ -405,13 +405,13 @@ namespace Gear::Core::RenderEngine
 			//如果有需要，那么初始化ImGUI
 			if (initializeImGuiSurface)
 			{
-				LOGENGINE(LogColor::brightGreen, L"开启", LogColor::brightMagenta, L"ImGui");
+				LOGENGINE(LogColor::brightGreen, "开启", LogColor::brightMagenta, "ImGui");
 
 				imGuiToken = makeUnique<ImGuiToken>(hWnd, &mediumFont, &largeFont);
 			}
 			else
 			{
-				LOGENGINE(LogColor::brightRed, L"关闭", LogColor::brightMagenta, L"ImGui");
+				LOGENGINE(LogColor::brightRed, "关闭", LogColor::brightMagenta, "ImGui");
 			}
 
 			//设置默认的2D投影矩阵
@@ -756,42 +756,42 @@ namespace Gear::Core::RenderEngine
 				{
 					const uint32_t vendorID = desc.VendorId;
 
-					std::wstring vendorName;
+					std::string vendorName;
 
 					if (vendorID == 0x10DE)
 					{
 						vendor = AdapterVendor::NVIDIA;
 
-						vendorName = L"NVIDIA";
+						vendorName = "NVIDIA";
 					}
 					else if (vendorID == 0x1002 || vendorID == 0x1022)
 					{
 						vendor = AdapterVendor::AMD;
 
-						vendorName = L"AMD";
+						vendorName = "AMD";
 					}
 					else if (vendorID == 0x163C || vendorID == 0x8086 || vendorID == 0x8087)
 					{
 						vendor = AdapterVendor::INTEL;
 
-						vendorName = L"INTEL";
+						vendorName = "INTEL";
 					}
 					else
 					{
 						vendor = AdapterVendor::UNKNOWN;
 
-						vendorName = L"UNKNOWN";
+						vendorName = "UNKNOWN";
 					}
 
-					LOGENGINE(L"以下是适配器的相关信息");
+					LOGENGINE("以下是适配器的相关信息");
 
-					LOGENGINE(L"适配器名称", LogColor::brightMagenta, desc.Description);
+					LOGENGINE("适配器名称", LogColor::brightMagenta, desc.Description);
 
-					LOGENGINE(L"适配器生产商ID", IntegerMode::HEX, vendorID);
+					LOGENGINE("适配器生产商ID", IntegerMode::HEX, vendorID);
 
-					LOGENGINE(L"适配器生产商", LogColor::brightMagenta, vendorName);
+					LOGENGINE("适配器生产商", LogColor::brightMagenta, vendorName);
 
-					LOGENGINE(L"适配器专有视频内存", static_cast<float>(desc.DedicatedVideoMemory) / 1024.f / 1024.f / 1024.f, L"GB");
+					LOGENGINE("适配器专有视频内存", static_cast<float>(desc.DedicatedVideoMemory) / 1024.f / 1024.f / 1024.f, "GB");
 
 					break;
 				}

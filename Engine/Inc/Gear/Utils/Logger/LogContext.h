@@ -25,7 +25,7 @@ namespace Gear::Utils::Logger
 
 	struct LogMessage
 	{
-		const std::wstring& str;
+		const std::string& str;
 
 		const LogType type;
 
@@ -61,12 +61,12 @@ namespace Gear::Utils::Logger
 		~LogContext();
 
 		template<typename... Args>
-		static LogMessage createLogMessage(const wchar_t* const functionName, const LogType& type, const Args&... args);
+		static LogMessage createLogMessage(const char* const functionName, const LogType& type, const Args&... args);
 
 	private:
 
 		template<typename... Args>
-		LogMessage getLogMessage(const wchar_t* const functionName, const LogType& type, const Args&... args);
+		LogMessage getLogMessage(const char* const functionName, const LogType& type, const Args&... args);
 
 		template<typename First, typename... Rest>
 		void packRestArgument(const First& first, const Rest&... rest);
@@ -137,13 +137,13 @@ namespace Gear::Utils::Logger
 
 		static constexpr size_t slotNum = 128ull;
 
-		std::array<std::wstring, slotNum> slots;
+		std::array<std::string, slotNum> slots;
 
 		uint64_t writeIndex;
 
 		uint64_t readIndex;
 
-		std::wstring* messageStr;
+		std::string* messageStr;
 
 		std::mutex inUseMutex;
 
@@ -152,7 +152,7 @@ namespace Gear::Utils::Logger
 	};
 
 	template<typename ...Args>
-	inline LogMessage LogContext::createLogMessage(const wchar_t* const functionName, const LogType& type, const Args & ...args)
+	inline LogMessage LogContext::createLogMessage(const char* const functionName, const LogType& type, const Args & ...args)
 	{
 		thread_local UniquePtr<LogContext> context = makeUnique<LogContext>();
 
@@ -162,7 +162,7 @@ namespace Gear::Utils::Logger
 	}
 
 	template<typename ...Args>
-	inline LogMessage LogContext::getLogMessage(const wchar_t* const functionName, const LogType& type, const Args & ...args)
+	inline LogMessage LogContext::getLogMessage(const char* const functionName, const LogType& type, const Args & ...args)
 	{
 		writeIndex++;
 
@@ -192,13 +192,13 @@ namespace Gear::Utils::Logger
 			//			   = 44+length(functionName)
 			const size_t headerStrLen = 256ull;
 
-			wchar_t headerStr[headerStrLen] = {};
+			char headerStr[headerStrLen] = {};
 
 			const std::thread::id id = std::this_thread::get_id();
 
 			const uint32_t threadId = *(uint32_t*)&id;
 
-			swprintf_s(headerStr, headerStrLen, L"%s[%d:%d:%d] %s{T%u} %s(%s) ", LogColor::timeStampColor.code, localTime.tm_hour, localTime.tm_min, localTime.tm_sec,
+			sprintf_s(headerStr, headerStrLen, "%s[%d:%d:%d] %s{T%u} %s(%s) ", LogColor::timeStampColor.code, localTime.tm_hour, localTime.tm_min, localTime.tm_sec,
 				LogColor::threadIdColor.code, threadId, LogColor::functionNameColor.code, functionName);
 
 			*messageStr += headerStr;
@@ -210,28 +210,28 @@ namespace Gear::Utils::Logger
 
 			packArgument(LogColor::successColor);
 
-			packArgument(L"<SUCCESS>");
+			packArgument("<SUCCESS>");
 
 			break;
 		case LogType::LOG_ERROR:
 
 			packArgument(LogColor::errorColor);
 
-			packArgument(L"<ERROR>");
+			packArgument("<ERROR>");
 
 			break;
 		case LogType::LOG_ENGINE:
 
 			packArgument(LogColor::engineColor);
 
-			packArgument(L"<ENGINE>");
+			packArgument("<ENGINE>");
 
 			break;
 		case LogType::LOG_USER:
 
 			packArgument(LogColor::userColor);
 
-			packArgument(L"<USER>");
+			packArgument("<USER>");
 
 			break;
 		}
@@ -269,9 +269,9 @@ namespace Gear::Utils::Logger
 	{
 		setDisplayColor(LogColor::numericColor);
 
-		wchar_t buff[_CVTBUFSIZE] = {};
+		char buff[_CVTBUFSIZE] = {};
 
-		swprintf_s(buff, _CVTBUFSIZE, L"%.*f ", floatPrecision.precision, arg);
+		sprintf_s(buff, _CVTBUFSIZE, "%.*f ", floatPrecision.precision, arg);
 
 		*messageStr += buff;
 	}

@@ -48,7 +48,7 @@ namespace Gear::Resource
 			dsvFormat = FMT::D24UNS8UI;
 			break;
 		default:
-			LOGERROR(L"不支持的深度模板纹理格式！");
+			LOGERROR("不支持的深度模板纹理格式！");
 			break;
 		}
 
