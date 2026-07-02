@@ -9,7 +9,7 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		accumulateShader(Shader::create(File::getRootFolder() + L"AccumulateShader.cso")),
+		accumulateShader(Shader::create(File::getWRootFolder() + L"AccumulateShader.cso")),
 		accumulatedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, false)),
 		cameraParam{ Math::pi / 4.f + 0.4f,0.f,3.0f,8.f },
 		accumulateParam{ 0,0.f }

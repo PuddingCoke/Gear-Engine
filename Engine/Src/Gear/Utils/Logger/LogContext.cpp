@@ -48,7 +48,7 @@ namespace Gear::Utils::Logger
 		}
 		else
 		{
-			*messageStr += String::wstringToString(arg);
+			*messageStr += String::wStringToString(arg);
 		}
 
 		*messageStr += " ";
@@ -72,7 +72,7 @@ namespace Gear::Utils::Logger
 		}
 		else
 		{
-			*messageStr += String::wstringToString(arg);
+			*messageStr += String::wStringToString(arg);
 		}
 
 		*messageStr += " ";

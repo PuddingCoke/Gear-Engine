@@ -12,11 +12,11 @@ public:
 		timer(1.f / 60.f),
 		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true))
 	{
-		whiteNoiseState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"WhiteNoiseCS.cso"));
+		whiteNoiseState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"WhiteNoiseCS.cso"));
 
-		evolveState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"EvolveCS.cso"));
+		evolveState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"EvolveCS.cso"));
 
-		visualizeState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"VisualizeCS.cso"));
+		visualizeState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"VisualizeCS.cso"));
 
 		swapTexture = ResourceManager::createSwapTexture([] {return ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true); });
 

@@ -9,17 +9,11 @@ public:
 
 	Material(ResourceManager& resManager, const std::string& diffusePath, const std::string& roughnessMetallicPath, std::string& normalPath)
 	{
-		const std::wstring wDiffusePath = std::wstring(diffusePath.begin(), diffusePath.end());
+		diffuse = resManager.createRenderTextureView(String::stringToWString(diffusePath), true);
 
-		const std::wstring wRoughnessMetallicPath = std::wstring(roughnessMetallicPath.begin(), roughnessMetallicPath.end());
+		roughnessMetallic = resManager.createRenderTextureView(String::stringToWString(roughnessMetallicPath), true);
 
-		const std::wstring wNormalPath = std::wstring(normalPath.begin(), normalPath.end());
-
-		diffuse = resManager.createRenderTextureView(wDiffusePath, true);
-
-		roughnessMetallic = resManager.createRenderTextureView(wRoughnessMetallicPath, true);
-
-		normal = resManager.createRenderTextureView(wNormalPath, true);
+		normal = resManager.createRenderTextureView(String::stringToWString(normalPath), true);
 	}
 
 	~Material()

@@ -8,7 +8,7 @@
 
 namespace Gear::Utils::String
 {
-	std::string wstringToString(const std::wstring& wstr)
+	std::string wStringToString(const std::wstring& wstr)
 	{
 		if (wstr.empty())
 		{

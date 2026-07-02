@@ -4,6 +4,8 @@
 
 #include<Gear/Utils/Logger.h>
 
+#include<Gear/Utils/String.h>
+
 #include<fstream>
 
 #include<sstream>
@@ -20,18 +22,40 @@ namespace Gear::Utils::File
 	{
 		struct FileImpl
 		{
-			std::wstring rootFolder;
-		}impl;
+			FileImpl(const std::wstring& wRootFolder);
 
-		void setRootFolder(const std::wstring& rootFolder)
+			const std::wstring wRootFolder;
+
+			const std::string rootFolder;
+		};
+
+		FileImpl::FileImpl(const std::wstring& wRootFolder) :
+			wRootFolder(wRootFolder),
+			rootFolder(String::wStringToString(wRootFolder))
 		{
-			impl.rootFolder = rootFolder;
+		}
+
+		UniquePtr<FileImpl> impl;
+
+		void initialize(const std::wstring& rootFolder)
+		{
+			impl = makeUnique<FileImpl>(rootFolder);
+		}
+
+		void release()
+		{
+			impl.reset();
 		}
 	}
 
-	std::wstring getRootFolder()
+	std::wstring getWRootFolder()
 	{
-		return Internal::impl.rootFolder;
+		return Internal::impl->wRootFolder;
+	}
+
+	std::string getRootFolder()
+	{
+		return Internal::impl->rootFolder;
 	}
 
 	std::wstring backslashToSlash(const std::wstring& filePath)

@@ -12,9 +12,9 @@ public:
 		renderTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
 			FMT::RGBA8UN, 1, 1, false, true, DirectX::Colors::White)),
 		arrowTexture(resManager->createRenderTextureView(L"arrow.png", true)),
-		vehicleVS(Shader::create(File::getRootFolder() + L"VehicleVS.cso")),
-		vehicleGS(Shader::create(File::getRootFolder() + L"VehicleGS.cso")),
-		vehiclePS(Shader::create(File::getRootFolder() + L"VehiclePS.cso")),
+		vehicleVS(Shader::create(File::getWRootFolder() + L"VehicleVS.cso")),
+		vehicleGS(Shader::create(File::getWRootFolder() + L"VehicleGS.cso")),
+		vehiclePS(Shader::create(File::getWRootFolder() + L"VehiclePS.cso")),
 		simulationParam{}
 	{
 		{
@@ -45,7 +45,7 @@ public:
 			maxSpeedMaxForce->getBuffer()->setName(L"Max Speed Max Force Buffer");
 		}
 
-		stepState = PipelineStateBuilder::build(Shader::create(File::getRootFolder() + L"StepCS.cso"));
+		stepState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"StepCS.cso"));
 
 		vehicleRenderState = PipelineStateBuilder()
 			.setRasterizerState(PipelineStateHelper::rasterCullBack)

@@ -68,6 +68,8 @@ namespace Gear
 
 		UniquePtr<Logger::Internal::InitializeToken> loggerToken;
 
+		UniquePtr<File::Internal::InitializeToken> fileToken;
+
 		UniquePtr<Window::Win32Form::InitializeToken> windowToken;
 
 		UniquePtr<RenderEngine::Internal::InitializeToken> renderEngineToken;
@@ -118,9 +120,9 @@ namespace Gear
 	{
 		loggerToken = makeUnique<Logger::Internal::InitializeToken>();
 
-		File::Internal::setRootFolder(File::backslashToSlash(File::getParentFolder(argv[0])));
+		fileToken = makeUnique<File::Internal::InitializeToken>(File::backslashToSlash(File::getParentFolder(argv[0])));
 
-		LOGENGINE("EXE根目录", LogColor::brightBlue, File::getRootFolder());
+		LOGENGINE("EXE根目录", LogColor::brightBlue, File::getWRootFolder());
 
 		usage = param.usage;
 

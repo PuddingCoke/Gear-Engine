@@ -34,9 +34,9 @@ std::vector<std::wstring> split(std::wstring str, const wchar_t separator)
 }
 
 TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) :
-	spriteVS(Shader::create(File::getRootFolder() + L"SpriteVS.cso")),
-	spriteGS(Shader::create(File::getRootFolder() + L"SpriteGS.cso")),
-	spritePS(Shader::create(File::getRootFolder() + L"SpritePS.cso")),
+	spriteVS(Shader::create(File::getWRootFolder() + L"SpriteVS.cso")),
+	spriteGS(Shader::create(File::getWRootFolder() + L"SpriteGS.cso")),
+	spritePS(Shader::create(File::getWRootFolder() + L"SpritePS.cso")),
 	textBuffer(ResourceManager::createStructuredBufferView(textArray.elementByteSize(), textArray.totalByteSize(), false, false, true, true, true)),
 	scale(1.f)
 {
@@ -55,7 +55,7 @@ TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) 
 
 	if (fileStream.bad())
 	{
-		LOGERROR(L"字体描述文件打开失败");
+		LOGERROR("字体描述文件打开失败");
 	}
 
 	std::wstring str;
@@ -72,7 +72,7 @@ TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) 
 
 			currentFontSize = fontSize;
 
-			LOGUSER(L"字体大小", fontSize);
+			LOGUSER("字体大小", fontSize);
 		}
 
 		if (splitResult.front() == L"file")
