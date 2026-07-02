@@ -19,8 +19,6 @@ namespace Gear
 
 		virtual ~Game();
 
-		virtual void imGuiCall();
-
 		Game(const Game&) = delete;
 
 		void operator=(const Game&) = delete;

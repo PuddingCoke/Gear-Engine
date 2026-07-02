@@ -12,10 +12,6 @@ namespace Gear
 	{
 	}
 
-	void Game::imGuiCall()
-	{
-	}
-
 	void Game::beginRenderTask(RenderTask& renderTask)
 	{
 		if (RenderEngine::getDisplayImGuiSurface())
