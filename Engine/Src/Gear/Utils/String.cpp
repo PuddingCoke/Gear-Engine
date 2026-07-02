@@ -15,11 +15,16 @@ namespace Gear::Utils::String
 			return "";
 		}
 
-		const int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), nullptr, 0, nullptr, nullptr);
+		const int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), -1, nullptr, 0, nullptr, nullptr);
 
-		std::string result(sizeNeeded, 0);
+		if (0 == sizeNeeded)
+		{
+			return "WideCharToMultiByte调用失败";
+		}
 
-		WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), &result[0], sizeNeeded, nullptr, nullptr);
+		std::string result(sizeNeeded - 1, 0);
+
+		WideCharToMultiByte(CP_UTF8, 0, wstr.data(), -1, &result[0], sizeNeeded, nullptr, nullptr);
 
 		return result;
 	}
@@ -31,11 +36,16 @@ namespace Gear::Utils::String
 			return L"";
 		}
 
-		const int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), nullptr, 0);
+		const int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, str.data(), -1, nullptr, 0);
 
-		std::wstring result(sizeNeeded, 0);
+		if (0 == sizeNeeded)
+		{
+			return L"MultiByteToWideChar调用失败";
+		}
 
-		MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), &result[0], sizeNeeded);
+		std::wstring result(sizeNeeded - 1, 0);
+
+		MultiByteToWideChar(CP_UTF8, 0, str.data(), -1, &result[0], sizeNeeded);
 
 		return result;
 	}

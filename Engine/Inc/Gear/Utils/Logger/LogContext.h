@@ -13,6 +13,8 @@
 
 #include<array>
 
+#include<type_traits>
+
 namespace Gear::Utils::Logger
 {
 	enum class LogType
@@ -105,6 +107,7 @@ namespace Gear::Utils::Logger
 		void packArgument(const uint64_t& arg);
 
 		template<typename Arg>
+			requires std::is_floating_point_v<Arg>
 		void packFloatPoint(const Arg& arg);
 
 		//浮点数
@@ -149,6 +152,10 @@ namespace Gear::Utils::Logger
 
 		std::condition_variable inUseCV;
 
+		static constexpr uint64_t convertBufferLength = 512ull;
+
+		char convertBuffer[convertBufferLength];
+
 	};
 
 	template<typename ...Args>
@@ -188,20 +195,16 @@ namespace Gear::Utils::Logger
 
 			localtime_s(&localTime, &currentTime);
 
-			//headerStrLen = 5+2+8+1+5+2+1+10+1+5+2+length(functionName)+1+1
-			//			   = 44+length(functionName)
-			const size_t headerStrLen = 256ull;
-
-			char headerStr[headerStrLen] = {};
-
 			const std::thread::id id = std::this_thread::get_id();
 
 			const uint32_t threadId = *(uint32_t*)&id;
 
-			sprintf_s(headerStr, headerStrLen, "%s[%d:%d:%d] %s{T%u} %s(%s) ", LogColor::timeStampColor.code, localTime.tm_hour, localTime.tm_min, localTime.tm_sec,
+			//headerStrLen = 5+2+8+1+5+2+1+10+1+5+2+length(functionName)+1+1
+			//			   = 44+length(functionName)
+			sprintf_s(convertBuffer, convertBufferLength, "%s[%d:%d:%d] %s{T%u} %s(%s) ", LogColor::timeStampColor.code, localTime.tm_hour, localTime.tm_min, localTime.tm_sec,
 				LogColor::threadIdColor.code, threadId, LogColor::functionNameColor.code, functionName);
 
-			*messageStr += headerStr;
+			*messageStr += convertBuffer;
 		}
 
 		switch (type)
@@ -265,15 +268,14 @@ namespace Gear::Utils::Logger
 	}
 
 	template<typename Arg>
+		requires std::is_floating_point_v<Arg>
 	inline void LogContext::packFloatPoint(const Arg& arg)
 	{
 		setDisplayColor(LogColor::numericColor);
 
-		char buff[_CVTBUFSIZE] = {};
+		sprintf_s(convertBuffer, convertBufferLength, "%.*f ", floatPrecision.precision, arg);
 
-		sprintf_s(buff, _CVTBUFSIZE, "%.*f ", floatPrecision.precision, arg);
-
-		*messageStr += buff;
+		*messageStr += convertBuffer;
 	}
 }
 

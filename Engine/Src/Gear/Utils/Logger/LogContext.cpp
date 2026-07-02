@@ -34,7 +34,22 @@ namespace Gear::Utils::Logger
 	{
 		setDisplayColor(textColor);
 
-		*messageStr += String::wstringToString(arg);
+		const int32_t sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, arg.data(), -1, nullptr, 0, nullptr, nullptr);
+
+		if (0 == sizeNeeded)
+		{
+			*messageStr += "WideCharToMultiByte调用失败";
+		}
+		else if (sizeNeeded <= convertBufferLength)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, arg.data(), -1, &convertBuffer[0], sizeNeeded, nullptr, nullptr);
+
+			*messageStr += convertBuffer;
+		}
+		else
+		{
+			*messageStr += String::wstringToString(arg);
+		}
 
 		*messageStr += " ";
 	}
@@ -43,7 +58,22 @@ namespace Gear::Utils::Logger
 	{
 		setDisplayColor(textColor);
 
-		*messageStr += String::wstringToString(arg);
+		const int32_t sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, arg, -1, nullptr, 0, nullptr, nullptr);
+
+		if (0 == sizeNeeded)
+		{
+			*messageStr += "WideCharToMultiByte调用失败";
+		}
+		else if (sizeNeeded <= convertBufferLength)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, arg, -1, &convertBuffer[0], sizeNeeded, nullptr, nullptr);
+
+			*messageStr += convertBuffer;
+		}
+		else
+		{
+			*messageStr += String::wstringToString(arg);
+		}
 
 		*messageStr += " ";
 	}
@@ -88,29 +118,19 @@ namespace Gear::Utils::Logger
 
 		if (integerMode == IntegerMode::HEX)
 		{
-			//0xFFFFFFFF\0 11
-			const size_t hexMaxLength = 11ull;
+			_itoa_s(arg, convertBuffer + 2, convertBufferLength - 2ull, 16);
 
-			char buff[hexMaxLength] = {};
+			convertBuffer[0] = '0';
 
-			_itoa_s(arg, buff + 2, hexMaxLength - 2ull, 16);
+			convertBuffer[1] = 'x';
 
-			buff[0] = '0';
-
-			buff[1] = 'x';
-
-			*messageStr += buff;
+			*messageStr += convertBuffer;
 		}
 		else
 		{
-			//-2147483648\0 12
-			const size_t decMaxLength = 12ull;
+			_itoa_s(arg, convertBuffer, convertBufferLength, 10);
 
-			char buff[decMaxLength] = {};
-
-			_itoa_s(arg, buff, decMaxLength, 10);
-
-			*messageStr += buff;
+			*messageStr += convertBuffer;
 		}
 
 		*messageStr += " ";
@@ -122,29 +142,19 @@ namespace Gear::Utils::Logger
 
 		if (integerMode == IntegerMode::HEX)
 		{
-			//0xFFFFFFFFFFFFFFFF\0 19
-			const size_t hexMaxLength = 19ull;
+			_i64toa_s(arg, convertBuffer + 2, convertBufferLength - 2ull, 16);
 
-			char buff[hexMaxLength] = {};
+			convertBuffer[0] = '0';
 
-			_i64toa_s(arg, buff + 2, hexMaxLength - 2ull, 16);
+			convertBuffer[1] = 'x';
 
-			buff[0] = '0';
-
-			buff[1] = 'x';
-
-			*messageStr += buff;
+			*messageStr += convertBuffer;
 		}
 		else
 		{
-			//-9223372036854775808\0 21
-			const size_t decMaxLength = 21ull;
+			_i64toa_s(arg, convertBuffer, convertBufferLength, 10);
 
-			char buff[decMaxLength] = {};
-
-			_i64toa_s(arg, buff, decMaxLength, 10);
-
-			*messageStr += buff;
+			*messageStr += convertBuffer;
 		}
 
 		*messageStr += " ";
@@ -156,29 +166,19 @@ namespace Gear::Utils::Logger
 
 		if (integerMode == IntegerMode::HEX)
 		{
-			//0xFFFFFFFF\0 11
-			const size_t hexMaxLength = 11ull;
+			_ultoa_s(arg, convertBuffer + 2, convertBufferLength - 2ull, 16);
 
-			char buff[hexMaxLength] = {};
+			convertBuffer[0] = '0';
 
-			_ultoa_s(arg, buff + 2, hexMaxLength - 2ull, 16);
+			convertBuffer[1] = 'x';
 
-			buff[0] = '0';
-
-			buff[1] = 'x';
-
-			*messageStr += buff;
+			*messageStr += convertBuffer;
 		}
 		else
 		{
-			//4294967295\0 11
-			const size_t decMaxLength = 11ull;
+			_ultoa_s(arg, convertBuffer, convertBufferLength, 10);
 
-			char buff[decMaxLength] = {};
-
-			_ultoa_s(arg, buff, decMaxLength, 10);
-
-			*messageStr += buff;
+			*messageStr += convertBuffer;
 		}
 
 		*messageStr += " ";
@@ -190,29 +190,19 @@ namespace Gear::Utils::Logger
 
 		if (integerMode == IntegerMode::HEX)
 		{
-			//0xFFFFFFFFFFFFFFFF\0 19
-			const size_t hexMaxLength = 19ull;
+			_ui64toa_s(arg, convertBuffer + 2, convertBufferLength - 2ull, 16);
 
-			char buff[hexMaxLength] = {};
+			convertBuffer[0] = '0';
 
-			_ui64toa_s(arg, buff + 2, hexMaxLength - 2ull, 16);
+			convertBuffer[1] = 'x';
 
-			buff[0] = '0';
-
-			buff[1] = 'x';
-
-			*messageStr += buff;
+			*messageStr += convertBuffer;
 		}
 		else
 		{
-			//18446744073709551615 21
-			const size_t decMaxLength = 21ull;
+			_ui64toa_s(arg, convertBuffer, convertBufferLength, 10);
 
-			char buff[decMaxLength] = {};
-
-			_ui64toa_s(arg, buff, decMaxLength, 10);
-
-			*messageStr += buff;
+			*messageStr += convertBuffer;
 		}
 
 		*messageStr += " ";

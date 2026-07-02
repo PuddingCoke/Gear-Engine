@@ -180,7 +180,7 @@ namespace Gear
 			break;
 		}
 
-		LOGENGINE("分辨率", Graphics::getWidth(), L"x", Graphics::getHeight());
+		LOGENGINE("分辨率", Graphics::getWidth(), "x", Graphics::getHeight());
 
 		LOGENGINE("横纵比", Graphics::getAspectRatio());
 
