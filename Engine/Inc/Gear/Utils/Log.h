@@ -58,7 +58,7 @@ namespace Gear::Utils::Logger
 		return *this;
 	}
 
-	void ThrowLog(const Log& log);
+	[[noreturn]] void ThrowLog(const Log& log);
 
 }
 

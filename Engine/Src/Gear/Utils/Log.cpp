@@ -50,8 +50,10 @@ namespace Gear::Utils::Logger
 		}
 	}
 
-	void ThrowLog(const Log& log)
+	[[noreturn]] void ThrowLog(const Log& log)
 	{
 		log.finishAndThrowMessage();
+
+		throw std::runtime_error("THROWLOG不能被用于非错误类型的日志！");
 	}
 }
