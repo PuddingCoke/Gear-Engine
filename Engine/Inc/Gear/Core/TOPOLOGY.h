@@ -3,9 +3,9 @@
 #ifndef _GEAR_CORE_TOPOLOGY_H_
 #define _GEAR_CORE_TOPOLOGY_H_
 
-#include<D3D12Headers/d3dcommon.h>
+#include<directx/d3dcommon.h>
 
-#include<D3D12Headers/d3d12.h>
+#include<directx/d3d12.h>
 
 namespace Gear::Core::TOPOLOGY
 {

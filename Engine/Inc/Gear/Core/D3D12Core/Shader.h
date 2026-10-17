@@ -9,7 +9,7 @@
 
 #include<dxccompiler/dxcapi.h>
 
-#include<D3D12Headers/d3d12shader.h>
+#include<directx/d3d12shader.h>
 
 namespace Gear::Core::D3D12Core
 {

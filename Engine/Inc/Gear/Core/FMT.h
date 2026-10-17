@@ -13,7 +13,7 @@
 
 #include<type_traits>
 
-#include<D3D12Headers/dxgiformat.h>
+#include<directx/dxgiformat.h>
 
 /// <summary>
 /// 通道顺序 + 每通道比特 + 类型

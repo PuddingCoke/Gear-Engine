@@ -66,7 +66,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Engine-d.lib;DirectXTex-d.lib;D3D12.lib;DXGI.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine-d.lib;DirectXTex-d.lib;D3D12.lib;DXGI.lib;dxguid.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /Y "$(SolutionDir)Dependencies\*" "$(OutDir)"</Command>
@@ -93,7 +93,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>wmainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Engine.lib;DirectXTex.lib;D3D12.lib;DXGI.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;DirectXTex.lib;D3D12.lib;DXGI.lib;dxguid.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /Y "$(SolutionDir)Dependencies\*" "$(OutDir)"</Command>

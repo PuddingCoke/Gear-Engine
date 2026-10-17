@@ -7,7 +7,7 @@
 
 #include<dxccompiler/dxcapi.h>
 
-#include<D3D12Headers/d3d12shader.h>
+#include<directx/d3d12shader.h>
 
 #include"ShaderType.h"
 

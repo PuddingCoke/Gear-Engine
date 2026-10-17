@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_VIDEODEVICE_H_
 #define _GEAR_CORE_VIDEODEVICE_H_
 
-#include<D3D12Headers/d3d12video.h>
+#include<directx/d3d12video.h>
 
 namespace Gear::Core::VideoDevice
 {

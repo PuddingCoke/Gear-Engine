@@ -13,7 +13,7 @@ static_assert(sizeof(double) == 8, "double类型的大小必须是8");
 
 #include<Gear/Utils/Memory.h>
 
-#include<D3D12Headers/d3dx12.h>
+#include<directx/d3dx12.h>
 
 #include<comdef.h>
 

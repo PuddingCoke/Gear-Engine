@@ -4,7 +4,7 @@
 
 #include<Gear/Core/Graphics.h>
 
-#include<Shaders/CompiledShaders/ToneMapCS.h>
+#include<Gear/CompiledShaders/ToneMapCS.h>
 
 namespace Gear::Effect::ToneMapEffect
 {

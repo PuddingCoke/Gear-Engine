@@ -3,7 +3,7 @@
 #ifndef _GEAR_RESOURCE_PIPELINERESOURCEDESC_H_
 #define _GEAR_RESOURCE_PIPELINERESOURCEDESC_H_
 
-#include<D3D12Headers/d3dx12.h>
+#include<directx/d3dx12.h>
 
 namespace Gear::Core::D3D12Resource
 {

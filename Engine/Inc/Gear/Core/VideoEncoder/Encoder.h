@@ -17,11 +17,11 @@
 
 extern "C"
 {
-#include<ffmpeg/libavutil/avutil.h>
-#include<ffmpeg/libavformat/avformat.h>
-#include<ffmpeg/libavcodec/avcodec.h>
-#include<ffmpeg/libswscale/swscale.h>
-#include<ffmpeg/libavutil/log.h>
+#include<libavutil/avutil.h>
+#include<libavformat/avformat.h>
+#include<libavcodec/avcodec.h>
+#include<libswscale/swscale.h>
+#include<libavutil/log.h>
 }
 
 namespace Gear::Core::VideoEncoder

@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_DEVICE_INTERNAL_H_
 #define _GEAR_CORE_DEVICE_INTERNAL_H_
 
-#include<D3D12Headers/d3dx12.h>
+#include<directx/d3dx12.h>
 
 namespace Gear::Core::Device::Internal
 {

@@ -56,12 +56,13 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;USING_DIRECTX_HEADERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 /external:W1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Inc;$(ProjectDir)External\D3D12Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExternalWarningLevel>Level1</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -72,7 +73,7 @@
     </FxCompile>
     <FxCompile>
       <ObjectFileOutput />
-      <HeaderFileOutput>Shaders/CompiledShaders/%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput>Inc/Gear/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel>6.6</ShaderModel>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableOptimizations>false</DisableOptimizations>
@@ -88,13 +89,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;USING_DIRECTX_HEADERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 /external:W1 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Inc;$(ProjectDir)External\D3D12Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExternalWarningLevel>Level1</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -107,7 +109,7 @@
     </FxCompile>
     <FxCompile>
       <ObjectFileOutput />
-      <HeaderFileOutput>Shaders/CompiledShaders/%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput>Inc/Gear/CompiledShaders/%(Filename).h</HeaderFileOutput>
       <ShaderModel>6.6</ShaderModel>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </FxCompile>
