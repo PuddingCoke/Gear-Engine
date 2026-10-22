@@ -162,7 +162,7 @@ namespace Gear::Utils::File
 		}
 	}
 
-	std::wstring getWRootFolder()
+	std::wstring getRootFolderW()
 	{
 		return impl->wRootFolder;
 	}

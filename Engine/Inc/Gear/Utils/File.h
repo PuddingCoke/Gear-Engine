@@ -9,8 +9,8 @@
 
 namespace Gear::Utils::File
 {
-	//获取EXE执行目录
-	std::wstring getWRootFolder();
+	//获取EXE的绝对目录
+	std::wstring getRootFolderW();
 
 	std::string getRootFolder();
 

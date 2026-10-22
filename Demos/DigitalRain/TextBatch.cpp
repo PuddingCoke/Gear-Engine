@@ -34,9 +34,9 @@ std::vector<std::wstring> split(std::wstring str, const wchar_t separator)
 }
 
 TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) :
-	spriteVS(Shader::create(File::getWRootFolder() + L"SpriteVS.cso")),
-	spriteGS(Shader::create(File::getWRootFolder() + L"SpriteGS.cso")),
-	spritePS(Shader::create(File::getWRootFolder() + L"SpritePS.cso")),
+	spriteVS(Shader::create(File::getRootFolderW() + L"SpriteVS.cso")),
+	spriteGS(Shader::create(File::getRootFolderW() + L"SpriteGS.cso")),
+	spritePS(Shader::create(File::getRootFolderW() + L"SpritePS.cso")),
 	textBuffer(ResourceManager::createStructuredBufferView(textArray.elementByteSize(), textArray.totalByteSize(), false, false, true, true, true)),
 	scale(1.f)
 {

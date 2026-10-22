@@ -53,33 +53,33 @@ public:
 
 		simulationParam.vorticityIntensity = config.vorticityIntensity;
 
-		splatVelocityState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"SplatVelocityCS.cso"));
+		splatVelocityState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"SplatVelocityCS.cso"));
 
-		splatColorState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"SplatColorCS.cso"));
+		splatColorState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"SplatColorCS.cso"));
 
-		vorticityState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"VorticityCS.cso"));
+		vorticityState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"VorticityCS.cso"));
 
-		vorticityConfinementState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"VorticityConfinementCS.cso"));
+		vorticityConfinementState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"VorticityConfinementCS.cso"));
 
-		divergenceState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"DivergenceCS.cso"));
+		divergenceState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"DivergenceCS.cso"));
 
-		pressureResetState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"PressureResetCS.cso"));
+		pressureResetState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"PressureResetCS.cso"));
 
-		pressureState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"PressureCS.cso"));
+		pressureState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"PressureCS.cso"));
 
-		gradientSubtractState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"GradientSubtractCS.cso"));
+		gradientSubtractState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"GradientSubtractCS.cso"));
 
-		velocityAdvectionState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"VelocityAdvectionCS.cso"));
+		velocityAdvectionState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"VelocityAdvectionCS.cso"));
 
-		colorAdvectionState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"ColorAdvectionCS.cso"));
+		colorAdvectionState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"ColorAdvectionCS.cso"));
 
-		velocityBoundaryState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"VelocityBoundaryCS.cso"));
+		velocityBoundaryState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"VelocityBoundaryCS.cso"));
 
-		pressureBoundaryState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"PressureBoundaryCS.cso"));
+		pressureBoundaryState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"PressureBoundaryCS.cso"));
 
-		phongShadeState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"PhongShadeCS.cso"));
+		phongShadeState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"PhongShadeCS.cso"));
 
-		edgeHighlightState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"EdgeHighlightCS.cso"));
+		edgeHighlightState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"EdgeHighlightCS.cso"));
 
 		effect = BloomEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight());
 

@@ -42,6 +42,42 @@
 
 #include<stb_image_write.h>
 
+namespace
+{
+	std::wstring getExecutablePathW()
+	{
+		std::wstring buffer(MAX_PATH, L'\0');
+
+		while (true)
+		{
+			const DWORD len = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
+
+			if (len == 0)
+			{
+				return L"";
+			}
+
+			if (len == buffer.size())
+			{
+				break;
+			}
+			else if (len < buffer.size())
+			{
+				buffer.resize(len);
+
+				break;
+			}
+
+			if (len > buffer.size())
+			{
+				buffer.resize(buffer.size() * 2);
+			}
+		}
+
+		return buffer;
+	}
+}
+
 namespace Gear
 {
 	class GearImpl
@@ -97,9 +133,16 @@ namespace Gear
 
 		loggerToken = makeUnique<Logger::Internal::InitializeToken>();
 
-		fileToken = makeUnique<File::Internal::InitializeToken>(File::backslashToSlash(File::getParentFolder(argv[0])));
+		const std::wstring executablePath = getExecutablePathW();
 
-		LOGENGINE() << "EXE根目录" << COLORIZEPATH(File::getWRootFolder());
+		if (executablePath == L"")
+		{
+			THROWLOG(LOGERROR() << "获取EXE路径失败！");
+		}
+
+		fileToken = makeUnique<File::Internal::InitializeToken>(File::backslashToSlash(File::getParentFolder(executablePath)));
+
+		LOGENGINE() << "EXE根目录" << COLORIZEPATH(File::getRootFolderW());
 
 		MainMonitor::Internal::getCurrentSettings();
 

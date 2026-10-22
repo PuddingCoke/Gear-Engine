@@ -12,7 +12,7 @@ public:
 		effect(BloomEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight())),
 		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true))
 	{
-		computeState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"ComputeCS.cso"));
+		computeState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"ComputeCS.cso"));
 
 		Graphics::setExposure(1.9f);
 

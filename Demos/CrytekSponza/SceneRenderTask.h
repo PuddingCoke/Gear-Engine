@@ -31,15 +31,15 @@ public:
 		depthCube(ResourceManager::createDepthTextureView(probeCaptureResolution, probeCaptureResolution,
 			FMT::D32F, 6, 1, true, true)),
 		irradianceVolumeBuffer(ResourceManager::createDefaultCBuffer(sizeof(IrradianceVolume), true)),
-		shadowVS(Shader::create(File::getWRootFolder() + L"ShadowVS.cso")),
-		deferredVShader(Shader::create(File::getWRootFolder() + L"DeferredVShader.cso")),
-		deferredPShader(Shader::create(File::getWRootFolder() + L"DeferredPShader.cso")),
-		deferredFinal(Shader::create(File::getWRootFolder() + L"DeferredFinal.cso")),
-		cubeRenderVS(Shader::create(File::getWRootFolder() + L"CubeRenderVS.cso")),
-		cubeRenderPS(Shader::create(File::getWRootFolder() + L"CubeRenderPS.cso")),
-		cubeRenderBouncePS(Shader::create(File::getWRootFolder() + L"CubeRenderBouncePS.cso")),
-		skyboxPShader(Shader::create(File::getWRootFolder() + L"SkybosPShader.cso")),
-		ssrCombinePS(Shader::create(File::getWRootFolder() + L"SSRCombinePS.cso")),
+		shadowVS(Shader::create(File::getRootFolderW() + L"ShadowVS.cso")),
+		deferredVShader(Shader::create(File::getRootFolderW() + L"DeferredVShader.cso")),
+		deferredPShader(Shader::create(File::getRootFolderW() + L"DeferredPShader.cso")),
+		deferredFinal(Shader::create(File::getRootFolderW() + L"DeferredFinal.cso")),
+		cubeRenderVS(Shader::create(File::getRootFolderW() + L"CubeRenderVS.cso")),
+		cubeRenderPS(Shader::create(File::getRootFolderW() + L"CubeRenderPS.cso")),
+		cubeRenderBouncePS(Shader::create(File::getRootFolderW() + L"CubeRenderBouncePS.cso")),
+		skyboxPShader(Shader::create(File::getRootFolderW() + L"SkybosPShader.cso")),
+		ssrCombinePS(Shader::create(File::getRootFolderW() + L"SSRCombinePS.cso")),
 		sunAngle(Math::halfPi - 0.01f)
 	{
 		shadowTexture->getTexture()->setName(L"Shadow Texture");
@@ -102,9 +102,9 @@ public:
 			.setPS(*ssrCombinePS)
 			.build();
 
-		irradianceOctahedralEncodeState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"IrradianceOctahedralEncode.cso"));
+		irradianceOctahedralEncodeState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"IrradianceOctahedralEncode.cso"));
 
-		depthOctahedralEncodeState = PipelineStateBuilder::build(Shader::create(File::getWRootFolder() + L"DepthOctahedralEncode.cso"));
+		depthOctahedralEncodeState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"DepthOctahedralEncode.cso"));
 
 		skybox = resManager->createTextureCube(L"E:/Assets/Sponza/sky/kloppenheim_05_4k.hdr", 1024, true);
 

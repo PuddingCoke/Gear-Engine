@@ -27,7 +27,7 @@ namespace Gear::Effect
 
 	BloomEffect::BloomEffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height) :
 		EffectBase(refResManager, width, height, FMT::RGBA16F),
-		lensDirtTexture(refResManager.createRenderTextureView(Utils::File::getWRootFolder() + L"bloom_dirt_mask.png", true)),
+		lensDirtTexture(refResManager.createRenderTextureView(Utils::File::getRootFolderW() + L"bloom_dirt_mask.png", true)),
 		filteredTexture(ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16F, 1, 1, false, true))
 	{
 		filteredTexture->getTexture()->setName(L"Bloom Effect Filtered Texture");
