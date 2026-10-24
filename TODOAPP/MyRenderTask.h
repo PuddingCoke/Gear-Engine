@@ -105,7 +105,7 @@ class MyRenderTask : public RenderTask
 public:
 	MyRenderTask()
 	{
-		const std::wstring solutionFolder = File::getParentFolder(File::getParentFolder(File::getRootFolderW()));
+		const std::wstring solutionFolder = File::getParentFolder(File::getParentFolder(File::getRootFolder()));
 
 		// 引擎已在 RenderEngine 中完成了字体图集构建
 		// 无法再动态添加字体；UI 文本统一使用英文

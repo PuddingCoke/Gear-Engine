@@ -5,6 +5,8 @@
 
 #include"LogStructs.h"
 
+#include<Gear/Utils/File.h>
+
 #include<Gear/Utils/Memory.h>
 
 #include<mutex>
@@ -87,6 +89,9 @@ namespace Gear::Utils::Logger
 
 		//双精度浮点数
 		void packArgument(const double_t& arg);
+
+		//文件路径
+		void packArgument(const File::Path& arg);
 
 		//改变整数模式
 		void packArgument(const LogIntegerMode& arg);

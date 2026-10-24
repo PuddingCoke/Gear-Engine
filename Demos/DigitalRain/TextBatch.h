@@ -6,7 +6,7 @@ class TextBatch
 {
 public:
 
-	TextBatch(ResourceManager& resManager, const std::wstring& filePath);
+	TextBatch(ResourceManager& resManager, const File::Path& filePath);
 
 	void drawText(const wchar_t ch, const float x, const float y, const float z, const float r, const float g, const float b, const float a);
 

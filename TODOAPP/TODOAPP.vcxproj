@@ -69,7 +69,9 @@
       <AdditionalDependencies>Engine-d.lib;DirectXTex-d.lib;D3D12.lib;DXGI.lib;dxguid.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /E /Y "$(SolutionDir)Dependencies\*" "$(OutDir)"</Command>
+      <Command>xcopy /E /Y "$(ProjectDir)Assets\*" "$(OutDir)Assets\"
+xcopy /E /Y "$(SolutionDir)EngineAssets\*" "$(OutDir)Assets\EngineAssets\"
+xcopy /E /Y "$(SolutionDir)Dlls\*" "$(OutDir)"</Command>
     </PostBuildEvent>
     <FxCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -96,7 +98,9 @@
       <AdditionalDependencies>Engine.lib;DirectXTex.lib;D3D12.lib;DXGI.lib;dxguid.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /E /Y "$(SolutionDir)Dependencies\*" "$(OutDir)"</Command>
+      <Command>xcopy /E /Y "$(ProjectDir)Assets\*" "$(OutDir)Assets\"
+xcopy /E /Y "$(SolutionDir)EngineAssets\*" "$(OutDir)Assets\EngineAssets\"
+xcopy /E /Y "$(SolutionDir)Dlls\*" "$(OutDir)"</Command>
     </PostBuildEvent>
     <FxCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

@@ -42,7 +42,7 @@
     <FxCompile Include="IrradiancePS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="BRDFLUT.dds">
+    <Image Include="Assets\BRDFLUT.dds">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

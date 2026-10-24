@@ -16,13 +16,13 @@ public:
 		renderParamBuffer(ResourceManager::createDynamicCBuffer(sizeof(RenderParam))),
 		spectrumParamBuffer{ ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true),ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true),ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true) },
 		cascade{ makeUnique<WaveCascade>(textureResolution,context),makeUnique<WaveCascade>(textureResolution,context),makeUnique<WaveCascade>(textureResolution,context) },
-		textureCubePS(Shader::create(File::getRootFolderW() + L"TextureCubePS.cso")),
-		gridDebugVS(Shader::create(File::getRootFolderW() + L"GridDebugVS.cso")),
-		gridDebugPS(Shader::create(File::getRootFolderW() + L"GridDebugPS.cso")),
-		oceanVS(Shader::create(File::getRootFolderW() + L"OceanVS.cso")),
-		oceanHS(Shader::create(File::getRootFolderW() + L"OceanHS.cso")),
-		oceanDS(Shader::create(File::getRootFolderW() + L"OceanDS.cso")),
-		oceanPS(Shader::create(File::getRootFolderW() + L"OceanPS.cso")),
+		textureCubePS(Shader::create(L"TextureCubePS.cso")),
+		gridDebugVS(Shader::create(L"GridDebugVS.cso")),
+		gridDebugPS(Shader::create(L"GridDebugPS.cso")),
+		oceanVS(Shader::create(L"OceanVS.cso")),
+		oceanHS(Shader::create(L"OceanHS.cso")),
+		oceanDS(Shader::create(L"OceanDS.cso")),
+		oceanPS(Shader::create(L"OceanPS.cso")),
 		originTexture(makeUnique<RenderTextureView>(originTexture)),
 		renderOcean(true)
 	{
@@ -58,17 +58,17 @@ public:
 			.setPS(*oceanPS)
 			.build();
 
-		spectrumState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"SpectrumCS.cso"));
+		spectrumState = PipelineStateBuilder::build(Shader::create(L"SpectrumCS.cso"));
 
-		conjugateState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"ConjugateCS.cso"));
+		conjugateState = PipelineStateBuilder::build(Shader::create(L"ConjugateCS.cso"));
 
-		displacementSpectrumState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"DisplacementSpectrumCS.cso"));
+		displacementSpectrumState = PipelineStateBuilder::build(Shader::create(L"DisplacementSpectrumCS.cso"));
 
-		ifftState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"IFFTCS.cso"));
+		ifftState = PipelineStateBuilder::build(Shader::create(L"IFFTCS.cso"));
 
-		permutationState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"PermutationCS.cso"));
+		permutationState = PipelineStateBuilder::build(Shader::create(L"PermutationCS.cso"));
 
-		waveMergeState = PipelineStateBuilder::build(Shader::create(File::getRootFolderW() + L"WaveMergeCS.cso"));
+		waveMergeState = PipelineStateBuilder::build(Shader::create(L"WaveMergeCS.cso"));
 
 		tildeh0Texture = createTexture(textureResolution, FMT::RG32F);
 

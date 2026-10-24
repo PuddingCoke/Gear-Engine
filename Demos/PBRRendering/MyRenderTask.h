@@ -12,10 +12,10 @@ public:
 
 	MyRenderTask() :
 		scene("E:/Assets/PBRRendering/DNA.obj", *resManager, FMT::RGBA16F),
-		skyboxPS(Shader::create(File::getRootFolderW() + L"SkyboxPS.cso")),
-		prefilterVS(Shader::create(File::getRootFolderW() + L"PrefilterVS.cso")),
-		prefilterPS(Shader::create(File::getRootFolderW() + L"PrefilterPS.cso")),
-		irradiancePS(Shader::create(File::getRootFolderW() + L"IrradiancePS.cso"))
+		skyboxPS(Shader::create(L"SkyboxPS.cso")),
+		prefilterVS(Shader::create(L"PrefilterVS.cso")),
+		prefilterPS(Shader::create(L"PrefilterPS.cso")),
+		irradiancePS(Shader::create(L"IrradiancePS.cso"))
 	{
 		renderTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
 			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);

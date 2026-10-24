@@ -7,11 +7,11 @@
 
 namespace Gear::Utils::File::Internal
 {
-	void initialize(const std::wstring& wRootFolder);
+	void initialize(const std::wstring& rootFolder);
 
 	void release();
 
-	struct InitializeToken { InitializeToken(const std::wstring& wRootFolder) { initialize(wRootFolder); } ~InitializeToken() { release(); } };
+	struct InitializeToken { InitializeToken(const std::wstring& rootFolder) { initialize(rootFolder); } ~InitializeToken() { release(); } };
 }
 
 #endif // !_GEAR_UTILS_FILE_INTERNAL_H_

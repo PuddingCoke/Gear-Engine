@@ -75,16 +75,16 @@ namespace Gear::Core
 		return buffer;
 	}
 
-	D3D12Resource::TexturePtr ResourceManager::createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube)
+	D3D12Resource::TexturePtr ResourceManager::createTexture(const Utils::File::Path& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube)
 	{
-		if (!Utils::File::exist(filePath))
+		if (!filePath.exist())
 		{
 			THROWLOG(LOGERROR() << filePath << "指定路径下未找到文件");
 		}
 
 		D3D12Resource::TexturePtr texture;
 
-		const std::wstring fileExtension = Utils::File::getExtension(filePath);
+		const std::wstring fileExtension = filePath.extension();
 
 		if (isTextureCube)
 		{
@@ -107,7 +107,7 @@ namespace Gear::Core
 
 			ComPtr<ID3D12Resource> tex;
 
-			CHECKERROR(DirectX::LoadWICTextureFromFileEx(GraphicsDevice::get(), filePath.c_str(), 0, resFlags, DirectX::WIC_LOADER_DEFAULT, &tex, decodedData, subresource));
+			CHECKERROR(DirectX::LoadWICTextureFromFileEx(GraphicsDevice::get(), filePath.cstr(), 0, resFlags, DirectX::WIC_LOADER_DEFAULT, &tex, decodedData, subresource));
 
 			texture = makeUnique<D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -127,7 +127,7 @@ namespace Gear::Core
 
 			ComPtr<ID3D12Resource> tex;
 
-			CHECKERROR(DirectX::LoadDDSTextureFromFileEx(GraphicsDevice::get(), filePath.c_str(), 0, resFlags, DirectX::DDS_LOADER_DEFAULT, &tex, decodedData, subresources, nullptr, isTextureCube));
+			CHECKERROR(DirectX::LoadDDSTextureFromFileEx(GraphicsDevice::get(), filePath.cstr(), 0, resFlags, DirectX::DDS_LOADER_DEFAULT, &tex, decodedData, subresources, nullptr, isTextureCube));
 
 			texture = makeUnique<D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -147,15 +147,15 @@ namespace Gear::Core
 
 			if (fileExtension == L"hdr")
 			{
-				CHECKERROR(DirectX::LoadFromHDRFile(filePath.c_str(), &metadata, scratchImage));
+				CHECKERROR(DirectX::LoadFromHDRFile(filePath.cstr(), &metadata, scratchImage));
 			}
 			else if (fileExtension == L"tga")
 			{
-				CHECKERROR(DirectX::LoadFromTGAFile(filePath.c_str(), &metadata, scratchImage));
+				CHECKERROR(DirectX::LoadFromTGAFile(filePath.cstr(), &metadata, scratchImage));
 			}
 			else
 			{
-				CHECKERROR(DirectX::LoadFromEXRFile(filePath.c_str(), &metadata, scratchImage));
+				CHECKERROR(DirectX::LoadFromEXRFile(filePath.cstr(), &metadata, scratchImage));
 			}
 
 			const DirectX::Image* image = scratchImage.GetImage(0, 0, 0);
@@ -500,7 +500,7 @@ namespace Gear::Core
 		return makeUnique<Resource::DepthTextureView>(std::move(texture), isTextureCube, persistent);
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createRenderTextureView(const std::wstring& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
+	Resource::RenderTextureViewPtr ResourceManager::createRenderTextureView(const Utils::File::Path& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
 	{
 		bool stateTracking = true;
 
@@ -683,7 +683,7 @@ namespace Gear::Core
 		return createRenderTextureView(width, height, resFormat, arraySize, mipLevels, isTextureCube, persistent, srvFormat, uavFormat, FMT::UNKNOWN);
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
+	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(const Utils::File::Path& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
 	{
 		Resource::RenderTextureView* equirectangularMap = nullptr;
 
@@ -784,7 +784,7 @@ namespace Gear::Core
 		}
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
+	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(const std::initializer_list<Utils::File::Path>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
 	{
 		D3D12Resource::Texture* srcTextures[6] = {};
 
@@ -793,7 +793,7 @@ namespace Gear::Core
 
 			uint32_t index = 0;
 
-			for (const std::wstring& filePath : texturesPath)
+			for (const Utils::File::Path& filePath : texturesPath)
 			{
 				srcTexturesRet[index] = createTexture(filePath, D3D12_RESOURCE_FLAG_NONE, nullptr);
 

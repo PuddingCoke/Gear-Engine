@@ -40,6 +40,8 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
+#define STBIW_WINDOWS_UTF8
+
 #include<stb_image_write.h>
 
 namespace
@@ -131,18 +133,18 @@ namespace Gear
 		//设置locale为.UTF-8用于多语言支持
 		std::locale::global(std::locale(".UTF-8"));
 
-		loggerToken = makeUnique<Logger::Internal::InitializeToken>();
-
 		const std::wstring executablePath = getExecutablePathW();
 
 		if (executablePath == L"")
 		{
-			THROWLOG(LOGERROR() << "获取EXE路径失败！");
+			throw std::runtime_error("无法获取可执行文件路径");
 		}
 
 		fileToken = makeUnique<File::Internal::InitializeToken>(File::backslashToSlash(File::getParentFolder(executablePath)));
 
-		LOGENGINE() << "EXE根目录" << COLORIZEPATH(File::getRootFolderW());
+		loggerToken = makeUnique<Logger::Internal::InitializeToken>();
+
+		LOGENGINE() << "EXE根目录" << COLORIZEPATH(File::getRootFolder());
 
 		MainMonitor::Internal::getCurrentSettings();
 
@@ -371,9 +373,13 @@ namespace Gear
 
 				backBufferHeap->unmap();
 
-				stbi_write_png("output.png", initParam.width, initParam.height, 4, colors.get(), FMT::getByteSize(Graphics::backBufferFormat) * initParam.width);
+				const File::UserDataPath outputPath = L"output.png";
 
-				LOGSUCCESS() << "截屏保存到" << COLORIZEPATH("output.png");
+				const std::string multibytePath = outputPath.multibyteStr();
+
+				stbi_write_png(multibytePath.c_str(), initParam.width, initParam.height, 4, colors.get(), FMT::getByteSize(Graphics::backBufferFormat) * initParam.width);
+
+				LOGSUCCESS() << "截屏保存到" << outputPath;
 
 				startPoint = std::chrono::high_resolution_clock::now();
 			}

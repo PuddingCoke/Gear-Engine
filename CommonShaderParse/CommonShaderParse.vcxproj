@@ -132,8 +132,8 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /Y "$(SolutionDir)Dependencies\dxcompiler.dll" "$(OutDir)"
-xcopy /Y "$(SolutionDir)Dependencies\dxil.dll" "$(OutDir)"
+      <Command>xcopy /Y "$(SolutionDir)Dlls\dxcompiler.dll" "$(OutDir)"
+xcopy /Y "$(SolutionDir)Dlls\dxil.dll" "$(OutDir)"
 xcopy /Y "$(SolutionDir)Engine\Shaders\Common.hlsli" "$(OutDir)"
 xcopy /Y "$(ProjectDir)dummyVS.hlsl" "$(OutDir)"</Command>
     </PostBuildEvent>
@@ -162,8 +162,8 @@ xcopy /Y "$(ProjectDir)dummyVS.hlsl" "$(OutDir)"</Command>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /Y "$(SolutionDir)Dependencies\dxcompiler.dll" "$(OutDir)"
-xcopy /Y "$(SolutionDir)Dependencies\dxil.dll" "$(OutDir)"
+      <Command>xcopy /Y "$(SolutionDir)Dlls\dxcompiler.dll" "$(OutDir)"
+xcopy /Y "$(SolutionDir)Dlls\dxil.dll" "$(OutDir)"
 xcopy /Y "$(SolutionDir)Engine\Shaders\Common.hlsli" "$(OutDir)"
 xcopy /Y "$(ProjectDir)dummyVS.hlsl" "$(OutDir)"</Command>
     </PostBuildEvent>

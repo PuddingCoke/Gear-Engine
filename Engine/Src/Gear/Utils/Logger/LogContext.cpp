@@ -266,6 +266,32 @@ namespace Gear::Utils::Logger
 		packFloatPoint(arg);
 	}
 
+	void LogContext::packArgument(const File::Path& arg)
+	{
+		setDisplayColor(LogColor::brightBlue);
+
+		const std::wstring& str = arg.str();
+
+		const int32_t sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, str.data(), -1, nullptr, 0, nullptr, nullptr);
+
+		if (sizeNeeded == 0)
+		{
+			*messageStr += "WideCharToMultiByte调用失败";
+		}
+		else if (sizeNeeded <= convertBufferLength)
+		{
+			WideCharToMultiByte(CP_UTF8, 0, str.data(), -1, &convertBuffer[0], sizeNeeded, nullptr, nullptr);
+
+			*messageStr += convertBuffer;
+		}
+		else
+		{
+			*messageStr += String::wStringToString(str);
+		}
+
+		*messageStr += " ";
+	}
+
 	void LogContext::packArgument(const LogIntegerMode& arg)
 	{
 		integerMode = arg;

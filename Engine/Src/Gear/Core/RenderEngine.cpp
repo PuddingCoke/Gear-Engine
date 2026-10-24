@@ -77,7 +77,7 @@ namespace Gear::Core::RenderEngine
 			ImFontGlyphRangesBuilder builder;
 
 			//加载常用汉字，GetGlyphRangesChineseSimplifiedCommon提供的汉字完全不够
-			std::vector<uint8_t> chineseCharacters = Utils::File::readAllBinary(Utils::File::getRootFolderW() + L"7000+symbols.txt");
+			std::vector<uint8_t> chineseCharacters = Utils::File::readAllBinary(Utils::File::EngineAssetsPath(L"7000+symbols.txt"));
 
 			chineseCharacters.push_back('\0');
 

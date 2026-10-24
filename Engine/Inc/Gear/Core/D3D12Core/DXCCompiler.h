@@ -18,10 +18,10 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 	ComPtr<IDxcBlob> load(const uint8_t* const bytes, const size_t byteSize);
 
 	//hlsl
-	ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderType type);
+	ComPtr<IDxcBlob> compile(const Utils::File::Path& filePath, const ShaderType type);
 
 	//cso
-	ComPtr<IDxcBlob> read(const std::wstring& filePath);
+	ComPtr<IDxcBlob> read(const Utils::File::Path& filePath);
 
 	ComPtr<ID3D12ShaderReflection> getReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob);
 

@@ -5,6 +5,8 @@
 
 #include<Gear/Core/GraphicsDevice.h>
 
+#include<Gear/Utils/File.h>
+
 #include"ShaderType.h"
 
 #include<dxccompiler/dxcapi.h>
@@ -29,19 +31,19 @@ namespace Gear::Core::D3D12Core
 
 		static ShaderPtr create(const uint8_t* const bytes, const size_t byteSize);
 
-		static ShaderPtr create(const std::wstring& filePath);
+		static ShaderPtr create(const Utils::File::Path& filePath);
 
-		static ShaderPtr create(const std::wstring& filePath, const ShaderType type);
+		static ShaderPtr create(const Utils::File::Path& filePath, const ShaderType type);
 
 		//bytes
 		//注意：字节的生命周期必须大于等于着色器的生命周期
 		Shader(const uint8_t* const bytes, const size_t byteSize);
 
 		//cso
-		Shader(const std::wstring& filePath);
+		Shader(const Utils::File::Path& filePath);
 
 		//hlsl
-		Shader(const std::wstring& filePath, const ShaderType type);
+		Shader(const Utils::File::Path& filePath, const ShaderType type);
 
 		ComPtr<ID3D12ShaderReflection> getReflection() const;
 

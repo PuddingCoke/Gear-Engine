@@ -24,8 +24,103 @@
 
 #include<Windows.h>
 
+#include<filesystem>
+
 namespace Gear::Utils::File
 {
+
+	Path::Path(const std::wstring& pathStr)
+	{
+		if (pathStr == L"")
+		{
+			THROWLOG(LOGERROR() << "路径为空！");
+		}
+
+		this->pathStr = std::filesystem::path(pathStr).has_root_path() ? pathStr : (getAssetsFolder() + pathStr);
+	}
+
+	Path::Path(const wchar_t* const pathStr)
+	{
+		if (pathStr == nullptr)
+		{
+			THROWLOG(LOGERROR() << "路径指针为nullptr！");
+		}
+
+		if (pathStr[0] == '\0')
+		{
+			THROWLOG(LOGERROR() << "路径为空！");
+		}
+
+		this->pathStr = std::filesystem::path(pathStr).has_root_path() ? pathStr : (getAssetsFolder() + pathStr);
+	}
+
+	const std::wstring& Path::str() const
+	{
+		return pathStr;
+	}
+
+	const wchar_t* Path::cstr() const
+	{
+		return pathStr.c_str();
+	}
+
+	Path Path::operator+(const std::wstring& subdirectory)
+	{
+		return Path(pathStr + subdirectory);
+	}
+
+	Path& Path::operator+=(const std::wstring& subdirectory)
+	{
+		pathStr += subdirectory;
+
+		return *this;
+	}
+
+	bool Path::exist() const
+	{
+		return GetFileAttributesW(pathStr.c_str()) != INVALID_FILE_ATTRIBUTES;
+	}
+
+	std::wstring Path::extension() const
+	{
+		return File::getExtension(pathStr);
+	}
+
+	std::string Path::multibyteStr() const
+	{
+		return String::wStringToString(pathStr);
+	}
+
+	EngineAssetsPath::EngineAssetsPath(const std::wstring& subdirectory) :
+		Path(std::wstring(L"EngineAssets/") + subdirectory)
+	{
+	}
+
+	EngineAssetsPath::EngineAssetsPath(const wchar_t* const subdirectory) :
+		Path(std::wstring(L"EngineAssets/") + subdirectory)
+	{
+	}
+
+	RootPath::RootPath(const std::wstring& subdirectory) :
+		Path(getRootFolder() + subdirectory)
+	{
+	}
+
+	RootPath::RootPath(const wchar_t* const subdirectory) :
+		Path(getRootFolder() + subdirectory)
+	{
+	}
+
+	UserDataPath::UserDataPath(const std::wstring& subdirectory) :
+		Path(getUserDataFolder() + subdirectory)
+	{
+	}
+
+	UserDataPath::UserDataPath(const wchar_t* const subdirectory) :
+		Path(getUserDataFolder() + subdirectory)
+	{
+	}
+
 	std::wstring backslashToSlash(const std::wstring& filePath)
 	{
 		std::wstring result = filePath;
@@ -89,9 +184,9 @@ namespace Gear::Utils::File
 		return filePath.substr(idx + 1, filePath.size() - idx - 1);
 	}
 
-	std::wstring readAllText(const std::wstring& filePath)
+	std::wstring readAllText(const Path& filePath)
 	{
-		std::wifstream file(filePath);
+		std::wifstream file(filePath.str());
 
 		if (!file.is_open())
 		{
@@ -105,9 +200,9 @@ namespace Gear::Utils::File
 		return stringStream.str();
 	}
 
-	std::vector<uint8_t> readAllBinary(const std::wstring& filePath)
+	std::vector<uint8_t> readAllBinary(const Path& filePath)
 	{
-		std::ifstream file(filePath, std::ios::ate | std::ios::binary);
+		std::ifstream file(filePath.str(), std::ios::ate | std::ios::binary);
 
 		if (!file.is_open())
 		{
@@ -127,24 +222,25 @@ namespace Gear::Utils::File
 		return bytes;
 	}
 
-	bool exist(const std::wstring& filePath)
-	{
-		return GetFileAttributesW(filePath.c_str()) != INVALID_FILE_ATTRIBUTES;
-	}
-
 	struct FileImpl
 	{
+
 		FileImpl(const std::wstring& wRootFolder);
 
-		const std::wstring wRootFolder;
+		const std::wstring rootFolder;
 
-		const std::string rootFolder;
+		const std::wstring assetsFolder;
+
+		const std::wstring userDataFolder;
+
 	};
 
-	FileImpl::FileImpl(const std::wstring& wRootFolder) :
-		wRootFolder(wRootFolder),
-		rootFolder(String::wStringToString(wRootFolder))
+	FileImpl::FileImpl(const std::wstring& rootFolder) :
+		rootFolder(rootFolder),
+		assetsFolder(rootFolder + L"Assets/"),
+		userDataFolder(rootFolder + L"UserData/")
 	{
+		std::filesystem::create_directories(userDataFolder);
 	}
 
 	UniquePtr<FileImpl> impl;
@@ -162,13 +258,19 @@ namespace Gear::Utils::File
 		}
 	}
 
-	std::wstring getRootFolderW()
-	{
-		return impl->wRootFolder;
-	}
-
-	std::string getRootFolder()
+	std::wstring getRootFolder()
 	{
 		return impl->rootFolder;
 	}
+
+	std::wstring getAssetsFolder()
+	{
+		return impl->assetsFolder;
+	}
+
+	std::wstring getUserDataFolder()
+	{
+		return impl->userDataFolder;
+	}
+
 }

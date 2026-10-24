@@ -51,12 +51,12 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="characters.fnt">
+    <None Include="Assets\characters.fnt">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="characters_0.dds">
+    <Image Include="Assets\characters_0.dds">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

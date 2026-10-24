@@ -65,7 +65,7 @@ namespace Gear::Core
 		D3D12Resource::BufferPtr createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags);
 
 		//从文件创建纹理
-		D3D12Resource::TexturePtr createTexture(const std::wstring& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube);
+		D3D12Resource::TexturePtr createTexture(const Utils::File::Path& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube);
 
 		//从随机数据创建纹理
 		D3D12Resource::TexturePtr createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags);
@@ -94,7 +94,7 @@ namespace Gear::Core
 
 		static Resource::DepthTextureViewPtr createDepthTextureView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent);
 
-		Resource::RenderTextureViewPtr createRenderTextureView(const std::wstring& filePath, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
+		Resource::RenderTextureViewPtr createRenderTextureView(const Utils::File::Path& filePath, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
 
 		Resource::RenderTextureViewPtr createRenderTextureView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent,
 			const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
@@ -111,9 +111,9 @@ namespace Gear::Core
 		static Resource::RenderTextureViewPtr createComputeTexture(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent,
 			DXGI_FORMAT srvFormat = FMT::UNKNOWN, DXGI_FORMAT uavFormat = FMT::UNKNOWN);
 
-		Resource::RenderTextureViewPtr createTextureCube(const std::wstring& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
+		Resource::RenderTextureViewPtr createTextureCube(const Utils::File::Path& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV = false, const bool hasRTV = false);
 
-		Resource::RenderTextureViewPtr createTextureCube(const std::initializer_list<std::wstring>& texturesPath, const bool persistent,
+		Resource::RenderTextureViewPtr createTextureCube(const std::initializer_list<Utils::File::Path>& texturesPath, const bool persistent,
 			const DXGI_FORMAT srvFormat = FMT::UNKNOWN, const DXGI_FORMAT uavFormat = FMT::UNKNOWN, const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
 
 		static Resource::SwapBufferPtr createSwapBuffer(const std::function<Resource::BufferViewPtr(void)>& readBufferFunc, const std::function<Resource::BufferViewPtr(void)>& writeBufferFunc);

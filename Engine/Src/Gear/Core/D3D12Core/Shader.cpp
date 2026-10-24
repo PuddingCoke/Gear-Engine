@@ -2,8 +2,6 @@
 
 #include<Gear/Core/D3D12Core/DXCCompiler.h>
 
-#include<Gear/Utils/File.h>
-
 namespace Gear::Core::D3D12Core
 {
 	ShaderPtr Shader::create(const uint8_t* const bytes, const size_t byteSize)
@@ -11,12 +9,12 @@ namespace Gear::Core::D3D12Core
 		return makeUnique<Shader>(bytes, byteSize);
 	}
 
-	ShaderPtr Shader::create(const std::wstring& filePath)
+	ShaderPtr Shader::create(const Utils::File::Path& filePath)
 	{
 		return makeUnique<Shader>(filePath);
 	}
 
-	ShaderPtr Shader::create(const std::wstring& filePath, const ShaderType type)
+	ShaderPtr Shader::create(const Utils::File::Path& filePath, const ShaderType type)
 	{
 		return makeUnique<Shader>(filePath, type);
 	}
@@ -28,18 +26,18 @@ namespace Gear::Core::D3D12Core
 		shaderReflection = DXCCompiler::getReflectionBlob(shaderBlob);
 	}
 
-	Shader::Shader(const std::wstring& filePath)
+	Shader::Shader(const Utils::File::Path& filePath)
 	{
-		if (!Utils::File::exist(filePath))
+		if (!filePath.exist())
 		{
 			THROWLOG(LOGERROR() << filePath << "指定路径下未找到文件");
 		}
 
-		if (Utils::File::getExtension(filePath) == L"cso")
+		if (filePath.extension() == L"cso")
 		{
 			shaderBlob = DXCCompiler::read(filePath);
 
-			LOGSUCCESS() << "读取" << COLORIZEPATH(filePath);
+			LOGSUCCESS() << "读取" << filePath;
 		}
 		else
 		{
@@ -49,18 +47,18 @@ namespace Gear::Core::D3D12Core
 		shaderReflection = DXCCompiler::getReflectionBlob(shaderBlob);
 	}
 
-	Shader::Shader(const std::wstring& filePath, const ShaderType type)
+	Shader::Shader(const Utils::File::Path& filePath, const ShaderType type)
 	{
-		if (!Utils::File::exist(filePath))
+		if (!filePath.exist())
 		{
 			THROWLOG(LOGERROR() << filePath << "指定路径下未找到文件");
 		}
 
-		if (Utils::File::getExtension(filePath) == L"hlsl")
+		if (filePath.extension() == L"hlsl")
 		{
 			shaderBlob = DXCCompiler::compile(filePath, type);
 
-			LOGSUCCESS() << "编译" << COLORIZEPATH(filePath);
+			LOGSUCCESS() << "编译" << filePath;
 		}
 		else
 		{

@@ -34,7 +34,11 @@ namespace Gear::Core::VideoEncoder
 
 		avformat_network_init();
 
-		avformat_alloc_output_context2(&outContext, nullptr, "mp4", "output.mp4");
+		const Utils::File::UserDataPath outputPath = L"output.mp4";
+
+		const std::string multibytePath = outputPath.multibyteStr();
+
+		avformat_alloc_output_context2(&outContext, nullptr, "mp4", multibytePath.c_str());
 
 		outStream = avformat_new_stream(outContext, nullptr);
 
@@ -42,7 +46,7 @@ namespace Gear::Core::VideoEncoder
 
 		outStream->id = 0;
 
-		LOGENGINE() << "视频名称" << COLORIZEPATH("output.mp4");
+		LOGENGINE() << "视频路径" << outputPath;
 
 		LOGENGINE() << "视频时间" << LogFloatPrecision(1) << static_cast<float>(frameToEncode) / static_cast<float>(frameRate) << "秒";
 
@@ -89,16 +93,16 @@ namespace Gear::Core::VideoEncoder
 		{
 			.Format = Graphics::backBufferFormat,
 			.ColorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709,
-			.FrameRate = {frameRate, 1},
-			.SourceSizeRange = {Graphics::getWidth(), Graphics::getHeight(), Graphics::getWidth(), Graphics::getHeight()},
-			.DestinationSizeRange = {Graphics::getWidth(), Graphics::getHeight(), Graphics::getWidth(), Graphics::getHeight()},
+			.FrameRate = { frameRate, 1 },
+			.SourceSizeRange = { Graphics::getWidth(), Graphics::getHeight(), Graphics::getWidth(), Graphics::getHeight() },
+			.DestinationSizeRange = { Graphics::getWidth(), Graphics::getHeight(), Graphics::getWidth(), Graphics::getHeight() },
 		};
 
 		D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC outputDesc =
 		{
 		.Format = DXGI_FORMAT_NV12,
 		.ColorSpace = DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709,
-		.FrameRate = {frameRate, 1},
+		.FrameRate = { frameRate, 1 },
 		};
 
 		CHECKERROR(VideoDevice::get()->CreateVideoProcessor(0, &outputDesc, 1, &inputDesc, IID_PPV_ARGS(&videoProcessor)));

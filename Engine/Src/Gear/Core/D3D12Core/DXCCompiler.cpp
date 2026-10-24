@@ -22,10 +22,10 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		ComPtr<IDxcBlob> load(const uint8_t* const bytes, const size_t byteSize);
 
 		//hlsl
-		ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderType type) const;
+		ComPtr<IDxcBlob> compile(const Utils::File::Path& filePath, const ShaderType type) const;
 
 		//cso
-		ComPtr<IDxcBlob> read(const std::wstring& filePath) const;
+		ComPtr<IDxcBlob> read(const Utils::File::Path& filePath) const;
 
 		ComPtr<ID3D12ShaderReflection> getReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob) const;
 
@@ -69,7 +69,7 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		return shaderBlob;
 	}
 
-	ComPtr<IDxcBlob> DXCCompilerImpl::compile(const std::wstring& filePath, const ShaderType type) const
+	ComPtr<IDxcBlob> DXCCompilerImpl::compile(const Utils::File::Path& filePath, const ShaderType type) const
 	{
 		if (type == ShaderType::TYPECOUNT)
 		{
@@ -92,31 +92,31 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		switch (type)
 		{
 		case ShaderType::VERTEX:
-			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"vs_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"vs_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		case ShaderType::HULL:
-			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"hs_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"hs_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		case ShaderType::DOMAIN:
-			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ds_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ds_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		case ShaderType::GEOMETRY:
-			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"gs_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"gs_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		case ShaderType::PIXEL:
-			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ps_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ps_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		case ShaderType::COMPUTE:
-			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"cs_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"cs_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		case ShaderType::AMPLIFICATION:
-			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"as_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"as_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		case ShaderType::MESH:
-			dxcUtils->BuildArguments(filePath.c_str(), L"main", L"ms_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ms_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		case ShaderType::LIBRARY:
-			dxcUtils->BuildArguments(filePath.c_str(), L"", L"lib_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"", L"lib_6_6", nullptr, 0, nullptr, 0, &args);
 			break;
 		default:
 			break;
@@ -133,7 +133,7 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		return shaderBlob;
 	}
 
-	ComPtr<IDxcBlob> DXCCompilerImpl::read(const std::wstring& filePath) const
+	ComPtr<IDxcBlob> DXCCompilerImpl::read(const Utils::File::Path& filePath) const
 	{
 		const std::vector<uint8_t> bytes = Utils::File::readAllBinary(filePath);
 
@@ -187,12 +187,12 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		return impl->load(bytes, byteSize);
 	}
 
-	ComPtr<IDxcBlob> compile(const std::wstring& filePath, const ShaderType type)
+	ComPtr<IDxcBlob> compile(const Utils::File::Path& filePath, const ShaderType type)
 	{
 		return impl->compile(filePath, type);
 	}
 
-	ComPtr<IDxcBlob> read(const std::wstring& filePath)
+	ComPtr<IDxcBlob> read(const Utils::File::Path& filePath)
 	{
 		return impl->read(filePath);
 	}

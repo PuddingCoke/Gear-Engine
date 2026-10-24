@@ -9,7 +9,7 @@ class MyRenderTask :public RenderTask
 public:
 
 	MyRenderTask() :
-		accumulateShader(Shader::create(File::getRootFolderW() + L"AccumulateShader.cso")),
+		accumulateShader(Shader::create(L"AccumulateShader.cso")),
 		accumulatedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, false)),
 		accumulateParam{ 0,0.f,8.f },
 		POWER(8.f)

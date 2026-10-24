@@ -23,8 +23,8 @@ public:
 	}sceneInfo;
 
 	Scene(const std::string& filePath, ResourceManager& resManager, const DXGI_FORMAT rtvFormat) :
-		vertexShader(Shader::create(File::getRootFolderW() + L"PBRVS.cso")),
-		pixelShader(Shader::create(File::getRootFolderW() + L"PBRPS.cso"))
+		vertexShader(Shader::create(L"PBRVS.cso")),
+		pixelShader(Shader::create(L"PBRPS.cso"))
 	{
 		Assimp::Importer importer;
 

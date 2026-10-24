@@ -33,10 +33,10 @@ std::vector<std::wstring> split(std::wstring str, const wchar_t separator)
 	return result;
 }
 
-TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) :
-	spriteVS(Shader::create(File::getRootFolderW() + L"SpriteVS.cso")),
-	spriteGS(Shader::create(File::getRootFolderW() + L"SpriteGS.cso")),
-	spritePS(Shader::create(File::getRootFolderW() + L"SpritePS.cso")),
+TextBatch::TextBatch(ResourceManager& resManager, const File::Path& filePath) :
+	spriteVS(Shader::create(L"SpriteVS.cso")),
+	spriteGS(Shader::create(L"SpriteGS.cso")),
+	spritePS(Shader::create(L"SpritePS.cso")),
 	textBuffer(ResourceManager::createStructuredBufferView(textArray.elementByteSize(), textArray.totalByteSize(), false, false, true, true, true)),
 	scale(1.f)
 {
@@ -51,7 +51,7 @@ TextBatch::TextBatch(ResourceManager& resManager, const std::wstring& filePath) 
 
 	std::wifstream fileStream;
 
-	fileStream.open(filePath);
+	fileStream.open(filePath.str());
 
 	if (fileStream.bad())
 	{

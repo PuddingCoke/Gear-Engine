@@ -23,7 +23,7 @@ namespace Gear::Utils::Logger
 		LoggerImpl() :
 			isRunning(true), fileHandle(nullptr), consoleHandle(nullptr)
 		{
-			fileHandle = CreateFileA("log.txt", GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+			fileHandle = CreateFileW(File::UserDataPath(L"log.txt").cstr(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
 
 			if (fileHandle == INVALID_HANDLE_VALUE)
 			{
