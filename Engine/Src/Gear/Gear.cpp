@@ -142,9 +142,16 @@ namespace Gear
 
 		fileToken = makeUnique<File::Internal::InitializeToken>(File::backslashToSlash(File::getParentFolder(executablePath)));
 
+		const Utils::File::RootPath dllsPath = L"Dlls/";
+
+		if (SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS))
+		{
+			AddDllDirectory(dllsPath.cstr());
+		}
+
 		loggerToken = makeUnique<Logger::Internal::InitializeToken>();
 
-		LOGENGINE() << "EXE根目录" << COLORIZEPATH(File::getRootFolder());
+		LOGENGINE() << "EXE根目录" << Utils::File::RootPath(L"");
 
 		MainMonitor::Internal::getCurrentSettings();
 

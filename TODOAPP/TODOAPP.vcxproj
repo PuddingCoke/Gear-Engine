@@ -36,6 +36,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="$(SolutionDir)Demos\DemoCommon.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -66,12 +67,12 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Engine-d.lib;DirectXTex-d.lib;D3D12.lib;DXGI.lib;dxguid.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine-d.lib;DirectXTex-d.lib;D3D12.lib;DXGI.lib;dxguid.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /Y "$(ProjectDir)Assets\*" "$(OutDir)Assets\"
 xcopy /E /Y "$(SolutionDir)EngineAssets\*" "$(OutDir)Assets\EngineAssets\"
-xcopy /E /Y "$(SolutionDir)Dlls\*" "$(OutDir)"</Command>
+xcopy /E /Y "$(SolutionDir)Dlls\*" "$(OutDir)Dlls\"</Command>
     </PostBuildEvent>
     <FxCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -95,12 +96,12 @@ xcopy /E /Y "$(SolutionDir)Dlls\*" "$(OutDir)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>wmainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>Engine.lib;DirectXTex.lib;D3D12.lib;DXGI.lib;dxguid.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine.lib;DirectXTex.lib;D3D12.lib;DXGI.lib;dxguid.lib;dxcompiler.lib;dxil.lib;assimp-vc145-mt.lib;OpenEXR-3_4.lib;GFSDK_SSAO_D3D12.win64.lib;avcodec.lib;avformat.lib;avutil.lib;swresample.lib;swscale.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /Y "$(ProjectDir)Assets\*" "$(OutDir)Assets\"
 xcopy /E /Y "$(SolutionDir)EngineAssets\*" "$(OutDir)Assets\EngineAssets\"
-xcopy /E /Y "$(SolutionDir)Dlls\*" "$(OutDir)"</Command>
+xcopy /E /Y "$(SolutionDir)Dlls\*" "$(OutDir)Dlls\"</Command>
     </PostBuildEvent>
     <FxCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

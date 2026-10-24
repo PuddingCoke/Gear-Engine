@@ -153,6 +153,4 @@ using Gear::Utils::Logger::LogNewLine;
 
 #define COLORIZEENUM(_enum_) COLORIZE(TOSTRING(_enum_), LogColor::blue)
 
-#define COLORIZEPATH(_path_) COLORIZE(_path_, LogColor::brightBlue)
-
 #endif // !_GEAR_UTILS_LOGGER_LOG_H_

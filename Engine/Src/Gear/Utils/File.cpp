@@ -91,36 +91,6 @@ namespace Gear::Utils::File
 		return String::wStringToString(pathStr);
 	}
 
-	EngineAssetsPath::EngineAssetsPath(const std::wstring& subdirectory) :
-		Path(std::wstring(L"EngineAssets/") + subdirectory)
-	{
-	}
-
-	EngineAssetsPath::EngineAssetsPath(const wchar_t* const subdirectory) :
-		Path(std::wstring(L"EngineAssets/") + subdirectory)
-	{
-	}
-
-	RootPath::RootPath(const std::wstring& subdirectory) :
-		Path(getRootFolder() + subdirectory)
-	{
-	}
-
-	RootPath::RootPath(const wchar_t* const subdirectory) :
-		Path(getRootFolder() + subdirectory)
-	{
-	}
-
-	UserDataPath::UserDataPath(const std::wstring& subdirectory) :
-		Path(getUserDataFolder() + subdirectory)
-	{
-	}
-
-	UserDataPath::UserDataPath(const wchar_t* const subdirectory) :
-		Path(getUserDataFolder() + subdirectory)
-	{
-	}
-
 	std::wstring backslashToSlash(const std::wstring& filePath)
 	{
 		std::wstring result = filePath;

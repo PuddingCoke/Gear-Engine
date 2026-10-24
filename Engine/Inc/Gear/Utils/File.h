@@ -49,42 +49,6 @@ namespace Gear::Utils::File
 
 	};
 
-	class EngineAssetsPath :public Path
-	{
-	public:
-
-		EngineAssetsPath() = delete;
-
-		EngineAssetsPath(const std::wstring& subdirectory);
-
-		EngineAssetsPath(const wchar_t* const subdirectory);
-
-	};
-
-	class RootPath :public Path
-	{
-	public:
-
-		RootPath() = delete;
-
-		RootPath(const std::wstring& subdirectory);
-
-		RootPath(const wchar_t* const subdirectory);
-
-	};
-
-	class UserDataPath :public Path
-	{
-	public:
-
-		UserDataPath() = delete;
-
-		UserDataPath(const std::wstring& subdirectory);
-
-		UserDataPath(const wchar_t* const subdirectory);
-
-	};
-
 	//获取EXE的绝对目录
 	std::wstring getRootFolder();
 
@@ -103,6 +67,27 @@ namespace Gear::Utils::File
 	std::wstring readAllText(const Path& filePath);
 
 	std::vector<uint8_t> readAllBinary(const Path& filePath);
+
+#define GEAR_MAKE_PATH_CLASS(ClassName, PrefixExpr)              \
+    class ClassName : public Path                                \
+    {                                                            \
+    public:                                                      \
+        ClassName() = delete;                                    \
+        ClassName(const std::wstring& subdirectory) :            \
+            Path((PrefixExpr) + subdirectory)                    \
+        {                                                        \
+        }                                                        \
+        ClassName(const wchar_t* const subdirectory) :           \
+            Path((PrefixExpr) + subdirectory)                    \
+        {                                                        \
+        }                                                        \
+    }
+
+	GEAR_MAKE_PATH_CLASS(EngineAssetsPath, std::wstring(L"EngineAssets/"));
+	GEAR_MAKE_PATH_CLASS(RootPath, getRootFolder());
+	GEAR_MAKE_PATH_CLASS(UserDataPath, getUserDataFolder());
+
+#undef GEAR_MAKE_PATH_CLASS
 
 }
 
