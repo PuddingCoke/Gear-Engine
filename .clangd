@@ -1,0 +1,18 @@
+# =============================================================================
+# clangd 配置
+#
+# compile_commands.json 由 CMakePresets 生成在 out/<preset>/ 下，
+# 这里默认指向 Debug 配置。切换到 Release 时把路径改为 out/release。
+# =============================================================================
+CompileFlags:
+  CompilationDatabase: out/debug
+
+# 提示：VS Code 的 clangd 扩展还需要允许 clangd 查询 MSVC 驱动，否则无法获取
+# MSVC 的系统头文件路径（会报 stddef.h 之类的找不到）。在 settings.json 中加：
+#
+#   "clangd.arguments": [
+#     "--query-driver=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/*/bin/Hostx64/x64/cl.exe"
+#   ]
+#
+# 如果之后只使用 MSVC /compile_commands.json，也可以不加此参数；clangd 只是
+# 无法解析标准库头文件，业务代码的跳转仍然可用。

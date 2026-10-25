@@ -488,7 +488,5 @@ int wmain(int argc, const wchar_t* argv[])
 
 	writer.close();
 
-	std::cin.get();
-
 	return 0;
 }
