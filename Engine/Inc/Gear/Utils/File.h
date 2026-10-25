@@ -27,6 +27,8 @@ namespace Gear::Utils::File
 
 		const std::wstring& str() const;
 
+		std::string multibyteStr() const;
+
 		const wchar_t* cstr() const;
 
 		//Path + L"ASD/"		Path/ASD/
@@ -37,11 +39,11 @@ namespace Gear::Utils::File
 		//Path += L"ASD.exe"	Path/ASD.exe
 		Path& operator+=(const std::wstring& subdirectory);
 
+		Path parentPath() const;
+
 		bool exist() const;
 
 		std::wstring extension() const;
-
-		std::string multibyteStr() const;
 
 	private:
 
@@ -49,45 +51,25 @@ namespace Gear::Utils::File
 
 	};
 
-	//获取EXE的绝对目录
-	std::wstring getRootFolder();
+#define GEAR_DECLARE_PATH_CLASS(ClassName)				\
+	class ClassName: public Path						\
+	{													\
+	public:												\
+		ClassName() = delete;							\
+		ClassName(const std::wstring& subdirectory);	\
+		ClassName(const wchar_t* const subdirectory);	\
+	}
 
-	std::wstring getAssetsFolder();
+	GEAR_DECLARE_PATH_CLASS(EngineAssetsPath);
+	GEAR_DECLARE_PATH_CLASS(RootPath);
+	GEAR_DECLARE_PATH_CLASS(AssetsPath);
+	GEAR_DECLARE_PATH_CLASS(UserDataPath);
 
-	std::wstring getUserDataFolder();
-
-	std::wstring backslashToSlash(const std::wstring& filePath);
-
-	std::wstring slashToBackSlash(const std::wstring& filePath);
-
-	std::wstring getParentFolder(const std::wstring& filePath);
-
-	std::wstring getExtension(const std::wstring& filePath);
+#undef GEAR_DECLARE_PATH_CLASS
 
 	std::wstring readAllText(const Path& filePath);
 
 	std::vector<uint8_t> readAllBinary(const Path& filePath);
-
-#define GEAR_MAKE_PATH_CLASS(ClassName, PrefixExpr)              \
-    class ClassName : public Path                                \
-    {                                                            \
-    public:                                                      \
-        ClassName() = delete;                                    \
-        ClassName(const std::wstring& subdirectory) :            \
-            Path((PrefixExpr) + subdirectory)                    \
-        {                                                        \
-        }                                                        \
-        ClassName(const wchar_t* const subdirectory) :           \
-            Path((PrefixExpr) + subdirectory)                    \
-        {                                                        \
-        }                                                        \
-    }
-
-	GEAR_MAKE_PATH_CLASS(EngineAssetsPath, std::wstring(L"EngineAssets/"));
-	GEAR_MAKE_PATH_CLASS(RootPath, getRootFolder());
-	GEAR_MAKE_PATH_CLASS(UserDataPath, getUserDataFolder());
-
-#undef GEAR_MAKE_PATH_CLASS
 
 }
 

@@ -81,7 +81,7 @@
     </FxCompile>
     <PostBuildEvent />
     <PreBuildEvent>
-      <Command>"$(SolutionDir)Build\CommonShaderParse\$(Configuration)\CommonShaderParse.exe"</Command>
+      <Command>"$(SolutionDir)Build\CommonShaderParse\$(Configuration)\CommonShaderParse.exe" "$(SolutionDir)Engine\Inc\Gear\Core\D3D12Core\CommonShaderLayout.h"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -115,7 +115,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Engine\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </FxCompile>
     <PreBuildEvent>
-      <Command>"$(SolutionDir)Build\CommonShaderParse\$(Configuration)\CommonShaderParse.exe"</Command>
+      <Command>"$(SolutionDir)Build\CommonShaderParse\$(Configuration)\CommonShaderParse.exe" "$(SolutionDir)Engine\Inc\Gear\Core\D3D12Core\CommonShaderLayout.h"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

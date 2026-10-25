@@ -137,15 +137,53 @@ uint32_t getRegisterValue(const std::wstring& str)
 	return static_cast<uint32_t>(std::stoi(str.substr(1ull)));
 }
 
+std::wstring getExecutableFolderW()
+{
+	std::wstring buffer(MAX_PATH, L'\0');
+
+	while (true)
+	{
+		const DWORD len = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
+
+		if (len == 0)
+		{
+			return L"";
+		}
+
+		if (len < buffer.size())
+		{
+			buffer.resize(len);
+
+			break;
+		}
+
+		buffer.resize(buffer.size() * 2);
+	}
+
+	size_t idx = buffer.find_last_of(L'\\');
+
+	if (idx == std::wstring::npos)
+	{
+		idx = buffer.find_last_of(L'/');
+
+		if (idx == std::wstring::npos)
+		{
+			return L"";
+		}
+	}
+
+	return buffer.substr(0, idx + 1ull);
+}
+
 int wmain(int argc, const wchar_t* argv[])
 {
 	std::locale::global(std::locale(".UTF-8"));
 
 	SetConsoleOutputCP(CP_UTF8);
 
-	const std::wstring rootFolder = getParentFolder(argv[0]);
+	const std::wstring rootFolder = getExecutableFolderW();
 
-	const std::wstring filePath = rootFolder + L"\\dummyVS.hlsl";
+	const std::wstring filePath = rootFolder + L"dummyVS.hlsl";
 
 	std::vector<uint8_t> byteCode = readAllBinary(filePath);
 
@@ -216,7 +254,9 @@ int wmain(int argc, const wchar_t* argv[])
 		std::cin.get();
 	}
 
-	HeaderWriter writer(rootFolder);
+	const std::wstring outDirectory = argv[1];
+
+	HeaderWriter writer(outDirectory);
 
 	{
 		ID3D12ShaderReflectionConstantBuffer* constantBuffer = shaderReflection->GetConstantBufferByIndex(0);
@@ -331,7 +371,9 @@ int wmain(int argc, const wchar_t* argv[])
 	writer.endDescQuick(L"CommonShaderLayout");
 
 	{
-		std::wifstream inputStream = std::wifstream(rootFolder + L"\\Common.hlsli");
+		std::wifstream inputStream = std::wifstream(rootFolder + L"Common.hlsli");
+
+		std::wcout << L"open " << (rootFolder + L"Common.hlsli") << " succeeded\n";
 
 		//用于全局参数对
 		uint32_t rootParameterIndex = 0;

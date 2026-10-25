@@ -450,9 +450,6 @@
     <ClInclude Include="Inc\Gear\Core\Internal\DeviceInternal.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Gear\Core\D3D12Core\CommonShaderLayout.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Inc\Gear\Core\D3D12Core\CommandQueue.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -472,6 +469,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="Inc\Gear\Utils\Log.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Gear\Core\D3D12Core\CommonShaderLayout.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

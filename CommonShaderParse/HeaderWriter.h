@@ -16,23 +16,6 @@ enum class VarType;
 
 enum class VarModifier;
 
-std::wstring getParentFolder(const std::wstring& filePath)
-{
-	size_t idx = filePath.find_last_of(L'\\');
-
-	if (idx == std::wstring::npos)
-	{
-		idx = filePath.find_last_of(L'/');
-
-		if (idx == std::wstring::npos)
-		{
-			return L"";
-		}
-	}
-
-	return filePath.substr(0, idx);
-}
-
 class HeaderWriter
 {
 public:
@@ -87,8 +70,8 @@ private:
 
 };
 
-inline HeaderWriter::HeaderWriter(const std::wstring& rootFolder) :
-	currentCount(0), outDirectory(getParentFolder(getParentFolder(getParentFolder(rootFolder))) + L"\\Engine\\Inc\\Gear\\Core\\D3D12Core\\CommonShaderLayout.h")
+inline HeaderWriter::HeaderWriter(const std::wstring& outDirectory) :
+	currentCount(0), outDirectory(outDirectory)
 {
 	outStream = std::wofstream(outDirectory);
 

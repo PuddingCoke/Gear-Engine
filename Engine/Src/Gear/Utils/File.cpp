@@ -28,67 +28,30 @@
 
 namespace Gear::Utils::File
 {
-
-	Path::Path(const std::wstring& pathStr)
+	std::wstring getExecutablePathW()
 	{
-		if (pathStr == L"")
+		std::wstring buffer(MAX_PATH, L'\0');
+
+		while (true)
 		{
-			THROWLOG(LOGERROR() << "路径为空！");
+			const DWORD len = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
+
+			if (len == 0)
+			{
+				throw std::runtime_error("无法获取可执行程序文件路径");
+			}
+
+			if (len < buffer.size())
+			{
+				buffer.resize(len);
+
+				break;
+			}
+
+			buffer.resize(buffer.size() * 2);
 		}
 
-		this->pathStr = std::filesystem::path(pathStr).has_root_path() ? pathStr : (getAssetsFolder() + pathStr);
-	}
-
-	Path::Path(const wchar_t* const pathStr)
-	{
-		if (pathStr == nullptr)
-		{
-			THROWLOG(LOGERROR() << "路径指针为nullptr！");
-		}
-
-		if (pathStr[0] == '\0')
-		{
-			THROWLOG(LOGERROR() << "路径为空！");
-		}
-
-		this->pathStr = std::filesystem::path(pathStr).has_root_path() ? pathStr : (getAssetsFolder() + pathStr);
-	}
-
-	const std::wstring& Path::str() const
-	{
-		return pathStr;
-	}
-
-	const wchar_t* Path::cstr() const
-	{
-		return pathStr.c_str();
-	}
-
-	Path Path::operator+(const std::wstring& subdirectory)
-	{
-		return Path(pathStr + subdirectory);
-	}
-
-	Path& Path::operator+=(const std::wstring& subdirectory)
-	{
-		pathStr += subdirectory;
-
-		return *this;
-	}
-
-	bool Path::exist() const
-	{
-		return GetFileAttributesW(pathStr.c_str()) != INVALID_FILE_ATTRIBUTES;
-	}
-
-	std::wstring Path::extension() const
-	{
-		return File::getExtension(pathStr);
-	}
-
-	std::string Path::multibyteStr() const
-	{
-		return String::wStringToString(pathStr);
+		return buffer;
 	}
 
 	std::wstring backslashToSlash(const std::wstring& filePath)
@@ -118,7 +81,7 @@ namespace Gear::Utils::File
 
 		std::wstring trueFilePath = filePath;
 
-		if (filePath[filePath.length() - 1] == L'\\' || filePath[filePath.length() - 1] == L'/')
+		if (filePath.back() == L'\\' || filePath.back() == L'/')
 		{
 			trueFilePath = trueFilePath.substr(0, filePath.length() - 1ull);
 		}
@@ -127,7 +90,7 @@ namespace Gear::Utils::File
 
 		if (idx != std::wstring::npos)
 		{
-			return trueFilePath.substr(0, idx) + L"\\";
+			return trueFilePath.substr(0, idx + 1ull);
 		}
 		else
 		{
@@ -135,11 +98,11 @@ namespace Gear::Utils::File
 
 			if (idx != std::wstring::npos)
 			{
-				return trueFilePath.substr(0, idx) + L"/";
+				return trueFilePath.substr(0, idx + 1ull);
 			}
 		}
 
-		return L"";
+		return filePath;
 	}
 
 	std::wstring getExtension(const std::wstring& filePath)
@@ -151,8 +114,139 @@ namespace Gear::Utils::File
 			return L"";
 		}
 
-		return filePath.substr(idx + 1, filePath.size() - idx - 1);
+		return filePath.substr(idx + 1ull, filePath.size() - (idx + 1ull));
 	}
+
+	class FileImpl
+	{
+	public:
+
+		FileImpl();
+
+		const std::wstring& getRootFolder() const;
+
+		const std::wstring& getAssetsFolder() const;
+
+		const std::wstring& getUserDataFolder() const;
+
+	private:
+
+		const std::wstring rootFolder;
+
+		const std::wstring assetsFolder;
+
+		const std::wstring userDataFolder;
+
+	};
+
+	FileImpl::FileImpl() :
+		rootFolder(backslashToSlash(getParentFolder(getExecutablePathW()))),
+		assetsFolder(rootFolder + L"Assets/"),
+		userDataFolder(rootFolder + L"UserData/")
+	{
+		std::filesystem::create_directories(userDataFolder);
+	}
+
+	const std::wstring& FileImpl::getRootFolder() const
+	{
+		return rootFolder;
+	}
+
+	const std::wstring& FileImpl::getAssetsFolder() const
+	{
+		return assetsFolder;
+	}
+
+	const std::wstring& FileImpl::getUserDataFolder() const
+	{
+		return userDataFolder;
+	}
+
+	UniquePtr<FileImpl> impl;
+
+	Path::Path(const std::wstring& pathStr)
+	{
+		if (pathStr == L"")
+		{
+			THROWLOG(LOGERROR() << "路径为空！");
+		}
+
+		this->pathStr = std::filesystem::path(pathStr).has_root_path() ? pathStr : (impl->getAssetsFolder() + pathStr);
+	}
+
+	Path::Path(const wchar_t* const pathStr)
+	{
+		if (pathStr == nullptr)
+		{
+			THROWLOG(LOGERROR() << "路径指针为nullptr！");
+		}
+
+		if (pathStr[0] == '\0')
+		{
+			THROWLOG(LOGERROR() << "路径为空！");
+		}
+
+		this->pathStr = std::filesystem::path(pathStr).has_root_path() ? pathStr : (impl->getAssetsFolder() + pathStr);
+	}
+
+	const std::wstring& Path::str() const
+	{
+		return pathStr;
+	}
+
+	std::string Path::multibyteStr() const
+	{
+		return String::wStringToString(pathStr);
+	}
+
+	const wchar_t* Path::cstr() const
+	{
+		return pathStr.c_str();
+	}
+
+	Path Path::operator+(const std::wstring& subdirectory)
+	{
+		return Path(pathStr + subdirectory);
+	}
+
+	Path& Path::operator+=(const std::wstring& subdirectory)
+	{
+		pathStr += subdirectory;
+
+		return *this;
+	}
+
+	Path Path::parentPath() const
+	{
+		return Path(getParentFolder(pathStr));
+	}
+
+	bool Path::exist() const
+	{
+		return GetFileAttributesW(pathStr.c_str()) != INVALID_FILE_ATTRIBUTES;
+	}
+
+	std::wstring Path::extension() const
+	{
+		return File::getExtension(pathStr);
+	}
+
+#define GEAR_IMPL_PATH_CLASS(ClassName, PrefixExpr)							\
+		ClassName::ClassName(const std::wstring& subdirectory) :            \
+			Path((PrefixExpr) + subdirectory)								\
+		{																	\
+		}																	\
+		ClassName::ClassName(const wchar_t* const subdirectory) :           \
+			Path((PrefixExpr) + subdirectory)								\
+		{																	\
+		}																	
+
+	GEAR_IMPL_PATH_CLASS(EngineAssetsPath, std::wstring(L"EngineAssets/"));
+	GEAR_IMPL_PATH_CLASS(RootPath, impl->getRootFolder());
+	GEAR_IMPL_PATH_CLASS(AssetsPath, impl->getAssetsFolder());
+	GEAR_IMPL_PATH_CLASS(UserDataPath, impl->getUserDataFolder());
+
+#undef GEAR_IMPL_PATH_CLASS
 
 	std::wstring readAllText(const Path& filePath)
 	{
@@ -192,55 +286,17 @@ namespace Gear::Utils::File
 		return bytes;
 	}
 
-	struct FileImpl
-	{
-
-		FileImpl(const std::wstring& wRootFolder);
-
-		const std::wstring rootFolder;
-
-		const std::wstring assetsFolder;
-
-		const std::wstring userDataFolder;
-
-	};
-
-	FileImpl::FileImpl(const std::wstring& rootFolder) :
-		rootFolder(rootFolder),
-		assetsFolder(rootFolder + L"Assets/"),
-		userDataFolder(rootFolder + L"UserData/")
-	{
-		std::filesystem::create_directories(userDataFolder);
-	}
-
-	UniquePtr<FileImpl> impl;
-
 	namespace Internal
 	{
-		void initialize(const std::wstring& rootFolder)
+		void initialize()
 		{
-			impl = makeUnique<FileImpl>(rootFolder);
+			impl = makeUnique<FileImpl>();
 		}
 
 		void release()
 		{
 			impl.reset();
 		}
-	}
-
-	std::wstring getRootFolder()
-	{
-		return impl->rootFolder;
-	}
-
-	std::wstring getAssetsFolder()
-	{
-		return impl->assetsFolder;
-	}
-
-	std::wstring getUserDataFolder()
-	{
-		return impl->userDataFolder;
 	}
 
 }

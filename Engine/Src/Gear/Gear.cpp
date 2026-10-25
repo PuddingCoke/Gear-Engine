@@ -44,42 +44,6 @@
 
 #include<stb_image_write.h>
 
-namespace
-{
-	std::wstring getExecutablePathW()
-	{
-		std::wstring buffer(MAX_PATH, L'\0');
-
-		while (true)
-		{
-			const DWORD len = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
-
-			if (len == 0)
-			{
-				return L"";
-			}
-
-			if (len == buffer.size())
-			{
-				break;
-			}
-			else if (len < buffer.size())
-			{
-				buffer.resize(len);
-
-				break;
-			}
-
-			if (len > buffer.size())
-			{
-				buffer.resize(buffer.size() * 2);
-			}
-		}
-
-		return buffer;
-	}
-}
-
 namespace Gear
 {
 	class GearImpl
@@ -133,14 +97,7 @@ namespace Gear
 		//设置locale为.UTF-8用于多语言支持
 		std::locale::global(std::locale(".UTF-8"));
 
-		const std::wstring executablePath = getExecutablePathW();
-
-		if (executablePath == L"")
-		{
-			throw std::runtime_error("无法获取可执行文件路径");
-		}
-
-		fileToken = makeUnique<File::Internal::InitializeToken>(File::backslashToSlash(File::getParentFolder(executablePath)));
+		fileToken = makeUnique<File::Internal::InitializeToken>();
 
 		const Utils::File::RootPath dllsPath = L"Dlls/";
 
