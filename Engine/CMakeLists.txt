@@ -2,13 +2,13 @@
 # Engine：静态库（对应 Engine.vcxproj）
 #
 # 增量构建策略：
-#   1. Common.hlsli / dummyVS.hlsl 变化
-#        -> 重新运行 CommonShaderParse 生成 CommonShaderLayout.h
-#        -> 重新编译 Shaders 下全部着色器
-#   2. 生成结果先写临时文件，再 copy_if_different 到最终路径
-#        -> 内容未变时最终文件 mtime 不变
-#        -> Ninja 的 restat + MSVC /showIncludes 依赖扫描决定哪些 cpp 需要重编
-#   3. .cpp 对头文件的依赖完全由 /showIncludes 自动跟踪，不做强制全量重编
+#   1. CommonShaderLayout.h 由 CommonShaderParse 生成（对应 MSBuild 的 PreBuild）。
+#   2. 每个着色器的依赖 = 源文件 + include 目录（含其所在目录）下所有 *.hlsli，
+#      由 cmake/GearShader.cmake 自动收集。
+#   3. 着色器产物先写临时文件，再 copy_if_different 到最终路径；
+#      内容未变时最终文件 mtime 不变，Ninja 的 restat 跳过下游。
+#   4. 生成头通过 OBJECT_DEPENDS 成为相关 .cpp 的隐式依赖，
+#      .hlsl/.hlsli 一变即可在一次构建内完成“重建头 -> 重编 cpp -> 重链接”。
 # =============================================================================
 
 file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
@@ -84,19 +84,6 @@ set_target_properties(Engine PROPERTIES
     COMPILE_PDB_NAME_RELEASE "Engine"
 )
 
-# --- dxc ---------------------------------------------------------------------
-find_program(GEAR_DXC_EXECUTABLE NAMES dxc)
-if(NOT GEAR_DXC_EXECUTABLE)
-    file(GLOB _dxc_candidates "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/bin/10.*/x64/dxc.exe")
-    if(_dxc_candidates)
-        list(SORT _dxc_candidates)
-        list(GET _dxc_candidates -1 GEAR_DXC_EXECUTABLE)
-    endif()
-endif()
-if(NOT GEAR_DXC_EXECUTABLE)
-    message(FATAL_ERROR "未找到 dxc.exe，请通过 -DGEAR_DXC_EXECUTABLE=<path> 指定。")
-endif()
-
 # --- CommonShaderLayout.h ----------------------------------------------------
 # CommonShaderParse 从自身 exe 目录读取 dummyVS.hlsl / Common.hlsli，
 # 因此每次生成前先同步副本（MSBuild 只在工具重链时 PostBuild，可能读到旧文件）。
@@ -127,8 +114,15 @@ add_custom_command(
 add_custom_target(EngineLayout DEPENDS "${GEAR_LAYOUT_HEADER}")
 
 # --- 着色器 ------------------------------------------------------------------
-# 文件|类型，类型取自 Engine.vcxproj（ShaderModel 6.6，入口 main）
-set(GEAR_ENGINE_SHADERS
+# 项目级默认：全部编译成 C++ 头文件，输出到 Inc/Gear/CompiledShaders/<名>.h。
+# 规则（模式/类型/入口/参数映射/增量）见 cmake/GearShader.cmake。
+gear_shader_defaults(
+    MODE HEADER
+    OUTPUT_DIR "Inc/Gear/CompiledShaders"
+)
+
+# 文件|类型，类型取自 Engine.vcxproj（着色器模型由顶层 GEAR_SHADER_MODEL 统一）
+gear_add_shaders(Engine
     "Shaders/Bloom/BloomDownSamplePS.hlsl|Pixel"
     "Shaders/Bloom/BloomFilterPS.hlsl|Pixel"
     "Shaders/Bloom/BloomFinalPS.hlsl|Pixel"
@@ -156,63 +150,16 @@ set(GEAR_ENGINE_SHADERS
     "Shaders/ToneMapCS.hlsl|Compute"
 )
 
-# 着色器实际 include 的公共头文件；任一个变化都重编全部着色器
-set(GEAR_ENGINE_HLSLI
-    "${CMAKE_CURRENT_SOURCE_DIR}/Shaders/Common.hlsli"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Shaders/PBRHeader.hlsli"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Shaders/FXAA/FXAAHeader.hlsli"
-)
+# 生成头必须先构建、再编译；同时也用于让 Ninja 在一次构建内完成重编与重链。
+gear_shader_apply_header_deps(Engine)
 
-set(GEAR_SHADER_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Inc/Gear/CompiledShaders")
-set(GEAR_SHADER_TMP_DIR    "${CMAKE_CURRENT_BINARY_DIR}/shadertmp")
+# 产物默认输出到源码树，Inc 已是 Engine 的 PUBLIC include 目录。
+# 打开 GEAR_SHADER_OUTPUT_IN_BUILD_TREE 后产物落在构建目录，需要把镜像的
+# Inc 根目录补进头文件搜索路径。
+if(GEAR_SHADER_OUTPUT_IN_BUILD_TREE)
+    target_include_directories(Engine BEFORE PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/Inc")
+endif()
 
-set(GEAR_ENGINE_SHADER_HEADERS "")
-foreach(_entry IN LISTS GEAR_ENGINE_SHADERS)
-    string(REPLACE "|" ";" _parts "${_entry}")
-    list(GET _parts 0 _rel)
-    list(GET _parts 1 _type)
-
-    get_filename_component(_name "${_rel}" NAME_WE)
-    set(_src    "${CMAKE_CURRENT_SOURCE_DIR}/${_rel}")
-    set(_tmp    "${GEAR_SHADER_TMP_DIR}/${_name}.h")
-    set(_final  "${GEAR_SHADER_OUTPUT_DIR}/${_name}.h")
-
-    if(_type STREQUAL "Pixel")
-        set(_profile "ps_6_6")
-    elseif(_type STREQUAL "Vertex")
-        set(_profile "vs_6_6")
-    elseif(_type STREQUAL "Geometry")
-        set(_profile "gs_6_6")
-    elseif(_type STREQUAL "Compute")
-        set(_profile "cs_6_6")
-    else()
-        message(FATAL_ERROR "未知着色器类型：${_type}（${_rel}）")
-    endif()
-
-    add_custom_command(
-        OUTPUT "${_final}"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${GEAR_SHADER_TMP_DIR}" "${GEAR_SHADER_OUTPUT_DIR}"
-        COMMAND "${GEAR_DXC_EXECUTABLE}"
-                -T ${_profile}
-                -E main
-                -Vn "g_${_name}Bytes"
-                -I "${CMAKE_CURRENT_SOURCE_DIR}/Shaders"
-                -Fh "${_tmp}"
-                "${_src}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_tmp}" "${_final}"
-        DEPENDS
-            "${_src}"
-            ${GEAR_ENGINE_HLSLI}
-            "${GEAR_DXC_EXECUTABLE}"
-        COMMENT "HLSL ${_name} (${_type})"
-        VERBATIM
-    )
-
-    list(APPEND GEAR_ENGINE_SHADER_HEADERS "${_final}")
-endforeach()
-
-add_custom_target(EngineShaders DEPENDS ${GEAR_ENGINE_SHADER_HEADERS})
-
-# 目标级依赖只保证“先生成、后编译”，不会导致全部源文件重编；
-# 具体哪些 cpp 重编仍由 /showIncludes 记录的头文件时间戳决定。
-add_dependencies(Engine EngineLayout EngineShaders)
+# 生成的 .h 通过 target_sources 挂到 Engine 上，Ninja 保证先生成后编译；
+# 内容未变化时 copy_if_different 不更新 mtime，依赖它的 .cpp 不会重编。
+add_dependencies(Engine EngineLayout)
