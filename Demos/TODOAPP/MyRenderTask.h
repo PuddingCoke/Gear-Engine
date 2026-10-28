@@ -105,7 +105,7 @@ class MyRenderTask : public RenderTask
 public:
 	MyRenderTask()
 	{
-		const File::Path taskJsonPath = File::RootPath(L"").parentPath().parentPath() + L"TODOAPP/tasks.json";
+		const File::Path taskJsonPath = File::RootPath(L"").parentPath().parentPath().parentPath() + L"Demos/TODOAPP/tasks.json";
 
 		LOGUSER() << "读取" << taskJsonPath;
 
