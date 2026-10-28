@@ -3,14 +3,14 @@
 #
 # 对应 SampleProject.vcxproj + Demos/DemoCommon.props：
 #   IncludePath                  -> Engine/External、Engine/Inc
-#   LibraryPath                  -> Libs（由 _gear_demo_resolve_libs 解析）
+#   LibraryPath                  -> Libs（全部静态库由 GearStaticLibs 目标统一链接）
 #   OutDir                       -> Build/<项目>/<Config>
 #   WarningLevel/SDLCheck/字符集 -> 顶层统一（/W3 默认，另有 /sdl /utf-8 /permissive-）
 #   PreprocessorDefinitions      -> _CONSOLE + _DEBUG/NDEBUG
-#   AdditionalDependencies       -> 基础库（自动处理 -d 后缀）+ LIBS 追加
-#   PostBuildEvent(xcopy)        -> Assets / EngineAssets / Dlls 三份拷贝
+#   AdditionalDependencies       -> GearStaticLibs（自动处理 -d 后缀）+ LIBS 追加
+#   PostBuildEvent(xcopy)        -> Demo 的 Assets、Runtime/Assets、Runtime/Dlls 三份拷贝
 #   FxCompile(ObjectFileOutput)  -> Assets/<名>.cso（转交 GearShader.cmake）
-#   DemoCommon.props(/DELAYLOAD) -> 自动收集 Dlls/*.dll 生成 /DELAYLOAD
+#   DemoCommon.props(/DELAYLOAD) -> 自动收集 Runtime/Dlls/*.dll 生成 /DELAYLOAD
 #
 # 公共默认用普通变量定义，写在 Demos/CMakeLists.txt 里即可被所有子目录继承：
 #   set(GEAR_DEMO_LIBS         ...)   # 额外第三方库（不带 .lib 后缀）
@@ -31,23 +31,66 @@ if(NOT DEFINED GEAR_DXC_EXECUTABLE)
     message(FATAL_ERROR "GearDemo.cmake 需要先由顶层 CMakeLists 完成着色器相关初始化")
 endif()
 
-# 所有示例项目都会链接的基础库（名字不带 .lib；存在 <名>-d.lib 时 Debug 自动用它）
-set(_GEAR_DEMO_BASE_LIBS
-    DirectXTex
-    assimp-vc145-mt
-    OpenEXR-3_4
-    GFSDK_SSAO_D3D12.win64
-    avcodec
-    avformat
-    avutil
-    swresample
-    swscale
-    dxcompiler
-    dxil
-)
+# -----------------------------------------------------------------------------
+# 内部：扫描 Libs 下所有静态库并按 Debug/Release 变体配对
+#
+# 约定：Foo.lib 与 Foo-d.lib 是同一个库的两个配置，Debug 用 -d、其余配置用
+# 普通版；只有一种变体时直接链接它。Engine 的产物同样输出到 Libs，必须排除，
+# 否则会与 Engine 目标重复链接。
+#
+# 不用 CONFIGURE_DEPENDS：Engine.lib 是构建产物，让它触发重新 configure 会
+# 在每次干净构建后多一轮配置。第三方库是静态文件，配置时扫描一次足够。
+# -----------------------------------------------------------------------------
+function(_gear_scan_static_libs OUT_VAR)
+    file(GLOB _libs "${GEAR_LIBS_DIR}/*.lib")
+
+    set(_bases "")
+    foreach(_lib IN LISTS _libs)
+        # 不能用 NAME_WE：它按“最长扩展名”截断，会把
+        # GFSDK_SSAO_D3D12.win64.lib 变成 GFSDK_SSAO_D3D12
+        get_filename_component(_name "${_lib}" NAME)
+        string(REGEX REPLACE "\\.[Ll][Ii][Bb]$" "" _name "${_name}")
+        if(_name MATCHES "^Engine(-d)?$")
+            continue()
+        endif()
+        string(REGEX REPLACE "-d$" "" _base "${_name}")
+        list(APPEND _bases "${_base}")
+    endforeach()
+    list(REMOVE_DUPLICATES _bases)
+
+    set(_resolved "")
+    foreach(_base IN LISTS _bases)
+        set(_release "${GEAR_LIBS_DIR}/${_base}.lib")
+        set(_debug   "${GEAR_LIBS_DIR}/${_base}-d.lib")
+        if(EXISTS "${_release}" AND EXISTS "${_debug}")
+            list(APPEND _resolved
+                "$<$<CONFIG:Debug>:${_debug}>"
+                "$<$<NOT:$<CONFIG:Debug>>:${_release}>")
+        elseif(EXISTS "${_debug}")
+            # 只有 Debug 版：只能在 Debug 下链接
+            list(APPEND _resolved "$<$<CONFIG:Debug>:${_debug}>")
+        else()
+            list(APPEND _resolved "${_release}")
+        endif()
+    endforeach()
+
+    set(${OUT_VAR} "${_resolved}" PARENT_SCOPE)
+endfunction()
+
+_gear_scan_static_libs(_GEAR_STATIC_LIBS)
+
+# 所有第三方静态库的集合。目标（示例项目、工具等）只需链接它，
+# 不需要再逐个列举 Libs 下的库名。
+if(NOT TARGET GearStaticLibs)
+    add_library(GearStaticLibs INTERFACE)
+    target_link_libraries(GearStaticLibs INTERFACE ${_GEAR_STATIC_LIBS})
+endif()
 
 # -----------------------------------------------------------------------------
-# 内部：把库名解析成 Libs 下的绝对路径，Debug 优先使用 -d 版本
+# 内部：解析额外库（GEAR_DEMO_LIBS / A_LIBS）
+#   绝对路径          -> 原样
+#   Libs 下的库名      -> 绝对路径，自动处理 -d 变体
+#   其它名字          -> 原样交给链接器（系统库，如 winmm）
 # -----------------------------------------------------------------------------
 function(_gear_demo_resolve_libs OUT_VAR)
     set(_resolved "")
@@ -62,19 +105,23 @@ function(_gear_demo_resolve_libs OUT_VAR)
 
         set(_release "${GEAR_LIBS_DIR}/${_name}.lib")
         set(_debug   "${GEAR_LIBS_DIR}/${_name}-d.lib")
-        if(EXISTS "${_debug}" AND EXISTS "${_release}")
-            list(APPEND _resolved "$<$<CONFIG:Debug>:${_debug}>" "$<$<CONFIG:Release>:${_release}>")
+        if(EXISTS "${_release}" AND EXISTS "${_debug}")
+            list(APPEND _resolved
+                "$<$<CONFIG:Debug>:${_debug}>"
+                "$<$<NOT:$<CONFIG:Debug>>:${_release}>")
         elseif(EXISTS "${_release}")
             list(APPEND _resolved "${_release}")
+        elseif(EXISTS "${_debug}")
+            list(APPEND _resolved "$<$<CONFIG:Debug>:${_debug}>")
         else()
-            message(FATAL_ERROR "gear_add_demo: 找不到库 ${_name}.lib（${GEAR_LIBS_DIR}）")
+            list(APPEND _resolved "${_lib}")
         endif()
     endforeach()
     set(${OUT_VAR} "${_resolved}" PARENT_SCOPE)
 endfunction()
 
 # -----------------------------------------------------------------------------
-# 内部：Dlls 下所有 DLL -> /DELAYLOAD:xxx.dll
+# 内部：Runtime/Dlls 下所有 DLL -> /DELAYLOAD:xxx.dll
 # -----------------------------------------------------------------------------
 function(_gear_demo_delayload OUT_VAR)
     file(GLOB _dlls "${GEAR_DLLS_DIR}/*.dll")
@@ -100,7 +147,7 @@ endfunction()
 #       [OUTPUT_DIR <目录>]                  # 默认 ${GEAR_OUTPUT_ROOT}/<target>/$<CONFIG>
 #       [LIBS ...] [INCLUDE_DIRS ...] [DEFINITIONS ...]
 #       [SHADER_INCLUDE_DIRS ...] [SHADER_DEFINITIONS ...]
-#       [NO_ASSET_COPY]                      # 不拷贝 Assets / EngineAssets
+#       [NO_ASSET_COPY]                      # 不拷贝 Demo 的 Assets 与 Runtime/Assets
 #   )
 # -----------------------------------------------------------------------------
 function(gear_add_demo TARGET)
@@ -154,12 +201,12 @@ function(gear_add_demo TARGET)
     )
 
     # ---- 链接 ----
-    _gear_demo_resolve_libs(_base_libs ${_GEAR_DEMO_BASE_LIBS})
+    # Libs 下的第三方静态库由 GearStaticLibs 统一提供（自动 -d 配对）
     _gear_demo_resolve_libs(_extra_libs ${GEAR_DEMO_LIBS} ${A_LIBS})
 
     target_link_libraries(${TARGET} PRIVATE
         Engine
-        ${_base_libs}
+        GearStaticLibs
         ${_extra_libs}
         D3D12 DXGI dxguid delayimp
     )
@@ -206,11 +253,12 @@ function(gear_add_demo TARGET)
                 COMMENT "复制 ${TARGET} 的 Assets"
                 VERBATIM)
         endif()
-        if(EXISTS "${GEAR_ROOT_DIR}/EngineAssets")
+        # Runtime/Assets 下按子目录组织（如 EngineAssets），整体并入输出目录的 Assets
+        if(EXISTS "${GEAR_RUNTIME_ASSETS_DIR}")
             add_custom_command(TARGET ${TARGET} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        "${GEAR_ROOT_DIR}/EngineAssets" "$<TARGET_FILE_DIR:${TARGET}>/Assets/EngineAssets"
-                COMMENT "复制 EngineAssets"
+                        "${GEAR_RUNTIME_ASSETS_DIR}" "$<TARGET_FILE_DIR:${TARGET}>/Assets"
+                COMMENT "复制 Runtime/Assets"
                 VERBATIM)
         endif()
     endif()

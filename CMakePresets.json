@@ -39,7 +39,6 @@
     {
       "name": "debug",
       "configurePreset": "debug",
-      "jobs": 0,
       "environment": {
         "VSLANG": "1033"
       }
@@ -47,7 +46,6 @@
     {
       "name": "release",
       "configurePreset": "release",
-      "jobs": 0,
       "environment": {
         "VSLANG": "1033"
       }
