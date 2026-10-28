@@ -121,6 +121,50 @@ function(_gear_demo_resolve_libs OUT_VAR)
 endfunction()
 
 # -----------------------------------------------------------------------------
+# 运行期依赖检查（Demo 构建前执行）
+#
+# Libs 里的导入库必须与 Runtime/Dlls 里的 DLL 配套，否则运行时加载失败；
+# 这条隐式约定很容易在后续引入新第三方库时被遗忘，因此每次 Libs/Dlls
+# 发生变化时自动检查一遍（见 cmake/GearCheckRuntimeDlls.cmake）。
+# 检查结果用 stamp 文件记录，没有变化时不会重复执行。
+# -----------------------------------------------------------------------------
+set(GEAR_DUMPBIN_EXECUTABLE "")
+if(CMAKE_LINKER)
+    get_filename_component(_gear_link_dir "${CMAKE_LINKER}" DIRECTORY)
+    if(EXISTS "${_gear_link_dir}/dumpbin.exe")
+        set(GEAR_DUMPBIN_EXECUTABLE "${_gear_link_dir}/dumpbin.exe")
+    endif()
+endif()
+if(NOT GEAR_DUMPBIN_EXECUTABLE)
+    find_program(GEAR_DUMPBIN_EXECUTABLE dumpbin)
+endif()
+
+if(GEAR_DUMPBIN_EXECUTABLE)
+    set(_gear_check_stamp "${CMAKE_BINARY_DIR}/GearCheckRuntimeDlls.stamp")
+    # 不用 CONFIGURE_DEPENDS：新库仍需重新 configure 才会被链接，这里保持一致
+    file(GLOB_RECURSE _gear_check_libs "${GEAR_LIBS_DIR}/*.lib")
+    file(GLOB_RECURSE _gear_check_dlls "${GEAR_DLLS_DIR}/*.dll")
+
+    add_custom_command(
+        OUTPUT "${_gear_check_stamp}"
+        COMMAND "${CMAKE_COMMAND}"
+                "-DGEAR_LIBS_DIR=${GEAR_LIBS_DIR}"
+                "-DGEAR_DLLS_DIR=${GEAR_DLLS_DIR}"
+                "-DGEAR_DUMPBIN_EXECUTABLE=${GEAR_DUMPBIN_EXECUTABLE}"
+                -P "${GEAR_ROOT_DIR}/cmake/GearCheckRuntimeDlls.cmake"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${_gear_check_stamp}"
+        DEPENDS ${_gear_check_libs} ${_gear_check_dlls}
+                "${GEAR_ROOT_DIR}/cmake/GearCheckRuntimeDlls.cmake"
+        COMMENT "检查 Libs 导入库与 Runtime/Dlls 的配套关系"
+        VERBATIM)
+
+    add_custom_target(GearCheckRuntimeDlls DEPENDS "${_gear_check_stamp}")
+else()
+    add_custom_target(GearCheckRuntimeDlls)
+    message(STATUS "未找到 dumpbin.exe，跳过运行期依赖检查")
+endif()
+
+# -----------------------------------------------------------------------------
 # 内部：Runtime/Dlls 下所有 DLL -> /DELAYLOAD:xxx.dll
 # -----------------------------------------------------------------------------
 function(_gear_demo_delayload OUT_VAR)
@@ -210,6 +254,9 @@ function(gear_add_demo TARGET)
         ${_extra_libs}
         D3D12 DXGI dxguid delayimp
     )
+
+    # 构建前先确保 Libs 里的导入库都有配套 DLL（检查失败直接中止构建）
+    add_dependencies(${TARGET} GearCheckRuntimeDlls)
 
     # MSBuild 侧 Release 也开了 GenerateDebugInformation
     target_link_options(${TARGET} PRIVATE "$<$<CONFIG:Release>:/DEBUG>")
