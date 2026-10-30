@@ -30,16 +30,15 @@ file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/Inc/Gear/*.h"
 )
 
-# 构建会生成 Inc/Gear/CompiledShaders/*.h；排除它们，避免 CONFIGURE_DEPENDS
-# 因生成物变化触发重新 configure（它们通过 /showIncludes 作为依赖被跟踪）。
-list(FILTER ENGINE_HEADERS EXCLUDE REGEX "/CompiledShaders/")
-
 add_library(Engine STATIC ${ENGINE_SOURCES} ${ENGINE_HEADERS})
 
 # --- 编译设置（对应 Engine.vcxproj）-----------------------------------------
 target_include_directories(Engine
     PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/Inc"
+        # 生成头位于 PrecompileShaders/CompiledShaders，C++ 侧写
+        # <CompiledShaders/<子目录>/<名>.h> 即可解析
+        "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders"
 )
 
 # 对应 ExternalIncludePath + ExternalWarningLevel=Level1
@@ -99,13 +98,13 @@ add_custom_command(
             "${CMAKE_SOURCE_DIR}/CommonShaderParse/dummyVS.hlsl"
             "$<TARGET_FILE_DIR:CommonShaderParse>/dummyVS.hlsl"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_SOURCE_DIR}/Shaders/Common.hlsli"
+            "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders/Common.hlsli"
             "$<TARGET_FILE_DIR:CommonShaderParse>/Common.hlsli"
     COMMAND "$<TARGET_FILE:CommonShaderParse>" "${GEAR_LAYOUT_TMP}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${GEAR_LAYOUT_TMP}" "${GEAR_LAYOUT_HEADER}"
     DEPENDS
         "${CMAKE_SOURCE_DIR}/CommonShaderParse/dummyVS.hlsl"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Shaders/Common.hlsli"
+        "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders/Common.hlsli"
         "$<TARGET_FILE:CommonShaderParse>"
     COMMENT "Generating CommonShaderLayout.h"
     VERBATIM
@@ -118,46 +117,47 @@ add_custom_target(EngineLayout DEPENDS "${GEAR_LAYOUT_HEADER}")
 # 规则（模式/类型/入口/参数映射/增量）见 cmake/GearShader.cmake。
 gear_shader_defaults(
     MODE HEADER
-    OUTPUT_DIR "Inc/Gear/CompiledShaders"
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders"
 )
 
 # 文件|类型，类型取自 Engine.vcxproj（着色器模型由顶层 GEAR_SHADER_MODEL 统一）
 gear_add_shaders(Engine
-    "Shaders/Bloom/BloomDownSamplePS.hlsl|Pixel"
-    "Shaders/Bloom/BloomFilterPS.hlsl|Pixel"
-    "Shaders/Bloom/BloomFinalPS.hlsl|Pixel"
-    "Shaders/Bloom/BloomHBlurCS.hlsl|Compute"
-    "Shaders/Bloom/BloomKarisAveragePS.hlsl|Pixel"
-    "Shaders/Bloom/BloomVBlurCS.hlsl|Compute"
-    "Shaders/FullScreen/FullScreenPS.hlsl|Pixel"
-    "Shaders/FullScreen/FullScreenVS.hlsl|Vertex"
-    "Shaders/FXAA/ColorToColorLuma.hlsl|Pixel"
-    "Shaders/FXAA/FXAA.hlsl|Pixel"
-    "Shaders/GammaCorrectCS.hlsl|Compute"
-    "Shaders/HDRClampCS.hlsl|Compute"
-    "Shaders/PrimitiveBatch/PrimitiveBatchCircleVS.hlsl|Vertex"
-    "Shaders/PrimitiveBatch/PrimitiveBatchLineGS.hlsl|Geometry"
-    "Shaders/PrimitiveBatch/PrimitiveBatchLineVS.hlsl|Vertex"
-    "Shaders/PrimitiveBatch/PrimitiveBatchPS.hlsl|Pixel"
-    "Shaders/PrimitiveBatch/PrimitiveBatchRCLineGS.hlsl|Geometry"
-    "Shaders/PrimitiveBatch/PrimitiveBatchRCLineVS.hlsl|Vertex"
-    "Shaders/SSR/HiZCopyCS.hlsl|Compute"
-    "Shaders/SSR/HiZCreateCS.hlsl|Compute"
-    "Shaders/SSR/HiZProcessPS.hlsl|Pixel"
-    "Shaders/TextureCube/EquirectangularPS.hlsl|Pixel"
-    "Shaders/TextureCube/EquirectangularVS.hlsl|Vertex"
-    "Shaders/TextureCube/TextureCubeVS.hlsl|Vertex"
-    "Shaders/ToneMapCS.hlsl|Compute"
+    "Bloom/BloomDownSamplePS.hlsl|Pixel"
+    "Bloom/BloomFilterPS.hlsl|Pixel"
+    "Bloom/BloomFinalPS.hlsl|Pixel"
+    "Bloom/BloomHBlurCS.hlsl|Compute"
+    "Bloom/BloomKarisAveragePS.hlsl|Pixel"
+    "Bloom/BloomVBlurCS.hlsl|Compute"
+    "FullScreen/FullScreenPS.hlsl|Pixel"
+    "FullScreen/FullScreenVS.hlsl|Vertex"
+    "FXAA/ColorToColorLuma.hlsl|Pixel"
+    "FXAA/FXAA.hlsl|Pixel"
+    "GammaCorrectCS.hlsl|Compute"
+    "HDRClampCS.hlsl|Compute"
+    "PrimitiveBatch/PrimitiveBatchCircleVS.hlsl|Vertex"
+    "PrimitiveBatch/PrimitiveBatchLineGS.hlsl|Geometry"
+    "PrimitiveBatch/PrimitiveBatchLineVS.hlsl|Vertex"
+    "PrimitiveBatch/PrimitiveBatchPS.hlsl|Pixel"
+    "PrimitiveBatch/PrimitiveBatchRCLineGS.hlsl|Geometry"
+    "PrimitiveBatch/PrimitiveBatchRCLineVS.hlsl|Vertex"
+    "SSR/HiZCopyCS.hlsl|Compute"
+    "SSR/HiZCreateCS.hlsl|Compute"
+    "SSR/HiZProcessPS.hlsl|Pixel"
+    "TextureCube/EquirectangularPS.hlsl|Pixel"
+    "TextureCube/EquirectangularVS.hlsl|Vertex"
+    "TextureCube/TextureCubeVS.hlsl|Vertex"
+    "ToneMapCS.hlsl|Compute"
 )
 
 # 生成头必须先构建、再编译；同时也用于让 Ninja 在一次构建内完成重编与重链。
 gear_shader_apply_header_deps(Engine)
 
-# 产物默认输出到源码树，Inc 已是 Engine 的 PUBLIC include 目录。
-# 打开 GEAR_SHADER_OUTPUT_IN_BUILD_TREE 后产物落在构建目录，需要把镜像的
-# Inc 根目录补进头文件搜索路径。
+# 产物默认输出到源码树的 PrecompileShaders/CompiledShaders，该源根已是
+# Engine 的 PUBLIC include 目录。打开 GEAR_SHADER_OUTPUT_IN_BUILD_TREE 后
+# 产物镜像到构建目录，需要把构建树里的同名根目录补进搜索路径并优先命中。
 if(GEAR_SHADER_OUTPUT_IN_BUILD_TREE)
-    target_include_directories(Engine BEFORE PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/Inc")
+    target_include_directories(Engine BEFORE PUBLIC
+        "${CMAKE_CURRENT_BINARY_DIR}/PrecompileShaders")
 endif()
 
 # 生成的 .h 通过 target_sources 挂到 Engine 上，Ninja 保证先生成后编译；

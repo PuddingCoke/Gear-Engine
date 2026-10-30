@@ -9,12 +9,12 @@ namespace Gear::Core::D3D12Core
 		return makeUnique<Shader>(bytes, byteSize);
 	}
 
-	ShaderPtr Shader::create(const Utils::File::Path& filePath)
+	ShaderPtr Shader::create(const Utils::File::CompiledShaderPath& filePath)
 	{
 		return makeUnique<Shader>(filePath);
 	}
 
-	ShaderPtr Shader::create(const Utils::File::Path& filePath, const ShaderType type)
+	ShaderPtr Shader::create(const Utils::File::ShaderPath& filePath, const ShaderType type)
 	{
 		return makeUnique<Shader>(filePath, type);
 	}
@@ -26,7 +26,7 @@ namespace Gear::Core::D3D12Core
 		shaderReflection = DXCCompiler::getReflectionBlob(shaderBlob);
 	}
 
-	Shader::Shader(const Utils::File::Path& filePath)
+	Shader::Shader(const Utils::File::CompiledShaderPath& filePath)
 	{
 		if (!filePath.exist())
 		{
@@ -47,7 +47,7 @@ namespace Gear::Core::D3D12Core
 		shaderReflection = DXCCompiler::getReflectionBlob(shaderBlob);
 	}
 
-	Shader::Shader(const Utils::File::Path& filePath, const ShaderType type)
+	Shader::Shader(const Utils::File::ShaderPath& filePath, const ShaderType type)
 	{
 		if (!filePath.exist())
 		{

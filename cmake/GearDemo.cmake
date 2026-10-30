@@ -9,7 +9,8 @@
 #   PreprocessorDefinitions      -> _CONSOLE + _DEBUG/NDEBUG
 #   AdditionalDependencies       -> GearStaticLibs（自动处理 -d 后缀）+ LIBS 追加
 #   PostBuildEvent(xcopy)        -> Demo 的 Assets、Runtime/Assets、Runtime/Dlls 三份拷贝
-#   FxCompile(ObjectFileOutput)  -> Assets/<名>.cso（转交 GearShader.cmake）
+#   FxCompile(ObjectFileOutput)  -> Assets/Shaders/CompiledShaders/<相对路径>.cso
+#                                   （转交 GearShader.cmake）
 #   DemoCommon.props(/DELAYLOAD) -> 自动收集 Runtime/Dlls/*.dll 生成 /DELAYLOAD
 #
 # 公共默认用普通变量定义，写在 Demos/CMakeLists.txt 里即可被所有子目录继承：
@@ -25,6 +26,7 @@
 #           "ColorGradingPS.hlsl|Pixel"
 #           "BlackHolePS.hlsl|Pixel")
 # SOURCES / HEADERS 省略时自动取当前目录的 *.cpp / *.h。
+# SHADERS 中的路径相对 <当前目录>/PrecompileShaders。
 # =============================================================================
 
 if(NOT DEFINED GEAR_DXC_EXECUTABLE)
@@ -182,9 +184,9 @@ endfunction()
 #
 #   gear_add_demo(<target>
 #       [SOURCES ...] [HEADERS ...]          # 省略则取当前目录 *.cpp / *.h
-#       [SHADERS "相对路径|类型" ...]         # 类型见 GearShader.cmake
+#       [SHADERS "相对路径|类型" ...]         # 相对 PrecompileShaders；类型见 GearShader.cmake
 #       [SHADER_MODE CSO|HEADER]             # 默认 CSO
-#       [SHADER_OUTPUT_DIR <目录>]           # 默认 <输出目录>/Assets
+#       [SHADER_OUTPUT_DIR <目录>]           # 仅 CSO 使用，默认 <输出目录>/Assets/Shaders
 #       [ASSETS_DIR <目录>]                  # 默认 "Assets"
 #       [SUBSYSTEM Console|Windows]          # 默认 Console
 #       [ENTRY <符号>]                       # 对应 EntryPointSymbol，如 wmainCRTStartup
@@ -325,12 +327,15 @@ function(gear_add_demo TARGET)
 
         set(_shader_out "${A_SHADER_OUTPUT_DIR}")
         if(NOT _shader_out)
-            set(_shader_out "${_out_dir}/Assets")
+            set(_shader_out "${_out_dir}/Assets/Shaders")
         endif()
 
-        # 在函数作用域内设置项目默认，只影响下面这几个 gear_add_shader 调用
+        # 在函数作用域内设置项目默认，只影响下面这几个 gear_add_shader 调用。
+        # 产物实际写入 _shader_out/CompiledShaders，与运行时
+        # CompiledShaderPath（Assets/Shaders/CompiledShaders/）一致。
         gear_shader_defaults(
             MODE ${_shader_mode}
+            SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders"
             OUTPUT_DIR "${_shader_out}"
             INCLUDE_DIRS ${A_SHADER_INCLUDE_DIRS} ${GEAR_DEMO_SHADER_INCLUDE_DIRS}
             DEFINITIONS ${A_SHADER_DEFINITIONS} ${GEAR_DEMO_SHADER_DEFINITIONS}

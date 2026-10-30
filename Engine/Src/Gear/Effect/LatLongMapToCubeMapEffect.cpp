@@ -4,9 +4,9 @@
 
 #include<Gear/Utils/Math.h>
 
-#include<Gear/CompiledShaders/EquirectangularVS.h>
+#include<CompiledShaders/TextureCube/EquirectangularVS.h>
 
-#include<Gear/CompiledShaders/EquirectangularPS.h>
+#include<CompiledShaders/TextureCube/EquirectangularPS.h>
 
 namespace Gear::Effect::LatLongMapToCubeMapEffect
 {

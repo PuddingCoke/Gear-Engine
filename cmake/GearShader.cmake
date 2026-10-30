@@ -6,6 +6,12 @@
 #   项目级     gear_shader_defaults(...)   作用域 = 调用目录，子目录可继承
 #   着色器级   gear_add_shader(...)        继承项目默认，可追加 include/定义、覆盖模式
 #
+# 目录约定：
+#   源文件全部位于 SOURCE_DIR（默认 <当前目录>/PrecompileShaders），
+#   gear_add_shader 的 <源文件> 参数相对 SOURCE_DIR。
+#   产物统一放在 <OUTPUT_DIR>/CompiledShaders/ 下，并镜像源文件的相对路径，
+#   因此不同子目录可以安全地出现同名着色器。
+#
 # 与原 MSBuild FxCompile 的对应关系：
 #   AdditionalIncludeDirectories -> -I
 #   ShaderType                   -> -T <profile>_<model>
@@ -36,8 +42,8 @@ if(NOT DEFINED GEAR_SHADER_MODEL)
     set(GEAR_SHADER_MODEL "6.6")
 endif()
 
-# 所有着色器都强制附加的搜索目录（对应 vcxproj 的 $(SolutionDir)Engine\Shaders）
-set(GEAR_SHADER_FORCED_INCLUDES "${GEAR_ENGINE_DIR}/Shaders")
+# 所有着色器都强制附加的搜索目录（对应 vcxproj 的 $(SolutionDir)Engine\PrecompileShaders）
+set(GEAR_SHADER_FORCED_INCLUDES "${GEAR_ENGINE_DIR}/PrecompileShaders")
 if(NOT EXISTS "${GEAR_SHADER_FORCED_INCLUDES}")
     message(FATAL_ERROR "缺少着色器公共头目录：${GEAR_SHADER_FORCED_INCLUDES}")
 endif()
@@ -90,13 +96,16 @@ endfunction()
 #
 #   gear_shader_defaults(
 #       MODE        HEADER|CSO      # 可省略：省略时每个着色器必须自己指定
-#       OUTPUT_DIR  <目录>          # 可省略：省略则输出到 <构建目录>/shaders
+#       SOURCE_DIR  <目录>          # 可省略：省略则用 <当前目录>/PrecompileShaders
+#       OUTPUT_DIR  <目录>          # 仅 CSO 使用；可省略，省略则用 SOURCE_DIR
+#                                   # CSO 产物写入 <OUTPUT_DIR>/CompiledShaders
+#                                   # HEADER 固定写入 <SOURCE_DIR>/CompiledShaders
 #       INCLUDE_DIRS ...            # 追加
 #       DEFINITIONS  ...            # 追加
 #   )
 # -----------------------------------------------------------------------------
 function(gear_shader_defaults)
-    cmake_parse_arguments(PARSE_ARGV 0 A "" "MODE;OUTPUT_DIR" "INCLUDE_DIRS;DEFINITIONS")
+    cmake_parse_arguments(PARSE_ARGV 0 A "" "MODE;SOURCE_DIR;OUTPUT_DIR" "INCLUDE_DIRS;DEFINITIONS")
 
     if(DEFINED A_MODE AND NOT A_MODE STREQUAL "")
         string(TOUPPER "${A_MODE}" _mode)
@@ -104,6 +113,10 @@ function(gear_shader_defaults)
             message(FATAL_ERROR "gear_shader_defaults: MODE 只能是 HEADER 或 CSO，收到 \"${A_MODE}\"")
         endif()
         set(GEAR_SHADER_DEFAULT_MODE "${_mode}" PARENT_SCOPE)
+    endif()
+
+    if(DEFINED A_SOURCE_DIR AND NOT A_SOURCE_DIR STREQUAL "")
+        set(GEAR_SHADER_SOURCE_DIR "${A_SOURCE_DIR}" PARENT_SCOPE)
     endif()
 
     if(DEFINED A_OUTPUT_DIR AND NOT A_OUTPUT_DIR STREQUAL "")
@@ -131,16 +144,21 @@ endfunction()
 #   gear_add_shader(<target> <源文件>
 #       TYPE        Vertex|Hull|Domain|Geometry|Pixel|Compute|Amplification|Mesh|Lib
 #       [MODE       HEADER|CSO]     # 覆盖项目默认；项目未指定时必填
-#       [OUTPUT_DIR <目录>]         # 覆盖项目默认
+#       [SOURCE_DIR <目录>]         # 覆盖项目默认源根
+#       [OUTPUT_DIR <目录>]         # 覆盖项目默认输出根
 #       [INCLUDE_DIRS ...]          # 追加
 #       [DEFINITIONS  ...]          # 追加
 #   )
 #
-# OUTPUT_DIR 是目录（不含文件名），输出文件名由源文件名与模式决定。
-# 相对路径默认相对当前源码目录；GEAR_SHADER_OUTPUT_IN_BUILD_TREE=ON 时相对构建目录。
+# <源文件> 是相对 SOURCE_DIR 的路径，例如 "Bloom/BloomFilterPS.hlsl"。
+# 产物写入各自根目录下的 CompiledShaders/，并镜像源文件的相对路径：
+#   HEADER -> <SOURCE_DIR>/CompiledShaders/<相对路径>.h（忽略 OUTPUT_DIR）
+#   CSO    -> <OUTPUT_DIR>/CompiledShaders/<相对路径>.cso（OUTPUT_DIR 默认 SOURCE_DIR）
+# GEAR_SHADER_OUTPUT_IN_BUILD_TREE=ON 时改为镜像到构建树。
+# OUTPUT_DIR 相对路径默认相对当前源码目录；GEAR_SHADER_OUTPUT_IN_BUILD_TREE=ON 时相对构建目录。
 # -----------------------------------------------------------------------------
 function(gear_add_shader TARGET SOURCE)
-    cmake_parse_arguments(PARSE_ARGV 2 A "" "TYPE;MODE;OUTPUT_DIR" "INCLUDE_DIRS;DEFINITIONS")
+    cmake_parse_arguments(PARSE_ARGV 2 A "" "TYPE;MODE;SOURCE_DIR;OUTPUT_DIR" "INCLUDE_DIRS;DEFINITIONS")
 
     if(NOT TARGET ${TARGET})
         message(FATAL_ERROR "gear_add_shader: 目标不存在：${TARGET}")
@@ -184,39 +202,92 @@ function(gear_add_shader TARGET SOURCE)
     endif()
 
     # ---- 路径 ----
+    # 源根：SOURCE 是相对源根的路径，默认 <当前目录>/PrecompileShaders
+    set(_source_root "${A_SOURCE_DIR}")
+    if(NOT _source_root)
+        set(_source_root "${GEAR_SHADER_SOURCE_DIR}")
+    endif()
+    if(NOT _source_root)
+        set(_source_root "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders")
+    endif()
+    if(NOT IS_ABSOLUTE "${_source_root}")
+        set(_source_root "${CMAKE_CURRENT_SOURCE_DIR}/${_source_root}")
+    endif()
+    file(TO_CMAKE_PATH "${_source_root}" _source_root)
+    get_filename_component(_source_root "${_source_root}" ABSOLUTE)
+    if(NOT EXISTS "${_source_root}")
+        message(FATAL_ERROR "gear_add_shader: 源目录不存在：${_source_root}（${SOURCE}）")
+    endif()
+
     if(IS_ABSOLUTE "${SOURCE}")
         set(_src "${SOURCE}")
     else()
-        set(_src "${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE}")
+        set(_src "${_source_root}/${SOURCE}")
     endif()
     file(TO_CMAKE_PATH "${_src}" _src)
-
-    set(_out_dir "${A_OUTPUT_DIR}")
-    if(NOT _out_dir)
-        set(_out_dir "${GEAR_SHADER_OUTPUT_DIR}")
-    endif()
-    if(NOT _out_dir)
-        set(_out_dir "shaders")
+    get_filename_component(_src "${_src}" ABSOLUTE)
+    if(NOT EXISTS "${_src}")
+        message(FATAL_ERROR "gear_add_shader: 着色器源文件不存在：${_src}")
     endif()
 
-    if(IS_ABSOLUTE "${_out_dir}")
-        set(_out_abs "${_out_dir}")
-    elseif(GEAR_SHADER_OUTPUT_IN_BUILD_TREE)
-        set(_out_abs "${CMAKE_CURRENT_BINARY_DIR}/${_out_dir}")
+    file(RELATIVE_PATH _rel "${_source_root}" "${_src}")
+    if(_rel MATCHES "^\\.\\.")
+        message(FATAL_ERROR
+            "gear_add_shader: 源文件不在 SOURCE_DIR 下：${_src}\nSOURCE_DIR = ${_source_root}")
+    endif()
+    get_filename_component(_rel_dir "${_rel}" DIRECTORY)
+    get_filename_component(_name "${_rel}" NAME_WE)
+    if(_rel_dir)
+        set(_rel_prefix "${_rel_dir}/")
     else()
-        set(_out_abs "${CMAKE_CURRENT_SOURCE_DIR}/${_out_dir}")
+        set(_rel_prefix "")
     endif()
-    file(TO_CMAKE_PATH "${_out_abs}" _out_abs)
-    get_filename_component(_out_abs "${_out_abs}" ABSOLUTE)
 
-    get_filename_component(_name "${_src}" NAME_WE)
+    # 输出根：
+    #   HEADER 固定写入 SOURCE_DIR，忽略 OUTPUT_DIR
+    #   CSO    写入 OUTPUT_DIR，未指定时回退 SOURCE_DIR
+    if(_mode STREQUAL "HEADER")
+        if(GEAR_SHADER_OUTPUT_IN_BUILD_TREE)
+            # 产物镜像到构建树中与源根同名的目录
+            get_filename_component(_source_root_name "${_source_root}" NAME)
+            set(_out_abs "${CMAKE_CURRENT_BINARY_DIR}/${_source_root_name}")
+        else()
+            set(_out_abs "${_source_root}")
+        endif()
+    else()
+        set(_out_dir "${A_OUTPUT_DIR}")
+        if(NOT _out_dir)
+            set(_out_dir "${GEAR_SHADER_OUTPUT_DIR}")
+        endif()
+        if(NOT _out_dir)
+            if(GEAR_SHADER_OUTPUT_IN_BUILD_TREE)
+                # 默认输出到构建树，并保持与源码树一致的目录名
+                get_filename_component(_source_root_name "${_source_root}" NAME)
+                set(_out_dir "${_source_root_name}")
+            else()
+                set(_out_dir "${_source_root}")
+            endif()
+        endif()
+
+        if(IS_ABSOLUTE "${_out_dir}")
+            set(_out_abs "${_out_dir}")
+        elseif(GEAR_SHADER_OUTPUT_IN_BUILD_TREE)
+            set(_out_abs "${CMAKE_CURRENT_BINARY_DIR}/${_out_dir}")
+        else()
+            set(_out_abs "${CMAKE_CURRENT_SOURCE_DIR}/${_out_dir}")
+        endif()
+        file(TO_CMAKE_PATH "${_out_abs}" _out_abs)
+        get_filename_component(_out_abs "${_out_abs}" ABSOLUTE)
+    endif()
+
+    set(_out_compiled "${_out_abs}/CompiledShaders")
 
     if(_mode STREQUAL "HEADER")
-        set(_final "${_out_abs}/${_name}.h")
+        set(_final "${_out_compiled}/${_rel_prefix}${_name}.h")
     elseif(_profile STREQUAL "lib")
-        set(_final "${_out_abs}/${_name}.lib")
+        set(_final "${_out_compiled}/${_rel_prefix}${_name}.lib")
     else()
-        set(_final "${_out_abs}/${_name}.cso")
+        set(_final "${_out_compiled}/${_rel_prefix}${_name}.cso")
     endif()
 
     get_property(_owner GLOBAL PROPERTY "GEAR_SHADER_OUTPUT_${_final}")
@@ -278,7 +349,7 @@ function(gear_add_shader TARGET SOURCE)
 
     set(_tmp_dir "${CMAKE_CURRENT_BINARY_DIR}/shadertmp")
     if(_mode STREQUAL "HEADER")
-        set(_tmp "${_tmp_dir}/${_name}.h")
+        set(_tmp "${_tmp_dir}/${_rel_prefix}${_name}.h")
         list(APPEND _dxc -Vn "g_${_name}Bytes" -Fh "${_tmp}")
     else()
         list(APPEND _dxc -Fo "${_final}")
@@ -298,30 +369,35 @@ function(gear_add_shader TARGET SOURCE)
     if(_mode STREQUAL "HEADER")
         add_custom_command(
             OUTPUT "${_final}"
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${_out_abs}" "${_tmp_dir}"
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                    "${_out_compiled}/${_rel_dir}" "${_tmp_dir}/${_rel_dir}"
             COMMAND ${_dxc} "${_src}"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_tmp}" "${_final}"
             DEPENDS ${_deps}
-            COMMENT "HLSL ${_name} (${A_TYPE} -> HEADER)"
+            COMMENT "HLSL ${_rel} (${A_TYPE} -> HEADER)"
             COMMAND_EXPAND_LISTS
             VERBATIM
         )
         # 挂到目标上：Ninja 保证先生成 .h，再编译包含它的 .cpp
         target_sources(${TARGET} PRIVATE "${_final}")
-        # 记录到目标名下的生成头清单，供 gear_shader_apply_header_deps() 使用
-        set_property(GLOBAL APPEND PROPERTY "GEAR_SHADER_HEADERS_${TARGET}" "${_final}")
+        # 记录生成头的相对路径与绝对路径，供 gear_shader_apply_header_deps() 使用
+        set_property(GLOBAL APPEND PROPERTY "GEAR_SHADER_HEADERS_${TARGET}"
+            "${_rel_prefix}${_name}.h|${_final}")
     else()
         add_custom_command(
             OUTPUT "${_final}"
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${_out_abs}" "${_tmp_dir}"
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                    "${_out_compiled}/${_rel_dir}" "${_tmp_dir}/${_rel_dir}"
             COMMAND ${_dxc} "${_src}"
             DEPENDS ${_deps}
-            COMMENT "HLSL ${_name} (${A_TYPE} -> CSO)"
+            COMMENT "HLSL ${_rel} (${A_TYPE} -> CSO)"
             COMMAND_EXPAND_LISTS
             VERBATIM
         )
-        add_custom_target(${TARGET}_shader_${_name} DEPENDS "${_final}")
-        add_dependencies(${TARGET} ${TARGET}_shader_${_name})
+        # 镜像相对路径后，不同子目录可能同名，target 名按相对路径生成
+        string(MAKE_C_IDENTIFIER "${_rel}" _rel_ident)
+        add_custom_target(${TARGET}_shader_${_rel_ident} DEPENDS "${_final}")
+        add_dependencies(${TARGET} ${TARGET}_shader_${_rel_ident})
     endif()
 endfunction()
 
@@ -364,11 +440,16 @@ function(gear_shader_apply_header_deps TARGET)
             if(NOT _ref MATCHES "CompiledShaders/([^>\"]+)")
                 continue()
             endif()
-            set(_name "${CMAKE_MATCH_1}")
-            foreach(_header IN LISTS _headers)
-                get_filename_component(_header_name "${_header}" NAME)
-                if(_header_name STREQUAL _name)
-                    set_property(SOURCE "${_src}" APPEND PROPERTY OBJECT_DEPENDS "${_header}")
+            set(_ref_rel "${CMAKE_MATCH_1}")
+            get_filename_component(_ref_base "${_ref_rel}" NAME)
+            foreach(_entry IN LISTS _headers)
+                string(REPLACE "|" ";" _pair "${_entry}")
+                list(GET _pair 0 _rel_header)
+                list(GET _pair 1 _header_file)
+                get_filename_component(_rel_base "${_rel_header}" NAME)
+                # 优先按完整相对路径匹配；退回文件名以兼容扁平的旧写法
+                if(_ref_rel STREQUAL _rel_header OR _ref_base STREQUAL _rel_base)
+                    set_property(SOURCE "${_src}" APPEND PROPERTY OBJECT_DEPENDS "${_header_file}")
                 endif()
             endforeach()
         endforeach()
@@ -379,8 +460,8 @@ endfunction()
 # 批量版本：每个条目写作 "相对路径|类型"
 #
 #   gear_add_shaders(Engine
-#       "Shaders/Bloom/BloomFilterPS.hlsl|Pixel"
-#       "Shaders/GammaCorrectCS.hlsl|Compute"
+#       "Bloom/BloomFilterPS.hlsl|Pixel"
+#       "GammaCorrectCS.hlsl|Compute"
 #   )
 #
 # 需要为单个着色器追加设置时，直接调用 gear_add_shader。

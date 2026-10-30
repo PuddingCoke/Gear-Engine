@@ -368,12 +368,6 @@ Engine.lib
 Engine-d.lib
 Engine-d.idb
 
-log.txt
-
 CompiledShaders/
 
 Build/
-
-output.mp4
-
-output.png

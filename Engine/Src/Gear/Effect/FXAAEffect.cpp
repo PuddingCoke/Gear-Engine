@@ -1,8 +1,8 @@
 #include<Gear/Effect/FXAAEffect.h>
 
-#include<Gear/CompiledShaders/ColorToColorLuma.h>
+#include<CompiledShaders/FXAA/ColorToColorLuma.h>
 
-#include<Gear/CompiledShaders/FXAA.h>
+#include<CompiledShaders/FXAA/FXAA.h>
 
 namespace Gear::Effect
 {

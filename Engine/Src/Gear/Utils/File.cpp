@@ -245,6 +245,8 @@ namespace Gear::Utils::File
 	GEAR_IMPL_PATH_CLASS(RootPath, impl->getRootFolder());
 	GEAR_IMPL_PATH_CLASS(AssetsPath, impl->getAssetsFolder());
 	GEAR_IMPL_PATH_CLASS(UserDataPath, impl->getUserDataFolder());
+	GEAR_IMPL_PATH_CLASS(ShaderPath, std::wstring(L"Shaders/"));
+	GEAR_IMPL_PATH_CLASS(CompiledShaderPath, std::wstring(L"Shaders/CompiledShaders/"));
 
 #undef GEAR_IMPL_PATH_CLASS
 

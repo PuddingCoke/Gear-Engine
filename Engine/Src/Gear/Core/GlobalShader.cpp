@@ -2,11 +2,11 @@
 
 #include<Gear/Core/Internal/GlobalShaderInternal.h>
 
-#include<Gear/CompiledShaders/FullScreenVS.h>
+#include<CompiledShaders/FullScreen/FullScreenVS.h>
 
-#include<Gear/CompiledShaders/FullScreenPS.h>
+#include<CompiledShaders/FullScreen/FullScreenPS.h>
 
-#include<Gear/CompiledShaders/TextureCubeVS.h>
+#include<CompiledShaders/TextureCube/TextureCubeVS.h>
 
 namespace Gear::Core::GlobalShader
 {

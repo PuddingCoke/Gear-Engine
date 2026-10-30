@@ -1,10 +1,10 @@
 #include<Gear/Effect/SSREffect.h>
 
-#include<Gear/CompiledShaders/HiZCopyCS.h>
+#include<CompiledShaders/SSR/HiZCopyCS.h>
 
-#include<Gear/CompiledShaders/HiZCreateCS.h>
+#include<CompiledShaders/SSR/HiZCreateCS.h>
 
-#include<Gear/CompiledShaders/HiZProcessPS.h>
+#include<CompiledShaders/SSR/HiZProcessPS.h>
 
 namespace Gear::Effect
 {

@@ -49,7 +49,7 @@ set_target_properties(CommonShaderParse PROPERTIES
 add_custom_command(TARGET CommonShaderParse POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/dummyVS.hlsl"
-        "${GEAR_ENGINE_DIR}/Shaders/Common.hlsli"
+        "${GEAR_ENGINE_DIR}/PrecompileShaders/Common.hlsli"
         "${GEAR_DLLS_DIR}/dxcompiler.dll"
         "${GEAR_DLLS_DIR}/dxil.dll"
         "$<TARGET_FILE_DIR:CommonShaderParse>"

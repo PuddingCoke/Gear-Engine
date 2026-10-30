@@ -64,6 +64,8 @@ namespace Gear::Utils::File
 	GEAR_DECLARE_PATH_CLASS(RootPath);
 	GEAR_DECLARE_PATH_CLASS(AssetsPath);
 	GEAR_DECLARE_PATH_CLASS(UserDataPath);
+	GEAR_DECLARE_PATH_CLASS(ShaderPath);
+	GEAR_DECLARE_PATH_CLASS(CompiledShaderPath);
 
 #undef GEAR_DECLARE_PATH_CLASS
 
