@@ -89,34 +89,51 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 
 		ComPtr<IDxcCompilerArgs> args;
 
+		const Utils::File::ShaderPath shaderCommonPath = Utils::File::ShaderPath(L"ShaderCommon");
+
+#ifdef _DEBUG
+		const wchar_t* additionalArgs[] = {
+			L"-I",
+			shaderCommonPath.cstr(),
+			L"-D_DEBUG"
+		};
+#else
+		const wchar_t* additionalArgs[] = {
+			L"-I",
+			shaderCommonPath.cstr()
+		};
+#endif // _DEBUG
+
+		const uint32_t additionalArgCount = _countof(additionalArgs);
+
 		switch (type)
 		{
 		case ShaderType::VERTEX:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"vs_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"vs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::HULL:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"hs_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"hs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::DOMAIN:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ds_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ds_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::GEOMETRY:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"gs_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"gs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::PIXEL:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ps_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ps_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::COMPUTE:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"cs_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"cs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::AMPLIFICATION:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"as_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"as_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::MESH:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ms_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ms_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::LIBRARY:
-			dxcUtils->BuildArguments(filePath.cstr(), L"", L"lib_6_6", nullptr, 0, nullptr, 0, &args);
+			dxcUtils->BuildArguments(filePath.cstr(), L"", L"lib_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		default:
 			break;

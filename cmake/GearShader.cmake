@@ -42,8 +42,9 @@ if(NOT DEFINED GEAR_SHADER_MODEL)
     set(GEAR_SHADER_MODEL "6.6")
 endif()
 
-# 所有着色器都强制附加的搜索目录（对应 vcxproj 的 $(SolutionDir)Engine\PrecompileShaders）
-set(GEAR_SHADER_FORCED_INCLUDES "${GEAR_ENGINE_DIR}/PrecompileShaders")
+# 所有着色器都强制附加的搜索目录（对应 vcxproj 的
+# $(SolutionDir)Engine\PrecompileShaders\ShaderCommon）
+set(GEAR_SHADER_FORCED_INCLUDES "${GEAR_ENGINE_DIR}/PrecompileShaders/ShaderCommon")
 if(NOT EXISTS "${GEAR_SHADER_FORCED_INCLUDES}")
     message(FATAL_ERROR "缺少着色器公共头目录：${GEAR_SHADER_FORCED_INCLUDES}")
 endif()
@@ -51,7 +52,7 @@ endif()
 set(GEAR_SHADER_OUTPUT_IN_BUILD_TREE OFF CACHE BOOL
     "着色器产物输出到构建目录而不是源码目录；用于彻底隔离 Debug/Release 的生成物")
 set(GEAR_SHADER_AUTO_DEPS ON CACHE BOOL
-    "自动把所有 include 目录（含每个着色器所在目录）下的 *.hlsli 收集为依赖")
+    "自动把 SOURCE_DIR 与全局强制 include 目录下的 *.hlsli 收集为依赖；不收集项目自定义 include 目录")
 
 # 着色器类型 -> dxc target 前缀（与 vcxproj 的 ShaderType 一致）。
 # 这些是文件级普通变量，函数内可见。
@@ -66,7 +67,7 @@ set(_GEAR_SHADER_PROFILE_Mesh          ms)
 set(_GEAR_SHADER_PROFILE_Lib           lib)
 
 # -----------------------------------------------------------------------------
-# 内部：收集 include 目录下的 *.hlsli（按目录缓存，避免每个着色器重复扫描）
+# 内部：收集指定目录下的 *.hlsli（按目录缓存，避免每个着色器重复扫描）
 # -----------------------------------------------------------------------------
 function(_gear_shader_collect_hlsli OUT_VAR)
     set(_files "")
@@ -356,10 +357,12 @@ function(gear_add_shader TARGET SOURCE)
     endif()
 
     # ---- 依赖 ----
+    # 只收集 SOURCE_DIR 与全局强制 include 目录（Engine/PrecompileShaders/ShaderCommon）下的
+    # *.hlsli。项目自定义 include 目录不参与收集：Assets/Shaders 里可能有运行时
+    # 编译的着色器，它们的 hlsli 不应触发预编译着色器重建。
     set(_deps "${_src}" "${GEAR_DXC_EXECUTABLE}")
     if(GEAR_SHADER_AUTO_DEPS)
-        get_filename_component(_src_dir "${_src}" DIRECTORY)
-        _gear_shader_collect_hlsli(_hlsli ${_includes} "${_src_dir}")
+        _gear_shader_collect_hlsli(_hlsli "${_source_root}" "${GEAR_SHADER_FORCED_INCLUDES}")
         if(_hlsli)
             list(APPEND _deps ${_hlsli})
         endif()

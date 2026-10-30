@@ -312,6 +312,15 @@ function(gear_add_demo TARGET)
         endif()
     endif()
 
+    # 引擎公共着色器头：运行时编译的着色器可能 include 它们。
+    # 保留 ShaderCommon 目录名，输出到 <程序目录>/Assets/Shaders/ShaderCommon。
+    add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${GEAR_ENGINE_DIR}/PrecompileShaders/ShaderCommon"
+                "$<TARGET_FILE_DIR:${TARGET}>/Assets/Shaders/ShaderCommon"
+        COMMENT "复制 ShaderCommon"
+        VERBATIM)
+
     add_custom_command(TARGET ${TARGET} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
                 "${GEAR_DLLS_DIR}" "$<TARGET_FILE_DIR:${TARGET}>/Dlls"

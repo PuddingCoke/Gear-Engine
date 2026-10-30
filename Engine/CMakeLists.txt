@@ -98,13 +98,13 @@ add_custom_command(
             "${CMAKE_SOURCE_DIR}/CommonShaderParse/dummyVS.hlsl"
             "$<TARGET_FILE_DIR:CommonShaderParse>/dummyVS.hlsl"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders/Common.hlsli"
+            "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders/ShaderCommon/Common.hlsli"
             "$<TARGET_FILE_DIR:CommonShaderParse>/Common.hlsli"
     COMMAND "$<TARGET_FILE:CommonShaderParse>" "${GEAR_LAYOUT_TMP}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${GEAR_LAYOUT_TMP}" "${GEAR_LAYOUT_HEADER}"
     DEPENDS
         "${CMAKE_SOURCE_DIR}/CommonShaderParse/dummyVS.hlsl"
-        "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders/Common.hlsli"
+        "${CMAKE_CURRENT_SOURCE_DIR}/PrecompileShaders/ShaderCommon/Common.hlsli"
         "$<TARGET_FILE:CommonShaderParse>"
     COMMENT "Generating CommonShaderLayout.h"
     VERBATIM
