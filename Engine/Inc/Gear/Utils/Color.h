@@ -3,15 +3,14 @@
 #ifndef _GEAR_UTILS_COLOR_H_
 #define _GEAR_UTILS_COLOR_H_
 
-#include<cstdint>
+#include <cstdint>
 
-#include<DirectXColors.h>
+#include <DirectXColors.h>
 
 namespace Gear::Utils
 {
 	struct Color
 	{
-
 		Color(const float* const color);
 
 		Color(const float r, const float g, const float b, const float a = 1.f);
@@ -24,7 +23,7 @@ namespace Gear::Utils
 
 		bool operator!=(const Color& color) const;
 
-		operator const float* () const;
+		operator const float*() const;
 
 		Color& operator=(const Color&) = default;
 
@@ -41,7 +40,6 @@ namespace Gear::Utils
 		float b;
 
 		float a;
-
 	};
 }
 

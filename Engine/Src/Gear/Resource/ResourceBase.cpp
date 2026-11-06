@@ -1,11 +1,15 @@
-#include<Gear/Resource/ResourceBase.h>
+#include <Gear/Resource/ResourceBase.h>
 
-#include<Gear/Core/RenderThreadLocal.h>
+#include <Gear/Core/RenderThreadLocal.h>
 
 namespace Gear::Resource
 {
 	ResourceBase::ResourceBase(const bool persistent) :
-		persistent(persistent), numCBVSRVUAVDescriptors(0), copySrcDescriptorHandle(), lastUpdateDynamicIndex(UINT64_MAX), currentFrameCopied(false)
+		persistent(persistent),
+		numCBVSRVUAVDescriptors(0),
+		copySrcDescriptorHandle(),
+		lastUpdateDynamicIndex(UINT64_MAX),
+		currentFrameCopied(false)
 	{
 	}
 
@@ -54,17 +58,20 @@ namespace Gear::Resource
 #ifdef _DEBUG
 		if (getNumCBVSRVUAVDescriptors() == 0u)
 		{
-			THROWLOG(LOGERROR() << "调用" << TOSTRING(allocCBVSRVUAVDescriptors) << "前应该先调用" << TOSTRING(setNumCBVSRVUAVDescriptors));
+			THROWLOG(LOGERROR() << "调用" << TOSTRING(allocCBVSRVUAVDescriptors) << "前应该先调用"
+			                    << TOSTRING(setNumCBVSRVUAVDescriptors));
 		}
 #endif // _DEBUG
 
 		if (getPersistent())
 		{
-			copySrcDescriptorHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(getNumCBVSRVUAVDescriptors());
+			copySrcDescriptorHandle =
+				GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(getNumCBVSRVUAVDescriptors());
 		}
 		else
 		{
-			copySrcDescriptorHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocDynamicDescriptor(getNumCBVSRVUAVDescriptors());
+			copySrcDescriptorHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocDynamicDescriptor(
+				getNumCBVSRVUAVDescriptors());
 		}
 
 		return copySrcDescriptorHandle;
@@ -75,7 +82,8 @@ namespace Gear::Resource
 #ifdef _DEBUG
 		if (getPersistent())
 		{
-			THROWLOG(LOGERROR() << "对于持久性资源来说，调用" << TOSTRING(copyToResourceHeap) << "是非法的！");
+			THROWLOG(LOGERROR() << "对于持久性资源来说，调用" << TOSTRING(copyToResourceHeap)
+			                    << "是非法的！");
 		}
 #endif // _DEBUG
 
@@ -96,7 +104,8 @@ namespace Gear::Resource
 			//>=lastUpdateDynamicIndex
 			const uint64_t currentDynamicIndex = GlobalDescriptorHeap::getResourceHeap()->getDynamicIndex();
 
-			const uint64_t numDynamicDescriptors = GlobalDescriptorHeap::getResourceHeap()->getNumDynamicDescriptors();
+			const uint64_t numDynamicDescriptors =
+				GlobalDescriptorHeap::getResourceHeap()->getNumDynamicDescriptors();
 
 			//获取lastUpdateDynamicIndex下一个循环的对应位置
 			const uint64_t nextLoopDynamicIndex = lastUpdateDynamicIndex + numDynamicDescriptors;
@@ -105,15 +114,21 @@ namespace Gear::Resource
 			const uint64_t safeMargin = numDynamicDescriptors * safeMarginNumerator / safeMarginDenominator;
 
 			//如果大于安全余量就不更新
-			if (nextLoopDynamicIndex > currentDynamicIndex && nextLoopDynamicIndex - currentDynamicIndex > safeMargin)
+			if (nextLoopDynamicIndex > currentDynamicIndex &&
+			    nextLoopDynamicIndex - currentDynamicIndex > safeMargin)
 			{
 				return false;
 			}
 		}
 
-		D3D12Core::DescriptorHandle copyDestDescriptorHandle = GlobalDescriptorHeap::getResourceHeap()->allocDynamicDescriptor(getNumCBVSRVUAVDescriptors(), lastUpdateDynamicIndex);
+		D3D12Core::DescriptorHandle copyDestDescriptorHandle =
+			GlobalDescriptorHeap::getResourceHeap()->allocDynamicDescriptor(getNumCBVSRVUAVDescriptors(),
+		                                                                    lastUpdateDynamicIndex);
 
-		D3D12Core::DescriptorHandle::copyDescriptors(getNumCBVSRVUAVDescriptors(), copyDestDescriptorHandle, copySrcDescriptorHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		D3D12Core::DescriptorHandle::copyDescriptors(getNumCBVSRVUAVDescriptors(),
+		                                             copyDestDescriptorHandle,
+		                                             copySrcDescriptorHandle,
+		                                             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 		descriptorHandle = copyDestDescriptorHandle;
 

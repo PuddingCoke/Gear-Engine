@@ -1,10 +1,10 @@
 #pragma once
 
-#include<Gear/Game.h>
+#include <Gear/Game.h>
 
-#include"MyRenderTask.h"
+#include "MyRenderTask.h"
 
-class MyGame :public Game
+class MyGame : public Game
 {
 public:
 
@@ -21,7 +21,6 @@ public:
 
 	void update(const float dt) override
 	{
-
 	}
 
 	void render()
@@ -32,5 +31,4 @@ public:
 	}
 
 	UniquePtr<MyRenderTask> renderTask;
-	
 };

@@ -3,9 +3,9 @@
 #ifndef _GEAR_UTILS_STATICVECTOR_H_
 #define _GEAR_UTILS_STATICVECTOR_H_
 
-#include<array>
+#include <array>
 
-#include"Log.h"
+#include "Log.h"
 
 namespace Gear::Utils
 {
@@ -56,12 +56,10 @@ namespace Gear::Utils
 		std::array<T, N> arr;
 
 		size_t idx;
-
 	};
 
 	template<typename T, size_t N>
-	inline StaticVector<T, N>::StaticVector() :
-		arr(), idx(0ull)
+	inline StaticVector<T, N>::StaticVector() : arr(), idx(0ull)
 	{
 	}
 

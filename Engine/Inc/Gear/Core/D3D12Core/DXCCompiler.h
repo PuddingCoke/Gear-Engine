@@ -3,13 +3,13 @@
 #ifndef _GEAR_CORE_D3D12CORE_DXCCOMPILER_H_
 #define _GEAR_CORE_D3D12CORE_DXCCOMPILER_H_
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
-#include<dxccompiler/dxcapi.h>
+#include <dxccompiler/dxcapi.h>
 
-#include<directx/d3d12shader.h>
+#include <directx/d3d12shader.h>
 
-#include"ShaderType.h"
+#include "ShaderType.h"
 
 namespace Gear::Core::D3D12Core::DXCCompiler
 {

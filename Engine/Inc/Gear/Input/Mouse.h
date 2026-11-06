@@ -3,9 +3,9 @@
 #ifndef _GEAR_INPUT_MOUSE_H_
 #define _GEAR_INPUT_MOUSE_H_
 
-#include<cstdint>
+#include <cstdint>
 
-#include<functional>
+#include <functional>
 
 namespace Gear::Input::Mouse
 {

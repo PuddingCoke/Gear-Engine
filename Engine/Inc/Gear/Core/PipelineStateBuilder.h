@@ -3,11 +3,11 @@
 #ifndef _GEAR_CORE_PIPELINESTATEBUILDER_H_
 #define _GEAR_CORE_PIPELINESTATEBUILDER_H_
 
-#include<Gear/Core/D3D12Core/GraphicsState.h>
+#include <Gear/Core/D3D12Core/GraphicsState.h>
 
-#include<Gear/Core/D3D12Core/ComputeState.h>
+#include <Gear/Core/D3D12Core/ComputeState.h>
 
-#include<Gear/Core/D3D12Core/Shader.h>
+#include <Gear/Core/D3D12Core/Shader.h>
 
 namespace Gear::Core
 {
@@ -21,8 +21,14 @@ namespace Gear::Core
 
 	struct InputElementDesc
 	{
-		constexpr explicit InputElementDesc(const uint32_t inputSlot, const InputClass inputSlotClass = InputClass::PERVERTEX, const uint32_t instanceDataStepRate = 0, const uint32_t alignedByteOffset = ALIGNEDAUTO) :
-			inputSlot(inputSlot), inputSlotClass(inputSlotClass), instanceDataStepRate(instanceDataStepRate), alignedByteOffset(alignedByteOffset)
+		constexpr explicit InputElementDesc(const uint32_t inputSlot,
+		                                    const InputClass inputSlotClass = InputClass::PERVERTEX,
+		                                    const uint32_t instanceDataStepRate = 0,
+		                                    const uint32_t alignedByteOffset = ALIGNEDAUTO) :
+			inputSlot(inputSlot),
+			inputSlotClass(inputSlotClass),
+			instanceDataStepRate(instanceDataStepRate),
+			alignedByteOffset(alignedByteOffset)
 		{
 		}
 
@@ -54,7 +60,7 @@ namespace Gear::Core
 		PipelineStateBuilder& setPS(const D3D12Core::Shader& ps);
 
 		template<size_t N>
-		PipelineStateBuilder& setInputElements(const InputElementDesc(&descs)[N]);
+		PipelineStateBuilder& setInputElements(const InputElementDesc (&descs)[N]);
 
 		PipelineStateBuilder& setBlendState(const D3D12_BLEND_DESC& desc);
 
@@ -76,11 +82,10 @@ namespace Gear::Core
 		std::vector<std::string> semanticNames;
 
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsDesc;
-
 	};
 
 	template<size_t N>
-	inline PipelineStateBuilder& PipelineStateBuilder::setInputElements(const InputElementDesc(&descs)[N])
+	inline PipelineStateBuilder& PipelineStateBuilder::setInputElements(const InputElementDesc (&descs)[N])
 	{
 		//如果是空的意味着没有调用setVS，那么需要先进行resize
 		if (inputElements.empty())
@@ -89,7 +94,8 @@ namespace Gear::Core
 		}
 		else if (inputElements.size() != N)
 		{
-			THROWLOG(LOGERROR() << "侦测到" << TOSTRING(descs) << "与" << TOSTRING(inputElements.size()) << "数量不匹配");
+			THROWLOG(LOGERROR() << "侦测到" << TOSTRING(descs) << "与" << TOSTRING(inputElements.size())
+			                    << "数量不匹配");
 		}
 
 		for (uint32_t i = 0; i < N; i++)
@@ -98,7 +104,8 @@ namespace Gear::Core
 
 			inputElements[i].AlignedByteOffset = descs[i].alignedByteOffset;
 
-			inputElements[i].InputSlotClass = static_cast<D3D12_INPUT_CLASSIFICATION>(descs[i].inputSlotClass);
+			inputElements[i].InputSlotClass =
+				static_cast<D3D12_INPUT_CLASSIFICATION>(descs[i].inputSlotClass);
 
 			inputElements[i].InstanceDataStepRate = descs[i].instanceDataStepRate;
 		}

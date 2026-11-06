@@ -1,10 +1,10 @@
-#include<Gear/Utils/WallpaperHelper.h>
+#include <Gear/Utils/WallpaperHelper.h>
 
-#include<Gear/Utils/MainMonitor.h>
+#include <Gear/Utils/MainMonitor.h>
 
-#include<Gear/Utils/Log.h>
+#include <Gear/Utils/Log.h>
 
-#include<cstdint>
+#include <cstdint>
 
 namespace Gear::Utils::WallpaperHelper
 {
@@ -16,16 +16,16 @@ namespace Gear::Utils::WallpaperHelper
 
 		HWND wallpaperHWND = nullptr;
 
-		auto EnumWindowsProc = [](HWND hwnd, LPARAM lParam)->BOOL
+		auto EnumWindowsProc = [](HWND hwnd, LPARAM lParam) -> BOOL
+		{
+			HWND p = FindWindowEx(hwnd, nullptr, L"SHELLDLL_DefView", nullptr);
+			HWND* ret = (HWND*)lParam;
+			if (p)
 			{
-				HWND p = FindWindowEx(hwnd, nullptr, L"SHELLDLL_DefView", nullptr);
-				HWND* ret = (HWND*)lParam;
-				if (p)
-				{
-					*ret = FindWindowEx(nullptr, hwnd, L"WorkerW", nullptr);
-				}
-				return true;
-			};
+				*ret = FindWindowEx(nullptr, hwnd, L"WorkerW", nullptr);
+			}
+			return true;
+		};
 
 		EnumWindows(EnumWindowsProc, (LPARAM)&wallpaperHWND);
 
@@ -36,8 +36,7 @@ namespace Gear::Utils::WallpaperHelper
 	{
 	public:
 
-		ObscureDetectThread() :
-			obscured(false), running(true)
+		ObscureDetectThread() : obscured(false), running(true)
 		{
 			RECT workArea;
 
@@ -84,7 +83,8 @@ namespace Gear::Utils::WallpaperHelper
 
 			const float topY_f = MainMonitor::getHeight() * marginRatio;
 
-			const float bottomBoundary_f = MainMonitor::getHeight() - taskBarHeight - MainMonitor::getHeight() * marginRatio;
+			const float bottomBoundary_f =
+				MainMonitor::getHeight() - taskBarHeight - MainMonitor::getHeight() * marginRatio;
 
 			const float vRange_f = bottomBoundary_f - topY_f;
 
@@ -102,7 +102,7 @@ namespace Gear::Utils::WallpaperHelper
 
 			yPos[7] = static_cast<uint32_t>(bottomBoundary_f + 0.5f);
 
-			const float xMarginRatio = 90.0f / 2560.0f;         // 水平边距比例
+			const float xMarginRatio = 90.0f / 2560.0f; // 水平边距比例
 
 			const float leftX_f = MainMonitor::getWidth() * xMarginRatio;
 
@@ -190,7 +190,8 @@ namespace Gear::Utils::WallpaperHelper
 
 		GetClassNameW(hWnd, className, _countof(className));
 
-		if ((_wcsicmp(className, L"Progman") == 0) || (_wcsicmp(className, L"WorkerW") == 0) || (hWnd == GetDesktopWindow()))
+		if ((_wcsicmp(className, L"Progman") == 0) || (_wcsicmp(className, L"WorkerW") == 0) ||
+		    (hWnd == GetDesktopWindow()))
 		{
 			return true;
 		}
@@ -203,7 +204,8 @@ namespace Gear::Utils::WallpaperHelper
 			{
 				GetClassNameW(root, className, _countof(className));
 
-				if ((_wcsicmp(className, L"Progman") == 0) || (_wcsicmp(className, L"WorkerW") == 0) || (root == GetDesktopWindow()))
+				if ((_wcsicmp(className, L"Progman") == 0) || (_wcsicmp(className, L"WorkerW") == 0) ||
+				    (root == GetDesktopWindow()))
 				{
 					return true;
 				}

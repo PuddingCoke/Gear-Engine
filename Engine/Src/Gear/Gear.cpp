@@ -1,48 +1,48 @@
-#include<Gear/Gear.h>
+#include <Gear/Gear.h>
 
-#include<Gear/Window/Win32Form.h>
+#include <Gear/Window/Win32Form.h>
 
-#include<Gear/Core/RenderEngine.h>
+#include <Gear/Core/RenderEngine.h>
 
-#include<Gear/Core/Internal/RenderEngineInternal.h>
+#include <Gear/Core/Internal/RenderEngineInternal.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Input/Keyboard.h>
+#include <Gear/Input/Keyboard.h>
 
-#include<Gear/Utils/MainMonitor.h>
+#include <Gear/Utils/MainMonitor.h>
 
-#include<Gear/Utils/Internal/MainMonitorInternal.h>
+#include <Gear/Utils/Internal/MainMonitorInternal.h>
 
-#include<Gear/Utils/File.h>
+#include <Gear/Utils/File.h>
 
-#include<Gear/Utils/Internal/FileInternal.h>
+#include <Gear/Utils/Internal/FileInternal.h>
 
-#include<Gear/Utils/Internal/LoggerInternal.h>
+#include <Gear/Utils/Internal/LoggerInternal.h>
 
-#include<Gear/Utils/WallpaperHelper.h>
+#include <Gear/Utils/WallpaperHelper.h>
 
-#include<Gear/Utils/DeltaTimeEstimator.h>
+#include <Gear/Utils/DeltaTimeEstimator.h>
 
-#include<Gear/Core/VideoEncoder/NVIDIAEncoder.h>
+#include <Gear/Core/VideoEncoder/NVIDIAEncoder.h>
 
-#include<Gear/Core/VideoEncoder/SoftwareEncoder.h>
+#include <Gear/Core/VideoEncoder/SoftwareEncoder.h>
 
-#include<iostream>
+#include <iostream>
 
-#include<locale>
+#include <locale>
 
-#include<chrono>
+#include <chrono>
 
-#include<dxgidebug.h>
+#include <dxgidebug.h>
 
-#include<dxgi1_6.h>
+#include <dxgi1_6.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
 #define STBIW_WINDOWS_UTF8
 
-#include<stb_image_write.h>
+#include <stb_image_write.h>
 
 namespace Gear
 {
@@ -88,7 +88,6 @@ namespace Gear
 		InitializationParam initParam;
 
 		static constexpr Input::Keyboard::Key screenGrabKey = Input::Keyboard::F11;
-
 	};
 
 	GearImpl::GearImpl(const InitializationParam& param, const int32_t argc, const wchar_t* argv[]) :
@@ -112,7 +111,8 @@ namespace Gear
 
 		MainMonitor::Internal::getCurrentSettings();
 
-		if (initParam.usage == InitializationParam::VIDEORENDER || initParam.usage == InitializationParam::WALLPAPER)
+		if (initParam.usage == InitializationParam::VIDEORENDER ||
+		    initParam.usage == InitializationParam::WALLPAPER)
 		{
 			initParam.enableImGuiSurface = false;
 		}
@@ -127,7 +127,7 @@ namespace Gear
 
 		DWORD windowStyle = 0u;
 
-		LRESULT(*windowCallback)(HWND hWnd, uint32_t msg, WPARAM wParam, LPARAM lParam) = nullptr;
+		LRESULT (*windowCallback)(HWND hWnd, uint32_t msg, WPARAM wParam, LPARAM lParam) = nullptr;
 
 		//根据初始化参数配置窗口的初始化参数
 		switch (initParam.usage)
@@ -194,7 +194,8 @@ namespace Gear
 			break;
 		}
 
-		windowToken = makeUnique<Window::Win32Form::InitializeToken>(param.title, windowStartX, windowStartY, windowWidth, windowHeight, windowStyle, windowCallback);
+		windowToken = makeUnique<Window::Win32Form::InitializeToken>(
+			param.title, windowStartX, windowStartY, windowWidth, windowHeight, windowStyle, windowCallback);
 
 		if (initParam.usage == InitializationParam::WALLPAPER)
 		{
@@ -209,7 +210,12 @@ namespace Gear
 
 		const bool useSwapChainBuffer = (initParam.usage != InitializationParam::VIDEORENDER);
 
-		renderEngineToken = makeUnique<RenderEngine::Internal::InitializeToken>(initParam.width, initParam.height, Window::Win32Form::getHandle(), useSwapChainBuffer, initParam.enableImGuiSurface);
+		renderEngineToken =
+			makeUnique<RenderEngine::Internal::InitializeToken>(initParam.width,
+		                                                        initParam.height,
+		                                                        Window::Win32Form::getHandle(),
+		                                                        useSwapChainBuffer,
+		                                                        initParam.enableImGuiSurface);
 
 		LOGENGINE() << "分辨率" << Graphics::getWidth() << "x" << Graphics::getHeight();
 
@@ -267,7 +273,8 @@ namespace Gear
 
 		while (Window::Win32Form::pollEvents())
 		{
-			const std::chrono::high_resolution_clock::time_point endPoint = std::chrono::high_resolution_clock::now();
+			const std::chrono::high_resolution_clock::time_point endPoint =
+				std::chrono::high_resolution_clock::now();
 
 			const float deltaTime = std::chrono::duration<float>(endPoint - startPoint).count();
 
@@ -314,7 +321,8 @@ namespace Gear
 			{
 				const uint8_t* const dataPtr = reinterpret_cast<const uint8_t*>(backBufferHeap->map());
 
-				UniquePtr<uint8_t[]> colors = makeUnique<uint8_t[]>(FMT::getByteSize(Graphics::backBufferFormat) * initParam.width * initParam.height);
+				UniquePtr<uint8_t[]> colors = makeUnique<uint8_t[]>(
+					FMT::getByteSize(Graphics::backBufferFormat) * initParam.width * initParam.height);
 
 				for (uint32_t row = 0; row < initParam.height; row++)
 				{
@@ -322,7 +330,8 @@ namespace Gear
 					{
 						const uint32_t writePixel = (row * initParam.width + col) * 4u;
 
-						const uint32_t readPixel = static_cast<uint32_t>(backBufferFootprint.Offset) + backBufferFootprint.Footprint.RowPitch * row + 4u * col;
+						const uint32_t readPixel = static_cast<uint32_t>(backBufferFootprint.Offset) +
+						                           backBufferFootprint.Footprint.RowPitch * row + 4u * col;
 
 						//RGBA <- BGRA
 						colors[writePixel] = dataPtr[readPixel + 2];
@@ -341,7 +350,12 @@ namespace Gear
 
 				const std::string multibytePath = outputPath.multibyteStr();
 
-				stbi_write_png(multibytePath.c_str(), initParam.width, initParam.height, 4, colors.get(), FMT::getByteSize(Graphics::backBufferFormat) * initParam.width);
+				stbi_write_png(multibytePath.c_str(),
+				               initParam.width,
+				               initParam.height,
+				               4,
+				               colors.get(),
+				               FMT::getByteSize(Graphics::backBufferFormat) * initParam.width);
 
 				LOGSUCCESS() << "截屏保存到" << outputPath;
 
@@ -358,14 +372,16 @@ namespace Gear
 
 		const uint32_t frameToEncode = initParam.videoRender.seconds * VideoEncoder::Encoder::frameRate;
 
-		LOGENGINE() << "编码方式" << LogColor::yellow << (initParam.videoRender.hardwareEncode ? "硬件编码" : "软件编码");
+		LOGENGINE() << "编码方式" << LogColor::yellow
+					<< (initParam.videoRender.hardwareEncode ? "硬件编码" : "软件编码");
 
 		if (initParam.videoRender.hardwareEncode)
 		{
 			switch (vendor)
 			{
 			case AdapterVendor::NVIDIA:
-				encoder = makeUnique<VideoEncoder::NVIDIAEncoder>(frameToEncode, initParam.videoRender.maxBFrames);
+				encoder =
+					makeUnique<VideoEncoder::NVIDIAEncoder>(frameToEncode, initParam.videoRender.maxBFrames);
 				break;
 			case AdapterVendor::AMD:
 			case AdapterVendor::INTEL:
@@ -381,12 +397,21 @@ namespace Gear
 			encoder = makeUnique<VideoEncoder::SoftwareEncoder>(frameToEncode);
 		}
 
-		UniquePtr<D3D12Resource::Texture> renderTexture = makeUnique<D3D12Resource::Texture>(Graphics::getWidth(), Graphics::getHeight(), Graphics::backBufferFormat, 1, 1, true, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET, nullptr);
+		UniquePtr<D3D12Resource::Texture> renderTexture =
+			makeUnique<D3D12Resource::Texture>(Graphics::getWidth(),
+		                                       Graphics::getHeight(),
+		                                       Graphics::backBufferFormat,
+		                                       1,
+		                                       1,
+		                                       true,
+		                                       D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
+		                                       nullptr);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE textureHandle;
 
 		{
-			DescriptorHandle descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(1);
+			DescriptorHandle descriptorHandle =
+				LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(1);
 
 			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
@@ -394,7 +419,8 @@ namespace Gear
 			rtvDesc.Texture2D.MipSlice = 0;
 			rtvDesc.Texture2D.PlaneSlice = 0;
 
-			GraphicsDevice::get()->CreateRenderTargetView(renderTexture->getResource(), &rtvDesc, descriptorHandle.getCurrentCPUHandle());
+			GraphicsDevice::get()->CreateRenderTargetView(
+				renderTexture->getResource(), &rtvDesc, descriptorHandle.getCurrentCPUHandle());
 
 			textureHandle = descriptorHandle.getCurrentCPUHandle();
 		}
@@ -439,7 +465,8 @@ namespace Gear
 	{
 		RenderEngine::Internal::setSyncInterval(0);
 
-		const HANDLE timerHandle = CreateWaitableTimerExW(nullptr, nullptr, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
+		const HANDLE timerHandle =
+			CreateWaitableTimerExW(nullptr, nullptr, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
 
 		if (!timerHandle)
 		{
@@ -454,14 +481,17 @@ namespace Gear
 
 		std::chrono::high_resolution_clock::time_point targetEndPoint = startPoint;
 
-		const std::chrono::high_resolution_clock::duration targetFrameDuration = std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(
-			std::chrono::duration<double>(1.0 / static_cast<double>(initParam.wallpaper.targetFrameRate)));
+		const std::chrono::high_resolution_clock::duration targetFrameDuration =
+			std::chrono::duration_cast<std::chrono::high_resolution_clock::duration>(
+				std::chrono::duration<double>(1.0 /
+		                                      static_cast<double>(initParam.wallpaper.targetFrameRate)));
 
 		while (Window::Win32Form::pollEvents())
 		{
 			while (WallpaperHelper::isDesktopObscured())
 			{
-				if (!Window::Win32Form::pollEvents(static_cast<DWORD>(WallpaperHelper::obscureCheckInterval / 2ull - 75ull)))
+				if (!Window::Win32Form::pollEvents(
+						static_cast<DWORD>(WallpaperHelper::obscureCheckInterval / 2ull - 75ull)))
 				{
 					CloseHandle(timerHandle);
 
@@ -473,7 +503,8 @@ namespace Gear
 				targetEndPoint = startPoint;
 			}
 
-			const std::chrono::high_resolution_clock::time_point endPoint = std::chrono::high_resolution_clock::now();
+			const std::chrono::high_resolution_clock::time_point endPoint =
+				std::chrono::high_resolution_clock::now();
 
 			const float deltaTime = std::chrono::duration<float>(endPoint - startPoint).count();
 
@@ -506,11 +537,14 @@ namespace Gear
 
 			targetEndPoint += targetFrameDuration;
 
-			const std::chrono::high_resolution_clock::time_point currentTimePoint = std::chrono::high_resolution_clock::now();
+			const std::chrono::high_resolution_clock::time_point currentTimePoint =
+				std::chrono::high_resolution_clock::now();
 
 			if (currentTimePoint < targetEndPoint)
 			{
-				const long long remainingUs = std::chrono::duration_cast<std::chrono::microseconds>(targetEndPoint - currentTimePoint).count();
+				const long long remainingUs =
+					std::chrono::duration_cast<std::chrono::microseconds>(targetEndPoint - currentTimePoint)
+						.count();
 
 				LARGE_INTEGER li;
 
@@ -547,7 +581,8 @@ namespace Gear
 
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug))))
 		{
-			dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_ALL | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
+			dxgiDebug->ReportLiveObjects(
+				DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_ALL | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
 		}
 
 		OutputDebugStringA("**********Live Object Report**********\n");

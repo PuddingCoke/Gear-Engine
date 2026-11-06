@@ -11,7 +11,17 @@ namespace Gear::Core::RenderThreadLocal::Internal
 
 	void flushCopiedResources();
 
-	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken()
+		{
+			initialize();
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 }
 
 #endif // !_GEAR_CORE_RENDERTHREADLOCAL_INTERNAL_H_

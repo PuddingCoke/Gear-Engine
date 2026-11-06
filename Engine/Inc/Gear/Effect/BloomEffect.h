@@ -3,25 +3,27 @@
 #ifndef _GEAR_EFFECT_BLOOMEFFECT_H_
 #define _GEAR_EFFECT_BLOOMEFFECT_H_
 
-#include<Gear/Resource/SwapTexture.h>
+#include <Gear/Resource/SwapTexture.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
-#include"EffectBase.h"
+#include "EffectBase.h"
 
 namespace Gear::Effect
 {
 	CREATESAFETYPE(BloomEffect);
 
-	class BloomEffect :public EffectBase
+	class BloomEffect : public EffectBase
 	{
 	public:
 
 		static constexpr uint32_t blurSteps = 5;
 
-		static constexpr uint32_t iteration[blurSteps] = { 2,3,4,5,6 };
+		static constexpr uint32_t iteration[blurSteps] = { 2, 3, 4, 5, 6 };
 
-		static BloomEffectPtr create(ResourceManager& refResManager, const uint32_t width, const uint32_t height);
+		static BloomEffectPtr create(ResourceManager& refResManager,
+		                             const uint32_t width,
+		                             const uint32_t height);
 
 		BloomEffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height);
 
@@ -79,7 +81,7 @@ namespace Gear::Effect
 			float intensity;
 			float softThreshold;
 			float lensDirtIntensity;
-		}bloomParam;
+		} bloomParam;
 
 		struct BlurParam
 		{
@@ -89,8 +91,7 @@ namespace Gear::Effect
 			uint32_t iteration;
 			float sigma;
 			DirectX::XMFLOAT4 padding[11];
-		}blurParam[blurSteps];
-
+		} blurParam[blurSteps];
 	};
 }
 

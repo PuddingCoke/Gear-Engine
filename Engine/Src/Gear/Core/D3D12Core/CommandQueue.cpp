@@ -1,6 +1,6 @@
-#include<Gear/Core/D3D12Core/CommandQueue.h>
+#include <Gear/Core/D3D12Core/CommandQueue.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
 namespace Gear::Core::D3D12Core
 {
@@ -83,7 +83,8 @@ namespace Gear::Core::D3D12Core
 
 			if (helperCommandList != prepareCommandList)
 			{
-				helperCommandList->resourceBarrier(static_cast<uint32_t>(resourceBarriers.size()), resourceBarriers.data());
+				helperCommandList->resourceBarrier(static_cast<uint32_t>(resourceBarriers.size()),
+				                                   resourceBarriers.data());
 			}
 			else
 			{
@@ -140,7 +141,8 @@ namespace Gear::Core::D3D12Core
 
 		recordCommandLists.clear();
 
-		commandQueue->ExecuteCommandLists(static_cast<uint32_t>(id3d12CommandLists.size()), id3d12CommandLists.data());
+		commandQueue->ExecuteCommandLists(static_cast<uint32_t>(id3d12CommandLists.size()),
+		                                  id3d12CommandLists.data());
 
 		signalFrameCPUReusable();
 	}

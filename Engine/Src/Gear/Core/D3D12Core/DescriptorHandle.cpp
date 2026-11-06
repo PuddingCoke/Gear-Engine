@@ -1,15 +1,32 @@
-#include<Gear/Core/D3D12Core/DescriptorHandle.h>
+#include <Gear/Core/D3D12Core/DescriptorHandle.h>
 
 namespace Gear::Core::D3D12Core
 {
 	DescriptorHandle::DescriptorHandle() :
-		cpuHandleStart{}, gpuHandleStart{}, currentOffset(), incrementSize(), baseIndex(), offsetLimit(), descriptorHeap(nullptr)
+		cpuHandleStart{},
+		gpuHandleStart{},
+		currentOffset(),
+		incrementSize(),
+		baseIndex(),
+		offsetLimit(),
+		descriptorHeap(nullptr)
 	{
 	}
 
-	DescriptorHandle::DescriptorHandle(const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleStart, const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandleStart,
-		const uint32_t currentOffset, const uint32_t incrementSize, const uint32_t baseIndex, const uint32_t offsetLimit, const DescriptorHeap* descriptorHeap) :
-		cpuHandleStart(cpuHandleStart), gpuHandleStart(gpuHandleStart), currentOffset(currentOffset), incrementSize(incrementSize), baseIndex(baseIndex), offsetLimit(offsetLimit), descriptorHeap(descriptorHeap)
+	DescriptorHandle::DescriptorHandle(const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleStart,
+	                                   const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandleStart,
+	                                   const uint32_t currentOffset,
+	                                   const uint32_t incrementSize,
+	                                   const uint32_t baseIndex,
+	                                   const uint32_t offsetLimit,
+	                                   const DescriptorHeap* descriptorHeap) :
+		cpuHandleStart(cpuHandleStart),
+		gpuHandleStart(gpuHandleStart),
+		currentOffset(currentOffset),
+		incrementSize(incrementSize),
+		baseIndex(baseIndex),
+		offsetLimit(offsetLimit),
+		descriptorHeap(descriptorHeap)
 	{
 	}
 
@@ -50,7 +67,10 @@ namespace Gear::Core::D3D12Core
 		currentOffset %= offsetLimit;
 	}
 
-	void DescriptorHandle::copyDescriptors(const uint32_t numCopy, DescriptorHandle copyDestHandle, DescriptorHandle copySrcHandle, const D3D12_DESCRIPTOR_HEAP_TYPE heapType)
+	void DescriptorHandle::copyDescriptors(const uint32_t numCopy,
+	                                       DescriptorHandle copyDestHandle,
+	                                       DescriptorHandle copySrcHandle,
+	                                       const D3D12_DESCRIPTOR_HEAP_TYPE heapType)
 	{
 		const uint32_t copyDestDistToEnd = copyDestHandle.getDistToEnd();
 
@@ -68,10 +88,13 @@ namespace Gear::Core::D3D12Core
 					//这里要分三个部分进行拷贝
 
 					//第一个拷贝部分的长度取两个环绕前长度最短的那个
-					const uint32_t numCopyFirst = ((copyDestDistToEnd < copySrcDistToEnd) ? copyDestDistToEnd : copySrcDistToEnd);
+					const uint32_t numCopyFirst =
+						((copyDestDistToEnd < copySrcDistToEnd) ? copyDestDistToEnd : copySrcDistToEnd);
 
 					//第二个拷贝部分的长度取两个环绕前长度相减的绝对值
-					const uint32_t numCopySecond = ((copyDestDistToEnd < copySrcDistToEnd) ? copySrcDistToEnd - copyDestDistToEnd : copyDestDistToEnd - copySrcDistToEnd);
+					const uint32_t numCopySecond =
+						((copyDestDistToEnd < copySrcDistToEnd) ? copySrcDistToEnd - copyDestDistToEnd :
+					                                              copyDestDistToEnd - copySrcDistToEnd);
 
 					//第三个拷贝部分的长度为剩余拷贝长度
 					const uint32_t numCopyThird = numCopy - numCopyFirst - numCopySecond;
@@ -131,9 +154,13 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void DescriptorHandle::copyDescriptorsSimple(const uint32_t numCopy, DescriptorHandle& copyDestHandle, DescriptorHandle& copySrcHandle, const D3D12_DESCRIPTOR_HEAP_TYPE heapType)
+	void DescriptorHandle::copyDescriptorsSimple(const uint32_t numCopy,
+	                                             DescriptorHandle& copyDestHandle,
+	                                             DescriptorHandle& copySrcHandle,
+	                                             const D3D12_DESCRIPTOR_HEAP_TYPE heapType)
 	{
-		GraphicsDevice::get()->CopyDescriptorsSimple(numCopy, copyDestHandle.getCurrentCPUHandle(), copySrcHandle.getCurrentCPUHandle(), heapType);
+		GraphicsDevice::get()->CopyDescriptorsSimple(
+			numCopy, copyDestHandle.getCurrentCPUHandle(), copySrcHandle.getCurrentCPUHandle(), heapType);
 
 		copyDestHandle.move(numCopy);
 

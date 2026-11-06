@@ -1,14 +1,24 @@
-#include<Gear/Core/RenderThreadLocal.h>
+#include <Gear/Core/RenderThreadLocal.h>
 
-#include<Gear/Core/Internal/RenderThreadLocalInternal.h>
+#include <Gear/Core/Internal/RenderThreadLocalInternal.h>
 
-#include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
+#include <Gear/Core/Internal/LocalDescriptorHeapInternal.h>
 
-#include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
+#include <Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
 
 namespace Gear::Core::RenderThreadLocal
 {
-	struct CoInitializeToken { CoInitializeToken() { CHECKERROR(CoInitializeEx(0, COINIT_MULTITHREADED)); } ~CoInitializeToken() { CoUninitialize(); } };
+	struct CoInitializeToken
+	{
+		CoInitializeToken()
+		{
+			CHECKERROR(CoInitializeEx(0, COINIT_MULTITHREADED));
+		}
+		~CoInitializeToken()
+		{
+			CoUninitialize();
+		}
+	};
 
 	struct RenderThreadLocalImpl
 	{

@@ -1,19 +1,18 @@
-#include<Gear/Core/Device.h>
+#include <Gear/Core/Device.h>
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
-#include<Gear/Core/VideoDevice.h>
+#include <Gear/Core/VideoDevice.h>
 
 namespace Gear::Core::Device
 {
 	struct DeviceImpl
 	{
-
 		ComPtr<ID3D12Device9> device;
 
 		ComPtr<ID3D12VideoDevice3> videoDevice;
 
-	}impl;
+	} impl;
 
 	namespace Internal
 	{
@@ -21,7 +20,8 @@ namespace Gear::Core::Device
 		{
 			if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&impl.device))))
 			{
-				LOGSUCCESS() << "创建" << COLORIZEENUM(D3D_FEATURE_LEVEL_12_0) << "特性等级的" << COLORIZESTRUCT(ID3D12Device);
+				LOGSUCCESS() << "创建" << COLORIZEENUM(D3D_FEATURE_LEVEL_12_0) << "特性等级的"
+							 << COLORIZESTRUCT(ID3D12Device);
 			}
 			else
 			{

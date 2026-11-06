@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_GRAPHICS_H_
 #define _GEAR_CORE_GRAPHICS_H_
 
-#include<Gear/Core/FMT.h>
+#include <Gear/Core/FMT.h>
 
 namespace Gear::Core::Graphics
 {

@@ -11,7 +11,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include<Windows.h>
+#include <Windows.h>
 
 namespace Gear::Utils::WallpaperHelper
 {
@@ -27,7 +27,17 @@ namespace Gear::Utils::WallpaperHelper
 
 	void release();
 
-	struct DetectThreadToken { DetectThreadToken() { initialize(); } ~DetectThreadToken() { release(); } };
+	struct DetectThreadToken
+	{
+		DetectThreadToken()
+		{
+			initialize();
+		}
+		~DetectThreadToken()
+		{
+			release();
+		}
+	};
 
 	//壁纸模式时，后台线程的检查间隔（毫秒）
 	constexpr size_t obscureCheckInterval = 700;

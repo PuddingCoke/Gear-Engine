@@ -1,14 +1,16 @@
-#include<Gear/Core/VideoEncoder/NVIDIAEncoder.h>
+#include <Gear/Core/VideoEncoder/NVIDIAEncoder.h>
 
 #define NVENCCALL(func) \
-{\
-const NVENCSTATUS _status_ = func;\
-if(_status_ != NV_ENC_SUCCESS && _status_ != NV_ENC_ERR_LOCK_BUSY && _status_ != NV_ENC_ERR_NEED_MORE_INPUT && _status_ != NV_ENC_ERR_NEED_MORE_OUTPUT)\
-{\
-const std::string errorString = nvencAPI.nvEncGetLastErrorString(encoder);\
-THROWLOG(LOGERROR() << "调用" << #func << "时发生错误，错误码" << static_cast<uint32_t>(_status_) << "错误信息" << errorString);\
-}\
-}\
+	{ \
+		const NVENCSTATUS _status_ = func; \
+		if (_status_ != NV_ENC_SUCCESS && _status_ != NV_ENC_ERR_LOCK_BUSY && \
+		    _status_ != NV_ENC_ERR_NEED_MORE_INPUT && _status_ != NV_ENC_ERR_NEED_MORE_OUTPUT) \
+		{ \
+			const std::string errorString = nvencAPI.nvEncGetLastErrorString(encoder); \
+			THROWLOG(LOGERROR() << "调用" << #func << "时发生错误，错误码" \
+			                    << static_cast<uint32_t>(_status_) << "错误信息" << errorString); \
+		} \
+	}
 
 namespace Gear::Core::VideoEncoder
 {
@@ -34,9 +36,12 @@ namespace Gear::Core::VideoEncoder
 			THROWLOG(LOGERROR() << "无法读取nvEncodeAPI64.dll！");
 		}
 
-		NVENCSTATUS(__stdcall * NVENCAPICreateInstance)(NV_ENCODE_API_FUNCTION_LIST*) = (NVENCSTATUS(*)(NV_ENCODE_API_FUNCTION_LIST*))GetProcAddress(moduleNvEncAPI, "NvEncodeAPICreateInstance");
+		NVENCSTATUS(__stdcall * NVENCAPICreateInstance)(NV_ENCODE_API_FUNCTION_LIST*) =
+			(NVENCSTATUS (*)(NV_ENCODE_API_FUNCTION_LIST*))GetProcAddress(moduleNvEncAPI,
+		                                                                  "NvEncodeAPICreateInstance");
 
-		LOGENGINE() << TOSTRING(NVENCAPICreateInstance) << "状态" << static_cast<uint32_t>(NVENCAPICreateInstance(&nvencAPI));
+		LOGENGINE() << TOSTRING(NVENCAPICreateInstance) << "状态"
+					<< static_cast<uint32_t>(NVENCAPICreateInstance(&nvencAPI));
 
 		NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS sessionParams = { NV_ENC_OPEN_ENCODE_SESSION_EX_PARAMS_VER };
 		sessionParams.device = GraphicsDevice::get();
@@ -45,7 +50,7 @@ namespace Gear::Core::VideoEncoder
 
 		NVENCCALL(nvencAPI.nvEncOpenEncodeSessionEx(&sessionParams, &encoder));
 
-		NV_ENC_PRESET_CONFIG presetConfig = { NV_ENC_PRESET_CONFIG_VER,{NV_ENC_CONFIG_VER} };
+		NV_ENC_PRESET_CONFIG presetConfig = { NV_ENC_PRESET_CONFIG_VER, { NV_ENC_CONFIG_VER } };
 
 		NVENCCALL(nvencAPI.nvEncGetEncodePresetConfigEx(encoder, codec, preset, tuningInfo, &presetConfig));
 
@@ -78,7 +83,8 @@ namespace Gear::Core::VideoEncoder
 
 		config.rcParams.vbvBufferSize = config.rcParams.maxBitRate * 4;
 
-		NV_ENC_CONFIG_H264_VUI_PARAMETERS& vuiParameters = config.encodeCodecConfig.h264Config.h264VUIParameters;
+		NV_ENC_CONFIG_H264_VUI_PARAMETERS& vuiParameters =
+			config.encodeCodecConfig.h264Config.h264VUIParameters;
 		vuiParameters.videoSignalTypePresentFlag = 1;
 		vuiParameters.videoFormat = NV_ENC_VUI_VIDEO_FORMAT_UNSPECIFIED;
 		vuiParameters.videoFullRangeFlag = 0;
@@ -110,7 +116,8 @@ namespace Gear::Core::VideoEncoder
 
 		NVENCCALL(nvencAPI.nvEncInitializeEncoder(encoder, &encoderParams));
 
-		eosEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);;
+		eosEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		;
 
 		completionEvents = makeUnique<HANDLE[]>(numNV12Textures);
 
@@ -134,7 +141,15 @@ namespace Gear::Core::VideoEncoder
 		{
 			completionEvents[i] = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-			nv12Textures[i] = makeUnique<D3D12Resource::Texture>(Graphics::getWidth(), Graphics::getHeight(), FMT::NV12, 1, 1, true, D3D12_RESOURCE_FLAG_NONE, nullptr, D3D12_RESOURCE_STATE_COMMON);
+			nv12Textures[i] = makeUnique<D3D12Resource::Texture>(Graphics::getWidth(),
+			                                                     Graphics::getHeight(),
+			                                                     FMT::NV12,
+			                                                     1,
+			                                                     1,
+			                                                     true,
+			                                                     D3D12_RESOURCE_FLAG_NONE,
+			                                                     nullptr,
+			                                                     D3D12_RESOURCE_STATE_COMMON);
 
 			readbackHeaps[i] = makeUnique<D3D12Resource::ReadbackHeap>(readbackHeapSize);
 
@@ -270,12 +285,17 @@ namespace Gear::Core::VideoEncoder
 		{
 			std::unique_lock<std::mutex> readIndexLock(readIndexMutex);
 
-			readCV.wait(readIndexLock, [this] {return writeIndex < readIndex + numNV12Textures; });
+			readCV.wait(readIndexLock,
+			            [this]
+			{
+				return writeIndex < readIndex + numNV12Textures;
+			});
 		}
 
 		const uint64_t modWriteIndex = writeIndex % numNV12Textures;
 
-		const uint64_t inputFenceWaitValue = bgraToNV12(inputTexture, nv12Textures[modWriteIndex].get(), inputFence.get());
+		const uint64_t inputFenceWaitValue =
+			bgraToNV12(inputTexture, nv12Textures[modWriteIndex].get(), inputFence.get());
 
 		NV_ENC_MAP_INPUT_RESOURCE mapInputResource = { NV_ENC_MAP_INPUT_RESOURCE_VER };
 		mapInputResource.registeredResource = registeredInputResourcePtrs[modWriteIndex];
@@ -350,7 +370,11 @@ namespace Gear::Core::VideoEncoder
 			{
 				std::unique_lock<std::mutex> writeIndexLock(writeIndexMutex);
 
-				writeCV.wait(writeIndexLock, [this] {return readIndex < writeIndex; });
+				writeCV.wait(writeIndexLock,
+				             [this]
+				{
+					return readIndex < writeIndex;
+				});
 			}
 
 			const uint64_t modReadIndex = readIndex % numNV12Textures;
@@ -367,13 +391,12 @@ namespace Gear::Core::VideoEncoder
 
 			//[mp4 @ 000001bdb1381100] pts (46500) < dts (48000) in stream 0 报错
 			//解决方法 https://github.com/FFmpeg/FFmpeg/commit/670ff6c7ce0c70798a9909b334310625fe067a34?diff=split
-			encoding = writeFrame(
-				lockBitstream.bitstreamBufferPtr,
-				lockBitstream.bitstreamSizeInBytes,
-				lockBitstream.pictureType == NV_ENC_PIC_TYPE_IDR,
-				static_cast<int64_t>(decodeFrameIndices[modReadIndex]) - static_cast<int64_t>(frameIntervalP - 1u),
-				static_cast<int64_t>(lockBitstream.outputTimeStamp)
-			);
+			encoding = writeFrame(lockBitstream.bitstreamBufferPtr,
+			                      lockBitstream.bitstreamSizeInBytes,
+			                      lockBitstream.pictureType == NV_ENC_PIC_TYPE_IDR,
+			                      static_cast<int64_t>(decodeFrameIndices[modReadIndex]) -
+			                          static_cast<int64_t>(frameIntervalP - 1u),
+			                      static_cast<int64_t>(lockBitstream.outputTimeStamp));
 
 			NVENCCALL(nvencAPI.nvEncUnlockBitstream(encoder, lockBitstream.outputBitstream));
 

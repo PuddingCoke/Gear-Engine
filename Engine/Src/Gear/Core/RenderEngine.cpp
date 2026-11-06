@@ -1,54 +1,54 @@
-#include<Gear/Core/RenderEngine.h>
+#include <Gear/Core/RenderEngine.h>
 
-#include<Gear/Core/Internal/RenderEngineInternal.h>
+#include <Gear/Core/Internal/RenderEngineInternal.h>
 
-#include<Gear/Core/Device.h>
+#include <Gear/Core/Device.h>
 
-#include<Gear/Core/Internal/DeviceInternal.h>
+#include <Gear/Core/Internal/DeviceInternal.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Core/Internal/GraphicsInternal.h>
+#include <Gear/Core/Internal/GraphicsInternal.h>
 
-#include<Gear/Core/MainCamera.h>
+#include <Gear/Core/MainCamera.h>
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
-#include<Gear/Core/Internal/FMTInternal.h>
+#include <Gear/Core/Internal/FMTInternal.h>
 
-#include<Gear/Utils/Random.h>
+#include <Gear/Utils/Random.h>
 
-#include<Gear/Utils/File.h>
+#include <Gear/Utils/File.h>
 
-#include<Gear/Utils/MainMonitor.h>
+#include <Gear/Utils/MainMonitor.h>
 
-#include<Gear/Core/D3D12Core/CommandQueue.h>
+#include <Gear/Core/D3D12Core/CommandQueue.h>
 
-#include<Gear/Core/D3D12Core/CommonShaderLayout.h>
+#include <Gear/Core/D3D12Core/CommonShaderLayout.h>
 
-#include<Gear/Core/Internal/RenderThreadLocalInternal.h>
+#include <Gear/Core/Internal/RenderThreadLocalInternal.h>
 
-#include<Gear/Core/Internal/RenderThreadGlobalInternal.h>
+#include <Gear/Core/Internal/RenderThreadGlobalInternal.h>
 
-#include<Gear/Core/Internal/DynamicCBufferManagerInternal.h>
+#include <Gear/Core/Internal/DynamicCBufferManagerInternal.h>
 
-#include<Gear/Effect/Internal/BackBufferBlitEffectInternal.h>
+#include <Gear/Effect/Internal/BackBufferBlitEffectInternal.h>
 
-#include<Gear/Effect/Internal/HDRClampEffectInternal.h>
+#include <Gear/Effect/Internal/HDRClampEffectInternal.h>
 
-#include<Gear/Effect/Internal/LatLongMapToCubeMapEffectInternal.h>
+#include <Gear/Effect/Internal/LatLongMapToCubeMapEffectInternal.h>
 
-#include<Gear/Effect/Internal/ToneMapEffectInternal.h>
+#include <Gear/Effect/Internal/ToneMapEffectInternal.h>
 
-#include<Gear/Effect/Internal/GammaCorrectEffectInternal.h>
+#include <Gear/Effect/Internal/GammaCorrectEffectInternal.h>
 
-#include<ImGUI/imgui.h>
+#include <ImGUI/imgui.h>
 
-#include<ImGUI/imgui_impl_win32.h>
+#include <ImGUI/imgui_impl_win32.h>
 
-#include<ImGUI/imgui_impl_dx12.h>
+#include <ImGUI/imgui_impl_dx12.h>
 
-#include<dxgi1_6.h>
+#include <dxgi1_6.h>
 
 namespace Gear::Core::RenderEngine
 {
@@ -65,11 +65,16 @@ namespace Gear::Core::RenderEngine
 
 			ImGui::GetStyle().ScaleAllSizes(Utils::MainMonitor::getScale());
 
-			const D3D12Core::DescriptorHandle handle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(1);
+			const D3D12Core::DescriptorHandle handle =
+				GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(1);
 
 			ImGui_ImplWin32_Init(hWnd);
-			ImGui_ImplDX12_Init(GraphicsDevice::get(), Graphics::getFrameBufferCount(), Graphics::backBufferFormat,
-				GlobalDescriptorHeap::getResourceHeap()->get(), handle.getCurrentCPUHandle(), handle.getCurrentGPUHandle());
+			ImGui_ImplDX12_Init(GraphicsDevice::get(),
+			                    Graphics::getFrameBufferCount(),
+			                    Graphics::backBufferFormat,
+			                    GlobalDescriptorHeap::getResourceHeap()->get(),
+			                    handle.getCurrentCPUHandle(),
+			                    handle.getCurrentGPUHandle());
 
 			//显示输入法的待选框
 			ImGui::GetMainViewport()->PlatformHandleRaw = (void*)hWnd;
@@ -77,7 +82,8 @@ namespace Gear::Core::RenderEngine
 			ImFontGlyphRangesBuilder builder;
 
 			//加载常用汉字，GetGlyphRangesChineseSimplifiedCommon提供的汉字完全不够
-			std::vector<uint8_t> chineseCharacters = Utils::File::readAllBinary(Utils::File::EngineAssetsPath(L"7000+symbols.txt"));
+			std::vector<uint8_t> chineseCharacters =
+				Utils::File::readAllBinary(Utils::File::EngineAssetsPath(L"7000+symbols.txt"));
 
 			chineseCharacters.push_back('\0');
 
@@ -91,9 +97,11 @@ namespace Gear::Core::RenderEngine
 			builder.BuildRanges(&ranges);
 
 			//加载微软雅黑字体
-			*mediumFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 18.f * Utils::MainMonitor::getScale(), nullptr, ranges.Data);
+			*mediumFont = io.Fonts->AddFontFromFileTTF(
+				"C:/Windows/Fonts/msyh.ttc", 18.f * Utils::MainMonitor::getScale(), nullptr, ranges.Data);
 
-			*largeFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/msyh.ttc", 22.f * Utils::MainMonitor::getScale(), nullptr, ranges.Data);
+			*largeFont = io.Fonts->AddFontFromFileTTF(
+				"C:/Windows/Fonts/msyh.ttc", 22.f * Utils::MainMonitor::getScale(), nullptr, ranges.Data);
 
 			io.FontDefault = *mediumFont;
 
@@ -110,10 +118,8 @@ namespace Gear::Core::RenderEngine
 
 	struct RenderResourceToken
 	{
-		RenderResourceToken(ResourceManager* const resManager) :
-			latLongMapToCubeMapEffect(resManager)
+		RenderResourceToken(ResourceManager* const resManager) : latLongMapToCubeMapEffect(resManager)
 		{
-
 		}
 
 		Effect::BackBufferBlitEffect::Internal::InitializeToken backBufferBlitEffect;
@@ -137,7 +143,11 @@ namespace Gear::Core::RenderEngine
 
 		void operator=(const RenderEngineImpl&) = delete;
 
-		RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hWnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface);
+		RenderEngineImpl(const uint32_t width,
+		                 const uint32_t height,
+		                 const HWND hWnd,
+		                 const bool useSwapChainBuffer,
+		                 const bool initializeImGuiSurface);
 
 		~RenderEngineImpl();
 
@@ -173,11 +183,13 @@ namespace Gear::Core::RenderEngine
 
 		void setDefRenderTexture();
 
-		void setRenderTexture(D3D12Resource::Texture* const texture, const D3D12_CPU_DESCRIPTOR_HANDLE handle);
+		void setRenderTexture(D3D12Resource::Texture* const texture,
+		                      const D3D12_CPU_DESCRIPTOR_HANDLE handle);
 
 		void initializeResources();
 
-		void saveBackBuffer(D3D12Resource::ReadbackHeapPtr& readbackHeap, D3D12_PLACED_SUBRESOURCE_FOOTPRINT& backBufferFootprint);
+		void saveBackBuffer(D3D12Resource::ReadbackHeapPtr& readbackHeap,
+		                    D3D12_PLACED_SUBRESOURCE_FOOTPRINT& backBufferFootprint);
 
 		bool getDisplayImGuiSurface() const;
 
@@ -246,10 +258,13 @@ namespace Gear::Core::RenderEngine
 		int32_t syncInterval;
 
 		D3D12Core::CommonShaderLayout::PerframeResource perframeResource;
-
 	};
 
-	RenderEngineImpl::RenderEngineImpl(const uint32_t width, const uint32_t height, const HWND hWnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface) :
+	RenderEngineImpl::RenderEngineImpl(const uint32_t width,
+	                                   const uint32_t height,
+	                                   const HWND hWnd,
+	                                   const bool useSwapChainBuffer,
+	                                   const bool initializeImGuiSurface) :
 		vendor(AdapterVendor::UNKNOWN),
 		lastUsableGraphicsCommandList(nullptr),
 		initializeImGuiSurface(initializeImGuiSurface),
@@ -343,7 +358,8 @@ namespace Gear::Core::RenderEngine
 
 			ComPtr<IDXGISwapChain1> swapChain1;
 
-			factory->CreateSwapChainForHwnd(commandQueue->get(), hWnd, &swapChainDesc, nullptr, nullptr, &swapChain1);
+			factory->CreateSwapChainForHwnd(
+				commandQueue->get(), hWnd, &swapChainDesc, nullptr, nullptr, &swapChain1);
 
 			factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER);
 
@@ -354,7 +370,9 @@ namespace Gear::Core::RenderEngine
 		//那么需要取出纹理用于状态追踪并为其纹理创建RTV
 		if (useSwapChainBuffer)
 		{
-			D3D12Core::DescriptorHandle descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(Graphics::getFrameBufferCount());
+			D3D12Core::DescriptorHandle descriptorHandle =
+				LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(
+					Graphics::getFrameBufferCount());
 
 			backBufferHandles = makeUnique<D3D12_CPU_DESCRIPTOR_HANDLE[]>(Graphics::getFrameBufferCount());
 
@@ -370,31 +388,41 @@ namespace Gear::Core::RenderEngine
 
 				texture->SetName(backBufferName.c_str());
 
-				GraphicsDevice::get()->CreateRenderTargetView(texture.Get(), nullptr, descriptorHandle.getCurrentCPUHandle());
+				GraphicsDevice::get()->CreateRenderTargetView(
+					texture.Get(), nullptr, descriptorHandle.getCurrentCPUHandle());
 
 				backBufferHandles[i] = descriptorHandle.getCurrentCPUHandle();
 
 				descriptorHandle.move();
 
 				//后备缓冲的初态为D3D12_RESOURCE_STATE_PRESENT
-				backBufferTextures[i] = makeUnique<D3D12Resource::Texture>(texture, true, D3D12_RESOURCE_STATE_PRESENT);
+				backBufferTextures[i] =
+					makeUnique<D3D12Resource::Texture>(texture, true, D3D12_RESOURCE_STATE_PRESENT);
 			}
 		}
 
 		//如果有需要，那么初始化ImGUI
 		if (initializeImGuiSurface)
 		{
-			LOGENGINE() << COLORIZE("开启", LogColor::brightGreen) << COLORIZE("ImGui", LogColor::brightMagenta);
+			LOGENGINE() << COLORIZE("开启", LogColor::brightGreen)
+						<< COLORIZE("ImGui", LogColor::brightMagenta);
 
 			imGuiToken = makeUnique<ImGuiToken>(hWnd, &mediumFont, &largeFont);
 		}
 		else
 		{
-			LOGENGINE() << COLORIZE("关闭", LogColor::brightRed) << COLORIZE("ImGui", LogColor::brightMagenta);
+			LOGENGINE() << COLORIZE("关闭", LogColor::brightRed)
+						<< COLORIZE("ImGui", LogColor::brightMagenta);
 		}
 
 		//设置默认的2D投影矩阵
-		MainCamera::setProj(DirectX::XMMatrixOrthographicOffCenterLH(0.f, static_cast<float>(Graphics::getWidth()), 0, static_cast<float>(Graphics::getHeight()), -1.f, 1.f));
+		MainCamera::setProj(
+			DirectX::XMMatrixOrthographicOffCenterLH(0.f,
+		                                             static_cast<float>(Graphics::getWidth()),
+		                                             0,
+		                                             static_cast<float>(Graphics::getHeight()),
+		                                             -1.f,
+		                                             1.f));
 
 		//设置默认的视图矩阵
 		MainCamera::setView(DirectX::XMMatrixIdentity());
@@ -466,7 +494,9 @@ namespace Gear::Core::RenderEngine
 		engineGlobalCBuffer->acquireDataPtr();
 
 		//把后备缓冲转变到STATE_RENDER_TARGET，并暂存资源屏障
-		prepareGraphicsCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		prepareGraphicsCommandList->trackAndSetResourceState(getRenderTexture(),
+		                                                     D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+		                                                     D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 		prepareGraphicsCommandList->flushTransitionResources();
 	}
@@ -495,7 +525,8 @@ namespace Gear::Core::RenderEngine
 
 			perframeResource.view = DirectX::XMMatrixTranspose(MainCamera::getView());
 
-			perframeResource.viewProj = DirectX::XMMatrixTranspose(MainCamera::getView() * MainCamera::getProj());
+			perframeResource.viewProj =
+				DirectX::XMMatrixTranspose(MainCamera::getView() * MainCamera::getProj());
 
 			//逆的转置的转置等于没有转置
 			perframeResource.normalMatrix = DirectX::XMMatrixInverse(nullptr, MainCamera::getView());
@@ -505,11 +536,14 @@ namespace Gear::Core::RenderEngine
 			perframeResource.cameraPos.w = 1.0f;
 
 			//归一化保险一点
-			DirectX::XMStoreFloat4(&perframeResource.cameraRight, DirectX::XMVector3Normalize(perframeResource.view.r[0]));
+			DirectX::XMStoreFloat4(&perframeResource.cameraRight,
+			                       DirectX::XMVector3Normalize(perframeResource.view.r[0]));
 
-			DirectX::XMStoreFloat4(&perframeResource.cameraUp, DirectX::XMVector3Normalize(perframeResource.view.r[1]));
+			DirectX::XMStoreFloat4(&perframeResource.cameraUp,
+			                       DirectX::XMVector3Normalize(perframeResource.view.r[1]));
 
-			DirectX::XMStoreFloat4(&perframeResource.cameraForward, DirectX::XMVector3Normalize(perframeResource.view.r[2]));
+			DirectX::XMStoreFloat4(&perframeResource.cameraForward,
+			                       DirectX::XMVector3Normalize(perframeResource.view.r[2]));
 
 			//方向w要置零
 			perframeResource.cameraRight.w = 0.0f;
@@ -536,13 +570,11 @@ namespace Gear::Core::RenderEngine
 		{
 			perframeResource.aspectRatio = Graphics::getAspectRatio();
 
-			perframeResource.screenSize = DirectX::XMFLOAT2(
-				static_cast<float>(Graphics::getWidth()),
-				static_cast<float>(Graphics::getHeight()));
+			perframeResource.screenSize = DirectX::XMFLOAT2(static_cast<float>(Graphics::getWidth()),
+			                                                static_cast<float>(Graphics::getHeight()));
 
-			perframeResource.screenTexelSize = DirectX::XMFLOAT2(
-				1.f / perframeResource.screenSize.x,
-				1.f / perframeResource.screenSize.y);
+			perframeResource.screenTexelSize =
+				DirectX::XMFLOAT2(1.f / perframeResource.screenSize.x, 1.f / perframeResource.screenSize.y);
 		}
 
 		engineGlobalCBuffer->updateData(&perframeResource);
@@ -554,7 +586,9 @@ namespace Gear::Core::RenderEngine
 			D3D12Core::CommandList* const lastUsableCommandList = commandQueue->getLastUsableCommandList();
 
 			//使用最后一个可用的直接类型的命令列表把后备缓冲转变到STATE_PRESENT
-			lastUsableCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_PRESENT);
+			lastUsableCommandList->trackAndSetResourceState(getRenderTexture(),
+			                                                D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+			                                                D3D12_RESOURCE_STATE_PRESENT);
 
 			lastUsableCommandList->flushResourceBarriers();
 		}
@@ -579,10 +613,12 @@ namespace Gear::Core::RenderEngine
 
 	void RenderEngineImpl::setDefRenderTexture()
 	{
-		setRenderTexture(backBufferTextures[Graphics::getFrameIndex()].get(), backBufferHandles[Graphics::getFrameIndex()]);
+		setRenderTexture(backBufferTextures[Graphics::getFrameIndex()].get(),
+		                 backBufferHandles[Graphics::getFrameIndex()]);
 	}
 
-	void RenderEngineImpl::setRenderTexture(D3D12Resource::Texture* const texture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
+	void RenderEngineImpl::setRenderTexture(D3D12Resource::Texture* const texture,
+	                                        const D3D12_CPU_DESCRIPTOR_HANDLE handle)
 	{
 		//接管renderTexture的状态转变
 		renderTexture = texture;
@@ -610,13 +646,15 @@ namespace Gear::Core::RenderEngine
 		resManager->cleanTransientResources();
 	}
 
-	void RenderEngineImpl::saveBackBuffer(D3D12Resource::ReadbackHeapPtr& readbackHeap, D3D12_PLACED_SUBRESOURCE_FOOTPRINT& backBufferFootprint)
+	void RenderEngineImpl::saveBackBuffer(D3D12Resource::ReadbackHeapPtr& readbackHeap,
+	                                      D3D12_PLACED_SUBRESOURCE_FOOTPRINT& backBufferFootprint)
 	{
 		const D3D12_RESOURCE_DESC backBufferDesc = getRenderTexture()->getResource()->GetDesc();
 
 		uint64_t backBufferByteSize = 0ull;
 
-		GraphicsDevice::get()->GetCopyableFootprints(&backBufferDesc, 0, 1, 0, &backBufferFootprint, nullptr, nullptr, &backBufferByteSize);
+		GraphicsDevice::get()->GetCopyableFootprints(
+			&backBufferDesc, 0, 1, 0, &backBufferFootprint, nullptr, nullptr, &backBufferByteSize);
 
 		if (readbackHeap == nullptr || readbackHeap->getSize() != backBufferByteSize)
 		{
@@ -629,10 +667,13 @@ namespace Gear::Core::RenderEngine
 
 		if (!lastUsableGraphicsCommandList)
 		{
-			lastUsableGraphicsCommandList = static_cast<D3D12Core::GraphicsCommandList*>(commandQueue->getLastUsableCommandList());
+			lastUsableGraphicsCommandList =
+				static_cast<D3D12Core::GraphicsCommandList*>(commandQueue->getLastUsableCommandList());
 		}
 
-		lastUsableGraphicsCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+		lastUsableGraphicsCommandList->trackAndSetResourceState(getRenderTexture(),
+		                                                        D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+		                                                        D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 		lastUsableGraphicsCommandList->flushResourceBarriers();
 
@@ -671,9 +712,9 @@ namespace Gear::Core::RenderEngine
 	{
 		ComPtr<IDXGIAdapter4> adapter;
 
-		for (uint32_t adapterIndex = 0;
-			SUCCEEDED(factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)));
-			adapterIndex++)
+		for (uint32_t adapterIndex = 0; SUCCEEDED(factory->EnumAdapterByGpuPreference(
+				 adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)));
+		     adapterIndex++)
 		{
 			DXGI_ADAPTER_DESC3 desc = {};
 
@@ -684,7 +725,8 @@ namespace Gear::Core::RenderEngine
 				continue;
 			}
 
-			if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
+			if (SUCCEEDED(
+					D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
 			{
 				const uint32_t vendorID = desc.VendorId;
 
@@ -723,7 +765,9 @@ namespace Gear::Core::RenderEngine
 
 				LOGENGINE() << "适配器生产商" << COLORIZE(vendorName, LogColor::brightMagenta);
 
-				LOGENGINE() << "适配器专有视频内存" << static_cast<float>(desc.DedicatedVideoMemory) / 1024.f / 1024.f / 1024.f << "GB";
+				LOGENGINE() << "适配器专有视频内存"
+							<< static_cast<float>(desc.DedicatedVideoMemory) / 1024.f / 1024.f / 1024.f
+							<< "GB";
 
 				break;
 			}
@@ -765,14 +809,19 @@ namespace Gear::Core::RenderEngine
 
 			if (!lastUsableGraphicsCommandList)
 			{
-				lastUsableGraphicsCommandList = static_cast<D3D12Core::GraphicsCommandList*>(commandQueue->getLastUsableCommandList());
+				lastUsableGraphicsCommandList =
+					static_cast<D3D12Core::GraphicsCommandList*>(commandQueue->getLastUsableCommandList());
 			}
 
-			lastUsableGraphicsCommandList->trackAndSetResourceState(getRenderTexture(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			lastUsableGraphicsCommandList->trackAndSetResourceState(
+				getRenderTexture(),
+				D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+				D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			lastUsableGraphicsCommandList->flushResourceBarriers();
 
-			lastUsableGraphicsCommandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap()->get(), GlobalDescriptorHeap::getSamplerHeap()->get());
+			lastUsableGraphicsCommandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap()->get(),
+			                                                 GlobalDescriptorHeap::getSamplerHeap()->get());
 
 			ImGui::Render();
 
@@ -786,9 +835,14 @@ namespace Gear::Core::RenderEngine
 
 	namespace Internal
 	{
-		void initialize(const uint32_t width, const uint32_t height, const HWND hWnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface)
+		void initialize(const uint32_t width,
+		                const uint32_t height,
+		                const HWND hWnd,
+		                const bool useSwapChainBuffer,
+		                const bool initializeImGuiSurface)
 		{
-			impl = makeUnique<RenderEngineImpl>(width, height, hWnd, useSwapChainBuffer, initializeImGuiSurface);
+			impl =
+				makeUnique<RenderEngineImpl>(width, height, hWnd, useSwapChainBuffer, initializeImGuiSurface);
 		}
 
 		void release()
@@ -841,7 +895,8 @@ namespace Gear::Core::RenderEngine
 			impl->setSyncInterval(syncInterval);
 		}
 
-		void saveBackBuffer(D3D12Resource::ReadbackHeapPtr& readbackHeap, D3D12_PLACED_SUBRESOURCE_FOOTPRINT& backBufferFootprint)
+		void saveBackBuffer(D3D12Resource::ReadbackHeapPtr& readbackHeap,
+		                    D3D12_PLACED_SUBRESOURCE_FOOTPRINT& backBufferFootprint)
 		{
 			impl->saveBackBuffer(readbackHeap, backBufferFootprint);
 		}
@@ -851,7 +906,8 @@ namespace Gear::Core::RenderEngine
 			impl->setDefRenderTexture();
 		}
 
-		void setRenderTexture(D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle)
+		void setRenderTexture(D3D12Resource::Texture* const renderTexture,
+		                      const D3D12_CPU_DESCRIPTOR_HANDLE handle)
 		{
 			impl->setRenderTexture(renderTexture, handle);
 		}

@@ -1,6 +1,6 @@
-#include<Gear/Input/Internal/InputInternal.h>
+#include <Gear/Input/Internal/InputInternal.h>
 
-#include<vector>
+#include <vector>
 
 namespace Gear::Input::Internal
 {

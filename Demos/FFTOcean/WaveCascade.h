@@ -1,13 +1,12 @@
 #pragma once
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
 class WaveCascade
 {
 public:
 
-	WaveCascade(const uint32_t size, GraphicsContext* const context) :
-		size(size), context(context)
+	WaveCascade(const uint32_t size, GraphicsContext* const context) : size(size), context(context)
 	{
 		waveDataTexture = createTexture(size, FMT::RGBA32F);
 
@@ -33,7 +32,7 @@ public:
 
 		jacobianTexture->getTexture()->setName(L"jacobianTexture");
 
-		float clearVal[] = { 9999.f,9999.f,9999.f,9999.f };
+		float clearVal[] = { 9999.f, 9999.f, 9999.f, 9999.f };
 
 		context->clearUnorderedAccess(jacobianTexture->getUAVMipClearDesc(0), clearVal);
 	}
@@ -47,27 +46,20 @@ public:
 		context->setPipelineState(*ifftState);
 
 		SETCONSTS({
-		context->setCSConstants({
-			tempTexture->getUAVMipIndex(0),
-			inputTexture.getAllSRVIndex() }, co);
-			});
+			context->setCSConstants({ tempTexture->getUAVMipIndex(0), inputTexture.getAllSRVIndex() }, co);
+		});
 
-		context->dispatchDim(size* size, 1, 1);
+		context->dispatchDim(size * size, 1, 1);
 
 		SETCONSTS({
-		context->setCSConstants({
-			inputTexture.getUAVMipIndex(0),
-			tempTexture->getAllSRVIndex() }, co);
-			});
+			context->setCSConstants({ inputTexture.getUAVMipIndex(0), tempTexture->getAllSRVIndex() }, co);
+		});
 
-		context->dispatchDim(size* size, 1, 1);
+		context->dispatchDim(size * size, 1, 1);
 
 		context->setPipelineState(*permutationState);
 
-		SETCONSTS({
-		context->setCSConstants({
-			inputTexture.getUAVMipIndex(0) }, co);
-			});
+		SETCONSTS({ context->setCSConstants({ inputTexture.getUAVMipIndex(0) }, co); });
 
 		context->dispatchDim(size, size, 1);
 	}
@@ -77,11 +69,11 @@ public:
 		context->setPipelineState(*spectrumState);
 
 		SETCONSTS({
-		context->setCSConstants({
-			tildeh0Texture->getUAVMipIndex(0),
-			waveDataTexture->getUAVMipIndex(0),
-			randomGaussTexture->getAllSRVIndex() }, co);
-			});
+			context->setCSConstants({ tildeh0Texture->getUAVMipIndex(0),
+			                          waveDataTexture->getUAVMipIndex(0),
+			                          randomGaussTexture->getAllSRVIndex() },
+			                        co);
+		});
 
 		context->setCSConstantBuffer(spectrumParamBuffer);
 
@@ -90,10 +82,9 @@ public:
 		context->setPipelineState(*conjugateState);
 
 		SETCONSTS({
-		context->setCSConstants({
-			waveSpectrumTexture->getUAVMipIndex(0),
-			tildeh0Texture->getAllSRVIndex() }, co);
-			});
+			context->setCSConstants(
+				{ waveSpectrumTexture->getUAVMipIndex(0), tildeh0Texture->getAllSRVIndex() }, co);
+		});
 
 		context->dispatchDim(size, size, 1);
 	}
@@ -103,14 +94,14 @@ public:
 		context->setPipelineState(*displacementSpectrumState);
 
 		SETCONSTS({
-		context->setCSConstants({
-			DxDz->getUAVMipIndex(0),
-			DyDxz->getUAVMipIndex(0),
-			DyxDyz->getUAVMipIndex(0),
-			DxxDzz->getUAVMipIndex(0),
-			waveDataTexture->getAllSRVIndex(),
-			waveSpectrumTexture->getAllSRVIndex() }, co);
-			});
+			context->setCSConstants({ DxDz->getUAVMipIndex(0),
+			                          DyDxz->getUAVMipIndex(0),
+			                          DyxDyz->getUAVMipIndex(0),
+			                          DxxDzz->getUAVMipIndex(0),
+			                          waveDataTexture->getAllSRVIndex(),
+			                          waveSpectrumTexture->getAllSRVIndex() },
+			                        co);
+		});
 
 		context->dispatchDim(size, size, 1);
 	}
@@ -128,15 +119,15 @@ public:
 		context->setPipelineState(*waveMergeState);
 
 		SETCONSTS({
-		context->setCSConstants({
-			displacementTexture->getUAVMipIndex(0),
-			derivativeTexture->getUAVMipIndex(0),
-			jacobianTexture->getUAVMipIndex(0),
-			DxDz->getAllSRVIndex(),
-			DyDxz->getAllSRVIndex(),
-			DyxDyz->getAllSRVIndex(),
-			DxxDzz->getAllSRVIndex() }, co);
-			});
+			context->setCSConstants({ displacementTexture->getUAVMipIndex(0),
+			                          derivativeTexture->getUAVMipIndex(0),
+			                          jacobianTexture->getUAVMipIndex(0),
+			                          DxDz->getAllSRVIndex(),
+			                          DyDxz->getAllSRVIndex(),
+			                          DyxDyz->getAllSRVIndex(),
+			                          DxxDzz->getAllSRVIndex() },
+			                        co);
+		});
 
 		context->dispatchDim(size, size, 1);
 	}
@@ -200,7 +191,6 @@ private:
 
 	//dDx/dx dDz/dz
 	RenderTextureViewPtr DxxDzz;
-
 };
 
 ComputeState* WaveCascade::spectrumState = nullptr;

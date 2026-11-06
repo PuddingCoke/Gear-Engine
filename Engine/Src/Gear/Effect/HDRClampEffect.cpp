@@ -1,8 +1,8 @@
-#include<Gear/Effect/HDRClampEffect.h>
+#include <Gear/Effect/HDRClampEffect.h>
 
-#include<Gear/Effect/Internal/HDRClampEffectInternal.h>
+#include <Gear/Effect/Internal/HDRClampEffectInternal.h>
 
-#include<CompiledShaders/HDRClampCS.h>
+#include <CompiledShaders/HDRClampCS.h>
 
 namespace Gear::Effect::HDRClampEffect
 {
@@ -17,12 +17,12 @@ namespace Gear::Effect::HDRClampEffect
 	private:
 
 		ComputeStatePtr hdrClampState;
-
 	};
 
 	HDRClampEffectImpl::HDRClampEffectImpl()
 	{
-		hdrClampState = PipelineStateBuilder::build(Shader::create(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes)));
+		hdrClampState =
+			PipelineStateBuilder::build(Shader::create(g_HDRClampCSBytes, sizeof(g_HDRClampCSBytes)));
 
 		LOGSUCCESS() << "创建" << COLORIZESTRUCT(HDRClampEffect);
 	}
@@ -35,9 +35,7 @@ namespace Gear::Effect::HDRClampEffect
 		{
 			context->setPipelineState(*hdrClampState);
 
-			SETCONSTS({
-			context->setCSConstants({ inOutTexture.getUAVMipIndex(0) }, co);
-				});
+			SETCONSTS({ context->setCSConstants({ inOutTexture.getUAVMipIndex(0) }, co); });
 
 			context->dispatchDim(inOutTexture.get3Dimension());
 		}

@@ -3,13 +3,13 @@
 #ifndef _GEAR_CORE_D3D12RESOURCE_UPLOADHEAP_H_
 #define _GEAR_CORE_D3D12RESOURCE_UPLOADHEAP_H_
 
-#include"D3D12ResourceBase.h"
+#include "D3D12ResourceBase.h"
 
 namespace Gear::Core::D3D12Resource
 {
 	CREATESAFETYPE(UploadHeap);
 
-	class UploadHeap :public D3D12ResourceBase
+	class UploadHeap : public D3D12ResourceBase
 	{
 	public:
 
@@ -30,7 +30,6 @@ namespace Gear::Core::D3D12Resource
 		void unmap() const;
 
 		void update(const void* const data, const uint64_t size) const;
-
 	};
 }
 

@@ -6,19 +6,18 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include<Gear/Utils/MainMonitor.h>
+#include <Gear/Utils/MainMonitor.h>
 
-#include<Gear/Utils/Internal/MainMonitorInternal.h>
+#include <Gear/Utils/Internal/MainMonitorInternal.h>
 
-#include<Gear/Utils/Log.h>
+#include <Gear/Utils/Log.h>
 
-#include<Windows.h>
+#include <Windows.h>
 
 namespace Gear::Utils::MainMonitor
 {
 	struct MainMonitorImpl
 	{
-
 		uint32_t width;
 
 		uint32_t height;

@@ -1,19 +1,23 @@
-#include<Gear/Effect/HBAOPlusEffect.h>
+#include <Gear/Effect/HBAOPlusEffect.h>
 
-#include<Gear/Core/MainCamera.h>
+#include <Gear/Core/MainCamera.h>
 
-#include<Gear/Core/RenderEngine.h>
+#include <Gear/Core/RenderEngine.h>
 
-#include<Gear/Core/D3D12Core/CommandQueue.h>
+#include <Gear/Core/D3D12Core/CommandQueue.h>
 
 namespace Gear::Effect
 {
-	HBAOPlusEffectPtr HBAOPlusEffect::create(ResourceManager& refResManager, const uint32_t width, const uint32_t height)
+	HBAOPlusEffectPtr HBAOPlusEffect::create(ResourceManager& refResManager,
+	                                         const uint32_t width,
+	                                         const uint32_t height)
 	{
 		return makeUnique<HBAOPlusEffect>(refResManager, width, height);
 	}
 
-	HBAOPlusEffect::HBAOPlusEffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height) :
+	HBAOPlusEffect::HBAOPlusEffect(ResourceManager& refResManager,
+	                               const uint32_t width,
+	                               const uint32_t height) :
 		EffectBase(refResManager, width, height, FMT::R32F), aoParameters{}
 	{
 		GFSDK_SSAO_CustomHeap customHeap;
@@ -22,9 +26,11 @@ namespace Gear::Effect
 
 		customHeap.delete_ = ::operator delete;
 
-		DescriptorHandle srvUAVCBVHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_CBV_SRV_UAV_HEAP_D3D12);
+		DescriptorHandle srvUAVCBVHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(
+			GFSDK_SSAO_NUM_DESCRIPTORS_CBV_SRV_UAV_HEAP_D3D12);
 
-		DescriptorHandle rtvHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(GFSDK_SSAO_NUM_DESCRIPTORS_RTV_HEAP_D3D12);
+		DescriptorHandle rtvHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(
+			GFSDK_SSAO_NUM_DESCRIPTORS_RTV_HEAP_D3D12);
 
 		GFSDK_SSAO_DescriptorHeaps_D3D12 descriptorHeaps;
 
@@ -36,7 +42,8 @@ namespace Gear::Effect
 
 		descriptorHeaps.RTV.BaseIndex = rtvHandle.getCurrentIndex();
 
-		GFSDK_SSAO_Status status = GFSDK_SSAO_CreateContext_D3D12(GraphicsDevice::get(), 1, descriptorHeaps, &aoContext, &customHeap);
+		GFSDK_SSAO_Status status = GFSDK_SSAO_CreateContext_D3D12(
+			GraphicsDevice::get(), 1, descriptorHeaps, &aoContext, &customHeap);
 
 		if (status == GFSDK_SSAO_OK)
 		{
@@ -44,7 +51,8 @@ namespace Gear::Effect
 		}
 		else
 		{
-			THROWLOG(LOGERROR() << "初始化" << TOSTRING(HBAOPlusEffect) << "失败, 失败码 : " << static_cast<uint32_t>(status));
+			THROWLOG(LOGERROR() << "初始化" << TOSTRING(HBAOPlusEffect)
+			                    << "失败, 失败码 : " << static_cast<uint32_t>(status));
 		}
 
 		aoParameters.Radius = 2.f;
@@ -93,7 +101,8 @@ namespace Gear::Effect
 		inputData.NormalData.Enable = true;
 		inputData.NormalData.FullResNormalTextureSRV.pResource = gNormal.getTexture()->getResource();
 		inputData.NormalData.FullResNormalTextureSRV.GpuHandle = gNormal.getSRVMipGPUHandle(0).ptr;
-		inputData.NormalData.WorldToViewMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&viewMatrix);
+		inputData.NormalData.WorldToViewMatrix.Data =
+			GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&viewMatrix);
 		inputData.NormalData.WorldToViewMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
 
 		GFSDK_SSAO_RenderMask renderMask = GFSDK_SSAO_RENDER_AO;
@@ -120,19 +129,28 @@ namespace Gear::Effect
 
 		GraphicsCommandList* const commandList = context->getCommandList();
 
-		commandList->trackAndSetResourceState(depthTexture.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		commandList->trackAndSetResourceState(
+			depthTexture.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-		commandList->trackAndSetResourceState(gNormal.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		commandList->trackAndSetResourceState(
+			gNormal.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-		commandList->trackAndSetResourceState(outputTexture->getTexture(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		commandList->trackAndSetResourceState(
+			outputTexture->getTexture(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 		commandList->flushResourceBarriers();
 
-		const GFSDK_SSAO_Status status = aoContext->RenderAO(RenderEngine::getCommandQueue()->get(), commandList->get(), inputData, aoParameters, output, renderMask);
+		const GFSDK_SSAO_Status status = aoContext->RenderAO(RenderEngine::getCommandQueue()->get(),
+		                                                     commandList->get(),
+		                                                     inputData,
+		                                                     aoParameters,
+		                                                     output,
+		                                                     renderMask);
 
 		if (status != GFSDK_SSAO_OK)
 		{
-			THROWLOG(LOGERROR() << TOSTRING(aoContext->RenderAO) << "调用失败, 失败码" << static_cast<uint32_t>(status));
+			THROWLOG(LOGERROR() << TOSTRING(aoContext->RenderAO) << "调用失败, 失败码"
+			                    << static_cast<uint32_t>(status));
 		}
 
 		//使用Nsight调试后发现RenderAO不会恢复图形相关的状态

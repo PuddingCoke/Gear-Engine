@@ -3,11 +3,11 @@
 #ifndef _GEAR_GAME_H_
 #define _GEAR_GAME_H_
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-#include<Gear/Core/RenderThread.h>
+#include <Gear/Core/RenderThread.h>
 
-#include<queue>
+#include <queue>
 
 namespace Gear
 {
@@ -38,7 +38,6 @@ namespace Gear
 		std::queue<RenderTask*> recordQueue;
 
 		std::queue<UniquePtr<RenderThread>> createQueue;
-
 	};
 }
 

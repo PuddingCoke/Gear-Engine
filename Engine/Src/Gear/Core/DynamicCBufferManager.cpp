@@ -1,14 +1,14 @@
-#include<Gear/Core/DynamicCBufferManager.h>
+#include <Gear/Core/DynamicCBufferManager.h>
 
-#include<Gear/Core/Internal/DynamicCBufferManagerInternal.h>
+#include <Gear/Core/Internal/DynamicCBufferManagerInternal.h>
 
-#include<Gear/Core/D3D12Resource/UploadHeap.h>
+#include <Gear/Core/D3D12Resource/UploadHeap.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Core/GlobalDescriptorHeap.h>
+#include <Gear/Core/GlobalDescriptorHeap.h>
 
-#include<atomic>
+#include <atomic>
 
 namespace Gear::Core::DynamicCBufferManager
 {
@@ -40,16 +40,15 @@ namespace Gear::Core::DynamicCBufferManager
 
 		UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeap;
 
-		UniquePtr<uint8_t* []> dataPtr;
+		UniquePtr<uint8_t*[]> dataPtr;
 
 		std::atomic<uint64_t> currentOffset;
-
 	};
 
 	DynamicCBufferRegion::DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t subRegionNum) :
 		subRegionSize(subRegionSize),
 		uploadHeap(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
-		dataPtr(makeUnique<uint8_t* []>(Graphics::getFrameBufferCount())),
+		dataPtr(makeUnique<uint8_t*[]>(Graphics::getFrameBufferCount())),
 		currentOffset(0)
 	{
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
@@ -79,7 +78,8 @@ namespace Gear::Core::DynamicCBufferManager
 	{
 		const uint64_t tempOffset = currentOffset.fetch_add(subRegionSize, std::memory_order_relaxed);
 
-		return { dataPtr[Graphics::getFrameIndex()] + tempOffset,static_cast<uint32_t>(tempOffset / subRegionSize) };
+		return { dataPtr[Graphics::getFrameIndex()] + tempOffset,
+			     static_cast<uint32_t>(tempOffset / subRegionSize) };
 	}
 
 	void DynamicCBufferRegion::reset()
@@ -111,7 +111,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 		//每个区域的子区域数量
 		//256bytes 512bytes 1024bytes .....
-		static constexpr uint32_t numSubRegion[] = { 4096,2048 };
+		static constexpr uint32_t numSubRegion[] = { 4096, 2048 };
 
 		static constexpr uint32_t numRegion = _countof(numSubRegion);
 
@@ -126,9 +126,8 @@ namespace Gear::Core::DynamicCBufferManager
 		//constantBufferAddress = baseAddressOffsets[regionIndex] + (256 << regionIndex) * subregionIndex
 		uint64_t baseAddressOffsets[numRegion];
 
-		//descriptorIndex = baseDescriptorIndices[regionIndex] + subregionIndex 
+		//descriptorIndex = baseDescriptorIndices[regionIndex] + subregionIndex
 		uint32_t baseDescriptorIndices[numRegion];
-
 	};
 
 	DynamicCBufferManagerImpl::DynamicCBufferManagerImpl()
@@ -157,7 +156,8 @@ namespace Gear::Core::DynamicCBufferManager
 
 			for (uint32_t regionIndex = 0; regionIndex < numRegion; regionIndex++)
 			{
-				bufferRegions[regionIndex] = makeUnique<DynamicCBufferRegion>(256ull << regionIndex, numSubRegion[regionIndex]);
+				bufferRegions[regionIndex] =
+					makeUnique<DynamicCBufferRegion>(256ull << regionIndex, numSubRegion[regionIndex]);
 			}
 		}
 
@@ -170,7 +170,8 @@ namespace Gear::Core::DynamicCBufferManager
 				requiredDescriptorNum += numSubRegion[regionIndex];
 			}
 
-			D3D12Core::DescriptorHandle descriptorHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(requiredDescriptorNum);
+			D3D12Core::DescriptorHandle descriptorHandle =
+				GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(requiredDescriptorNum);
 
 			uint64_t bufferLocationOffset = buffer->getGPUAddress();
 
@@ -180,7 +181,8 @@ namespace Gear::Core::DynamicCBufferManager
 
 				baseDescriptorIndices[regionIndex] = descriptorHandle.getCurrentIndex();
 
-				for (uint32_t subregionIndex = 0; subregionIndex < numSubRegion[regionIndex]; subregionIndex++)
+				for (uint32_t subregionIndex = 0; subregionIndex < numSubRegion[regionIndex];
+				     subregionIndex++)
 				{
 					D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 					desc.BufferLocation = bufferLocationOffset;
@@ -188,7 +190,8 @@ namespace Gear::Core::DynamicCBufferManager
 
 					bufferLocationOffset += (256ull << regionIndex);
 
-					GraphicsDevice::get()->CreateConstantBufferView(&desc, descriptorHandle.getCurrentCPUHandle());
+					GraphicsDevice::get()->CreateConstantBufferView(&desc,
+					                                                descriptorHandle.getCurrentCPUHandle());
 
 					descriptorHandle.move();
 				}
@@ -200,11 +203,14 @@ namespace Gear::Core::DynamicCBufferManager
 	{
 	}
 
-	DynamicCBufferManager::AvailableLocation DynamicCBufferManagerImpl::requestLocation(const uint32_t regionIndex)
+	DynamicCBufferManager::AvailableLocation DynamicCBufferManagerImpl::requestLocation(
+		const uint32_t regionIndex)
 	{
 		const DynamicCBufferRegion::Location location = bufferRegions[regionIndex]->acquireLocation();
 
-		return { location.dataPtr,baseAddressOffsets[regionIndex] + (256u << regionIndex) * location.subregionIndex,baseDescriptorIndices[regionIndex] + location.subregionIndex };
+		return { location.dataPtr,
+			     baseAddressOffsets[regionIndex] + (256u << regionIndex) * location.subregionIndex,
+			     baseDescriptorIndices[regionIndex] + location.subregionIndex };
 	}
 
 	void DynamicCBufferManagerImpl::recordCommands(D3D12Core::GraphicsCommandList* const commandList)
@@ -219,9 +225,11 @@ namespace Gear::Core::DynamicCBufferManager
 		{
 			if (bufferRegions[regionIndex]->getUpdateSize())
 			{
-				commandList->copyBufferRegion(buffer.get(), dstOffset[regionIndex],
-					bufferRegions[regionIndex]->getUploadHeap(), 0,
-					bufferRegions[regionIndex]->getUpdateSize());
+				commandList->copyBufferRegion(buffer.get(),
+				                              dstOffset[regionIndex],
+				                              bufferRegions[regionIndex]->getUploadHeap(),
+				                              0,
+				                              bufferRegions[regionIndex]->getUpdateSize());
 
 				bufferRegions[regionIndex]->reset();
 			}
@@ -258,7 +266,8 @@ namespace Gear::Core::DynamicCBufferManager
 		return DynamicCBufferManagerImpl::numRegion;
 	}
 
-	DynamicCBufferManager::AvailableLocation DynamicCBufferManager::requestLocation(const uint32_t regionIndex)
+	DynamicCBufferManager::AvailableLocation DynamicCBufferManager::requestLocation(
+		const uint32_t regionIndex)
 	{
 		return impl->requestLocation(regionIndex);
 	}

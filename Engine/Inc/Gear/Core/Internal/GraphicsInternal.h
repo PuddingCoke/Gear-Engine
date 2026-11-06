@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_GRAPHICS_INTERNAL_H_
 #define _GEAR_CORE_GRAPHICS_INTERNAL_H_
 
-#include<cstdint>
+#include <cstdint>
 
 namespace Gear::Core::Graphics::Internal
 {

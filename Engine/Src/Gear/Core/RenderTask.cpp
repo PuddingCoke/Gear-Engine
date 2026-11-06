@@ -1,6 +1,6 @@
-#include<Gear/Core/RenderThread.h>
+#include <Gear/Core/RenderThread.h>
 
-#include<Gear/Effect/BackBufferBlitEffect.h>
+#include <Gear/Effect/BackBufferBlitEffect.h>
 
 namespace Gear::Core
 {
@@ -33,7 +33,6 @@ namespace Gear::Core
 
 	void RenderTask::imGuiCall()
 	{
-
 	}
 
 	std::string RenderTask::getErrorStr() const

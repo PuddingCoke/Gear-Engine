@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_GLOBALROOTSIGNATURE_H_
 #define _GEAR_CORE_GLOBALROOTSIGNATURE_H_
 
-#include<Gear/Core/D3D12Core/RootSignature.h>
+#include <Gear/Core/D3D12Core/RootSignature.h>
 
 namespace Gear::Core::GlobalRootSignature
 {

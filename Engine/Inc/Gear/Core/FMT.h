@@ -9,11 +9,11 @@
 /// 这也是我在我的D3D11老项目中做的事，它带来的改善是非常大的，日常敲代码轻松太多了
 /// </summary>
 
-#include<cstdint>
+#include <cstdint>
 
-#include<type_traits>
+#include <type_traits>
 
-#include<directx/dxgiformat.h>
+#include <directx/dxgiformat.h>
 
 /// <summary>
 /// 通道顺序 + 每通道比特 + 类型
@@ -264,13 +264,12 @@ namespace Gear::Core::FMT
 	using PlaneCountType = uint8_t;
 
 	//自动推导格式索引类型
-	using FormatIndexType = std::conditional_t<
-		(formatTableLength <= 256u), uint8_t,
-		std::conditional_t<
-		(formatTableLength <= 65536u), uint16_t,
-		uint32_t //DXGI_FORMAT_FORCE_UINT 0xFFFFFFFF
-		>
-	>;
+	using FormatIndexType = std::conditional_t<(formatTableLength <= 256u),
+	                                           uint8_t,
+	                                           std::conditional_t<(formatTableLength <= 65536u),
+	                                                              uint16_t,
+	                                                              uint32_t //DXGI_FORMAT_FORCE_UINT 0xFFFFFFFF
+	                                                              >>;
 
 	PlaneCountType getPlaneCount(const DXGI_FORMAT format);
 

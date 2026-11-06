@@ -3,7 +3,7 @@
 #ifndef _GEAR_EFFECT_GAMMACORRECTEFFECT_H_
 #define _GEAR_EFFECT_GAMMACORRECTEFFECT_H_
 
-#include"EffectBase.h"
+#include "EffectBase.h"
 
 namespace Gear::Effect::GammaCorrectEffect
 {

@@ -1,6 +1,6 @@
-#include<Gear/Gear.h>
+#include <Gear/Gear.h>
 
-#include"MyGame.h"
+#include "MyGame.h"
 
 int wmain(int argc, const wchar_t* argv[])
 {

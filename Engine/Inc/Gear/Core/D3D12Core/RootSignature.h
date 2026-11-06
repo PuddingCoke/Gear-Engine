@@ -3,11 +3,11 @@
 #ifndef _GEAR_CORE_D3D12CORE_ROOTSIGNATURE_H_
 #define _GEAR_CORE_D3D12CORE_ROOTSIGNATURE_H_
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
-#include"CommonShaderLayout.h"
+#include "CommonShaderLayout.h"
 
-#include"ShaderType.h"
+#include "ShaderType.h"
 
 namespace Gear::Core::D3D12Core
 {
@@ -21,17 +21,17 @@ namespace Gear::Core::D3D12Core
 
 		void operator=(const RootSignature&) = delete;
 
-		RootSignature(
-			const uint32_t numVSConstants,
-			const uint32_t numHSConstants,
-			const uint32_t numDSConstants,
-			const uint32_t numGSConstants,
-			const uint32_t numPSConstants,
-			const uint32_t numCSConstants,
-			const uint32_t numASConstants,
-			const uint32_t numMSConstants,
-			CD3DX12_STATIC_SAMPLER_DESC* const samplerDescs, const uint32_t samplerCount,
-			const D3D12_ROOT_SIGNATURE_FLAGS signatureFlags);
+		RootSignature(const uint32_t numVSConstants,
+		              const uint32_t numHSConstants,
+		              const uint32_t numDSConstants,
+		              const uint32_t numGSConstants,
+		              const uint32_t numPSConstants,
+		              const uint32_t numCSConstants,
+		              const uint32_t numASConstants,
+		              const uint32_t numMSConstants,
+		              CD3DX12_STATIC_SAMPLER_DESC* const samplerDescs,
+		              const uint32_t samplerCount,
+		              const D3D12_ROOT_SIGNATURE_FLAGS signatureFlags);
 
 		virtual ~RootSignature();
 
@@ -91,16 +91,17 @@ namespace Gear::Core::D3D12Core
 		std::array<uint32_t, static_cast<uint32_t>(ShaderType::TYPECOUNT)> numShaderConstants;
 
 		//V H G D P C A M，与ShaderType中枚举表示的整数值一一对应
-		CommonShaderLayout::ShaderLocalParameterIndices localParameterIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];
+		CommonShaderLayout::ShaderLocalParameterIndices
+			localParameterIndices[static_cast<uint32_t>(ShaderType::TYPECOUNT)];
 
-		CommonShaderLayout::ShaderLocalParameterIndices getLocalParameterIndices(const ShaderType shaderType) const;
+		CommonShaderLayout::ShaderLocalParameterIndices getLocalParameterIndices(
+			const ShaderType shaderType) const;
 
 		uint32_t getLocalConstantsParameterIndex(const ShaderType shaderType) const;
 
 		uint32_t getLocalConstantBufferParameterIndex(const ShaderType shaderType) const;
 
 		ComPtr<ID3D12RootSignature> rootSignature;
-
 	};
 }
 

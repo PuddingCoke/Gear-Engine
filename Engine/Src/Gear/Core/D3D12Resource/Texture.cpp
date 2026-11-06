@@ -1,13 +1,33 @@
-#include<Gear/Core/D3D12Resource/Texture.h>
+#include <Gear/Core/D3D12Resource/Texture.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
-#include<Gear/Core/FMT.h>
+#include <Gear/Core/FMT.h>
 
 namespace Gear::Core::D3D12Resource
 {
-	Texture::Texture(const uint32_t width, const uint32_t height, const DXGI_FORMAT format, const uint32_t arraySize, const uint32_t mipLevels, const bool stateTracking, const D3D12_RESOURCE_FLAGS resFlags, const D3D12_CLEAR_VALUE* const clearValue, const uint32_t initialState) :
-		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, CD3DX12_RESOURCE_DESC::Tex2D(format, width, height, static_cast<uint16_t>(arraySize), static_cast<uint16_t>(mipLevels), 1, 0, resFlags), stateTracking, static_cast<D3D12_RESOURCE_STATES>(initialState), clearValue),
+	Texture::Texture(const uint32_t width,
+	                 const uint32_t height,
+	                 const DXGI_FORMAT format,
+	                 const uint32_t arraySize,
+	                 const uint32_t mipLevels,
+	                 const bool stateTracking,
+	                 const D3D12_RESOURCE_FLAGS resFlags,
+	                 const D3D12_CLEAR_VALUE* const clearValue,
+	                 const uint32_t initialState) :
+		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+	                      D3D12_HEAP_FLAG_NONE,
+	                      CD3DX12_RESOURCE_DESC::Tex2D(format,
+	                                                   width,
+	                                                   height,
+	                                                   static_cast<uint16_t>(arraySize),
+	                                                   static_cast<uint16_t>(mipLevels),
+	                                                   1,
+	                                                   0,
+	                                                   resFlags),
+	                      stateTracking,
+	                      static_cast<D3D12_RESOURCE_STATES>(initialState),
+	                      clearValue),
 		width(width),
 		height(height),
 		arraySize(arraySize),
@@ -19,10 +39,11 @@ namespace Gear::Core::D3D12Resource
 		transitionState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels)),
 		pendingState(makeUnique<States>(D3D12_RESOURCE_STATE_UNKNOWN, mipLevels))
 	{
-
 	}
 
-	Texture::Texture(const ComPtr<ID3D12Resource>& texture, const bool stateTracking, const uint32_t initialState) :
+	Texture::Texture(const ComPtr<ID3D12Resource>& texture,
+	                 const bool stateTracking,
+	                 const uint32_t initialState) :
 		D3D12ResourceBase(texture, stateTracking)
 	{
 		D3D12_RESOURCE_DESC desc = getResource()->GetDesc();
@@ -90,7 +111,8 @@ namespace Gear::Core::D3D12Resource
 		}
 	}
 
-	void Texture::transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers, std::vector<D3D12ResourceBase*>& pendingResources)
+	void Texture::transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers,
+	                         std::vector<D3D12ResourceBase*>& pendingResources)
 	{
 		//检查transitionState的每个mipslice的状态
 		//如果它们都是相同的，那么把allState设置为那个状态
@@ -98,7 +120,9 @@ namespace Gear::Core::D3D12Resource
 		{
 			const uint32_t tempState = transitionState->mipLevelStates[0];
 
-			const bool uniformState = ((tempState == D3D12_RESOURCE_STATE_UNKNOWN) ? false : transitionState->allOfEqual(tempState));
+			const bool uniformState =
+				((tempState == D3D12_RESOURCE_STATE_UNKNOWN) ? false :
+			                                                   transitionState->allOfEqual(tempState));
 
 			if (uniformState)
 			{
@@ -124,14 +148,17 @@ namespace Gear::Core::D3D12Resource
 						barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 						barrier.Transition.pResource = getResource();
 						barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-						barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(internalState->allState);
-						barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(transitionState->allState);
+						barrier.Transition.StateBefore =
+							static_cast<D3D12_RESOURCE_STATES>(internalState->allState);
+						barrier.Transition.StateAfter =
+							static_cast<D3D12_RESOURCE_STATES>(transitionState->allState);
 
 						resourceBarriers.push_back(barrier);
 
 						internalState->set(transitionState->allState);
 					}
-					else if (internalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+					else if (internalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+					         transitionState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 					{
 						resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 					}
@@ -165,16 +192,19 @@ namespace Gear::Core::D3D12Resource
 							{
 								finalStateChecking = true;
 
-								pendingState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+								pendingState->mipLevelStates[mipSlice] =
+									transitionState->mipLevelStates[mipSlice];
 
-								internalState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+								internalState->mipLevelStates[mipSlice] =
+									transitionState->mipLevelStates[mipSlice];
 
 								pushToPendingList(pendingResources);
 							}
 							//已知
 							else
 							{
-								if (!Utils::Math::bitFlagSubset(internalState->mipLevelStates[mipSlice], transitionState->mipLevelStates[mipSlice]))
+								if (!Utils::Math::bitFlagSubset(internalState->mipLevelStates[mipSlice],
+								                                transitionState->mipLevelStates[mipSlice]))
 								{
 									finalStateChecking = true;
 
@@ -186,17 +216,27 @@ namespace Gear::Core::D3D12Resource
 											barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 											barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 											barrier.Transition.pResource = getResource();
-											barrier.Transition.Subresource = D3D12CalcSubresource(mipSlice, arraySlice, planeSlice, mipLevels, arraySize);
-											barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(internalState->mipLevelStates[mipSlice]);
-											barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(transitionState->mipLevelStates[mipSlice]);
+											barrier.Transition.Subresource = D3D12CalcSubresource(
+												mipSlice, arraySlice, planeSlice, mipLevels, arraySize);
+											barrier.Transition.StateBefore =
+												static_cast<D3D12_RESOURCE_STATES>(
+													internalState->mipLevelStates[mipSlice]);
+											barrier.Transition.StateAfter =
+												static_cast<D3D12_RESOURCE_STATES>(
+													transitionState->mipLevelStates[mipSlice]);
 
 											resourceBarriers.push_back(barrier);
 										}
 									}
 
-									internalState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+									internalState->mipLevelStates[mipSlice] =
+										transitionState->mipLevelStates[mipSlice];
 								}
-								else if (!insertUAVBarrier && internalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+								else if (!insertUAVBarrier &&
+								         internalState->mipLevelStates[mipSlice] ==
+								             D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+								         transitionState->mipLevelStates[mipSlice] ==
+								             D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 								{
 									resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 
@@ -228,14 +268,17 @@ namespace Gear::Core::D3D12Resource
 						barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 						barrier.Transition.pResource = getResource();
 						barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-						barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(internalState->allState);
-						barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(transitionState->allState);
+						barrier.Transition.StateBefore =
+							static_cast<D3D12_RESOURCE_STATES>(internalState->allState);
+						barrier.Transition.StateAfter =
+							static_cast<D3D12_RESOURCE_STATES>(transitionState->allState);
 
 						resourceBarriers.push_back(barrier);
 
 						internalState->set(transitionState->allState);
 					}
-					else if (internalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+					else if (internalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+					         transitionState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 					{
 						resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 					}
@@ -260,16 +303,19 @@ namespace Gear::Core::D3D12Resource
 						{
 							finalStateChecking = true;
 
-							pendingState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+							pendingState->mipLevelStates[mipSlice] =
+								transitionState->mipLevelStates[mipSlice];
 
-							internalState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+							internalState->mipLevelStates[mipSlice] =
+								transitionState->mipLevelStates[mipSlice];
 
 							pushToPendingList(pendingResources);
 						}
 						//已知
 						else
 						{
-							if (!Utils::Math::bitFlagSubset(internalState->mipLevelStates[mipSlice], transitionState->mipLevelStates[mipSlice]))
+							if (!Utils::Math::bitFlagSubset(internalState->mipLevelStates[mipSlice],
+							                                transitionState->mipLevelStates[mipSlice]))
 							{
 								finalStateChecking = true;
 
@@ -281,17 +327,25 @@ namespace Gear::Core::D3D12Resource
 										barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 										barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 										barrier.Transition.pResource = getResource();
-										barrier.Transition.Subresource = D3D12CalcSubresource(mipSlice, arraySlice, planeSlice, mipLevels, arraySize);
-										barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(internalState->mipLevelStates[mipSlice]);
-										barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(transitionState->mipLevelStates[mipSlice]);
+										barrier.Transition.Subresource = D3D12CalcSubresource(
+											mipSlice, arraySlice, planeSlice, mipLevels, arraySize);
+										barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(
+											internalState->mipLevelStates[mipSlice]);
+										barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(
+											transitionState->mipLevelStates[mipSlice]);
 
 										resourceBarriers.push_back(barrier);
 									}
 								}
 
-								internalState->mipLevelStates[mipSlice] = transitionState->mipLevelStates[mipSlice];
+								internalState->mipLevelStates[mipSlice] =
+									transitionState->mipLevelStates[mipSlice];
 							}
-							else if (!insertUAVBarrier && internalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+							else if (!insertUAVBarrier &&
+							         internalState->mipLevelStates[mipSlice] ==
+							             D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+							         transitionState->mipLevelStates[mipSlice] ==
+							             D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 							{
 								resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 
@@ -313,7 +367,8 @@ namespace Gear::Core::D3D12Resource
 		{
 			const uint32_t tempState = internalState->mipLevelStates[0];
 
-			const bool uniformState = ((tempState == D3D12_RESOURCE_STATE_UNKNOWN) ? false : internalState->allOfEqual(tempState));
+			const bool uniformState =
+				((tempState == D3D12_RESOURCE_STATE_UNKNOWN) ? false : internalState->allOfEqual(tempState));
 
 			if (uniformState)
 			{
@@ -334,7 +389,8 @@ namespace Gear::Core::D3D12Resource
 		{
 			const uint32_t tempState = pendingState->mipLevelStates[0];
 
-			const bool uniformState = ((tempState == D3D12_RESOURCE_STATE_UNKNOWN) ? false : pendingState->allOfEqual(tempState));
+			const bool uniformState =
+				((tempState == D3D12_RESOURCE_STATE_UNKNOWN) ? false : pendingState->allOfEqual(tempState));
 
 			if (uniformState)
 			{
@@ -358,12 +414,15 @@ namespace Gear::Core::D3D12Resource
 						barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 						barrier.Transition.pResource = getResource();
 						barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-						barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->allState);
-						barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState->allState);
+						barrier.Transition.StateBefore =
+							static_cast<D3D12_RESOURCE_STATES>(globalState->allState);
+						barrier.Transition.StateAfter =
+							static_cast<D3D12_RESOURCE_STATES>(pendingState->allState);
 
 						resourceBarriers.push_back(barrier);
 					}
-					else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+					else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+					         pendingState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 					{
 						resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 					}
@@ -386,21 +445,27 @@ namespace Gear::Core::D3D12Resource
 									barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 									barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 									barrier.Transition.pResource = getResource();
-									barrier.Transition.Subresource = D3D12CalcSubresource(mipSlice, arraySlice, planeSlice, mipLevels, arraySize);
-									barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->mipLevelStates[mipSlice]);
-									barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState->mipLevelStates[mipSlice]);
+									barrier.Transition.Subresource = D3D12CalcSubresource(
+										mipSlice, arraySlice, planeSlice, mipLevels, arraySize);
+									barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(
+										globalState->mipLevelStates[mipSlice]);
+									barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(
+										pendingState->mipLevelStates[mipSlice]);
 
 									resourceBarriers.push_back(barrier);
 								}
 							}
 						}
-						else if (!insertUAVBarrier && globalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+						else if (!insertUAVBarrier &&
+						         globalState->mipLevelStates[mipSlice] ==
+						             D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+						         pendingState->mipLevelStates[mipSlice] ==
+						             D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 						{
 							resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 
 							insertUAVBarrier = true;
 						}
-
 					}
 				}
 			}
@@ -414,12 +479,15 @@ namespace Gear::Core::D3D12Resource
 					barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 					barrier.Transition.pResource = getResource();
 					barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-					barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->allState);
-					barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState->allState);
+					barrier.Transition.StateBefore =
+						static_cast<D3D12_RESOURCE_STATES>(globalState->allState);
+					barrier.Transition.StateAfter =
+						static_cast<D3D12_RESOURCE_STATES>(pendingState->allState);
 
 					resourceBarriers.push_back(barrier);
 				}
-				else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+				else if (globalState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+				         pendingState->allState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 				{
 					resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 				}
@@ -448,15 +516,22 @@ namespace Gear::Core::D3D12Resource
 									barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 									barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 									barrier.Transition.pResource = getResource();
-									barrier.Transition.Subresource = D3D12CalcSubresource(mipSlice, arraySlice, planeSlice, mipLevels, arraySize);
-									barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(globalState->mipLevelStates[mipSlice]);
-									barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(pendingState->mipLevelStates[mipSlice]);
+									barrier.Transition.Subresource = D3D12CalcSubresource(
+										mipSlice, arraySlice, planeSlice, mipLevels, arraySize);
+									barrier.Transition.StateBefore = static_cast<D3D12_RESOURCE_STATES>(
+										globalState->mipLevelStates[mipSlice]);
+									barrier.Transition.StateAfter = static_cast<D3D12_RESOURCE_STATES>(
+										pendingState->mipLevelStates[mipSlice]);
 
 									resourceBarriers.push_back(barrier);
 								}
 							}
 						}
-						else if (!insertUAVBarrier && globalState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState->mipLevelStates[mipSlice] == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+						else if (!insertUAVBarrier &&
+						         globalState->mipLevelStates[mipSlice] ==
+						             D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+						         pendingState->mipLevelStates[mipSlice] ==
+						             D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 						{
 							resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 
@@ -545,7 +620,8 @@ namespace Gear::Core::D3D12Resource
 			{
 				transitionState->allState = D3D12_RESOURCE_STATE_UNKNOWN;
 
-				transitionState->mipLevelStates[mipSlice] = (transitionState->mipLevelStates[mipSlice] | state);
+				transitionState->mipLevelStates[mipSlice] =
+					(transitionState->mipLevelStates[mipSlice] | state);
 			}
 		}
 		else

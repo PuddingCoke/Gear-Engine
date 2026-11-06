@@ -11,11 +11,11 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include<cstdint>
+#include <cstdint>
 
-#include<functional>
+#include <functional>
 
-#include<Windows.h>
+#include <Windows.h>
 
 namespace Gear::Input::Keyboard
 {

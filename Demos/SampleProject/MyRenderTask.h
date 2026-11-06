@@ -1,10 +1,10 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
@@ -12,10 +12,7 @@ public:
 	{
 		pixelShader = Shader::create(L"PixelShader.cso");
 
-		pipelineState = PipelineStateBuilder()
-			.setDefaultFullScreenState()
-			.setPS(*pixelShader)
-			.build();
+		pipelineState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*pixelShader).build();
 	}
 
 	~MyRenderTask()
@@ -42,5 +39,4 @@ private:
 	GraphicsStatePtr pipelineState;
 
 	ShaderPtr pixelShader;
-
 };

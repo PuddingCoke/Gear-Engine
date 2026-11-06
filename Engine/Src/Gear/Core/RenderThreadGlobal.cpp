@@ -1,14 +1,14 @@
-#include<Gear/Core/RenderThreadGlobal.h>
+#include <Gear/Core/RenderThreadGlobal.h>
 
-#include<Gear/Core/Internal/RenderThreadGlobalInternal.h>
+#include <Gear/Core/Internal/RenderThreadGlobalInternal.h>
 
-#include<Gear/Core/Internal/GlobalShaderInternal.h>
+#include <Gear/Core/Internal/GlobalShaderInternal.h>
 
-#include<Gear/Core/Internal/GlobalDescriptorHeapInternal.h>
+#include <Gear/Core/Internal/GlobalDescriptorHeapInternal.h>
 
-#include<Gear/Core/Internal/GlobalRootSignatureInternal.h>
+#include <Gear/Core/Internal/GlobalRootSignatureInternal.h>
 
-#include<Gear/Core/Internal/DynamicCBufferManagerInternal.h>
+#include <Gear/Core/Internal/DynamicCBufferManagerInternal.h>
 
 namespace Gear::Core::RenderThreadGlobal
 {

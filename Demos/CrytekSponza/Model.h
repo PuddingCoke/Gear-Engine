@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Gear/Core/GraphicsContext.h>
+#include <Gear/Core/GraphicsContext.h>
 
 struct Vertex
 {
@@ -15,13 +15,15 @@ class Model
 {
 public:
 
-	Model(const uint32_t materialIndex, const uint32_t indexCount, const uint32_t startIndexLocation, const uint32_t startVertexLocation) :
+	Model(const uint32_t materialIndex,
+	      const uint32_t indexCount,
+	      const uint32_t startIndexLocation,
+	      const uint32_t startVertexLocation) :
 		materialIndex(materialIndex),
 		indexCount(indexCount),
 		startIndexLocation(startIndexLocation),
 		startVertexLocation(startVertexLocation)
 	{
-
 	}
 
 	void draw(GraphicsContext* const context) const
@@ -41,5 +43,4 @@ public:
 	const uint32_t startIndexLocation;
 
 	const uint32_t startVertexLocation;
-
 };

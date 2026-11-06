@@ -3,27 +3,28 @@
 #ifndef _GEAR_EFFECT_SSREFFECT_H_
 #define _GEAR_EFFECT_SSREFFECT_H_
 
-#include"EffectBase.h"
+#include "EffectBase.h"
 
 namespace Gear::Effect
 {
 	CREATESAFETYPE(SSREffect);
 
 	//返回一个包含UV（RG）采样坐标以及能见度（BA）的纹理
-	class SSREffect :public EffectBase
+	class SSREffect : public EffectBase
 	{
 	public:
 
-		static SSREffectPtr create(ResourceManager& refResManager, const uint32_t width, const uint32_t height);
+		static SSREffectPtr create(ResourceManager& refResManager,
+		                           const uint32_t width,
+		                           const uint32_t height);
 
 		SSREffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height);
 
 		~SSREffect();
 
-		RenderTextureView* process(
-			DepthTextureView& depthTexture,
-			RenderTextureView& gPosition,
-			RenderTextureView& gNormal);
+		RenderTextureView* process(DepthTextureView& depthTexture,
+		                           RenderTextureView& gPosition,
+		                           RenderTextureView& gNormal);
 
 		void imGuiCall() override;
 
@@ -44,7 +45,6 @@ namespace Gear::Effect
 		static constexpr DXGI_FORMAT hiZTextureFormat = FMT::R32F;
 
 		static constexpr DXGI_FORMAT outputTextureFormat = FMT::RGBA16UN;
-
 	};
 }
 #endif // !_GEAR_EFFECT_SSREFFECT_H_

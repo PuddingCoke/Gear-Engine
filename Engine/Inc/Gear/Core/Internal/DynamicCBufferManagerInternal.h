@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_DYNAMICCBUFFERMANAGER_INTERNAL_H_
 #define _GEAR_CORE_DYNAMICCBUFFERMANAGER_INTERNAL_H_
 
-#include<Gear/Core/D3D12Core/GraphicsCommandList.h>
+#include <Gear/Core/D3D12Core/GraphicsCommandList.h>
 
 namespace Gear::Core::DynamicCBufferManager::Internal
 {
@@ -11,7 +11,17 @@ namespace Gear::Core::DynamicCBufferManager::Internal
 
 	void release();
 
-	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken()
+		{
+			initialize();
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 
 	void recordCommands(D3D12Core::GraphicsCommandList* const commandList);
 }

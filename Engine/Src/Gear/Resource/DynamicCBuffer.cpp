@@ -1,10 +1,10 @@
-#include<Gear/Resource/DynamicCBuffer.h>
+#include <Gear/Resource/DynamicCBuffer.h>
 
-#include<Gear/Core/DynamicCBufferManager.h>
+#include <Gear/Core/DynamicCBufferManager.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear::Resource
 {
@@ -55,9 +55,10 @@ namespace Gear::Resource
 		}
 #endif // _DEBUG
 
-		* acquireFrameIndex = Graphics::getRenderedFrameCount();
+		*acquireFrameIndex = Graphics::getRenderedFrameCount();
 
-		const DynamicCBufferManager::AvailableLocation& location = DynamicCBufferManager::requestLocation(regionIndex);
+		const DynamicCBufferManager::AvailableLocation& location =
+			DynamicCBufferManager::requestLocation(regionIndex);
 
 		*dataPtr = location.dataPtr;
 
@@ -80,7 +81,7 @@ namespace Gear::Resource
 		}
 #endif // _DEBUG
 
-		* updateFrameIndex = Graphics::getRenderedFrameCount();
+		*updateFrameIndex = Graphics::getRenderedFrameCount();
 
 		memcpy(*dataPtr, data, 256ull << regionIndex);
 	}

@@ -1,14 +1,13 @@
-#include<Gear/Input/Mouse.h>
+#include <Gear/Input/Mouse.h>
 
-#include<Gear/Input/Internal/MouseInternal.h>
+#include <Gear/Input/Internal/MouseInternal.h>
 
-#include<Gear/Input/Internal/InputInternal.h>
+#include <Gear/Input/Internal/InputInternal.h>
 
 namespace Gear::Input::Mouse
 {
 	struct MouseImpl
 	{
-
 		float x = 0.f;
 
 		float y = 0.f;

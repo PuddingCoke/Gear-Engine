@@ -47,16 +47,16 @@ namespace Gear::Core::D3D12Core
 {
 	enum class ShaderType
 	{
-		VERTEX,//顶点
-		HULL,//外壳
-		DOMAIN,//域
-		GEOMETRY,//几何
-		PIXEL,//像素
-		COMPUTE,//计算
-		AMPLIFICATION,//放大
-		MESH,//网格
-		TYPECOUNT,//不包含库类型，因为它没有入口点
-		LIBRARY//库
+		VERTEX, //顶点
+		HULL, //外壳
+		DOMAIN, //域
+		GEOMETRY, //几何
+		PIXEL, //像素
+		COMPUTE, //计算
+		AMPLIFICATION, //放大
+		MESH, //网格
+		TYPECOUNT, //不包含库类型，因为它没有入口点
+		LIBRARY //库
 	};
 }
 

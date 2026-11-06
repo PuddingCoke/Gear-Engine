@@ -1,10 +1,10 @@
 #pragma once
 
-#include<assimp/Importer.hpp>
-#include<assimp/scene.h>
-#include<assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
 struct Vertex
 {
@@ -26,11 +26,13 @@ public:
 
 			for (uint32_t i = 0; i < vertexNum; i++)
 			{
-				vertices.push_back(Vertex{ {mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z},{mesh->mNormals[i].x,mesh->mNormals[i].y,mesh->mNormals[i].z} });
+				vertices.push_back(
+					Vertex{ { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z },
+				            { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z } });
 			}
 
-			vertexBuffer = resManager.createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertexNum,
-				false, false, true, false, true, vertices.data());
+			vertexBuffer = resManager.createStructuredBufferView(
+				sizeof(Vertex), sizeof(Vertex) * vertexNum, false, false, true, false, true, vertices.data());
 		}
 
 		{
@@ -40,7 +42,7 @@ public:
 				DirectX::XMFLOAT4 diffuseColor;
 				DirectX::XMFLOAT4 specularColor;
 				DirectX::XMFLOAT4 padding[13];
-			}property;
+			} property;
 
 			aiColor3D color;
 
@@ -78,5 +80,4 @@ private:
 	BufferViewPtr vertexBuffer;
 
 	ImmutableCBufferPtr materialBuffer;
-
 };

@@ -1,4 +1,4 @@
-#include<Gear/Resource/ImmutableCBuffer.h>
+#include <Gear/Resource/ImmutableCBuffer.h>
 
 namespace Gear::Resource
 {
@@ -45,14 +45,11 @@ namespace Gear::Resource
 
 	ShaderResourceDesc ImmutableCBuffer::getBufferIndex() const
 	{
-		const ShaderResourceDesc desc = {
-		.type = ShaderResourceDesc::BUFFER,
-		.state = ShaderResourceDesc::CBV,
-		.resourceIndex = bufferIndex.get(),
-		.bufferDesc = {
-				.buffer = buffer.get(),
-				.counterBuffer = nullptr
-		} };
+		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
+			                              .state = ShaderResourceDesc::CBV,
+			                              .resourceIndex = bufferIndex.get(),
+			                              .bufferDesc = { .buffer = buffer.get(),
+			                                              .counterBuffer = nullptr } };
 
 		return desc;
 	}

@@ -1,11 +1,19 @@
-#include<Gear/Core/D3D12Resource/Buffer.h>
+#include <Gear/Core/D3D12Resource/Buffer.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear::Core::D3D12Resource
 {
-	Buffer::Buffer(const uint64_t size, const bool stateTracking, const D3D12_RESOURCE_FLAGS resFlags, const uint32_t initialState) :
-		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, CD3DX12_RESOURCE_DESC::Buffer(size, resFlags), stateTracking, static_cast<D3D12_RESOURCE_STATES>(initialState), nullptr),
+	Buffer::Buffer(const uint64_t size,
+	               const bool stateTracking,
+	               const D3D12_RESOURCE_FLAGS resFlags,
+	               const uint32_t initialState) :
+		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+	                      D3D12_HEAP_FLAG_NONE,
+	                      CD3DX12_RESOURCE_DESC::Buffer(size, resFlags),
+	                      stateTracking,
+	                      static_cast<D3D12_RESOURCE_STATES>(initialState),
+	                      nullptr),
 		size(size),
 		globalState(makeShared<uint32_t>(initialState)),
 		internalState(initialState),
@@ -14,7 +22,9 @@ namespace Gear::Core::D3D12Resource
 	{
 	}
 
-	Buffer::Buffer(const ComPtr<ID3D12Resource>& buffer, const bool stateTracking, const uint32_t initialState) :
+	Buffer::Buffer(const ComPtr<ID3D12Resource>& buffer,
+	               const bool stateTracking,
+	               const uint32_t initialState) :
 		D3D12ResourceBase(buffer, stateTracking),
 		globalState(makeShared<uint32_t>(initialState)),
 		internalState(initialState),
@@ -49,7 +59,8 @@ namespace Gear::Core::D3D12Resource
 		}
 	}
 
-	void Buffer::transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers, std::vector<D3D12ResourceBase*>& pendingResources)
+	void Buffer::transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers,
+	                        std::vector<D3D12ResourceBase*>& pendingResources)
 	{
 		if (internalState == D3D12_RESOURCE_STATE_UNKNOWN)
 		{
@@ -73,7 +84,8 @@ namespace Gear::Core::D3D12Resource
 
 			internalState = transitionState;
 		}
-		else if (internalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && transitionState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+		else if (internalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+		         transitionState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 		{
 			resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 		}
@@ -93,7 +105,8 @@ namespace Gear::Core::D3D12Resource
 
 			resourceBarriers.push_back(barrier);
 		}
-		else if (*globalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS && pendingState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+		else if (*globalState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS &&
+		         pendingState == D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
 		{
 			resourceBarriers.push_back(CD3DX12_RESOURCE_BARRIER::UAV(getResource()));
 		}

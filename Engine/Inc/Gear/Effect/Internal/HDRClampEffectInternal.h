@@ -3,7 +3,7 @@
 #ifndef _GEAR_EFFECT_HDRCLAMPEFFECT_INTERNAL_H_
 #define _GEAR_EFFECT_HDRCLAMPEFFECT_INTERNAL_H_
 
-#include"../EffectBase.h"
+#include "../EffectBase.h"
 
 namespace Gear::Effect::HDRClampEffect::Internal
 {
@@ -12,7 +12,17 @@ namespace Gear::Effect::HDRClampEffect::Internal
 
 	void release();
 
-	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken()
+		{
+			initialize();
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 
 }
 

@@ -3,21 +3,22 @@
 #ifndef _GEAR_RESOURCE_SWAPBUFFER_H_
 #define _GEAR_RESOURCE_SWAPBUFFER_H_
 
-#include"BufferView.h"
+#include "BufferView.h"
 
-#include"SwappableBase.h"
+#include "SwappableBase.h"
 
 namespace Gear::Resource
 {
 	CREATESAFETYPE(SwapBuffer);
 
-	class SwapBuffer :public SwappableBase<BufferView>
+	class SwapBuffer : public SwappableBase<BufferView>
 	{
 	public:
 
 		SwapBuffer() = delete;
 
-		SwapBuffer(const std::function<BufferViewPtr(void)>& readBufferFunc, const std::function<BufferViewPtr(void)>& writeBufferFunc);
+		SwapBuffer(const std::function<BufferViewPtr(void)>& readBufferFunc,
+		           const std::function<BufferViewPtr(void)>& writeBufferFunc);
 
 		VertexBufferDesc getVertexBuffer() const;
 
@@ -32,7 +33,6 @@ namespace Gear::Resource
 		operator VertexBufferDesc() const;
 
 		operator IndexBufferDesc() const;
-
 	};
 
 }

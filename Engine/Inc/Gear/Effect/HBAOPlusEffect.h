@@ -3,19 +3,21 @@
 #ifndef _GEAR_EFFECT_HBAOPLUSEFFECT_H_
 #define _GEAR_EFFECT_HBAOPLUSEFFECT_H_
 
-#include<HBAOPlus/GFSDK_SSAO.h>
+#include <HBAOPlus/GFSDK_SSAO.h>
 
-#include"EffectBase.h"
+#include "EffectBase.h"
 
 namespace Gear::Effect
 {
 	CREATESAFETYPE(HBAOPlusEffect);
 
-	class HBAOPlusEffect :public EffectBase
+	class HBAOPlusEffect : public EffectBase
 	{
 	public:
 
-		static HBAOPlusEffectPtr create(ResourceManager& refResManager, const uint32_t width, const uint32_t height);
+		static HBAOPlusEffectPtr create(ResourceManager& refResManager,
+		                                const uint32_t width,
+		                                const uint32_t height);
 
 		HBAOPlusEffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height);
 
@@ -30,7 +32,6 @@ namespace Gear::Effect
 		GFSDK_SSAO_Context_D3D12* aoContext;
 
 		GFSDK_SSAO_Parameters aoParameters;
-
 	};
 }
 

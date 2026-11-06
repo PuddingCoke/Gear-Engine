@@ -3,7 +3,7 @@
 #ifndef _GEAR_RESOURCE_SWAPPABLEBASE_H_
 #define _GEAR_RESOURCE_SWAPPABLEBASE_H_
 
-#include<functional>
+#include <functional>
 
 namespace Gear::Resource
 {
@@ -14,7 +14,8 @@ namespace Gear::Resource
 
 		SwappableBase() = delete;
 
-		SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc);
+		SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc,
+		              const std::function<UniquePtr<T>(void)>& writeObjectFunc);
 
 		virtual ~SwappableBase();
 
@@ -29,11 +30,11 @@ namespace Gear::Resource
 		UniquePtr<T> readObject;
 
 		UniquePtr<T> writeObject;
-
 	};
 
 	template<typename T>
-	inline SwappableBase<T>::SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc, const std::function<UniquePtr<T>(void)>& writeObjectFunc) :
+	inline SwappableBase<T>::SwappableBase(const std::function<UniquePtr<T>(void)>& readObjectFunc,
+	                                       const std::function<UniquePtr<T>(void)>& writeObjectFunc) :
 		readObject(readObjectFunc()), writeObject(writeObjectFunc())
 	{
 	}

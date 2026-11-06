@@ -3,26 +3,28 @@
 #ifndef _GEAR_RESOURCE_DEPTHTEXTUREVIEW_H_
 #define _GEAR_RESOURCE_DEPTHTEXTUREVIEW_H_
 
-#include<Gear/Core/D3D12Resource/Texture.h>
+#include <Gear/Core/D3D12Resource/Texture.h>
 
-#include"ResourceBase.h"
+#include "ResourceBase.h"
 
 namespace Gear::Resource
 {
 	CREATESAFETYPE(DepthTextureView);
 
-	class DepthTextureView :public ResourceBase
+	class DepthTextureView : public ResourceBase
 	{
 	public:
 
 		DepthTextureView() = delete;
 
 		//支持的类型
-		//R32_TYPELESS 
-		//R16_TYPELESS 
-		//R32G8X24_TYPELESS 
+		//R32_TYPELESS
+		//R16_TYPELESS
+		//R32G8X24_TYPELESS
 		//R24G8_TYPELESS
-		DepthTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent);
+		DepthTextureView(D3D12Resource::TexturePtr texturePtr,
+		                 const bool isTextureCube,
+		                 const bool persistent);
 
 		DepthTextureView(const DepthTextureView&);
 

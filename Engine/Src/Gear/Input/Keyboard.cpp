@@ -1,14 +1,13 @@
-#include<Gear/Input/Keyboard.h>
+#include <Gear/Input/Keyboard.h>
 
-#include<Gear/Input/Internal/KeyboardInternal.h>
+#include <Gear/Input/Internal/KeyboardInternal.h>
 
-#include<Gear/Input/Internal/InputInternal.h>
+#include <Gear/Input/Internal/InputInternal.h>
 
 namespace Gear::Input::Keyboard
 {
 	struct KeyboardImpl
 	{
-
 		static constexpr size_t maxKey = 512;
 
 		Event keyDownEvents[maxKey] = {};
@@ -23,7 +22,6 @@ namespace Gear::Input::Keyboard
 	{
 		void resetDeltaValue()
 		{
-			
 		}
 
 		void pressKey(const Key key)

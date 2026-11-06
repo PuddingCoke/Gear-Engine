@@ -1,10 +1,10 @@
-#include<Gear/Utils/Color.h>
+#include <Gear/Utils/Color.h>
 
-#include<Gear/Utils/Random.h>
+#include <Gear/Utils/Random.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
-#include<memory.h>
+#include <memory.h>
 
 namespace Gear::Utils
 {
@@ -13,22 +13,21 @@ namespace Gear::Utils
 		memcpy(&r, color, sizeof(float) * 4);
 	}
 
-	Color::Color(const float r, const float g, const float b, const float a) :
-		r(r), g(g), b(b), a(a)
+	Color::Color(const float r, const float g, const float b, const float a) : r(r), g(g), b(b), a(a)
 	{
 	}
 
 	uint32_t Color::toUint() const
 	{
 		return (static_cast<uint32_t>(Math::clamp(255.f * a, 0.f, 255.f)) << 24) |
-			(static_cast<uint32_t>(Math::clamp(255.f * b, 0.f, 255.f)) << 16) |
-			(static_cast<uint32_t>(Math::clamp(255.f * g, 0.f, 255.f)) << 8) |
-			(static_cast<uint32_t>(Math::clamp(255.f * r, 0.f, 255.f)));
+		       (static_cast<uint32_t>(Math::clamp(255.f * b, 0.f, 255.f)) << 16) |
+		       (static_cast<uint32_t>(Math::clamp(255.f * g, 0.f, 255.f)) << 8) |
+		       (static_cast<uint32_t>(Math::clamp(255.f * r, 0.f, 255.f)));
 	}
 
 	Color Color::random()
 	{
-		return { Random::genFloat(),Random::genFloat() ,Random::genFloat(),1.f };
+		return { Random::genFloat(), Random::genFloat(), Random::genFloat(), 1.f };
 	}
 
 	Color Color::hsvToRgb(const Color& c)
@@ -48,15 +47,27 @@ namespace Gear::Utils
 		switch (i % 6)
 		{
 		default:
-		case 0: r = c.b, g = t, b = p; break;
-		case 1: r = q, g = c.b, b = p; break;
-		case 2: r = p, g = c.b, b = t; break;
-		case 3: r = p, g = q, b = c.b; break;
-		case 4: r = t, g = p, b = c.b; break;
-		case 5: r = c.b, g = p, b = q; break;
+		case 0:
+			r = c.b, g = t, b = p;
+			break;
+		case 1:
+			r = q, g = c.b, b = p;
+			break;
+		case 2:
+			r = p, g = c.b, b = t;
+			break;
+		case 3:
+			r = p, g = q, b = c.b;
+			break;
+		case 4:
+			r = t, g = p, b = c.b;
+			break;
+		case 5:
+			r = c.b, g = p, b = q;
+			break;
 		}
 
-		return { r,g,b,1.f };
+		return { r, g, b, 1.f };
 	}
 
 	bool Color::operator==(const Color& color) const
@@ -69,7 +80,7 @@ namespace Gear::Utils
 		return toUint() != color.toUint();
 	}
 
-	Color::operator const float* () const
+	Color::operator const float*() const
 	{
 		return reinterpret_cast<const float*>(this);
 	}

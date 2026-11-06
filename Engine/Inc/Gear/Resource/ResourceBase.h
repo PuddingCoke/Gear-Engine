@@ -3,13 +3,13 @@
 #ifndef _GEAR_RESOURCE_RESOURCEBASE_H_
 #define _GEAR_RESOURCE_RESOURCEBASE_H_
 
-#include<Gear/Core/GlobalDescriptorHeap.h>
+#include <Gear/Core/GlobalDescriptorHeap.h>
 
-#include<Gear/Core/LocalDescriptorHeap.h>
+#include <Gear/Core/LocalDescriptorHeap.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
-#include"PipelineResourceDesc.h"
+#include "PipelineResourceDesc.h"
 
 namespace Gear::Resource
 {
@@ -67,7 +67,6 @@ namespace Gear::Resource
 
 		//对于非持久性资源的拷贝开始位置
 		D3D12Core::DescriptorHandle copySrcDescriptorHandle;
-
 	};
 }
 

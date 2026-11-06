@@ -1,6 +1,6 @@
 #pragma once
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
 class TextBatch
 {
@@ -8,7 +8,14 @@ public:
 
 	TextBatch(ResourceManager& resManager, const File::Path& filePath);
 
-	void drawText(const wchar_t ch, const float x, const float y, const float z, const float r, const float g, const float b, const float a);
+	void drawText(const wchar_t ch,
+	              const float x,
+	              const float y,
+	              const float z,
+	              const float r,
+	              const float g,
+	              const float b,
+	              const float a);
 
 	void render(GraphicsContext& context, RenderTextureView& outputTexture);
 
@@ -72,5 +79,4 @@ private:
 	};
 
 	std::unordered_map<wchar_t, const Character> characterMap;
-
 };

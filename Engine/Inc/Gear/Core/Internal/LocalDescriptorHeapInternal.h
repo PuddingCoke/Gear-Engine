@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_LOCALDESCRIPTORHEAP_INTERNAL_H_
 #define _GEAR_CORE_LOCALDESCRIPTORHEAP_INTERNAL_H_
 
-#include<cstdint>
+#include <cstdint>
 
 namespace Gear::Core::LocalDescriptorHeap::Internal
 {
@@ -11,7 +11,17 @@ namespace Gear::Core::LocalDescriptorHeap::Internal
 
 	void release();
 
-	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken()
+		{
+			initialize();
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 
 	constexpr uint32_t numStagingResourceDescriptors = 2000000u;
 

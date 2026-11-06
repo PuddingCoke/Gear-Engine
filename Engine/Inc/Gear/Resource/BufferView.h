@@ -3,22 +3,30 @@
 #ifndef _GEAR_RESOURCE_BUFFERVIEW_H_
 #define _GEAR_RESOURCE_BUFFERVIEW_H_
 
-#include<Gear/Core/D3D12Resource/UploadHeap.h>
+#include <Gear/Core/D3D12Resource/UploadHeap.h>
 
-#include"CounterBufferView.h"
+#include "CounterBufferView.h"
 
 namespace Gear::Resource
 {
 	CREATESAFETYPE(BufferView);
 
 	//多用途缓冲
-	class BufferView :public ResourceBase
+	class BufferView : public ResourceBase
 	{
 	public:
 
 		BufferView() = delete;
 
-		BufferView(D3D12Resource::BufferPtr bufferPtr, const uint32_t structureByteStride, const DXGI_FORMAT format, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent);
+		BufferView(D3D12Resource::BufferPtr bufferPtr,
+		           const uint32_t structureByteStride,
+		           const DXGI_FORMAT format,
+		           const bool createSRV,
+		           const bool createUAV,
+		           const bool createVBV,
+		           const bool createIBV,
+		           const bool cpuWritable,
+		           const bool persistent);
 
 		BufferView(const BufferView&);
 

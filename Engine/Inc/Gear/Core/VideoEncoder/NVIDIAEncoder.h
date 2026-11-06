@@ -3,9 +3,9 @@
 #ifndef _GEAR_CORE_VIDEOENCODER_NVIDIAENCODER_H_
 #define _GEAR_CORE_VIDEOENCODER_NVIDIAENCODER_H_
 
-#include"Encoder.h"
+#include "Encoder.h"
 
-#include<NvEnc/nvEncodeAPI.h>
+#include <NvEnc/nvEncodeAPI.h>
 
 //基本的工作流程
 
@@ -29,7 +29,7 @@
 
 namespace Gear::Core::VideoEncoder
 {
-	class NVIDIAEncoder :public Encoder
+	class NVIDIAEncoder : public Encoder
 	{
 	public:
 
@@ -114,7 +114,6 @@ namespace Gear::Core::VideoEncoder
 		std::thread workerThread;
 
 		std::atomic<bool> encoding;
-
 	};
 }
 

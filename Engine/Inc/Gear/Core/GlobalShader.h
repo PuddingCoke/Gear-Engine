@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_GLOBALSHADER_H_
 #define _GEAR_CORE_GLOBALSHADER_H_
 
-#include"D3D12Core/Shader.h"
+#include "D3D12Core/Shader.h"
 
 namespace Gear::Core::GlobalShader
 {

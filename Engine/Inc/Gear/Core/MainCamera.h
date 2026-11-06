@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_MAINCAMERA_H_
 #define _GEAR_CORE_MAINCAMERA_H_
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear::Core::MainCamera
 {
@@ -21,7 +21,9 @@ namespace Gear::Core::MainCamera
 
 	void setProj(const float fov, const float aspectRatio, const float zNear, const float zFar);
 
-	void setView(const DirectX::XMVECTOR& cameraPos, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up);
+	void setView(const DirectX::XMVECTOR& cameraPos,
+	             const DirectX::XMVECTOR& focus,
+	             const DirectX::XMVECTOR& up);
 
 	void setProj(const DirectX::XMMATRIX& proj);
 

@@ -1,14 +1,14 @@
-#include<directx/d3d12shader.h>
+#include <directx/d3d12shader.h>
 
-#include<dxccompiler/dxcapi.h>
+#include <dxccompiler/dxcapi.h>
 
-#include<wrl/client.h>
+#include <wrl/client.h>
 
-#include<vector>
+#include <vector>
 
-#include<cwctype>
+#include <cwctype>
 
-#include"HeaderWriter.h"
+#include "HeaderWriter.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -205,7 +205,8 @@ int wmain(int argc, const wchar_t* argv[])
 
 	ComPtr<IDxcBlobEncoding> textBlob;
 
-	utils->CreateBlobFromPinned(byteCode.data(), static_cast<uint32_t>(byteCode.size()), DXC_CP_UTF8, &textBlob);
+	utils->CreateBlobFromPinned(
+		byteCode.data(), static_cast<uint32_t>(byteCode.size()), DXC_CP_UTF8, &textBlob);
 
 	DxcBuffer source = {};
 	source.Ptr = textBlob->GetBufferPointer();
@@ -214,7 +215,8 @@ int wmain(int argc, const wchar_t* argv[])
 
 	ComPtr<IDxcResult> result;
 
-	compiler->Compile(&source, args->GetArguments(), args->GetCount(), includeHanlder.Get(), IID_PPV_ARGS(&result));
+	compiler->Compile(
+		&source, args->GetArguments(), args->GetCount(), includeHanlder.Get(), IID_PPV_ARGS(&result));
 
 	ComPtr<IDxcBlobUtf8> errors{};
 
@@ -292,7 +294,8 @@ int wmain(int argc, const wchar_t* argv[])
 			memberType->GetDesc(&memberDesc);
 
 			//根据vectorSize和memberDesc.type推导类型
-			if (memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_SCALAR || memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_VECTOR)
+			if (memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_SCALAR ||
+			    memberDesc.Class == D3D_SHADER_VARIABLE_CLASS::D3D_SVC_VECTOR)
 			{
 				const uint32_t vectorSize = memberDesc.Columns * memberDesc.Rows * 4;
 
@@ -413,19 +416,19 @@ int wmain(int argc, const wchar_t* argv[])
 
 			const std::wstring lowerCamelName = concatenate(lowerCamelSubName);
 
-			registerPair.push_back(std::pair<std::wstring, uint32_t>
-				(lowerCamelName + L"Register", getRegisterValue(splitResult.back())));
+			registerPair.push_back(std::pair<std::wstring, uint32_t>(lowerCamelName + L"Register",
+			                                                         getRegisterValue(splitResult.back())));
 
 			//通过GLOBAL关键词进行识别
 			if (vectorHas(subName, L"GLOBAL"))
 			{
-				globalParameterPair.push_back(std::pair<std::wstring, uint32_t>
-					(lowerCamelName + L"ParameterIndex", rootParameterIndex));
+				globalParameterPair.push_back(std::pair<std::wstring, uint32_t>(
+					lowerCamelName + L"ParameterIndex", rootParameterIndex));
 			}
 			else
 			{
-				localParameterPair.push_back(std::pair<std::wstring, uint32_t>
-					(lowerCamelName + L"ParameterIndex", 0u));
+				localParameterPair.push_back(
+					std::pair<std::wstring, uint32_t>(lowerCamelName + L"ParameterIndex", 0u));
 			}
 
 			rootParameterIndex++;

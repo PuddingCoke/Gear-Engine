@@ -1,6 +1,6 @@
-#include<Gear/Core/D3D12Core/Shader.h>
+#include <Gear/Core/D3D12Core/Shader.h>
 
-#include<Gear/Core/D3D12Core/DXCCompiler.h>
+#include <Gear/Core/D3D12Core/DXCCompiler.h>
 
 namespace Gear::Core::D3D12Core
 {
@@ -75,6 +75,6 @@ namespace Gear::Core::D3D12Core
 
 	D3D12_SHADER_BYTECODE Shader::getByteCode() const
 	{
-		return D3D12_SHADER_BYTECODE{ shaderBlob->GetBufferPointer(),shaderBlob->GetBufferSize() };
+		return D3D12_SHADER_BYTECODE{ shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize() };
 	}
 }

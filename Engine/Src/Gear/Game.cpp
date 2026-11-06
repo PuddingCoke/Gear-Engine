@@ -1,6 +1,6 @@
-#include<Gear/Game.h>
+#include <Gear/Game.h>
 
-#include<Gear/Core/RenderEngine.h>
+#include <Gear/Core/RenderEngine.h>
 
 namespace Gear
 {

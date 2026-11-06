@@ -1,8 +1,8 @@
-#include<Gear/Utils/DeltaTimeEstimator.h>
+#include <Gear/Utils/DeltaTimeEstimator.h>
 
-#include<algorithm>
+#include <algorithm>
 
-#include<numeric>
+#include <numeric>
 
 namespace Gear::Utils
 {
@@ -28,7 +28,8 @@ namespace Gear::Utils
 
 		if (!populated)
 		{
-			const float sumTime = std::accumulate(historyDeltatime, historyDeltatime + historyDeltaTimeIndex, 0.f);
+			const float sumTime =
+				std::accumulate(historyDeltatime, historyDeltatime + historyDeltaTimeIndex, 0.f);
 
 			frameRate = historyDeltaTimeIndex / sumTime;
 
@@ -39,7 +40,8 @@ namespace Gear::Utils
 
 		std::sort(sortedDeltaTime, sortedDeltaTime + numRecord);
 
-		const float sumTime = std::accumulate(sortedDeltaTime + numDiscard, sortedDeltaTime + numRecord - numDiscard, 0.f);
+		const float sumTime =
+			std::accumulate(sortedDeltaTime + numDiscard, sortedDeltaTime + numRecord - numDiscard, 0.f);
 
 		const float averageDeltaTime = sumTime / (numRecord - 2 * numDiscard);
 

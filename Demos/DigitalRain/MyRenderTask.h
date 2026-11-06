@@ -1,28 +1,37 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-#include"TextBatch.h"
+#include "TextBatch.h"
 
-#include"Rain.h"
+#include "Rain.h"
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
 	MyRenderTask() :
 		textBatch(makeUnique<TextBatch>(*resManager, L"characters.fnt")),
-		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
-			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black)),
+		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(),
+	                                                         Graphics::getHeight(),
+	                                                         FMT::RGBA16F,
+	                                                         1,
+	                                                         1,
+	                                                         false,
+	                                                         true,
+	                                                         DirectX::Colors::Black)),
 		bloomEffect(BloomEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight()))
 	{
 		Rain::stride = static_cast<int>(textBatch->getFontSize());
 
 		for (size_t i = 0; i < Graphics::getWidth() / Rain::stride; i++)
 		{
-			rains.push_back(Rain((Graphics::getWidth() - Graphics::getWidth() / Rain::stride * Rain::stride) / 2 + i * Rain::stride + Rain::stride / 2.f, Random::genUint() % 6 + 8));
+			rains.push_back(
+				Rain((Graphics::getWidth() - Graphics::getWidth() / Rain::stride * Rain::stride) / 2 +
+			             i * Rain::stride + Rain::stride / 2.f,
+			         Random::genUint() % 6 + 8));
 		}
 
 		Graphics::setGamma(1.0f);
@@ -34,7 +43,6 @@ public:
 
 	~MyRenderTask()
 	{
-
 	}
 
 	void imGuiCall() override
@@ -70,13 +78,17 @@ protected:
 		{
 			const float headColor = colorFactor * 1.25f;
 
-			textBatch->drawText(rain.character[0], rain.x, rain.y, 0.f, headColor, headColor, headColor * goldenFactor, 1);
+			textBatch->drawText(
+				rain.character[0], rain.x, rain.y, 0.f, headColor, headColor, headColor * goldenFactor, 1);
 
 			for (uint32_t j = 1; j < rain.character.size(); j++)
 			{
-				const float trailColor = colorFactor * std::pow((1.f - static_cast<float>(j) / rain.character.size()), rainFadePow);
+				const float trailColor =
+					colorFactor *
+					std::pow((1.f - static_cast<float>(j) / rain.character.size()), rainFadePow);
 
-				textBatch->drawText(rain.character[j], rain.x, rain.y + Rain::stride * j, 0.f, 0.f, trailColor, 0.f, 1.0f);
+				textBatch->drawText(
+					rain.character[j], rain.x, rain.y + Rain::stride * j, 0.f, 0.f, trailColor, 0.f, 1.0f);
 			}
 		}
 
@@ -110,5 +122,4 @@ private:
 	float goldenFactor = 0.825f;
 
 	bool logicRunning = true;
-
 };

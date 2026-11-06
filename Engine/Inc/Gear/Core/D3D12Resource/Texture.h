@@ -3,13 +3,13 @@
 #ifndef _GEAR_CORE_D3D12RESOURCE_TEXTURE_H_
 #define _GEAR_CORE_D3D12RESOURCE_TEXTURE_H_
 
-#include"D3D12ResourceBase.h"
+#include "D3D12ResourceBase.h"
 
 namespace Gear::Core::D3D12Resource
 {
 	CREATESAFETYPE(Texture);
 
-	class Texture :public D3D12ResourceBase
+	class Texture : public D3D12ResourceBase
 	{
 	public:
 
@@ -19,7 +19,15 @@ namespace Gear::Core::D3D12Resource
 
 		void operator=(const Texture&) = delete;
 
-		Texture(const uint32_t width, const uint32_t height, const DXGI_FORMAT format, const uint32_t arraySize, const uint32_t mipLevels, const bool stateTracking, const D3D12_RESOURCE_FLAGS resFlags, const D3D12_CLEAR_VALUE* const clearValue = nullptr, const uint32_t initialState = D3D12_RESOURCE_STATE_COPY_DEST);
+		Texture(const uint32_t width,
+		        const uint32_t height,
+		        const DXGI_FORMAT format,
+		        const uint32_t arraySize,
+		        const uint32_t mipLevels,
+		        const bool stateTracking,
+		        const D3D12_RESOURCE_FLAGS resFlags,
+		        const D3D12_CLEAR_VALUE* const clearValue = nullptr,
+		        const uint32_t initialState = D3D12_RESOURCE_STATE_COPY_DEST);
 
 		Texture(const ComPtr<ID3D12Resource>& texture, const bool stateTracking, const uint32_t initialState);
 
@@ -29,7 +37,8 @@ namespace Gear::Core::D3D12Resource
 
 		void updateGlobalStates() override;
 
-		void transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers, std::vector<D3D12ResourceBase*>& pendingResources) override;
+		void transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers,
+		                std::vector<D3D12ResourceBase*>& pendingResources) override;
 
 		void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers) override;
 
@@ -108,7 +117,6 @@ namespace Gear::Core::D3D12Resource
 		UniquePtr<States> transitionState;
 
 		UniquePtr<States> pendingState;
-
 	};
 }
 

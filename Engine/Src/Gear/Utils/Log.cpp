@@ -1,13 +1,12 @@
-#include<Gear/Utils/Log.h>
+#include <Gear/Utils/Log.h>
 
-#include<Gear/Utils/Logger/Logger.h>
+#include <Gear/Utils/Logger/Logger.h>
 
-#include<stdexcept>
+#include <stdexcept>
 
 namespace Gear::Utils::Logger
 {
-	Log::Log(const std::string_view& functionName, const LogType& type) :
-		context(LogContext::get())
+	Log::Log(const std::string_view& functionName, const LogType& type) : context(LogContext::get())
 	{
 		context.createLogMessage(functionName, type);
 	}
@@ -46,7 +45,7 @@ namespace Gear::Utils::Logger
 
 			Logger::submitLogMessage(message);
 
-            throw std::runtime_error(errorStr);
+			throw std::runtime_error(errorStr);
 		}
 		else
 		{

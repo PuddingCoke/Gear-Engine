@@ -1,10 +1,10 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class PostProcessTask :public RenderTask
+class PostProcessTask : public RenderTask
 {
 public:
 
@@ -49,5 +49,4 @@ protected:
 	BloomEffectPtr bloomEffect;
 
 	FXAAEffectPtr fxaaEffect;
-
 };

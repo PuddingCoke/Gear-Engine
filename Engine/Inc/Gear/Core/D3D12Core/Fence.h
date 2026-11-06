@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_D3D12CORE_FENCE_H_
 #define _GEAR_CORE_D3D12CORE_FENCE_H_
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
 namespace Gear::Core::D3D12Core
 {
@@ -39,7 +39,6 @@ namespace Gear::Core::D3D12Core
 		HANDLE fenceEvent;
 
 		std::atomic<uint64_t> currentFenceValue;
-
 	};
 }
 

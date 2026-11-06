@@ -1,4 +1,4 @@
-#include<Gear/Core/D3D12Core/Fence.h>
+#include <Gear/Core/D3D12Core/Fence.h>
 
 namespace Gear::Core::D3D12Core
 {

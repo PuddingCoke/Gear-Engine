@@ -1,34 +1,39 @@
-#include<Gear/Effect/BloomEffect.h>
+#include <Gear/Effect/BloomEffect.h>
 
-#include<Gear/Core/GlobalShader.h>
+#include <Gear/Core/GlobalShader.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Utils/File.h>
+#include <Gear/Utils/File.h>
 
-#include<CompiledShaders/Bloom/BloomFilterPS.h>
+#include <CompiledShaders/Bloom/BloomFilterPS.h>
 
-#include<CompiledShaders/Bloom/BloomFinalPS.h>
+#include <CompiledShaders/Bloom/BloomFinalPS.h>
 
-#include<CompiledShaders/Bloom/BloomVBlurCS.h>
+#include <CompiledShaders/Bloom/BloomVBlurCS.h>
 
-#include<CompiledShaders/Bloom/BloomHBlurCS.h>
+#include <CompiledShaders/Bloom/BloomHBlurCS.h>
 
-#include<CompiledShaders/Bloom/BloomDownSamplePS.h>
+#include <CompiledShaders/Bloom/BloomDownSamplePS.h>
 
-#include<CompiledShaders/Bloom/BloomKarisAveragePS.h>
+#include <CompiledShaders/Bloom/BloomKarisAveragePS.h>
 
 namespace Gear::Effect
 {
-	BloomEffectPtr BloomEffect::create(ResourceManager& refResManager, const uint32_t width, const uint32_t height)
+	BloomEffectPtr BloomEffect::create(ResourceManager& refResManager,
+	                                   const uint32_t width,
+	                                   const uint32_t height)
 	{
 		return makeUnique<BloomEffect>(refResManager, width, height);
 	}
 
 	BloomEffect::BloomEffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height) :
 		EffectBase(refResManager, width, height, FMT::RGBA16F),
-		lensDirtTexture(refResManager.createRenderTextureView(Utils::File::EngineAssetsPath(L"bloom_dirt_mask.png"), true)),
-		filteredTexture(ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16F, 1, 1, false, true))
+		lensDirtTexture(
+			refResManager.createRenderTextureView(Utils::File::EngineAssetsPath(L"bloom_dirt_mask.png"),
+	                                              true)),
+		filteredTexture(
+			ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16F, 1, 1, false, true))
 	{
 		filteredTexture->getTexture()->setName(L"Bloom Effect Filtered Texture");
 
@@ -38,17 +43,17 @@ namespace Gear::Effect
 		bloomKarisAverage = Shader::create(g_BloomKarisAveragePSBytes, sizeof(g_BloomKarisAveragePSBytes));
 
 		{
-			const float sigma[blurSteps] = { 0.44f,0.57f,0.8f,1.32f,3.3f };
+			const float sigma[blurSteps] = { 0.44f, 0.57f, 0.8f, 1.32f, 3.3f };
 
 			for (uint32_t i = 0; i < blurSteps; i++)
 			{
 				const DirectX::XMUINT2 resolutions = DirectX::XMUINT2(width >> (i + 1), height >> (i + 1));
 
-				swapTexture[i] = ResourceManager::createSwapTexture(
-					[=] {
-						return ResourceManager::createRenderTextureView(resolutions.x, resolutions.y, FMT::RGBA16F, 1, 1, false, true);
-					}
-				);
+				swapTexture[i] = ResourceManager::createSwapTexture([=]
+				{
+					return ResourceManager::createRenderTextureView(
+						resolutions.x, resolutions.y, FMT::RGBA16F, 1, 1, false, true);
+				});
 
 				blurParam[i].texelSize = DirectX::XMFLOAT2(1.f / resolutions.x, 1.f / resolutions.y);
 				blurParam[i].iteration = iteration[i];
@@ -72,13 +77,13 @@ namespace Gear::Effect
 		bloomParam.lensDirtIntensity = 1.f;
 
 		auto getDefaultBuilder = []
-			{
-				return PipelineStateBuilder()
-					.setBlendState(PipelineStateHelper::blendReplace)
-					.setVS(*GlobalShader::getFullScreenVS())
-					.setRasterizerState(PipelineStateHelper::rasterCullNone)
-					.setDepthStencilState(PipelineStateHelper::depthCompareNone);
-			};
+		{
+			return PipelineStateBuilder()
+			    .setBlendState(PipelineStateHelper::blendReplace)
+			    .setVS(*GlobalShader::getFullScreenVS())
+			    .setRasterizerState(PipelineStateHelper::rasterCullNone)
+			    .setDepthStencilState(PipelineStateHelper::depthCompareNone);
+		};
 
 		bloomFilterState = getDefaultBuilder().setPS(*bloomFilter).build();
 
@@ -86,13 +91,18 @@ namespace Gear::Effect
 
 		bloomDownSampleState = getDefaultBuilder().setPS(*bloomDownSample).build();
 
-		bloomUpSampleState = getDefaultBuilder().setPS(*GlobalShader::getFullScreenPS()).setBlendState(PipelineStateHelper::blendAddtive).build();
+		bloomUpSampleState = getDefaultBuilder()
+		                         .setPS(*GlobalShader::getFullScreenPS())
+		                         .setBlendState(PipelineStateHelper::blendAddtive)
+		                         .build();
 
 		bloomFinalState = getDefaultBuilder().setPS(*bloomFinal).build();
 
-		bloomHBlurState = PipelineStateBuilder::build(Shader::create(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes)));
+		bloomHBlurState =
+			PipelineStateBuilder::build(Shader::create(g_BloomHBlurCSBytes, sizeof(g_BloomHBlurCSBytes)));
 
-		bloomVBlurState = PipelineStateBuilder::build(Shader::create(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes)));
+		bloomVBlurState =
+			PipelineStateBuilder::build(Shader::create(g_BloomVBlurCSBytes, sizeof(g_BloomVBlurCSBytes)));
 	}
 
 	BloomEffect::~BloomEffect()
@@ -111,18 +121,18 @@ namespace Gear::Effect
 		context->setPipelineState(*bloomFilterState);
 		context->setRenderTargets({ filteredTexture->getRTVMip(0) }, {});
 		SETCONSTS({
-		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
-		context->setPSConstants(5, &bloomParam, co);
-			});
+			context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
+			context->setPSConstants(5, &bloomParam, co);
+		});
 		context->drawQuad();
 
 		context->setViewportSimple(swapTexture[0]->get2Dimension());
 		context->setPipelineState(*bloomKarisAverageState);
 		context->setRenderTargets({ swapTexture[0]->getRTVMip(0) }, {});
 		SETCONSTS({
-		context->setPSConstants({ filteredTexture->getAllSRVIndex() }, co);
-		context->setPSConstants(4, &bloomParam, co);
-			});
+			context->setPSConstants({ filteredTexture->getAllSRVIndex() }, co);
+			context->setPSConstants(4, &bloomParam, co);
+		});
 		context->drawQuad();
 		swapTexture[0]->swap();
 
@@ -132,9 +142,7 @@ namespace Gear::Effect
 		{
 			context->setViewportSimple(swapTexture[i + 1]->get2Dimension());
 			context->setRenderTargets({ swapTexture[i + 1]->getRTVMip(0) }, {});
-			SETCONSTS({
-			context->setPSConstants({ swapTexture[i]->getAllSRVIndex() }, co);
-				});
+			SETCONSTS({ context->setPSConstants({ swapTexture[i]->getAllSRVIndex() }, co); });
 			context->drawQuad();
 			swapTexture[i + 1]->swap();
 		}
@@ -142,10 +150,10 @@ namespace Gear::Effect
 		context->setPipelineState(*bloomHBlurState);
 
 		SETCONSTS({
-		context->setCSConstants({
-			swapTexture[blurSteps - 1]->getAllSRVIndex(),
-			swapTexture[blurSteps - 1]->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ swapTexture[blurSteps - 1]->getAllSRVIndex(),
+			                          swapTexture[blurSteps - 1]->getUAVMipIndex(0) },
+			                        co);
+		});
 
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
@@ -155,10 +163,10 @@ namespace Gear::Effect
 		context->setPipelineState(*bloomVBlurState);
 
 		SETCONSTS({
-		context->setCSConstants({
-			swapTexture[blurSteps - 1]->getAllSRVIndex(),
-			swapTexture[blurSteps - 1]->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ swapTexture[blurSteps - 1]->getAllSRVIndex(),
+			                          swapTexture[blurSteps - 1]->getUAVMipIndex(0) },
+			                        co);
+		});
 
 		context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 1]);
 
@@ -170,10 +178,10 @@ namespace Gear::Effect
 			context->setPipelineState(*bloomHBlurState);
 
 			SETCONSTS({
-			context->setCSConstants({
-				swapTexture[blurSteps - 2 - i]->getAllSRVIndex(),
-				swapTexture[blurSteps - 2 - i]->getUAVMipIndex(0) }, co);
-				});
+				context->setCSConstants({ swapTexture[blurSteps - 2 - i]->getAllSRVIndex(),
+				                          swapTexture[blurSteps - 2 - i]->getUAVMipIndex(0) },
+				                        co);
+			});
 
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
@@ -183,10 +191,10 @@ namespace Gear::Effect
 			context->setPipelineState(*bloomVBlurState);
 
 			SETCONSTS({
-			context->setCSConstants({
-				swapTexture[blurSteps - 2 - i]->getAllSRVIndex(),
-				swapTexture[blurSteps - 2 - i]->getUAVMipIndex(0) }, co);
-				});
+				context->setCSConstants({ swapTexture[blurSteps - 2 - i]->getAllSRVIndex(),
+				                          swapTexture[blurSteps - 2 - i]->getUAVMipIndex(0) },
+				                        co);
+			});
 
 			context->setCSConstantBuffer(*blurParamBuffer[blurSteps - 2 - i]);
 
@@ -195,9 +203,7 @@ namespace Gear::Effect
 			context->setViewportSimple(swapTexture[blurSteps - 2 - i]->get2Dimension());
 			context->setPipelineState(*bloomUpSampleState);
 			context->setRenderTargets({ swapTexture[blurSteps - 2 - i]->getRTVMip(0) }, {});
-			SETCONSTS({
-			context->setPSConstants({ swapTexture[blurSteps - 1 - i]->getAllSRVIndex() }, co);
-				});
+			SETCONSTS({ context->setPSConstants({ swapTexture[blurSteps - 1 - i]->getAllSRVIndex() }, co); });
 			context->drawQuad();
 			swapTexture[blurSteps - 2 - i]->swap();
 		}
@@ -206,12 +212,12 @@ namespace Gear::Effect
 		context->setPipelineState(*bloomFinalState);
 		context->setRenderTargets({ outputTexture->getRTVMip(0) }, {});
 		SETCONSTS({
-		context->setPSConstants({
-			inputTexture.getAllSRVIndex(),
-			swapTexture[0]->getAllSRVIndex(),
-			lensDirtTexture->getAllSRVIndex() }, co);
-		context->setPSConstants(6, &bloomParam, co);
-			});
+			context->setPSConstants({ inputTexture.getAllSRVIndex(),
+			                          swapTexture[0]->getAllSRVIndex(),
+			                          lensDirtTexture->getAllSRVIndex() },
+			                        co);
+			context->setPSConstants(6, &bloomParam, co);
+		});
 		context->drawQuad();
 
 		return outputTexture.get();

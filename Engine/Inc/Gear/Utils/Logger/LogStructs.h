@@ -3,7 +3,7 @@
 #ifndef _GEAR_UTILS_LOGGER_LOGSTRUCTS_H_
 #define _GEAR_UTILS_LOGGER_LOGSTRUCTS_H_
 
-#include<cstdint>
+#include <cstdint>
 
 namespace Gear::Utils::Logger
 {
@@ -17,7 +17,8 @@ namespace Gear::Utils::Logger
 
 	enum class LogIntegerMode
 	{
-		DEC, HEX
+		DEC,
+		HEX
 	};
 
 	struct LogColor
@@ -85,7 +86,9 @@ namespace Gear::Utils::Logger
 		int32_t precision;
 	};
 
-	struct LogNewLine {};
+	struct LogNewLine
+	{
+	};
 }
 
 #endif // !_GEAR_UTILS_LOGGER_LOGSTRUCTS_H_

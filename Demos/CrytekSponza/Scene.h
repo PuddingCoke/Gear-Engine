@@ -4,12 +4,12 @@ const std::string assetPath = "E:/glTF-Sample-Assets/Models/Sponza/glTF/";
 
 const std::wstring wAssetPath = L"E:/glTF-Sample-Assets/Models/Sponza/glTF/";
 
-#include"Model.h"
-#include"Material.h"
+#include "Model.h"
+#include "Material.h"
 
-#include<assimp/Importer.hpp>
-#include<assimp/scene.h>
-#include<assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 class Scene
 {
@@ -19,7 +19,10 @@ public:
 	{
 		Assimp::Importer importer;
 
-		const aiScene* const scene = importer.ReadFile(filePath, aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_ConvertToLeftHanded);
+		const aiScene* const scene = importer.ReadFile(
+			filePath,
+			aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_PreTransformVertices |
+				aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_ConvertToLeftHanded);
 
 		for (uint32_t materialIdx = 0; materialIdx < scene->mNumMaterials; materialIdx++)
 		{
@@ -60,7 +63,8 @@ public:
 				normalPath = assetPath + "dummy_ddn.dds";
 			}
 
-			materials.push_back(makeUnique<Material>(resManager, diffusePath, roughnessMetallicPathPath, normalPath));
+			materials.push_back(
+				makeUnique<Material>(resManager, diffusePath, roughnessMetallicPathPath, normalPath));
 		}
 
 		std::vector<Vertex> vertices;
@@ -148,16 +152,32 @@ public:
 				}
 			}
 
-			models.push_back(makeUnique<Model>(mesh->mMaterialIndex, indexCount, startIndexLocation, startVertexLocation));
+			models.push_back(
+				makeUnique<Model>(mesh->mMaterialIndex, indexCount, startIndexLocation, startVertexLocation));
 
 			startVertexLocation += vertexCount;
 
 			startIndexLocation += indexCount;
 		}
 
-		modelBuffer = resManager.createStructuredBufferView(sizeof(Vertex), sizeof(Vertex) * vertices.size(), true, false, true, false, true, vertices.data());
+		modelBuffer = resManager.createStructuredBufferView(sizeof(Vertex),
+		                                                    sizeof(Vertex) * vertices.size(),
+		                                                    true,
+		                                                    false,
+		                                                    true,
+		                                                    false,
+		                                                    true,
+		                                                    vertices.data());
 
-		indexBuffer = resManager.createTypedBufferView(FMT::R32UI, sizeof(uint32_t) * indices.size(), false, false, false, true, false, true, indices.data());
+		indexBuffer = resManager.createTypedBufferView(FMT::R32UI,
+		                                               sizeof(uint32_t) * indices.size(),
+		                                               false,
+		                                               false,
+		                                               false,
+		                                               true,
+		                                               false,
+		                                               true,
+		                                               indices.data());
 	}
 
 	~Scene()
@@ -200,5 +220,4 @@ private:
 	BufferViewPtr modelBuffer;
 
 	BufferViewPtr indexBuffer;
-
 };

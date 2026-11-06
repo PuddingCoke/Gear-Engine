@@ -1,8 +1,10 @@
-#include<Gear/Core/D3D12Core/ResourceStateTracker.h>
+#include <Gear/Core/D3D12Core/ResourceStateTracker.h>
 
 namespace Gear::Core::D3D12Core
 {
-	void ResourceStateTracker::trackAndSetResourceState(D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state)
+	void ResourceStateTracker::trackAndSetResourceState(D3D12Resource::Texture* const texture,
+	                                                    const uint32_t mipslice,
+	                                                    const uint32_t state)
 	{
 		if (texture->getStateTracking())
 		{
@@ -19,7 +21,8 @@ namespace Gear::Core::D3D12Core
 		}
 	}
 
-	void ResourceStateTracker::trackAndSetResourceState(D3D12Resource::Buffer* const buffer, const uint32_t state)
+	void ResourceStateTracker::trackAndSetResourceState(D3D12Resource::Buffer* const buffer,
+	                                                    const uint32_t state)
 	{
 		if (buffer && buffer->getStateTracking())
 		{

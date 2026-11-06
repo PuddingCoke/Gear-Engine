@@ -1,8 +1,11 @@
-#include<Gear/InitializationParam.h>
+#include <Gear/InitializationParam.h>
 
 namespace Gear
 {
-	InitializationParam InitializationParam::RealTime(const uint32_t width, const uint32_t height, const std::wstring& title, const bool enableImGuiSurface)
+	InitializationParam InitializationParam::RealTime(const uint32_t width,
+	                                                  const uint32_t height,
+	                                                  const std::wstring& title,
+	                                                  const bool enableImGuiSurface)
 	{
 		InitializationParam param = {};
 
@@ -19,7 +22,11 @@ namespace Gear
 		return param;
 	}
 
-	InitializationParam InitializationParam::VideoRender(const uint32_t width, const uint32_t height, const uint32_t seconds, const bool hardWareEncode, const uint32_t maxBFrames)
+	InitializationParam InitializationParam::VideoRender(const uint32_t width,
+	                                                     const uint32_t height,
+	                                                     const uint32_t seconds,
+	                                                     const bool hardWareEncode,
+	                                                     const uint32_t maxBFrames)
 	{
 		InitializationParam param = {};
 
@@ -50,9 +57,9 @@ namespace Gear
 
 		param.title = L"Wallpaper";
 
-		param.width = 0u;//由引擎设置
+		param.width = 0u; //由引擎设置
 
-		param.height = 0u;//由引擎设置
+		param.height = 0u; //由引擎设置
 
 		param.enableImGuiSurface = false;
 

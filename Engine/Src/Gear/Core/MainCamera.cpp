@@ -1,10 +1,9 @@
-#include<Gear/Core/MainCamera.h>
+#include <Gear/Core/MainCamera.h>
 
 namespace Gear::Core::MainCamera
 {
 	struct MainCameraImpl
 	{
-
 		DirectX::XMMATRIX projMatrix = {};
 
 		DirectX::XMMATRIX viewMatrix = {};
@@ -17,7 +16,7 @@ namespace Gear::Core::MainCamera
 
 		float zFar = 0.f;
 
-	}impl;
+	} impl;
 
 	DirectX::XMMATRIX getProj()
 	{
@@ -60,7 +59,9 @@ namespace Gear::Core::MainCamera
 		setProj(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, zNear, zFar));
 	}
 
-	void setView(const DirectX::XMVECTOR& cameraPos, const DirectX::XMVECTOR& focus, const DirectX::XMVECTOR& up)
+	void setView(const DirectX::XMVECTOR& cameraPos,
+	             const DirectX::XMVECTOR& focus,
+	             const DirectX::XMVECTOR& up)
 	{
 		impl.cameraPos = cameraPos;
 

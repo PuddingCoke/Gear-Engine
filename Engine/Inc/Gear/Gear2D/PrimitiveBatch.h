@@ -3,16 +3,16 @@
 #ifndef _GEAR_CORE_GEAR2D_PRIMITIVEBATCH_H_
 #define _GEAR_CORE_GEAR2D_PRIMITIVEBATCH_H_
 
-#include<Gear/Core/ResourceManager.h>
+#include <Gear/Core/ResourceManager.h>
 
-#include<Gear/Core/D3D12Core/Shader.h>
+#include <Gear/Core/D3D12Core/Shader.h>
 
 namespace Gear
 {
 	namespace Core
 	{
 		namespace Gear2D
-		{	
+		{
 			//由于这个类的实现，请为多个渲染目标创建PrimitiveBatch
 			class PrimitiveBatch
 			{
@@ -35,11 +35,32 @@ namespace Gear
 				//call this once frame
 				void end();
 
-				void drawLine(const float x1, const float y1, const float x2, const float y2, const float r, const float g, const float b, const float a = 1.f);
+				void drawLine(const float x1,
+				              const float y1,
+				              const float x2,
+				              const float y2,
+				              const float r,
+				              const float g,
+				              const float b,
+				              const float a = 1.f);
 
-				void drawCircle(const float x, const float y, const float length, const float r, const float g, const float b, const float a = 1.f);
+				void drawCircle(const float x,
+				                const float y,
+				                const float length,
+				                const float r,
+				                const float g,
+				                const float b,
+				                const float a = 1.f);
 
-				void drawRoundCapLine(const float x1, const float y1, const float x2, const float y2, const float width, const float r, const float g, const float b, const float a = 1.f);
+				void drawRoundCapLine(const float x1,
+				                      const float y1,
+				                      const float x2,
+				                      const float y2,
+				                      const float width,
+				                      const float r,
+				                      const float g,
+				                      const float b,
+				                      const float a = 1.f);
 
 				void setLineWidth(const float width);
 
@@ -79,7 +100,14 @@ namespace Gear
 
 					void end(GraphicsContext* const context, ID3D12PipelineState* const pipelineState);
 
-					void addLine(const float x1, const float y1, const float x2, const float y2, const float r, const float g, const float b, const float a);
+					void addLine(const float x1,
+					             const float y1,
+					             const float x2,
+					             const float y2,
+					             const float r,
+					             const float g,
+					             const float b,
+					             const float a);
 
 					Resource::BufferView* vertexBuffer;
 
@@ -103,7 +131,13 @@ namespace Gear
 
 					void end(GraphicsContext* const context, ID3D12PipelineState* const pipelineState);
 
-					void addCircle(const float x, const float y, const float length, const float r, const float g, const float b, const float a);
+					void addCircle(const float x,
+					               const float y,
+					               const float length,
+					               const float r,
+					               const float g,
+					               const float b,
+					               const float a);
 
 					Resource::BufferView* vertexBuffer;
 
@@ -127,7 +161,15 @@ namespace Gear
 
 					void end(GraphicsContext* const context, ID3D12PipelineState* const pipelineState);
 
-					void addRoundCapLine(const float x1, const float y1, const float x2, const float y2, const float width, const float r, const float g, const float b, const float a);
+					void addRoundCapLine(const float x1,
+					                     const float y1,
+					                     const float x2,
+					                     const float y2,
+					                     const float width,
+					                     const float r,
+					                     const float g,
+					                     const float b,
+					                     const float a);
 
 					Resource::BufferView* vertexBuffer;
 
@@ -138,7 +180,6 @@ namespace Gear
 					static constexpr int32_t maxLineNum = 150000;
 
 				} roundCapLineRenderer;
-
 			};
 		}
 	}

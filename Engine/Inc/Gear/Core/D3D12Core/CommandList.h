@@ -3,11 +3,11 @@
 #ifndef _GEAR_CORE_D3D12CORE_COMMANDLIST_H_
 #define _GEAR_CORE_D3D12CORE_COMMANDLIST_H_
 
-#include"ResourceStateTracker.h"
+#include "ResourceStateTracker.h"
 
 namespace Gear::Core::D3D12Core
 {
-	class CommandList :public ResourceStateTracker
+	class CommandList : public ResourceStateTracker
 	{
 	public:
 
@@ -25,7 +25,8 @@ namespace Gear::Core::D3D12Core
 
 		virtual void close() = 0;
 
-		virtual void resourceBarrier(const uint32_t numBarriers, const D3D12_RESOURCE_BARRIER* const pBarriers) const = 0;
+		virtual void resourceBarrier(const uint32_t numBarriers,
+		                             const D3D12_RESOURCE_BARRIER* const pBarriers) const = 0;
 
 		ID3D12CommandList* get() const;
 
@@ -49,7 +50,6 @@ namespace Gear::Core::D3D12Core
 		ID3D12CommandList* commandList;
 
 		const D3D12_COMMAND_LIST_TYPE commandListType;
-
 	};
 }
 

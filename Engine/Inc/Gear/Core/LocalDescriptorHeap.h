@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_LOCALDESCRIPTORHEAP_H_
 #define _GEAR_CORE_LOCALDESCRIPTORHEAP_H_
 
-#include<Gear/Core/D3D12Core/DescriptorHeap.h>
+#include <Gear/Core/D3D12Core/DescriptorHeap.h>
 
 namespace Gear::Core::LocalDescriptorHeap
 {

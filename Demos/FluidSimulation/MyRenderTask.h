@@ -1,45 +1,60 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
-	MyRenderTask() :
-		colorUpdateTimer(1.f)
+	MyRenderTask() : colorUpdateTimer(1.f)
 	{
-		const DirectX::XMUINT2 simRes = { Graphics::getWidth() >> config.resolutionFactor,Graphics::getHeight() >> config.resolutionFactor };
+		const DirectX::XMUINT2 simRes = { Graphics::getWidth() >> config.resolutionFactor,
+			                              Graphics::getHeight() >> config.resolutionFactor };
 
-		velocityTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true); });
+		velocityTex = ResourceManager::createSwapTexture([=]
+		{
+			return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true);
+		});
 
 		velocityTex->setName(L"Velocity Texture");
 
-		colorTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true); });
+		colorTex = ResourceManager::createSwapTexture([=]
+		{
+			return ResourceManager::createComputeTexture(
+				Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true);
+		});
 
 		colorTex->setName(L"Color Texture");
 
-		divergenceTex = ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
+		divergenceTex =
+			ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
 
 		divergenceTex->getTexture()->setName(L"Divergence Texture");
 
-		pressureTex = ResourceManager::createSwapTexture([=] {return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true); });
+		pressureTex = ResourceManager::createSwapTexture([=]
+		{
+			return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
+		});
 
 		pressureTex->setName(L"Pressure Texture");
 
-		vorticityTex = ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
+		vorticityTex =
+			ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
 
 		vorticityTex->getTexture()->setName(L"Vorticity Texture");
 
-		phongShadeTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true);
+		phongShadeTexture = ResourceManager::createComputeTexture(
+			Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true);
 
-		edgeHighlightTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true);
+		edgeHighlightTexture = ResourceManager::createComputeTexture(
+			Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true);
 
 		simulationParamBuffer = ResourceManager::createDynamicCBuffer(sizeof(SimulationParam));
 
-		simulationParam.colorTexelSize = DirectX::XMFLOAT2(1.f / Graphics::getWidth(), 1.f / Graphics::getHeight());
+		simulationParam.colorTexelSize =
+			DirectX::XMFLOAT2(1.f / Graphics::getWidth(), 1.f / Graphics::getHeight());
 
 		simulationParam.simTexelSize = DirectX::XMFLOAT2(1.f / simRes.x, 1.f / simRes.y);
 
@@ -59,7 +74,8 @@ public:
 
 		vorticityState = PipelineStateBuilder::build(Shader::create(L"VorticityCS.cso"));
 
-		vorticityConfinementState = PipelineStateBuilder::build(Shader::create(L"VorticityConfinementCS.cso"));
+		vorticityConfinementState =
+			PipelineStateBuilder::build(Shader::create(L"VorticityConfinementCS.cso"));
 
 		divergenceState = PipelineStateBuilder::build(Shader::create(L"DivergenceCS.cso"));
 
@@ -85,10 +101,11 @@ public:
 
 		effect->setThreshold(0.f);
 
-		kDownEventID = Keyboard::addKeyDownEvent(Keyboard::K, [this](const uint32_t)
-			{
-				config.logicRunning = !config.logicRunning;
-			});
+		kDownEventID = Keyboard::addKeyDownEvent(Keyboard::K,
+		                                         [this](const uint32_t)
+		{
+			config.logicRunning = !config.logicRunning;
+		});
 
 		Graphics::setExposure(1.f);
 
@@ -128,15 +145,16 @@ public:
 		{
 			context->setPipelineState(*splatVelocityState);
 			SETCONSTS({
-			context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
-				});
+				context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) },
+				                        co);
+			});
 			context->dispatchDim(velocityTex->get3Dimension());
 			velocityTex->swap();
 
 			context->setPipelineState(*splatColorState);
 			SETCONSTS({
-			context->setCSConstants({ colorTex->getAllSRVIndex(),colorTex->getUAVMipIndex(0) }, co);
-				});
+				context->setCSConstants({ colorTex->getAllSRVIndex(), colorTex->getUAVMipIndex(0) }, co);
+			});
 			context->dispatchDim(colorTex->get3Dimension());
 			colorTex->swap();
 		}
@@ -147,23 +165,26 @@ public:
 		//calculate vorticity
 		context->setPipelineState(*vorticityState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->getAllSRVIndex(),vorticityTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ velocityTex->getAllSRVIndex(), vorticityTex->getUAVMipIndex(0) }, co);
+		});
 		context->dispatchDim(vorticityTex->get3Dimension());
 
 		//apply vorticity confinement
 		context->setPipelineState(*vorticityConfinementState);
 		SETCONSTS({
-		context->setCSConstants({ vorticityTex->getAllSRVIndex(),velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ vorticityTex->getAllSRVIndex(),
+			                          velocityTex->getAllSRVIndex(),
+			                          velocityTex->getUAVMipIndex(0) },
+			                        co);
+		});
 		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) }, co);
+		});
 		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 	}
@@ -173,15 +194,13 @@ public:
 		//calculate divergence
 		context->setPipelineState(*divergenceState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->getAllSRVIndex(),divergenceTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ velocityTex->getAllSRVIndex(), divergenceTex->getUAVMipIndex(0) }, co);
+		});
 		context->dispatchDim(divergenceTex->get3Dimension());
 
 		//reset pressure
 		context->setPipelineState(*pressureResetState);
-		SETCONSTS({
-		context->setCSConstants({ pressureTex->getUAVMipIndex(0) }, co);
-			});
+		SETCONSTS({ context->setCSConstants({ pressureTex->getUAVMipIndex(0) }, co); });
 		context->dispatchDim(pressureTex->get3Dimension());
 		pressureTex->swap();
 
@@ -190,16 +209,20 @@ public:
 		{
 			context->setPipelineState(*pressureState);
 			SETCONSTS({
-			context->setCSConstants({ divergenceTex->getAllSRVIndex(),pressureTex->getAllSRVIndex(),pressureTex->getUAVMipIndex(0) }, co);
-				});
+				context->setCSConstants({ divergenceTex->getAllSRVIndex(),
+				                          pressureTex->getAllSRVIndex(),
+				                          pressureTex->getUAVMipIndex(0) },
+				                        co);
+			});
 			context->dispatchDim(pressureTex->get3Dimension());
 			pressureTex->swap();
 
 			//obstacle
 			context->setPipelineState(*pressureBoundaryState);
 			SETCONSTS({
-			context->setCSConstants({ pressureTex->getAllSRVIndex(),pressureTex->getUAVMipIndex(0) }, co);
-				});
+				context->setCSConstants({ pressureTex->getAllSRVIndex(), pressureTex->getUAVMipIndex(0) },
+				                        co);
+			});
 			context->dispatchDim(pressureTex->get3Dimension());
 			pressureTex->swap();
 		}
@@ -207,16 +230,19 @@ public:
 		//velocity subtract gradient of pressure
 		context->setPipelineState(*gradientSubtractState);
 		SETCONSTS({
-		context->setCSConstants({ pressureTex->getAllSRVIndex(),velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ pressureTex->getAllSRVIndex(),
+			                          velocityTex->getAllSRVIndex(),
+			                          velocityTex->getUAVMipIndex(0) },
+			                        co);
+		});
 		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) }, co);
+		});
 		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 	}
@@ -226,33 +252,36 @@ public:
 		//velocity advection
 		context->setPipelineState(*velocityAdvectionState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) }, co);
+		});
 		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->getAllSRVIndex(),velocityTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) }, co);
+		});
 		context->dispatchDim(velocityTex->get3Dimension());
 		velocityTex->swap();
 
 		//color advection
 		context->setPipelineState(*colorAdvectionState);
 		SETCONSTS({
-		context->setCSConstants({ velocityTex->getAllSRVIndex(),colorTex->getAllSRVIndex(),colorTex->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants(
+				{ velocityTex->getAllSRVIndex(), colorTex->getAllSRVIndex(), colorTex->getUAVMipIndex(0) },
+				co);
+		});
 		context->dispatchDim(colorTex->get3Dimension());
 		colorTex->swap();
 	}
 
 	void recordCommand() override
 	{
-		const DirectX::XMFLOAT2 pos = { Mouse::getX(),Graphics::getHeight() - Mouse::getY() };
+		const DirectX::XMFLOAT2 pos = { Mouse::getX(), Graphics::getHeight() - Mouse::getY() };
 
-		const DirectX::XMFLOAT2 posDelta = { Input::Mouse::getDeltaX() * config.force,-Input::Mouse::getDeltaY() * config.force };
+		const DirectX::XMFLOAT2 posDelta = { Input::Mouse::getDeltaX() * config.force,
+			                                 -Input::Mouse::getDeltaY() * config.force };
 
 		if (config.vortex)
 		{
@@ -275,9 +304,9 @@ public:
 
 		if (colorUpdateTimer.update(Graphics::getDeltaTime() * config.colorChangeSpeed))
 		{
-			Color c = Color::hsvToRgb({ Random::genFloat(),1.f,1.f });
+			Color c = Color::hsvToRgb({ Random::genFloat(), 1.f, 1.f });
 
-			simulationParam.splatColor = { c.r,c.g,c.b,1.f };
+			simulationParam.splatColor = { c.r, c.g, c.b, 1.f };
 		}
 
 		simulationParam.splatRadius = config.splatRadius / 50.f;
@@ -305,8 +334,9 @@ public:
 		{
 			context->setPipelineState(*phongShadeState);
 			SETCONSTS({
-			context->setCSConstants({ colorTex->getAllSRVIndex(),phongShadeTexture->getUAVMipIndex(0) }, co);
-				});
+				context->setCSConstants({ colorTex->getAllSRVIndex(), phongShadeTexture->getUAVMipIndex(0) },
+				                        co);
+			});
 			context->dispatchDim(phongShadeTexture->get3Dimension());
 
 			outputTexture = effect->process(*phongShadeTexture);
@@ -322,8 +352,9 @@ public:
 		{
 			context->setPipelineState(*edgeHighlightState);
 			SETCONSTS({
-			context->setCSConstants({ outputTexture->getAllSRVIndex(),edgeHighlightTexture->getUAVMipIndex(0) }, co);
-				});
+				context->setCSConstants(
+					{ outputTexture->getAllSRVIndex(), edgeHighlightTexture->getUAVMipIndex(0) }, co);
+			});
 			context->dispatchDim(edgeHighlightTexture->get3Dimension());
 
 			texture = edgeHighlightTexture.get();
@@ -360,26 +391,27 @@ private:
 
 	struct Configuration
 	{
-		float colorChangeSpeed = 10.f;//颜色改变速度
-		float colorDissipationSpeed = 1.f;//颜色消散速度
-		float velocityDissipationSpeed = 0.00f;//速度消散速度
-		float vorticityIntensity = 80.f;//涡流强度
-		float splatRadius = 0.25f;//施加颜色的半径
-		float force = 6.f;//施加速度的力度
-		const uint32_t pressureIteraion = 35;//雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
-		const uint32_t resolutionFactor = 1;//物理模拟分辨率 resolution >> resolutionFactor
+		float colorChangeSpeed = 10.f; //颜色改变速度
+		float colorDissipationSpeed = 1.f; //颜色消散速度
+		float velocityDissipationSpeed = 0.00f; //速度消散速度
+		float vorticityIntensity = 80.f; //涡流强度
+		float splatRadius = 0.25f; //施加颜色的半径
+		float force = 6.f; //施加速度的力度
+		const uint32_t pressureIteraion =
+			35; //雅可比迭代次数 这个值越高物理模拟越不容易出错 NVIDIA的文章有提到通常20-50次就够了
+		const uint32_t resolutionFactor = 1; //物理模拟分辨率 resolution >> resolutionFactor
 		float bumpScale = 300.f;
 		bool logicRunning = true;
 		bool phongShading = true;
 		bool edgeHighlight = true;
 		bool vortex = false;
-	}config;
+	} config;
 
 	struct SimulationParam
 	{
-		DirectX::XMFLOAT2 pos = { 0,0 };
-		DirectX::XMFLOAT2 posDelta = { 0,0 };
-		DirectX::XMFLOAT4 splatColor = { 0,0,0,1 };
+		DirectX::XMFLOAT2 pos = { 0, 0 };
+		DirectX::XMFLOAT2 posDelta = { 0, 0 };
+		DirectX::XMFLOAT4 splatColor = { 0, 0, 0, 1 };
 		DirectX::XMFLOAT2 colorTexelSize;
 		DirectX::XMFLOAT2 simTexelSize;
 		DirectX::XMUINT2 colorTextureSize;
@@ -428,5 +460,4 @@ private:
 	ComputeStatePtr phongShadeState;
 
 	ComputeStatePtr edgeHighlightState;
-
 };

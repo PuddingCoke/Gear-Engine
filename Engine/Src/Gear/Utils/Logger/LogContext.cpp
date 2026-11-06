@@ -1,17 +1,13 @@
-#include<Gear/Utils/Logger/LogContext.h>
+#include <Gear/Utils/Logger/LogContext.h>
 
-#include<Gear/Utils/String.h>
+#include <Gear/Utils/String.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear::Utils::Logger
 {
 	LogContext::LogContext() :
-		textColor{ "" },
-		displayColor{ "" },
-		writeIndex(0),
-		readIndex(0),
-		messageStr(nullptr)
+		textColor{ "" }, displayColor{ "" }, writeIndex(0), readIndex(0), messageStr(nullptr)
 	{
 		resetState();
 	}
@@ -20,7 +16,11 @@ namespace Gear::Utils::Logger
 	{
 		std::unique_lock<std::mutex> readIndexLock(readIndexMutex);
 
-		readIndexCV.wait(readIndexLock, [this]() { return writeIndex == readIndex; });
+		readIndexCV.wait(readIndexLock,
+		                 [this]()
+		{
+			return writeIndex == readIndex;
+		});
 	}
 
 	LogContext& LogContext::get()
@@ -56,7 +56,8 @@ namespace Gear::Utils::Logger
 	{
 		setDisplayColor(textColor);
 
-		const int32_t sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, arg.data(), -1, nullptr, 0, nullptr, nullptr);
+		const int32_t sizeNeeded =
+			WideCharToMultiByte(CP_UTF8, 0, arg.data(), -1, nullptr, 0, nullptr, nullptr);
 
 		if (sizeNeeded == 0)
 		{
@@ -272,7 +273,8 @@ namespace Gear::Utils::Logger
 
 		const std::wstring& str = arg.str();
 
-		const int32_t sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, str.data(), -1, nullptr, 0, nullptr, nullptr);
+		const int32_t sizeNeeded =
+			WideCharToMultiByte(CP_UTF8, 0, str.data(), -1, nullptr, 0, nullptr, nullptr);
 
 		if (sizeNeeded == 0)
 		{
@@ -322,7 +324,7 @@ namespace Gear::Utils::Logger
 
 	LogMessage LogContext::getLogMessage()
 	{
-		return LogMessage{ *messageStr,this,logType };
+		return LogMessage{ *messageStr, this, logType };
 	}
 
 	void LogContext::resetState()
@@ -342,7 +344,11 @@ namespace Gear::Utils::Logger
 		{
 			std::unique_lock<std::mutex> readIndexLock(readIndexMutex);
 
-			readIndexCV.wait(readIndexLock, [this]() { return writeIndex - readIndex < slotNum; });
+			readIndexCV.wait(readIndexLock,
+			                 [this]()
+			{
+				return writeIndex - readIndex < slotNum;
+			});
 		}
 
 		messageStr = &slots[writeIndex % slotNum];
@@ -366,8 +372,17 @@ namespace Gear::Utils::Logger
 
 		//headerStrLen = 5+2+8+1+5+2+1+10+1+5+2+length(functionName)+1+1
 		//			   = 44+length(functionName)
-		sprintf_s(convertBuffer, convertBufferLength, "%s[%d:%d:%d] %s{T%u} %s(%s) ", LogColor::timeStampColor.code, localTime.tm_hour, localTime.tm_min, localTime.tm_sec,
-			LogColor::threadIdColor.code, threadId, LogColor::functionNameColor.code, functionName.data());
+		sprintf_s(convertBuffer,
+		          convertBufferLength,
+		          "%s[%d:%d:%d] %s{T%u} %s(%s) ",
+		          LogColor::timeStampColor.code,
+		          localTime.tm_hour,
+		          localTime.tm_min,
+		          localTime.tm_sec,
+		          LogColor::threadIdColor.code,
+		          threadId,
+		          LogColor::functionNameColor.code,
+		          functionName.data());
 
 		*messageStr += convertBuffer;
 

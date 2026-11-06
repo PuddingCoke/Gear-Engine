@@ -3,9 +3,9 @@
 #ifndef _GEAR_CORE_D3D12RESOURCE_D3D12RESOURCEBASE_H_
 #define _GEAR_CORE_D3D12RESOURCE_D3D12RESOURCEBASE_H_
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
-#include<vector>
+#include <vector>
 
 namespace Gear::Core::D3D12Resource
 {
@@ -27,8 +27,12 @@ namespace Gear::Core::D3D12Resource
 
 		D3D12ResourceBase(const ComPtr<ID3D12Resource>& resource, const bool stateTracking);
 
-		D3D12ResourceBase(const D3D12_HEAP_PROPERTIES properties, const D3D12_HEAP_FLAGS flags, const D3D12_RESOURCE_DESC desc,
-			const bool stateTracking, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValues);
+		D3D12ResourceBase(const D3D12_HEAP_PROPERTIES properties,
+		                  const D3D12_HEAP_FLAGS flags,
+		                  const D3D12_RESOURCE_DESC desc,
+		                  const bool stateTracking,
+		                  const D3D12_RESOURCE_STATES initialState,
+		                  const D3D12_CLEAR_VALUE* clearValues);
 
 		D3D12ResourceBase(D3D12ResourceBase&);
 
@@ -66,7 +70,8 @@ namespace Gear::Core::D3D12Resource
 
 		void pushToTrackingList(std::vector<D3D12ResourceBase*>& trackingList);
 
-		virtual void transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers, std::vector<D3D12ResourceBase*>& pendingResources);
+		virtual void transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers,
+		                        std::vector<D3D12ResourceBase*>& pendingResources);
 
 		virtual void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers);
 
@@ -89,7 +94,6 @@ namespace Gear::Core::D3D12Resource
 		bool inTrackingList;
 
 		bool inPendingList;
-
 	};
 }
 

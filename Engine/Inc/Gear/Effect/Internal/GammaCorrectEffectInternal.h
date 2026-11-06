@@ -3,7 +3,7 @@
 #ifndef _GEAR_EFFECT_GAMMACORRECTEFFECT_INTERNAL_H
 #define _GEAR_EFFECT_GAMMACORRECTEFFECT_INTERNAL_H
 
-#include"../EffectBase.h"
+#include "../EffectBase.h"
 
 namespace Gear::Effect::GammaCorrectEffect::Internal
 {
@@ -12,7 +12,17 @@ namespace Gear::Effect::GammaCorrectEffect::Internal
 
 	void release();
 
-	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken()
+		{
+			initialize();
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 
 }
 

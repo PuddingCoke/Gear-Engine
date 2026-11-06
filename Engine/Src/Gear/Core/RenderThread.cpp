@@ -1,13 +1,17 @@
-#include<Gear/Core/RenderThread.h>
+#include <Gear/Core/RenderThread.h>
 
-#include<Gear/Core/Internal/RenderThreadLocalInternal.h>
+#include <Gear/Core/Internal/RenderThreadLocalInternal.h>
 
-#include<Gear/Core/RenderEngine.h>
+#include <Gear/Core/RenderEngine.h>
 
 namespace Gear::Core
 {
 	RenderThread::RenderThread(const std::function<void(RenderTask**)>& createFunc) :
-		taskCompleted(false), errorOccured(false), isRunning(true), createFunc(createFunc), renderTask(nullptr)
+		taskCompleted(false),
+		errorOccured(false),
+		isRunning(true),
+		createFunc(createFunc),
+		renderTask(nullptr)
 	{
 		thread = std::thread(&RenderThread::workerLoop, this);
 	}
@@ -39,7 +43,11 @@ namespace Gear::Core
 	{
 		std::unique_lock<std::mutex> lock(taskMutex);
 
-		taskCondition.wait(lock, [this]() {return taskCompleted; });
+		taskCondition.wait(lock,
+		                   [this]()
+		{
+			return taskCompleted;
+		});
 
 		return errorOccured;
 	}
@@ -71,7 +79,6 @@ namespace Gear::Core
 
 				taskCompleted = true;
 			}
-
 		}
 		catch (const std::exception& e)
 		{
@@ -102,7 +109,11 @@ namespace Gear::Core
 				{
 					std::unique_lock<std::mutex> lock(taskMutex);
 
-					taskCondition.wait(lock, [this]() {return !taskCompleted; });
+					taskCondition.wait(lock,
+					                   [this]()
+					{
+						return !taskCompleted;
+					});
 
 					if (!isRunning)
 					{

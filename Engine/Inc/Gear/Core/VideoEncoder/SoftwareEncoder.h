@@ -3,11 +3,11 @@
 #ifndef _GEAR_CORE_VIDEOENCODER_SOFTWAREENCODER_H_
 #define _GEAR_CORE_VIDEOENCODER_SOFTWAREENCODER_H_
 
-#include"Encoder.h"
+#include "Encoder.h"
 
 namespace Gear::Core::VideoEncoder
 {
-	class SoftwareEncoder :public Encoder
+	class SoftwareEncoder : public Encoder
 	{
 	public:
 
@@ -44,7 +44,6 @@ namespace Gear::Core::VideoEncoder
 		D3D12Resource::ReadbackHeapPtr nv12ReadbackHeap;
 
 		D3D12_PLACED_SUBRESOURCE_FOOTPRINT cpFootPrints[2];
-
 	};
 }
 

@@ -1,16 +1,22 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
 	MyRenderTask() :
-		renderTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
-			FMT::RGBA8UN, 1, 1, false, true, DirectX::Colors::White)),
+		renderTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(),
+	                                                         Graphics::getHeight(),
+	                                                         FMT::RGBA8UN,
+	                                                         1,
+	                                                         1,
+	                                                         false,
+	                                                         true,
+	                                                         DirectX::Colors::White)),
 		arrowTexture(resManager->createRenderTextureView(L"arrow.png", true)),
 		vehicleVS(Shader::create(L"VehicleVS.cso")),
 		vehicleGS(Shader::create(L"VehicleGS.cso")),
@@ -18,9 +24,11 @@ public:
 		simulationParam{}
 	{
 		{
-			UniquePtr<DirectX::XMFLOAT4[]> positionVelocityArray = makeUnique<DirectX::XMFLOAT4[]>(numVehicle);
+			UniquePtr<DirectX::XMFLOAT4[]> positionVelocityArray =
+				makeUnique<DirectX::XMFLOAT4[]>(numVehicle);
 
-			UniquePtr<DirectX::XMFLOAT2[]> maxSpeedMaxForceArray = makeUnique<DirectX::XMFLOAT2[]>(numVehicle);
+			UniquePtr<DirectX::XMFLOAT2[]> maxSpeedMaxForceArray =
+				makeUnique<DirectX::XMFLOAT2[]>(numVehicle);
 
 			for (size_t i = 0; i < numVehicle; i++)
 			{
@@ -30,17 +38,48 @@ public:
 
 				float ySpeed = 3.f * sinf(angle);
 
-				positionVelocityArray[i] = DirectX::XMFLOAT4(Random::genFloat() * Graphics::getWidth(), Random::genFloat() * Graphics::getHeight(), xSpeed, ySpeed);
+				positionVelocityArray[i] = DirectX::XMFLOAT4(Random::genFloat() * Graphics::getWidth(),
+				                                             Random::genFloat() * Graphics::getHeight(),
+				                                             xSpeed,
+				                                             ySpeed);
 
 				maxSpeedMaxForceArray[i] = DirectX::XMFLOAT2(3.f, 0.1f);
 			}
 
 			positionVelocity = ResourceManager::createSwapBuffer(
-				[&] {return resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numVehicle, true, true, true, false, false, true, positionVelocityArray.get()); },
-				[&] {return ResourceManager::createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numVehicle, true, true, true, false, false, true); });
+				[&]
+			{
+				return resManager->createTypedBufferView(FMT::RGBA32F,
+				                                         sizeof(DirectX::XMFLOAT4) * numVehicle,
+				                                         true,
+				                                         true,
+				                                         true,
+				                                         false,
+				                                         false,
+				                                         true,
+				                                         positionVelocityArray.get());
+			},
+				[&]
+			{
+				return ResourceManager::createTypedBufferView(FMT::RGBA32F,
+				                                              sizeof(DirectX::XMFLOAT4) * numVehicle,
+				                                              true,
+				                                              true,
+				                                              true,
+				                                              false,
+				                                              false,
+				                                              true);
+			});
 
-			maxSpeedMaxForce = resManager->createTypedBufferView(FMT::RG32F, sizeof(DirectX::XMFLOAT2) * numVehicle,
-				true, false, false, false, false, true, maxSpeedMaxForceArray.get());
+			maxSpeedMaxForce = resManager->createTypedBufferView(FMT::RG32F,
+			                                                     sizeof(DirectX::XMFLOAT2) * numVehicle,
+			                                                     true,
+			                                                     false,
+			                                                     false,
+			                                                     false,
+			                                                     false,
+			                                                     true,
+			                                                     maxSpeedMaxForceArray.get());
 
 			maxSpeedMaxForce->getBuffer()->setName(L"Max Speed Max Force Buffer");
 		}
@@ -48,13 +87,13 @@ public:
 		stepState = PipelineStateBuilder::build(Shader::create(L"StepCS.cso"));
 
 		vehicleRenderState = PipelineStateBuilder()
-			.setRasterizerState(PipelineStateHelper::rasterCullBack)
-			.setBlendState(PipelineStateHelper::blendDefault)
-			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setVS(*vehicleVS)
-			.setGS(*vehicleGS)
-			.setPS(*vehiclePS)
-			.build();
+		                         .setRasterizerState(PipelineStateHelper::rasterCullBack)
+		                         .setBlendState(PipelineStateHelper::blendDefault)
+		                         .setDepthStencilState(PipelineStateHelper::depthCompareNone)
+		                         .setVS(*vehicleVS)
+		                         .setGS(*vehicleGS)
+		                         .setPS(*vehiclePS)
+		                         .build();
 
 		simulationParam.numVehicle = numVehicle;
 
@@ -74,13 +113,13 @@ protected:
 		context->setPipelineState(*stepState);
 
 		SETCONSTS({
-		context->setCSConstants({
-			positionVelocity->getUAVIndex(),
-			positionVelocity->getSRVIndex(),
-			maxSpeedMaxForce->getSRVIndex() }, co);
+			context->setCSConstants({ positionVelocity->getUAVIndex(),
+			                          positionVelocity->getSRVIndex(),
+			                          maxSpeedMaxForce->getSRVIndex() },
+			                        co);
 
-		context->setCSConstants(simulationParam, co);
-			});
+			context->setCSConstants(simulationParam, co);
+		});
 
 		context->dispatchDim(numVehicle, 1, 1);
 
@@ -98,9 +137,7 @@ protected:
 
 		context->setVertexBuffers({ *positionVelocity }, 0);
 
-		SETCONSTS({
-		context->setPSConstants({ arrowTexture->getAllSRVIndex() }, co);
-			});
+		SETCONSTS({ context->setPSConstants({ arrowTexture->getAllSRVIndex() }, co); });
 
 		context->draw(numVehicle, 1, 0, 0);
 
@@ -136,5 +173,4 @@ private:
 	ShaderPtr vehicleGS;
 
 	ShaderPtr vehiclePS;
-
 };

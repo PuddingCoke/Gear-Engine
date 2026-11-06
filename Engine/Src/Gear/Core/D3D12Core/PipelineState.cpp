@@ -1,8 +1,9 @@
-#include<Gear/Core/D3D12Core/PipelineState.h>
+#include <Gear/Core/D3D12Core/PipelineState.h>
 
 namespace Gear::Core::D3D12Core
 {
-	PipelineState::PipelineState(const RootSignature* const rootSignature, const PipelineStateData pipelineStateData) :
+	PipelineState::PipelineState(const RootSignature* const rootSignature,
+	                             const PipelineStateData pipelineStateData) :
 		currentPipelineState(nullptr), rootSignature(rootSignature), pipelineStateData(pipelineStateData)
 	{
 	}

@@ -3,7 +3,7 @@
 #ifndef _GEAR_CAMERA_ORBITCAMERA_H_
 #define _GEAR_CAMERA_ORBITCAMERA_H_
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear
 {
@@ -19,7 +19,10 @@ namespace Gear
 
 			void operator=(const OrbitCamera&) = delete;
 
-			OrbitCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& up, const float zoomSpeed, const bool smoothZoom = true);
+			OrbitCamera(const DirectX::XMVECTOR& eye,
+			            const DirectX::XMVECTOR& up,
+			            const float zoomSpeed,
+			            const bool smoothZoom = true);
 
 			~OrbitCamera();
 
@@ -46,7 +49,6 @@ namespace Gear
 			const DirectX::XMVECTOR up;
 
 			const bool smoothZoom;
-
 		};
 	}
 }

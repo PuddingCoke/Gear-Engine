@@ -1,16 +1,22 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
 	MyRenderTask() :
 		timer(1.f / 60.f),
-		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true))
+		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(),
+	                                                        Graphics::getHeight(),
+	                                                        FMT::RGBA8UN,
+	                                                        1,
+	                                                        1,
+	                                                        false,
+	                                                        true))
 	{
 		whiteNoiseState = PipelineStateBuilder::build(Shader::create(L"WhiteNoiseCS.cso"));
 
@@ -18,7 +24,11 @@ public:
 
 		visualizeState = PipelineStateBuilder::build(Shader::create(L"VisualizeCS.cso"));
 
-		swapTexture = ResourceManager::createSwapTexture([] {return ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true); });
+		swapTexture = ResourceManager::createSwapTexture([]
+		{
+			return ResourceManager::createComputeTexture(
+				Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true);
+		});
 
 		initialize();
 	}
@@ -58,10 +68,10 @@ protected:
 		const uint32_t uintSeed = Random::genUint();
 
 		SETCONSTS({
-		context->setCSConstants({ swapTexture.getUAVMipIndex(0) }, co);
+			context->setCSConstants({ swapTexture.getUAVMipIndex(0) }, co);
 
-		context->setCSConstants(1, &uintSeed, co);
-			});
+			context->setCSConstants(1, &uintSeed, co);
+		});
 
 		context->dispatchDim(swapTexture.get3Dimension());
 
@@ -73,11 +83,10 @@ protected:
 		context->setPipelineState(*evolveState);
 
 		SETCONSTS({
-		context->setCSConstants({ swapTexture.getAllSRVIndex(),
-			swapTexture.getUAVMipIndex(0) }, co);
+			context->setCSConstants({ swapTexture.getAllSRVIndex(), swapTexture.getUAVMipIndex(0) }, co);
 
-		context->setCSConstants(simulationParam, co);
-			});
+			context->setCSConstants(simulationParam, co);
+		});
 
 		context->dispatchDim(swapTexture.get3Dimension());
 
@@ -102,9 +111,8 @@ protected:
 		context->setPipelineState(*visualizeState);
 
 		SETCONSTS({
-		context->setCSConstants({ originTexture->getUAVMipIndex(0),
-			swapTexture->getAllSRVIndex() }, co);
-			});
+			context->setCSConstants({ originTexture->getUAVMipIndex(0), swapTexture->getAllSRVIndex() }, co);
+		});
 
 		context->dispatchDim(swapTexture->get3Dimension());
 
@@ -137,7 +145,7 @@ private:
 		float d2 = 0.445f;
 		float alpha_n = 0.028f;
 		float alpha_m = 0.147f;
-	}simulationParam;
+	} simulationParam;
 
 	ComputeStatePtr whiteNoiseState;
 
@@ -150,5 +158,4 @@ private:
 	RenderTextureViewPtr originTexture;
 
 	Timer timer;
-
 };

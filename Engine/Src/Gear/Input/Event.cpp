@@ -1,9 +1,8 @@
-#include<Gear/Input/Event.h>
+#include <Gear/Input/Event.h>
 
 namespace Gear::Input
 {
-	Event::Event() :
-		idx(0ull), triggerCount(0u)
+	Event::Event() : idx(0ull), triggerCount(0u)
 	{
 	}
 

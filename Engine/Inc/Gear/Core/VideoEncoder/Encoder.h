@@ -3,25 +3,24 @@
 #ifndef _GEAR_CORE_VIDEOENCODER_ENCODER_H_
 #define _GEAR_CORE_VIDEOENCODER_ENCODER_H_
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Core/VideoDevice.h>
+#include <Gear/Core/VideoDevice.h>
 
-#include<Gear/Core/D3D12Core/GraphicsCommandList.h>
+#include <Gear/Core/D3D12Core/GraphicsCommandList.h>
 
-#include<Gear/Core/D3D12Core/VideoProcessCommandList.h>
+#include <Gear/Core/D3D12Core/VideoProcessCommandList.h>
 
-#include<Gear/Core/D3D12Core/CommandQueue.h>
+#include <Gear/Core/D3D12Core/CommandQueue.h>
 
-#include<Gear/Core/D3D12Resource/ReadbackHeap.h>
+#include <Gear/Core/D3D12Resource/ReadbackHeap.h>
 
-extern "C"
-{
-#include<libavutil/avutil.h>
-#include<libavformat/avformat.h>
-#include<libavcodec/avcodec.h>
-#include<libswscale/swscale.h>
-#include<libavutil/log.h>
+extern "C" {
+#include <libavutil/avutil.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
+#include <libavutil/log.h>
 }
 
 namespace Gear::Core::VideoEncoder
@@ -32,7 +31,9 @@ namespace Gear::Core::VideoEncoder
 
 		enum class VideoFormat
 		{
-			H264, HEVC, AV1
+			H264,
+			HEVC,
+			AV1
 		};
 
 		Encoder() = delete;
@@ -68,8 +69,11 @@ namespace Gear::Core::VideoEncoder
 		/// <param name="decodeFrameIndex">解压帧索引必须小于等于presentFrameIndex</param>
 		/// <param name="presentFrameIndex">呈现帧索引 0、1、2、3、4</param>
 		/// <returns>是否继续编码</returns>
-		bool writeFrame(void* const bitstreamPtr, const uint32_t bitstreamSize, const bool syncPoint,
-			const int64_t decodeFrameIndex, const int64_t presentFrameIndex);
+		bool writeFrame(void* const bitstreamPtr,
+		                const uint32_t bitstreamSize,
+		                const bool syncPoint,
+		                const int64_t decodeFrameIndex,
+		                const int64_t presentFrameIndex);
 
 		/// <summary>
 		/// 封装Packet，必须设置好packet的duration和stream_index
@@ -78,7 +82,9 @@ namespace Gear::Core::VideoEncoder
 		bool writeFrame(AVPacket* const packet);
 
 		//返回等待值
-		uint64_t bgraToNV12(D3D12Resource::Texture* const inputBGRATexture, D3D12Resource::Texture* const outputNV12Texture, D3D12Core::Fence* const fence);
+		uint64_t bgraToNV12(D3D12Resource::Texture* const inputBGRATexture,
+		                    D3D12Resource::Texture* const outputNV12Texture,
+		                    D3D12Core::Fence* const fence);
 
 		uint32_t getFrameEncoded() const;
 
@@ -106,7 +112,6 @@ namespace Gear::Core::VideoEncoder
 		D3D12Core::VideoProcessCommandListPtr vpCommandList;
 
 		D3D12Core::CommandQueuePtr vpCommandQueue;
-
 	};
 }
 

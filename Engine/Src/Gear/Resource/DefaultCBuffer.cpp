@@ -1,13 +1,13 @@
-#include<Gear/Resource/DefaultCBuffer.h>
+#include <Gear/Resource/DefaultCBuffer.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
 namespace Gear::Resource
 {
 	DefaultCBuffer::DefaultCBuffer(D3D12Resource::BufferPtr bufferPtr, const bool persistent) :
 		ImmutableCBuffer(std::move(bufferPtr), persistent),
 		uploadHeaps(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
-		dataPtrs(makeShared<void* []>(Graphics::getFrameBufferCount()))
+		dataPtrs(makeShared<void*[]>(Graphics::getFrameBufferCount()))
 	{
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
@@ -18,9 +18,7 @@ namespace Gear::Resource
 	}
 
 	DefaultCBuffer::DefaultCBuffer(const DefaultCBuffer& scb) :
-		ImmutableCBuffer(scb),
-		uploadHeaps(nullptr),
-		dataPtrs(scb.dataPtrs)
+		ImmutableCBuffer(scb), uploadHeaps(nullptr), dataPtrs(scb.dataPtrs)
 	{
 	}
 
@@ -42,7 +40,7 @@ namespace Gear::Resource
 	{
 		memcpy(dataPtrs[Graphics::getFrameIndex()], data, size);
 
-		const UpdateStruct updateStruct = { buffer.get(),uploadHeaps[Graphics::getFrameIndex()].get() };
+		const UpdateStruct updateStruct = { buffer.get(), uploadHeaps[Graphics::getFrameIndex()].get() };
 
 		return updateStruct;
 	}

@@ -1,15 +1,14 @@
 #pragma once
 
-#include<Gear/Game.h>
+#include <Gear/Game.h>
 
-#include"MyRenderTask.h"
+#include "MyRenderTask.h"
 
-class MyGame :public Game
+class MyGame : public Game
 {
 public:
 
-	MyGame() :
-		camera({ 2,0,0 }, { 0,1,0 }, 1.f)
+	MyGame() : camera({ 2, 0, 0 }, { 0, 1, 0 }, 1.f)
 	{
 		pushCreateAsync(createRenderTaskAsync(renderTask));
 
@@ -37,5 +36,4 @@ public:
 	UniquePtr<MyRenderTask> renderTask;
 
 	OrbitCamera camera;
-
 };

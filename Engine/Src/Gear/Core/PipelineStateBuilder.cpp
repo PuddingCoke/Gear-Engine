@@ -1,17 +1,16 @@
-#include<Gear/Core/PipelineStateBuilder.h>
+#include <Gear/Core/PipelineStateBuilder.h>
 
-#include<Gear/Core/PipelineStateHelper.h>
+#include <Gear/Core/PipelineStateHelper.h>
 
-#include<Gear/Core/GlobalRootSignature.h>
+#include <Gear/Core/GlobalRootSignature.h>
 
-#include<Gear/Core/GlobalShader.h>
+#include <Gear/Core/GlobalShader.h>
 
-#include<Gear/Core/FMT.h>
+#include <Gear/Core/FMT.h>
 
 namespace Gear::Core
 {
-	PipelineStateBuilder::PipelineStateBuilder() :
-		graphicsDesc{}
+	PipelineStateBuilder::PipelineStateBuilder() : graphicsDesc{}
 	{
 	}
 
@@ -111,7 +110,8 @@ namespace Gear::Core
 			}
 		}
 
-		THROWLOG(LOGERROR() << "无法得到" << static_cast<uint32_t>(componentType) << "和" << static_cast<uint32_t>(mask) << "表示的" << TOSTRING(DXGI_FORMAT));
+		THROWLOG(LOGERROR() << "无法得到" << static_cast<uint32_t>(componentType) << "和"
+		                    << static_cast<uint32_t>(mask) << "表示的" << TOSTRING(DXGI_FORMAT));
 	}
 
 	PipelineStateBuilder& PipelineStateBuilder::setVS(const D3D12Core::Shader& vs)
@@ -154,7 +154,8 @@ namespace Gear::Core
 		}
 		else if (inputElements.size() != numInputElements)
 		{
-			THROWLOG(LOGERROR() << "侦测到" << TOSTRING(numInputElements) << "与" << TOSTRING(inputElements.size()) << "数量不匹配");
+			THROWLOG(LOGERROR() << "侦测到" << TOSTRING(numInputElements) << "与"
+			                    << TOSTRING(inputElements.size()) << "数量不匹配");
 		}
 
 		semanticNames.resize(numInputElements);
@@ -239,9 +240,9 @@ namespace Gear::Core
 	PipelineStateBuilder& PipelineStateBuilder::setDefaultFullScreenState()
 	{
 		return setBlendState(PipelineStateHelper::blendReplace)
-			.setRasterizerState(PipelineStateHelper::rasterCullNone)
-			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setVS(*GlobalShader::getFullScreenVS());
+		    .setRasterizerState(PipelineStateHelper::rasterCullNone)
+		    .setDepthStencilState(PipelineStateHelper::depthCompareNone)
+		    .setVS(*GlobalShader::getFullScreenVS());
 	}
 
 	D3D12Core::GraphicsStatePtr PipelineStateBuilder::build()
@@ -292,10 +293,14 @@ namespace Gear::Core
 
 		if (inputElements.size())
 		{
-			graphicsDesc.InputLayout = { inputElements.data(),static_cast<uint32_t>(inputElements.size()) };
+			graphicsDesc.InputLayout = { inputElements.data(), static_cast<uint32_t>(inputElements.size()) };
 		}
 
-		return makeUnique<D3D12Core::GraphicsState>(std::move(inputElements), std::move(semanticNames), graphicsDesc, selectedRootSignature, pipelineStateData);
+		return makeUnique<D3D12Core::GraphicsState>(std::move(inputElements),
+		                                            std::move(semanticNames),
+		                                            graphicsDesc,
+		                                            selectedRootSignature,
+		                                            pipelineStateData);
 	}
 
 	D3D12Core::ComputeStatePtr PipelineStateBuilder::build(D3D12Core::ShaderPtr cs)
@@ -319,15 +324,17 @@ namespace Gear::Core
 
 		D3D12Core::PipelineState::PipelineStateData pipelineStateData = {};
 
-		const D3D12Core::RootSignature* selectedRootSignature = GlobalRootSignature::getComputeShaderRootSignature();
+		const D3D12Core::RootSignature* selectedRootSignature =
+			GlobalRootSignature::getComputeShaderRootSignature();
 
 		D3D12_COMPUTE_PIPELINE_STATE_DESC computeDesc = {};
 		computeDesc.pRootSignature = selectedRootSignature->get();
 		computeDesc.CS = cs->getByteCode();
 
-		CHECKERROR(GraphicsDevice::get()->CreateComputePipelineState(&computeDesc, IID_PPV_ARGS(&id3d12PipelineState)));
+		CHECKERROR(GraphicsDevice::get()->CreateComputePipelineState(&computeDesc,
+		                                                             IID_PPV_ARGS(&id3d12PipelineState)));
 
-		DirectX::XMUINT3 groupDimension = { 0,0,0 };
+		DirectX::XMUINT3 groupDimension = { 0, 0, 0 };
 
 		reflection->GetThreadGroupSize(&groupDimension.x, &groupDimension.y, &groupDimension.z);
 
@@ -338,6 +345,7 @@ namespace Gear::Core
 
 		pipelineStateData.computeData.groupDimension = groupDimension;
 
-		return makeUnique<D3D12Core::ComputeState>(std::move(cs), id3d12PipelineState, selectedRootSignature, pipelineStateData);
+		return makeUnique<D3D12Core::ComputeState>(
+			std::move(cs), id3d12PipelineState, selectedRootSignature, pipelineStateData);
 	}
 }

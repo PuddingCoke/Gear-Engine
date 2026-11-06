@@ -3,13 +3,13 @@
 #ifndef _GEAR_CORE_D3D12RESOURCE_READBACKHEAP_H_
 #define _GEAR_CORE_D3D12RESOURCE_READBACKHEAP_H_
 
-#include"D3D12ResourceBase.h"
+#include "D3D12ResourceBase.h"
 
 namespace Gear::Core::D3D12Resource
 {
 	CREATESAFETYPE(ReadbackHeap);
 
-	class ReadbackHeap :public D3D12ResourceBase
+	class ReadbackHeap : public D3D12ResourceBase
 	{
 	public:
 
@@ -36,7 +36,6 @@ namespace Gear::Core::D3D12Resource
 	private:
 
 		const uint64_t size;
-
 	};
 }
 

@@ -1,19 +1,15 @@
-#include<Gear/Utils/Timer.h>
+#include <Gear/Utils/Timer.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear::Utils
 {
-	Timer::Timer() :
-		timeLimit(0), currrentTime(0.f)
+	Timer::Timer() : timeLimit(0), currrentTime(0.f)
 	{
-
 	}
 
-	Timer::Timer(const float timeLimit) :
-		timeLimit(timeLimit), currrentTime(0.f)
+	Timer::Timer(const float timeLimit) : timeLimit(timeLimit), currrentTime(0.f)
 	{
-
 	}
 
 	bool Timer::update(const float dt)

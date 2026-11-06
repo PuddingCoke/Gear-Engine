@@ -3,17 +3,25 @@
 #ifndef _GEAR_CORE_RENDERENGINE_INTERNAL_H_
 #define _GEAR_CORE_RENDERENGINE_INTERNAL_H_
 
-#include<Gear/Core/D3D12Resource/ReadbackHeap.h>
+#include <Gear/Core/D3D12Resource/ReadbackHeap.h>
 
 namespace Gear::Core::RenderEngine::Internal
 {
-	void initialize(const uint32_t width, const uint32_t height, const HWND hWnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface);
+	void initialize(const uint32_t width,
+	                const uint32_t height,
+	                const HWND hWnd,
+	                const bool useSwapChainBuffer,
+	                const bool initializeImGuiSurface);
 
 	void release();
 
 	struct InitializeToken
 	{
-		InitializeToken(const uint32_t width, const uint32_t height, const HWND hWnd, const bool useSwapChainBuffer, const bool initializeImGuiSurface)
+		InitializeToken(const uint32_t width,
+		                const uint32_t height,
+		                const HWND hWnd,
+		                const bool useSwapChainBuffer,
+		                const bool initializeImGuiSurface)
 		{
 			initialize(width, height, hWnd, useSwapChainBuffer, initializeImGuiSurface);
 		}
@@ -51,13 +59,15 @@ namespace Gear::Core::RenderEngine::Internal
 	void setSyncInterval(const int32_t syncInterval);
 
 	//将后备缓冲拷贝到指定读回堆上
-	void saveBackBuffer(D3D12Resource::ReadbackHeapPtr& readbackHeap, D3D12_PLACED_SUBRESOURCE_FOOTPRINT& backBufferFootprint);
+	void saveBackBuffer(D3D12Resource::ReadbackHeapPtr& readbackHeap,
+	                    D3D12_PLACED_SUBRESOURCE_FOOTPRINT& backBufferFootprint);
 
 	//设置后备缓冲为渲染纹理
 	void setDefRenderTexture();
 
 	//设置指定纹理为渲染纹理
-	void setRenderTexture(D3D12Resource::Texture* const renderTexture, const D3D12_CPU_DESCRIPTOR_HANDLE handle);
+	void setRenderTexture(D3D12Resource::Texture* const renderTexture,
+	                      const D3D12_CPU_DESCRIPTOR_HANDLE handle);
 
 	//初始化资源（会等待GPU完成任务）
 	void initializeResources();

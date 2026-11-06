@@ -1,10 +1,10 @@
-#include<Gear/Effect/BackBufferBlitEffect.h>
+#include <Gear/Effect/BackBufferBlitEffect.h>
 
-#include<Gear/Effect/Internal/BackBufferBlitEffectInternal.h>
+#include <Gear/Effect/Internal/BackBufferBlitEffectInternal.h>
 
-#include<Gear/Core/GlobalShader.h>
+#include <Gear/Core/GlobalShader.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
 namespace Gear::Effect::BackBufferBlitEffect
 {
@@ -19,15 +19,14 @@ namespace Gear::Effect::BackBufferBlitEffect
 	private:
 
 		GraphicsStatePtr backBufferBlitState;
-
 	};
 
 	BackBufferBlitEffectImpl::BackBufferBlitEffectImpl()
 	{
 		backBufferBlitState = PipelineStateBuilder()
-			.setDefaultFullScreenState()
-			.setPS(*GlobalShader::getFullScreenPS())
-			.build();
+		                          .setDefaultFullScreenState()
+		                          .setPS(*GlobalShader::getFullScreenPS())
+		                          .build();
 
 		LOGSUCCESS() << "创建" << COLORIZESTRUCT(BackBufferBlitEffect);
 	}
@@ -44,9 +43,7 @@ namespace Gear::Effect::BackBufferBlitEffect
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		SETCONSTS({
-		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
-			});
+		SETCONSTS({ context->setPSConstants({ inputTexture.getAllSRVIndex() }, co); });
 
 		context->drawQuad();
 	}

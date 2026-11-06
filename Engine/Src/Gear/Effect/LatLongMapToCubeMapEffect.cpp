@@ -1,12 +1,12 @@
-#include<Gear/Effect/LatLongMapToCubeMapEffect.h>
+#include <Gear/Effect/LatLongMapToCubeMapEffect.h>
 
-#include<Gear/Effect/Internal/LatLongMapToCubeMapEffectInternal.h>
+#include <Gear/Effect/Internal/LatLongMapToCubeMapEffectInternal.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
-#include<CompiledShaders/TextureCube/EquirectangularVS.h>
+#include <CompiledShaders/TextureCube/EquirectangularVS.h>
 
-#include<CompiledShaders/TextureCube/EquirectangularPS.h>
+#include <CompiledShaders/TextureCube/EquirectangularPS.h>
 
 namespace Gear::Effect::LatLongMapToCubeMapEffect
 {
@@ -16,7 +16,9 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 
 		LatLongMapToCubeMapEffectImpl(ResourceManager* const resManager);
 
-		void process(GraphicsContext& refContext, RenderTextureView& inputTexture, RenderTextureView& outputTexture);
+		void process(GraphicsContext& refContext,
+		             RenderTextureView& inputTexture,
+		             RenderTextureView& outputTexture);
 
 	private:
 
@@ -27,7 +29,6 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 		GraphicsStatePtr equirectangularState;
 
 		ImmutableCBufferPtr matricesBuffer;
-
 	};
 
 	LatLongMapToCubeMapEffectImpl::LatLongMapToCubeMapEffectImpl(ResourceManager* const resManager)
@@ -37,12 +38,12 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 		equirectangularPS = Shader::create(g_EquirectangularPSBytes, sizeof(g_EquirectangularPSBytes));
 
 		equirectangularState = PipelineStateBuilder()
-			.setVS(*equirectangularVS)
-			.setPS(*equirectangularPS)
-			.setRasterizerState(PipelineStateHelper::rasterCullNone)
-			.setBlendState(PipelineStateHelper::blendReplace)
-			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.build();
+		                           .setVS(*equirectangularVS)
+		                           .setPS(*equirectangularPS)
+		                           .setRasterizerState(PipelineStateHelper::rasterCullNone)
+		                           .setBlendState(PipelineStateHelper::blendReplace)
+		                           .setDepthStencilState(PipelineStateHelper::depthCompareNone)
+		                           .build();
 
 		{
 			struct Matrices
@@ -52,30 +53,20 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 			} matrices{};
 
 			{
-				const DirectX::XMVECTOR focusPoints[6] =
-				{
-					{1.0f,  0.0f,  0.0f},
-					{-1.0f,  0.0f,  0.0f},
-					{0.0f,  1.0f,  0.0f},
-					{0.0f, -1.0f,  0.0f},
-					{0.0f,  0.0f,  1.0f},
-					{0.0f,  0.0f, -1.0f}
-				};
-				const DirectX::XMVECTOR upVectors[6] =
-				{
-					{0.0f, 1.0f,  0.0f},
-					{0.0f, 1.0f,  0.0f},
-					{0.0f,  0.0f,  -1.0f},
-					{0.0f,  0.0f, 1.0f},
-					{0.0f, 1.0f,  0.0f},
-					{0.0f, 1.0f,  0.0f}
-				};
+				const DirectX::XMVECTOR focusPoints[6] = { { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f },
+					                                       { 0.0f, 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f },
+					                                       { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } };
+				const DirectX::XMVECTOR upVectors[6] = { { 0.0f, 1.0f, 0.0f },  { 0.0f, 1.0f, 0.0f },
+					                                     { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, 1.0f },
+					                                     { 0.0f, 1.0f, 0.0f },  { 0.0f, 1.0f, 0.0f } };
 
-				const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Utils::Math::halfPi, 1.f, 0.1f, 10.f);
+				const DirectX::XMMATRIX projMatrix =
+					DirectX::XMMatrixPerspectiveFovLH(Utils::Math::halfPi, 1.f, 0.1f, 10.f);
 
 				for (uint32_t i = 0; i < 6; i++)
 				{
-					const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ 0.f,0.f,0.f }, focusPoints[i], upVectors[i]);
+					const DirectX::XMMATRIX viewMatrix =
+						DirectX::XMMatrixLookAtLH({ 0.f, 0.f, 0.f }, focusPoints[i], upVectors[i]);
 					const DirectX::XMMATRIX viewProj = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 
 					matrices.matrices[i] = viewProj;
@@ -90,7 +81,9 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 		LOGSUCCESS() << "创建" << COLORIZESTRUCT(LatLongMapToCubeMapEffect);
 	}
 
-	void LatLongMapToCubeMapEffectImpl::process(GraphicsContext& refContext, RenderTextureView& inputTexture, RenderTextureView& outputTexture)
+	void LatLongMapToCubeMapEffectImpl::process(GraphicsContext& refContext,
+	                                            RenderTextureView& inputTexture,
+	                                            RenderTextureView& outputTexture)
 	{
 		GraphicsContext* const context = &refContext;
 
@@ -104,9 +97,7 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 
 		context->setVSConstantBuffer(*matricesBuffer);
 
-		SETCONSTS({
-		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
-			});
+		SETCONSTS({ context->setPSConstants({ inputTexture.getAllSRVIndex() }, co); });
 
 		context->draw(36, 6, 0, 0);
 	}
@@ -115,7 +106,7 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 
 	namespace Internal
 	{
-		
+
 		void initialize(ResourceManager* const resManager)
 		{
 			impl = makeUnique<LatLongMapToCubeMapEffectImpl>(resManager);
@@ -128,9 +119,10 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 
 	}
 
-	void process(GraphicsContext& refContext, RenderTextureView& inputTexture, RenderTextureView& outputTexture)
+	void process(GraphicsContext& refContext,
+	             RenderTextureView& inputTexture,
+	             RenderTextureView& outputTexture)
 	{
 		impl->process(refContext, inputTexture, outputTexture);
 	}
 }
-

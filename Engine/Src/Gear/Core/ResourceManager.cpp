@@ -1,31 +1,34 @@
-#include<Gear/Core/ResourceManager.h>
+#include <Gear/Core/ResourceManager.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Effect/HDRClampEffect.h>
+#include <Gear/Effect/HDRClampEffect.h>
 
-#include<Gear/Effect/LatLongMapToCubeMapEffect.h>
+#include <Gear/Effect/LatLongMapToCubeMapEffect.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
-#include<Gear/Utils/Random.h>
+#include <Gear/Utils/Random.h>
 
-#include<Gear/Utils/File.h>
+#include <Gear/Utils/File.h>
 
-#include<DDSTextureLoader/DDSTextureLoader12.h>
+#include <DDSTextureLoader/DDSTextureLoader12.h>
 
-#include<WICTextureLoader/WICTextureLoader12.h>
+#include <WICTextureLoader/WICTextureLoader12.h>
 
-#include<DirectXTex/DirectXTexEXR.h>
+#include <DirectXTex/DirectXTexEXR.h>
 
-#include<DirectXTex/DirectXTex.h>
+#include <DirectXTex/DirectXTex.h>
 
 namespace Gear::Core
 {
 	ResourceManager::ResourceManager() :
-		context(makeUnique<GraphicsContext>()), commandList(context->getCommandList()),
-		d3d12Resources(makeUnique<std::vector<UniquePtr<D3D12Resource::D3D12ResourceBase>>[]>(Graphics::getFrameBufferCount())),
-		resources(makeUnique<std::vector<UniquePtr<Resource::ResourceBase>>[]>(Graphics::getFrameBufferCount()))
+		context(makeUnique<GraphicsContext>()),
+		commandList(context->getCommandList()),
+		d3d12Resources(makeUnique<std::vector<UniquePtr<D3D12Resource::D3D12ResourceBase>>[]>(
+			Graphics::getFrameBufferCount())),
+		resources(
+			makeUnique<std::vector<UniquePtr<Resource::ResourceBase>>[]>(Graphics::getFrameBufferCount()))
 	{
 	}
 
@@ -60,7 +63,9 @@ namespace Gear::Core
 		return commandList;
 	}
 
-	D3D12Resource::BufferPtr ResourceManager::createBuffer(const void* const data, const uint64_t size, const D3D12_RESOURCE_FLAGS resFlags)
+	D3D12Resource::BufferPtr ResourceManager::createBuffer(const void* const data,
+	                                                       const uint64_t size,
+	                                                       const D3D12_RESOURCE_FLAGS resFlags)
 	{
 		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
@@ -75,7 +80,9 @@ namespace Gear::Core
 		return buffer;
 	}
 
-	D3D12Resource::TexturePtr ResourceManager::createTexture(const Utils::File::Path& filePath, const D3D12_RESOURCE_FLAGS resFlags, bool* const isTextureCube)
+	D3D12Resource::TexturePtr ResourceManager::createTexture(const Utils::File::Path& filePath,
+	                                                         const D3D12_RESOURCE_FLAGS resFlags,
+	                                                         bool* const isTextureCube)
 	{
 		if (!filePath.exist())
 		{
@@ -99,7 +106,8 @@ namespace Gear::Core
 		//资源一开始虽然是处于COMMOM状态，但是UpdateSubresources中存在CopyBufferRegion
 		//这个操作执行完后，资源的状态实际上会从D3D12_RESOURCE_STATE_COMMON被提升到D3D12_RESOURCE_STATE_COPY_DEST
 		//这就是为什么引擎内部追踪的初始状态会被设置为D3D12_RESOURCE_STATE_COPY_DEST
-		if (fileExtension == L"bmp" || fileExtension == L"jpg" || fileExtension == L"jpeg" || fileExtension == L"png" || fileExtension == L"tiff")
+		if (fileExtension == L"bmp" || fileExtension == L"jpg" || fileExtension == L"jpeg" ||
+		    fileExtension == L"png" || fileExtension == L"tiff")
 		{
 			std::unique_ptr<uint8_t[]> decodedData;
 
@@ -107,15 +115,24 @@ namespace Gear::Core
 
 			ComPtr<ID3D12Resource> tex;
 
-			CHECKERROR(DirectX::LoadWICTextureFromFileEx(GraphicsDevice::get(), filePath.cstr(), 0, resFlags, DirectX::WIC_LOADER_DEFAULT, &tex, decodedData, subresource));
+			CHECKERROR(DirectX::LoadWICTextureFromFileEx(GraphicsDevice::get(),
+			                                             filePath.cstr(),
+			                                             0,
+			                                             resFlags,
+			                                             DirectX::WIC_LOADER_DEFAULT,
+			                                             &tex,
+			                                             decodedData,
+			                                             subresource));
 
 			texture = makeUnique<D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
-			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap =
+				makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
-			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
+			UpdateSubresources(
+				commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -127,15 +144,32 @@ namespace Gear::Core
 
 			ComPtr<ID3D12Resource> tex;
 
-			CHECKERROR(DirectX::LoadDDSTextureFromFileEx(GraphicsDevice::get(), filePath.cstr(), 0, resFlags, DirectX::DDS_LOADER_DEFAULT, &tex, decodedData, subresources, nullptr, isTextureCube));
+			CHECKERROR(DirectX::LoadDDSTextureFromFileEx(GraphicsDevice::get(),
+			                                             filePath.cstr(),
+			                                             0,
+			                                             resFlags,
+			                                             DirectX::DDS_LOADER_DEFAULT,
+			                                             &tex,
+			                                             decodedData,
+			                                             subresources,
+			                                             nullptr,
+			                                             isTextureCube));
 
 			texture = makeUnique<D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
 
-			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, static_cast<uint32_t>(subresources.size()));
+			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(
+				texture->getResource(), 0, static_cast<uint32_t>(subresources.size()));
 
-			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap =
+				makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
-			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, static_cast<uint32_t>(subresources.size()), subresources.data());
+			UpdateSubresources(commandList->get(),
+			                   texture->getResource(),
+			                   uploadHeap->getResource(),
+			                   0,
+			                   0,
+			                   static_cast<uint32_t>(subresources.size()),
+			                   subresources.data());
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -167,15 +201,18 @@ namespace Gear::Core
 
 			ComPtr<ID3D12Resource> tex;
 
-			CHECKERROR(DirectX::CreateTextureEx(GraphicsDevice::get(), metadata, resFlags, DirectX::CREATETEX_DEFAULT, &tex));
+			CHECKERROR(DirectX::CreateTextureEx(
+				GraphicsDevice::get(), metadata, resFlags, DirectX::CREATETEX_DEFAULT, &tex));
 
 			texture = makeUnique<D3D12Resource::Texture>(tex, true, D3D12_RESOURCE_STATE_COPY_DEST);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
-			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap =
+				makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
-			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
+			UpdateSubresources(
+				commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -189,7 +226,10 @@ namespace Gear::Core
 		return texture;
 	}
 
-	D3D12Resource::TexturePtr ResourceManager::createTexture(const uint32_t width, const uint32_t height, const RandomDataType type, const D3D12_RESOURCE_FLAGS resFlags)
+	D3D12Resource::TexturePtr ResourceManager::createTexture(const uint32_t width,
+	                                                         const uint32_t height,
+	                                                         const RandomDataType type,
+	                                                         const D3D12_RESOURCE_FLAGS resFlags)
 	{
 		D3D12Resource::TexturePtr texture;
 
@@ -204,27 +244,31 @@ namespace Gear::Core
 
 			for (uint32_t i = 0; i < width * height; i++)
 			{
-				colors[i] =
-				{
-					static_cast<uint8_t>(Utils::Random::genUint() % 256u),
-					static_cast<uint8_t>(Utils::Random::genUint() % 256u),
-					static_cast<uint8_t>(Utils::Random::genUint() % 256u),
-					static_cast<uint8_t>(Utils::Random::genUint() % 256u)
-				};
+				colors[i] = { static_cast<uint8_t>(Utils::Random::genUint() % 256u),
+					          static_cast<uint8_t>(Utils::Random::genUint() % 256u),
+					          static_cast<uint8_t>(Utils::Random::genUint() % 256u),
+					          static_cast<uint8_t>(Utils::Random::genUint() % 256u) };
 			}
 
 			texture = makeUnique<D3D12Resource::Texture>(width, height, FMT::RGBA8UN, 1, 1, true, resFlags);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
-			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap =
+				makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
 			subresourceData.pData = colors.data();
 			subresourceData.RowPitch = width * 4u;
 			subresourceData.SlicePitch = subresourceData.RowPitch * height;
 
-			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresourceData);
+			UpdateSubresources(commandList->get(),
+			                   texture->getResource(),
+			                   uploadHeap->getResource(),
+			                   0,
+			                   0,
+			                   1,
+			                   &subresourceData);
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -239,27 +283,31 @@ namespace Gear::Core
 
 			for (uint32_t i = 0; i < width * height; i++)
 			{
-				colors[i] =
-				{
-					DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
-					DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
-					DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
-					DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss())
-				};
+				colors[i] = { DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
+					          DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
+					          DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()),
+					          DirectX::PackedVector::XMConvertFloatToHalf(Utils::Random::genGauss()) };
 			}
 
 			texture = makeUnique<D3D12Resource::Texture>(width, height, FMT::RGBA16F, 1, 1, true, resFlags);
 
 			const uint64_t uploadHeapSize = GetRequiredIntermediateSize(texture->getResource(), 0, 1);
 
-			UniquePtr<D3D12Resource::UploadHeap> uploadHeap = makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
+			UniquePtr<D3D12Resource::UploadHeap> uploadHeap =
+				makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
 			D3D12_SUBRESOURCE_DATA subresourceData = {};
 			subresourceData.pData = colors.data();
 			subresourceData.RowPitch = width * 8u;
 			subresourceData.SlicePitch = subresourceData.RowPitch * height;
 
-			UpdateSubresources(commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresourceData);
+			UpdateSubresources(commandList->get(),
+			                   texture->getResource(),
+			                   uploadHeap->getResource(),
+			                   0,
+			                   0,
+			                   1,
+			                   &subresourceData);
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -267,7 +315,9 @@ namespace Gear::Core
 		return texture;
 	}
 
-	Resource::ImmutableCBufferPtr ResourceManager::createImmutableCBuffer(const uint32_t size, const void* const data, const bool persistent)
+	Resource::ImmutableCBufferPtr ResourceManager::createImmutableCBuffer(const uint32_t size,
+	                                                                      const void* const data,
+	                                                                      const bool persistent)
 	{
 		D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
@@ -280,21 +330,26 @@ namespace Gear::Core
 		return makeUnique<Resource::ImmutableCBuffer>(std::move(buffer), persistent);
 	}
 
-	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size, const void* const data, const bool persistent)
+	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size,
+	                                                                  const void* const data,
+	                                                                  const bool persistent)
 	{
 		D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
 		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), persistent);
 	}
 
-	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size, const bool persistent)
+	Resource::DefaultCBufferPtr ResourceManager::createDefaultCBuffer(const uint32_t size,
+	                                                                  const bool persistent)
 	{
-		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
+		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(
+			size, true, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
 
 		return makeUnique<Resource::DefaultCBuffer>(std::move(buffer), persistent);
 	}
 
-	UniquePtr<Resource::DynamicCBuffer> ResourceManager::createDynamicCBuffer(const uint32_t size, const void* const data)
+	UniquePtr<Resource::DynamicCBuffer> ResourceManager::createDynamicCBuffer(const uint32_t size,
+	                                                                          const void* const data)
 	{
 		UniquePtr<Resource::DynamicCBuffer> buffer = makeUnique<Resource::DynamicCBuffer>(size);
 
@@ -306,7 +361,15 @@ namespace Gear::Core
 		return buffer;
 	}
 
-	Resource::BufferViewPtr ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent, const void* const data)
+	Resource::BufferViewPtr ResourceManager::createTypedBufferView(const DXGI_FORMAT format,
+	                                                               const uint64_t size,
+	                                                               const bool createSRV,
+	                                                               const bool createUAV,
+	                                                               const bool createVBV,
+	                                                               const bool createIBV,
+	                                                               const bool cpuWritable,
+	                                                               const bool persistent,
+	                                                               const void* const data)
 	{
 		if (createVBV && createIBV)
 		{
@@ -348,10 +411,25 @@ namespace Gear::Core
 			buffer->setStateTracking(false);
 		}
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), 0, format, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer),
+		                                        0,
+		                                        format,
+		                                        createSRV,
+		                                        createUAV,
+		                                        createVBV,
+		                                        createIBV,
+		                                        cpuWritable,
+		                                        persistent);
 	}
 
-	Resource::BufferViewPtr ResourceManager::createTypedBufferView(const DXGI_FORMAT format, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool createIBV, const bool cpuWritable, const bool persistent)
+	Resource::BufferViewPtr ResourceManager::createTypedBufferView(const DXGI_FORMAT format,
+	                                                               const uint64_t size,
+	                                                               const bool createSRV,
+	                                                               const bool createUAV,
+	                                                               const bool createVBV,
+	                                                               const bool createIBV,
+	                                                               const bool cpuWritable,
+	                                                               const bool persistent)
 	{
 		if (createVBV && createIBV)
 		{
@@ -367,10 +445,25 @@ namespace Gear::Core
 
 		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), 0, format, createSRV, createUAV, createVBV, createIBV, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer),
+		                                        0,
+		                                        format,
+		                                        createSRV,
+		                                        createUAV,
+		                                        createVBV,
+		                                        createIBV,
+		                                        cpuWritable,
+		                                        persistent);
 	}
 
-	Resource::BufferViewPtr ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent, const void* const data)
+	Resource::BufferViewPtr ResourceManager::createStructuredBufferView(const uint32_t structureByteStride,
+	                                                                    const uint64_t size,
+	                                                                    const bool createSRV,
+	                                                                    const bool createUAV,
+	                                                                    const bool createVBV,
+	                                                                    const bool cpuWritable,
+	                                                                    const bool persistent,
+	                                                                    const void* const data)
 	{
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -402,10 +495,24 @@ namespace Gear::Core
 			buffer->setStateTracking(false);
 		}
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), structureByteStride, FMT::UNKNOWN, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer),
+		                                        structureByteStride,
+		                                        FMT::UNKNOWN,
+		                                        createSRV,
+		                                        createUAV,
+		                                        createVBV,
+		                                        false,
+		                                        cpuWritable,
+		                                        persistent);
 	}
 
-	Resource::BufferViewPtr ResourceManager::createStructuredBufferView(const uint32_t structureByteStride, const uint64_t size, const bool createSRV, const bool createUAV, const bool createVBV, const bool cpuWritable, const bool persistent)
+	Resource::BufferViewPtr ResourceManager::createStructuredBufferView(const uint32_t structureByteStride,
+	                                                                    const uint64_t size,
+	                                                                    const bool createSRV,
+	                                                                    const bool createUAV,
+	                                                                    const bool createVBV,
+	                                                                    const bool cpuWritable,
+	                                                                    const bool persistent)
 	{
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -416,10 +523,23 @@ namespace Gear::Core
 
 		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), structureByteStride, FMT::UNKNOWN, createSRV, createUAV, createVBV, false, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(std::move(buffer),
+		                                        structureByteStride,
+		                                        FMT::UNKNOWN,
+		                                        createSRV,
+		                                        createUAV,
+		                                        createVBV,
+		                                        false,
+		                                        cpuWritable,
+		                                        persistent);
 	}
 
-	Resource::BufferViewPtr ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent, const void* const data)
+	Resource::BufferViewPtr ResourceManager::createByteAddressBufferView(const uint64_t size,
+	                                                                     const bool createSRV,
+	                                                                     const bool createUAV,
+	                                                                     const bool cpuWritable,
+	                                                                     const bool persistent,
+	                                                                     const void* const data)
 	{
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -446,10 +566,15 @@ namespace Gear::Core
 			buffer->setStateTracking(false);
 		}
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), 0, FMT::UNKNOWN, createSRV, createUAV, false, false, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(
+			std::move(buffer), 0, FMT::UNKNOWN, createSRV, createUAV, false, false, cpuWritable, persistent);
 	}
 
-	Resource::BufferViewPtr ResourceManager::createByteAddressBufferView(const uint64_t size, const bool createSRV, const bool createUAV, const bool cpuWritable, const bool persistent)
+	Resource::BufferViewPtr ResourceManager::createByteAddressBufferView(const uint64_t size,
+	                                                                     const bool createSRV,
+	                                                                     const bool createUAV,
+	                                                                     const bool cpuWritable,
+	                                                                     const bool persistent)
 	{
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
 
@@ -460,10 +585,17 @@ namespace Gear::Core
 
 		D3D12Resource::BufferPtr buffer = makeUnique<D3D12Resource::Buffer>(size, true, resFlags);
 
-		return makeUnique<Resource::BufferView>(std::move(buffer), 0, FMT::UNKNOWN, createSRV, createUAV, false, false, cpuWritable, persistent);
+		return makeUnique<Resource::BufferView>(
+			std::move(buffer), 0, FMT::UNKNOWN, createSRV, createUAV, false, false, cpuWritable, persistent);
 	}
 
-	Resource::DepthTextureViewPtr ResourceManager::createDepthTextureView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent)
+	Resource::DepthTextureViewPtr ResourceManager::createDepthTextureView(const uint32_t width,
+	                                                                      const uint32_t height,
+	                                                                      const DXGI_FORMAT resFormat,
+	                                                                      const uint32_t arraySize,
+	                                                                      const uint32_t mipLevels,
+	                                                                      const bool isTextureCube,
+	                                                                      const bool persistent)
 	{
 		DXGI_FORMAT clearValueFormat = FMT::UNKNOWN;
 
@@ -495,12 +627,23 @@ namespace Gear::Core
 		clearValue.DepthStencil.Depth = 1.f;
 		clearValue.DepthStencil.Stencil = 0;
 
-		D3D12Resource::TexturePtr texture = makeUnique<D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL, &clearValue);
+		D3D12Resource::TexturePtr texture =
+			makeUnique<D3D12Resource::Texture>(width,
+		                                       height,
+		                                       resFormat,
+		                                       arraySize,
+		                                       mipLevels,
+		                                       true,
+		                                       D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
+		                                       &clearValue);
 
 		return makeUnique<Resource::DepthTextureView>(std::move(texture), isTextureCube, persistent);
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createRenderTextureView(const Utils::File::Path& filePath, const bool persistent, const bool hasUAV, const bool hasRTV)
+	Resource::RenderTextureViewPtr ResourceManager::createRenderTextureView(const Utils::File::Path& filePath,
+	                                                                        const bool persistent,
+	                                                                        const bool hasUAV,
+	                                                                        const bool hasRTV)
 	{
 		bool stateTracking = true;
 
@@ -529,7 +672,9 @@ namespace Gear::Core
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(texture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			commandList->trackAndSetResourceState(texture.get(),
+			                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+			                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 			commandList->flushResourceBarriers();
 
@@ -538,17 +683,31 @@ namespace Gear::Core
 
 		if (stateTracking)
 		{
-			return makeUnique<Resource::RenderTextureView>(std::move(texture), isTextureCube, persistent, texture->getFormat(),
-				hasUAV ? texture->getFormat() : FMT::UNKNOWN, hasRTV ? texture->getFormat() : FMT::UNKNOWN);
+			return makeUnique<Resource::RenderTextureView>(std::move(texture),
+			                                               isTextureCube,
+			                                               persistent,
+			                                               texture->getFormat(),
+			                                               hasUAV ? texture->getFormat() : FMT::UNKNOWN,
+			                                               hasRTV ? texture->getFormat() : FMT::UNKNOWN);
 		}
 		else
 		{
-			return makeUnique<Resource::RenderTextureView>(std::move(texture), isTextureCube, persistent, texture->getFormat(),
-				FMT::UNKNOWN, FMT::UNKNOWN);
+			return makeUnique<Resource::RenderTextureView>(std::move(texture),
+			                                               isTextureCube,
+			                                               persistent,
+			                                               texture->getFormat(),
+			                                               FMT::UNKNOWN,
+			                                               FMT::UNKNOWN);
 		}
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createRenderTextureView(const uint32_t width, const uint32_t height, const RandomDataType type, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
+	Resource::RenderTextureViewPtr ResourceManager::createRenderTextureView(const uint32_t width,
+	                                                                        const uint32_t height,
+	                                                                        const RandomDataType type,
+	                                                                        const bool persistent,
+	                                                                        const DXGI_FORMAT srvFormat,
+	                                                                        const DXGI_FORMAT uavFormat,
+	                                                                        const DXGI_FORMAT rtvFormat)
 	{
 		const bool hasRTV = (rtvFormat != FMT::UNKNOWN);
 
@@ -579,7 +738,9 @@ namespace Gear::Core
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(texture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			commandList->trackAndSetResourceState(texture.get(),
+			                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+			                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 			commandList->flushResourceBarriers();
 
@@ -588,15 +749,27 @@ namespace Gear::Core
 
 		if (srvFormat == FMT::UNKNOWN)
 		{
-			return makeUnique<Resource::RenderTextureView>(std::move(texture), false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+			return makeUnique<Resource::RenderTextureView>(
+				std::move(texture), false, persistent, texture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 		}
 		else
 		{
-			return makeUnique<Resource::RenderTextureView>(std::move(texture), false, persistent, srvFormat, uavFormat, rtvFormat);
+			return makeUnique<Resource::RenderTextureView>(
+				std::move(texture), false, persistent, srvFormat, uavFormat, rtvFormat);
 		}
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createRenderTextureView(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat, DXGI_FORMAT rtvFormat, const float* const color)
+	Resource::RenderTextureViewPtr ResourceManager::createRenderTextureView(const uint32_t width,
+	                                                                        const uint32_t height,
+	                                                                        const DXGI_FORMAT resFormat,
+	                                                                        const uint32_t arraySize,
+	                                                                        const uint32_t mipLevels,
+	                                                                        const bool isTextureCube,
+	                                                                        const bool persistent,
+	                                                                        DXGI_FORMAT srvFormat,
+	                                                                        DXGI_FORMAT uavFormat,
+	                                                                        DXGI_FORMAT rtvFormat,
+	                                                                        const float* const color)
 	{
 		if (srvFormat == FMT::UNKNOWN && uavFormat == FMT::UNKNOWN && rtvFormat == FMT::UNKNOWN)
 		{
@@ -618,7 +791,8 @@ namespace Gear::Core
 
 		if (!hasUAV && !hasRTV)
 		{
-			THROWLOG(LOGERROR() << TOSTRING(uavFormat) << "和" << TOSTRING(rtvFormat) << "其中一个必须为有效格式！");
+			THROWLOG(LOGERROR() << TOSTRING(uavFormat) << "和" << TOSTRING(rtvFormat)
+			                    << "其中一个必须为有效格式！");
 		}
 
 		D3D12_RESOURCE_FLAGS resFlags = D3D12_RESOURCE_FLAG_NONE;
@@ -641,17 +815,29 @@ namespace Gear::Core
 			clearValue.Format = rtvFormat;
 			memcpy(clearValue.Color, color, sizeof(float) * 4);
 
-			texture = makeUnique<D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, resFlags, &clearValue);
+			texture = makeUnique<D3D12Resource::Texture>(
+				width, height, resFormat, arraySize, mipLevels, true, resFlags, &clearValue);
 		}
 		else
 		{
-			texture = makeUnique<D3D12Resource::Texture>(width, height, resFormat, arraySize, mipLevels, true, resFlags);
+			texture = makeUnique<D3D12Resource::Texture>(
+				width, height, resFormat, arraySize, mipLevels, true, resFlags);
 		}
 
-		return makeUnique<Resource::RenderTextureView>(std::move(texture), isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
+		return makeUnique<Resource::RenderTextureView>(
+			std::move(texture), isTextureCube, persistent, srvFormat, uavFormat, rtvFormat);
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createGraphicsTexture(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, const float* const color, DXGI_FORMAT srvFormat, DXGI_FORMAT rtvFormat)
+	Resource::RenderTextureViewPtr ResourceManager::createGraphicsTexture(const uint32_t width,
+	                                                                      const uint32_t height,
+	                                                                      const DXGI_FORMAT resFormat,
+	                                                                      const uint32_t arraySize,
+	                                                                      const uint32_t mipLevels,
+	                                                                      const bool isTextureCube,
+	                                                                      const bool persistent,
+	                                                                      const float* const color,
+	                                                                      DXGI_FORMAT srvFormat,
+	                                                                      DXGI_FORMAT rtvFormat)
 	{
 		if (srvFormat == FMT::UNKNOWN && rtvFormat == FMT::UNKNOWN)
 		{
@@ -659,15 +845,35 @@ namespace Gear::Core
 
 			rtvFormat = resFormat;
 		}
-		else if ((srvFormat == FMT::UNKNOWN && rtvFormat != FMT::UNKNOWN) || (srvFormat != FMT::UNKNOWN && rtvFormat == FMT::UNKNOWN))
+		else if ((srvFormat == FMT::UNKNOWN && rtvFormat != FMT::UNKNOWN) ||
+		         (srvFormat != FMT::UNKNOWN && rtvFormat == FMT::UNKNOWN))
 		{
-			THROWLOG(LOGERROR() << TOSTRING(srvFormat) << "和" << TOSTRING(rtvFormat) << "要么同时为" << TOSTRING(FMT::UNKNOWN) << "，要么同时得被设置成有效值！");
+			THROWLOG(LOGERROR() << TOSTRING(srvFormat) << "和" << TOSTRING(rtvFormat) << "要么同时为"
+			                    << TOSTRING(FMT::UNKNOWN) << "，要么同时得被设置成有效值！");
 		}
 
-		return createRenderTextureView(width, height, resFormat, arraySize, mipLevels, isTextureCube, persistent, srvFormat, FMT::UNKNOWN, rtvFormat, color);
+		return createRenderTextureView(width,
+		                               height,
+		                               resFormat,
+		                               arraySize,
+		                               mipLevels,
+		                               isTextureCube,
+		                               persistent,
+		                               srvFormat,
+		                               FMT::UNKNOWN,
+		                               rtvFormat,
+		                               color);
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createComputeTexture(const uint32_t width, const uint32_t height, const DXGI_FORMAT resFormat, const uint32_t arraySize, const uint32_t mipLevels, const bool isTextureCube, const bool persistent, DXGI_FORMAT srvFormat, DXGI_FORMAT uavFormat)
+	Resource::RenderTextureViewPtr ResourceManager::createComputeTexture(const uint32_t width,
+	                                                                     const uint32_t height,
+	                                                                     const DXGI_FORMAT resFormat,
+	                                                                     const uint32_t arraySize,
+	                                                                     const uint32_t mipLevels,
+	                                                                     const bool isTextureCube,
+	                                                                     const bool persistent,
+	                                                                     DXGI_FORMAT srvFormat,
+	                                                                     DXGI_FORMAT uavFormat)
 	{
 		if (srvFormat == FMT::UNKNOWN && uavFormat == FMT::UNKNOWN)
 		{
@@ -675,20 +881,36 @@ namespace Gear::Core
 
 			uavFormat = resFormat;
 		}
-		else if ((srvFormat == FMT::UNKNOWN && uavFormat != FMT::UNKNOWN) || (srvFormat != FMT::UNKNOWN && uavFormat == FMT::UNKNOWN))
+		else if ((srvFormat == FMT::UNKNOWN && uavFormat != FMT::UNKNOWN) ||
+		         (srvFormat != FMT::UNKNOWN && uavFormat == FMT::UNKNOWN))
 		{
-			THROWLOG(LOGERROR() << TOSTRING(srvFormat) << "和" << TOSTRING(uavFormat) << "要么同时为" << TOSTRING(FMT::UNKNOWN) << "，要么同时得被设置成有效值！");
+			THROWLOG(LOGERROR() << TOSTRING(srvFormat) << "和" << TOSTRING(uavFormat) << "要么同时为"
+			                    << TOSTRING(FMT::UNKNOWN) << "，要么同时得被设置成有效值！");
 		}
 
-		return createRenderTextureView(width, height, resFormat, arraySize, mipLevels, isTextureCube, persistent, srvFormat, uavFormat, FMT::UNKNOWN);
+		return createRenderTextureView(width,
+		                               height,
+		                               resFormat,
+		                               arraySize,
+		                               mipLevels,
+		                               isTextureCube,
+		                               persistent,
+		                               srvFormat,
+		                               uavFormat,
+		                               FMT::UNKNOWN);
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(const Utils::File::Path& filePath, const uint32_t texturecubeResolution, const bool persistent, const bool hasUAV, const bool hasRTV)
+	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(const Utils::File::Path& filePath,
+	                                                                  const uint32_t texturecubeResolution,
+	                                                                  const bool persistent,
+	                                                                  const bool hasUAV,
+	                                                                  const bool hasRTV)
 	{
 		Resource::RenderTextureView* equirectangularMap = nullptr;
 
 		{
-			Resource::RenderTextureViewPtr equirectangularMapRet = createRenderTextureView(filePath, false, true, false);
+			Resource::RenderTextureViewPtr equirectangularMapRet =
+				createRenderTextureView(filePath, false, true, false);
 
 			equirectangularMap = equirectangularMapRet.get();
 
@@ -720,7 +942,8 @@ namespace Gear::Core
 		Resource::RenderTextureView* cubeMap = nullptr;
 
 		{
-			Resource::RenderTextureViewPtr cubeMapRet = createGraphicsTexture(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false);
+			Resource::RenderTextureViewPtr cubeMapRet = createGraphicsTexture(
+				texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, false);
 
 			cubeMap = cubeMapRet.get();
 
@@ -750,22 +973,27 @@ namespace Gear::Core
 			}
 		}
 
-		D3D12Resource::TexturePtr dstTexture = makeUnique<D3D12Resource::Texture>(texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, resFlags);
+		D3D12Resource::TexturePtr dstTexture = makeUnique<D3D12Resource::Texture>(
+			texturecubeResolution, texturecubeResolution, resFormat, 6, 1, true, resFlags);
 
 		D3D12Resource::Texture* srcTexture = cubeMap->getTexture();
 
 		for (uint32_t i = 0; i < 6; i++)
 		{
-			const uint32_t dstSubresource = D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
+			const uint32_t dstSubresource =
+				D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
 
-			const uint32_t srcSubresource = D3D12CalcSubresource(0, i, 0, srcTexture->getMipLevels(), srcTexture->getArraySize());
+			const uint32_t srcSubresource =
+				D3D12CalcSubresource(0, i, 0, srcTexture->getMipLevels(), srcTexture->getArraySize());
 
 			commandList->copyTextureRegion(dstTexture.get(), dstSubresource, srcTexture, srcSubresource);
 		}
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(dstTexture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			commandList->trackAndSetResourceState(dstTexture.get(),
+			                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+			                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 			commandList->flushResourceBarriers();
 
@@ -774,17 +1002,26 @@ namespace Gear::Core
 
 		if (stateTracking)
 		{
-			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(),
-				hasUAV ? dstTexture->getFormat() : FMT::UNKNOWN, hasRTV ? dstTexture->getFormat() : FMT::UNKNOWN);
+			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture),
+			                                               true,
+			                                               persistent,
+			                                               dstTexture->getFormat(),
+			                                               hasUAV ? dstTexture->getFormat() : FMT::UNKNOWN,
+			                                               hasRTV ? dstTexture->getFormat() : FMT::UNKNOWN);
 		}
 		else
 		{
-			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(),
-				FMT::UNKNOWN, FMT::UNKNOWN);
+			return makeUnique<Resource::RenderTextureView>(
+				std::move(dstTexture), true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 		}
 	}
 
-	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(const std::initializer_list<Utils::File::Path>& texturesPath, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat)
+	Resource::RenderTextureViewPtr ResourceManager::createTextureCube(
+		const std::initializer_list<Utils::File::Path>& texturesPath,
+		const bool persistent,
+		const DXGI_FORMAT srvFormat,
+		const DXGI_FORMAT uavFormat,
+		const DXGI_FORMAT rtvFormat)
 	{
 		D3D12Resource::Texture* srcTextures[6] = {};
 
@@ -830,20 +1067,30 @@ namespace Gear::Core
 			}
 		}
 
-		D3D12Resource::TexturePtr dstTexture = makeUnique<D3D12Resource::Texture>(srcTextures[0]->getWidth(), srcTextures[0]->getHeight(), srcTextures[0]->getFormat(), 6, 1, true, resFlags);
+		D3D12Resource::TexturePtr dstTexture = makeUnique<D3D12Resource::Texture>(srcTextures[0]->getWidth(),
+		                                                                          srcTextures[0]->getHeight(),
+		                                                                          srcTextures[0]->getFormat(),
+		                                                                          6,
+		                                                                          1,
+		                                                                          true,
+		                                                                          resFlags);
 
 		for (uint32_t i = 0; i < 6; i++)
 		{
-			const uint32_t dstSubresource = D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
+			const uint32_t dstSubresource =
+				D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
 
-			const uint32_t srcSubresource = D3D12CalcSubresource(0, 0, 0, srcTextures[i]->getMipLevels(), srcTextures[i]->getArraySize());
+			const uint32_t srcSubresource =
+				D3D12CalcSubresource(0, 0, 0, srcTextures[i]->getMipLevels(), srcTextures[i]->getArraySize());
 
 			commandList->copyTextureRegion(dstTexture.get(), dstSubresource, srcTextures[i], srcSubresource);
 		}
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(dstTexture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			commandList->trackAndSetResourceState(dstTexture.get(),
+			                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+			                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 			commandList->flushResourceBarriers();
 
@@ -852,30 +1099,38 @@ namespace Gear::Core
 
 		if (srvFormat == FMT::UNKNOWN)
 		{
-			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture), true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
+			return makeUnique<Resource::RenderTextureView>(
+				std::move(dstTexture), true, persistent, dstTexture->getFormat(), FMT::UNKNOWN, FMT::UNKNOWN);
 		}
 		else
 		{
-			return makeUnique<Resource::RenderTextureView>(std::move(dstTexture), true, persistent, srvFormat, uavFormat, rtvFormat);
+			return makeUnique<Resource::RenderTextureView>(
+				std::move(dstTexture), true, persistent, srvFormat, uavFormat, rtvFormat);
 		}
 	}
 
-	Resource::SwapBufferPtr ResourceManager::createSwapBuffer(const std::function<Resource::BufferViewPtr(void)>& readBufferFunc, const std::function<Resource::BufferViewPtr(void)>& writeBufferFunc)
+	Resource::SwapBufferPtr ResourceManager::createSwapBuffer(
+		const std::function<Resource::BufferViewPtr(void)>& readBufferFunc,
+		const std::function<Resource::BufferViewPtr(void)>& writeBufferFunc)
 	{
 		return makeUnique<Resource::SwapBuffer>(readBufferFunc, writeBufferFunc);
 	}
 
-	Resource::SwapBufferPtr ResourceManager::createSwapBuffer(const std::function<Resource::BufferViewPtr(void)>& bufferFunc)
+	Resource::SwapBufferPtr ResourceManager::createSwapBuffer(
+		const std::function<Resource::BufferViewPtr(void)>& bufferFunc)
 	{
 		return makeUnique<Resource::SwapBuffer>(bufferFunc, bufferFunc);
 	}
 
-	Resource::SwapTexturePtr ResourceManager::createSwapTexture(const std::function<Resource::RenderTextureViewPtr(void)>& readTextureFunc, const std::function<Resource::RenderTextureViewPtr(void)>& writeTextureFunc)
+	Resource::SwapTexturePtr ResourceManager::createSwapTexture(
+		const std::function<Resource::RenderTextureViewPtr(void)>& readTextureFunc,
+		const std::function<Resource::RenderTextureViewPtr(void)>& writeTextureFunc)
 	{
 		return makeUnique<Resource::SwapTexture>(readTextureFunc, writeTextureFunc);
 	}
 
-	Resource::SwapTexturePtr ResourceManager::createSwapTexture(const std::function<Resource::RenderTextureViewPtr(void)>& textureFunc)
+	Resource::SwapTexturePtr ResourceManager::createSwapTexture(
+		const std::function<Resource::RenderTextureViewPtr(void)>& textureFunc)
 	{
 		return makeUnique<Resource::SwapTexture>(textureFunc, textureFunc);
 	}

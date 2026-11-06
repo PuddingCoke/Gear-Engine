@@ -1,12 +1,12 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-#include"Scene.h"
+#include "Scene.h"
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
@@ -17,10 +17,17 @@ public:
 		prefilterPS(Shader::create(L"PrefilterPS.cso")),
 		irradiancePS(Shader::create(L"IrradiancePS.cso"))
 	{
-		renderTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(),
-			FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
+		renderTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(),
+		                                                       Graphics::getHeight(),
+		                                                       FMT::RGBA16F,
+		                                                       1,
+		                                                       1,
+		                                                       false,
+		                                                       true,
+		                                                       DirectX::Colors::Black);
 
-		depthTexture = ResourceManager::createDepthTextureView(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
+		depthTexture = ResourceManager::createDepthTextureView(
+			Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
 
 		brdfLUTTexture = resManager->createRenderTextureView(L"BRDFLUT.dds", true);
 
@@ -29,12 +36,12 @@ public:
 		envCube = resManager->createTextureCube(L"E:\\Assets\\sundowner_deck_4k.hdr", 1024, true);
 
 		skyboxState = PipelineStateBuilder()
-			.setBlendState(PipelineStateHelper::blendReplace)
-			.setRasterizerState(PipelineStateHelper::rasterCullBack)
-			.setDepthStencilState(PipelineStateHelper::depthCompareLessEqual)
-			.setVS(*GlobalShader::getTextureCubeVS())
-			.setPS(*skyboxPS)
-			.build();
+		                  .setBlendState(PipelineStateHelper::blendReplace)
+		                  .setRasterizerState(PipelineStateHelper::rasterCullBack)
+		                  .setDepthStencilState(PipelineStateHelper::depthCompareLessEqual)
+		                  .setVS(*GlobalShader::getTextureCubeVS())
+		                  .setPS(*skyboxPS)
+		                  .build();
 
 		prefilterCube = ResourceManager::createGraphicsTexture(1024, 1024, FMT::RGBA16F, 6, 6, true, true);
 
@@ -48,30 +55,20 @@ public:
 			} matrices{};
 
 			{
-				const DirectX::XMVECTOR focusPoints[6] =
-				{
-					{1.0f,  0.0f,  0.0f},
-					{-1.0f,  0.0f,  0.0f},
-					{0.0f,  1.0f,  0.0f},
-					{0.0f, -1.0f,  0.0f},
-					{0.0f,  0.0f,  1.0f},
-					{0.0f,  0.0f, -1.0f}
-				};
-				const DirectX::XMVECTOR upVectors[6] =
-				{
-					{0.0f, 1.0f,  0.0f},
-					{0.0f, 1.0f,  0.0f},
-					{0.0f,  0.0f,  -1.0f},
-					{0.0f,  0.0f, 1.0f},
-					{0.0f, 1.0f,  0.0f},
-					{0.0f, 1.0f,  0.0f}
-				};
+				const DirectX::XMVECTOR focusPoints[6] = { { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f },
+					                                       { 0.0f, 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f },
+					                                       { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } };
+				const DirectX::XMVECTOR upVectors[6] = { { 0.0f, 1.0f, 0.0f },  { 0.0f, 1.0f, 0.0f },
+					                                     { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f, 1.0f },
+					                                     { 0.0f, 1.0f, 0.0f },  { 0.0f, 1.0f, 0.0f } };
 
-				const DirectX::XMMATRIX projMatrix = DirectX::XMMatrixPerspectiveFovLH(Math::halfPi, 1.f, 0.1f, 10.f);
+				const DirectX::XMMATRIX projMatrix =
+					DirectX::XMMatrixPerspectiveFovLH(Math::halfPi, 1.f, 0.1f, 10.f);
 
 				for (uint32_t i = 0; i < 6; i++)
 				{
-					const DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH({ 0.f,0.f,0.f }, focusPoints[i], upVectors[i]);
+					const DirectX::XMMATRIX viewMatrix =
+						DirectX::XMMatrixLookAtLH({ 0.f, 0.f, 0.f }, focusPoints[i], upVectors[i]);
 					const DirectX::XMMATRIX viewProj = DirectX::XMMatrixTranspose(viewMatrix * projMatrix);
 
 					matrices.matrices[i] = viewProj;
@@ -82,24 +79,24 @@ public:
 		}
 
 		prefilterState = PipelineStateBuilder()
-			.setVS(*prefilterVS)
-			.setPS(*prefilterPS)
-			.setRasterizerState(PipelineStateHelper::rasterCullNone)
-			.setBlendState(PipelineStateHelper::blendReplace)
-			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.build();
+		                     .setVS(*prefilterVS)
+		                     .setPS(*prefilterPS)
+		                     .setRasterizerState(PipelineStateHelper::rasterCullNone)
+		                     .setBlendState(PipelineStateHelper::blendReplace)
+		                     .setDepthStencilState(PipelineStateHelper::depthCompareNone)
+		                     .build();
 
 		irradianceCube = ResourceManager::createGraphicsTexture(128, 128, FMT::RGBA16F, 6, 1, true, true);
 
 		irradianceCube->getTexture()->setName(L"Irradiance Cube");
 
 		irradianceState = PipelineStateBuilder()
-			.setVS(*prefilterVS)
-			.setPS(*irradiancePS)
-			.setRasterizerState(PipelineStateHelper::rasterCullNone)
-			.setBlendState(PipelineStateHelper::blendReplace)
-			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.build();
+		                      .setVS(*prefilterVS)
+		                      .setPS(*irradiancePS)
+		                      .setRasterizerState(PipelineStateHelper::rasterCullNone)
+		                      .setBlendState(PipelineStateHelper::blendReplace)
+		                      .setDepthStencilState(PipelineStateHelper::depthCompareNone)
+		                      .build();
 
 		calcPrefilterCube();
 
@@ -132,13 +129,14 @@ protected:
 
 			context->setVSConstantBuffer(*viewProjMatrixBuffer);
 
-			const float roughness = static_cast<float>(i) / static_cast<float>(prefilterCube->getTexture()->getMipLevels() - 1u);
+			const float roughness =
+				static_cast<float>(i) / static_cast<float>(prefilterCube->getTexture()->getMipLevels() - 1u);
 
 			SETCONSTS({
-			context->setPSConstants({ envCube->getAllSRVIndex() }, co);
+				context->setPSConstants({ envCube->getAllSRVIndex() }, co);
 
-			context->setPSConstants(1, &roughness, co);
-				});
+				context->setPSConstants(1, &roughness, co);
+			});
 
 			context->draw(36, 6, 0, 0);
 		}
@@ -156,9 +154,7 @@ protected:
 
 		context->setVSConstantBuffer(*viewProjMatrixBuffer);
 
-		SETCONSTS({
-		context->setPSConstants({ envCube->getAllSRVIndex() }, co);
-			});
+		SETCONSTS({ context->setPSConstants({ envCube->getAllSRVIndex() }, co); });
 
 		context->draw(36, 6, 0, 0);
 	}
@@ -185,9 +181,7 @@ protected:
 
 		context->setRenderTargets({ renderTexture->getRTVMip(0) }, depthTexture->getDSVMip(0));
 
-		SETCONSTS({
-		context->setPSConstants({ envCube->getAllSRVIndex() }, co);
-			});
+		SETCONSTS({ context->setPSConstants({ envCube->getAllSRVIndex() }, co); });
 
 		context->draw(36, 1, 0, 0);
 
@@ -240,5 +234,4 @@ private:
 
 	//使用SV_RenderTargetIndex一次性绘制到六个面上分别需要六个对应的矩阵
 	ImmutableCBufferPtr viewProjMatrixBuffer;
-
 };

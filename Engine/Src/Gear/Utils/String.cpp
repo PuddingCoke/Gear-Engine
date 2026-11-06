@@ -6,9 +6,9 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include<Gear/Utils/String.h>
+#include <Gear/Utils/String.h>
 
-#include<Windows.h>
+#include <Windows.h>
 
 namespace Gear::Utils::String
 {

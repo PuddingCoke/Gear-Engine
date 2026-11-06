@@ -1,17 +1,28 @@
-#include<Gear/Core/D3D12Core/GraphicsState.h>
+#include <Gear/Core/D3D12Core/GraphicsState.h>
 
-#include<Gear/Core/TOPOLOGY.h>
+#include <Gear/Core/TOPOLOGY.h>
 
-#include<Gear/Core/FMT.h>
+#include <Gear/Core/FMT.h>
 
 namespace Gear::Core::D3D12Core
 {
-	GraphicsState::GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements, std::vector<std::string> semanticNames, const D3D12_GRAPHICS_PIPELINE_STATE_DESC& graphicsDesc, const RootSignature* const rootSignature, const PipelineStateData pipelineStateData) :
-		PipelineState(rootSignature, pipelineStateData), inputElements(std::move(inputElements)), semanticNames(std::move(semanticNames)), graphicsDesc(graphicsDesc), currentUID(UINT64_MAX)
+	GraphicsState::GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements,
+	                             std::vector<std::string> semanticNames,
+	                             const D3D12_GRAPHICS_PIPELINE_STATE_DESC& graphicsDesc,
+	                             const RootSignature* const rootSignature,
+	                             const PipelineStateData pipelineStateData) :
+		PipelineState(rootSignature, pipelineStateData),
+		inputElements(std::move(inputElements)),
+		semanticNames(std::move(semanticNames)),
+		graphicsDesc(graphicsDesc),
+		currentUID(UINT64_MAX)
 	{
 	}
 
-	void GraphicsState::updatePipelineState(const DXGI_FORMAT* const rtvFormats, const uint32_t numRenderTargets, const DXGI_FORMAT dsvFormat, const D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType)
+	void GraphicsState::updatePipelineState(const DXGI_FORMAT* const rtvFormats,
+	                                        const uint32_t numRenderTargets,
+	                                        const DXGI_FORMAT dsvFormat,
+	                                        const D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType)
 	{
 		if (numRenderTargets)
 		{
@@ -38,7 +49,8 @@ namespace Gear::Core::D3D12Core
 			{
 				ComPtr<ID3D12PipelineState> pipelineState;
 
-				CHECKERROR(GraphicsDevice::get()->CreateGraphicsPipelineState(&graphicsDesc, IID_PPV_ARGS(&pipelineState)));
+				CHECKERROR(GraphicsDevice::get()->CreateGraphicsPipelineState(&graphicsDesc,
+				                                                              IID_PPV_ARGS(&pipelineState)));
 
 				pipelineStates[uid] = pipelineState;
 
@@ -57,10 +69,10 @@ namespace Gear::Core::D3D12Core
 	//543210
 	//大于越界
 #define OFFSETCHECKOUTOFBOUNDS() \
-if (offsetBits > bitsInTotal)\
-{\
-	THROWLOG(LOGERROR() << "侦测到" << TOSTRING(offsetBits) << "越界");\
-}\
+	if (offsetBits > bitsInTotal) \
+	{ \
+		THROWLOG(LOGERROR() << "侦测到" << TOSTRING(offsetBits) << "越界"); \
+	}
 
 	//前几天在研究unordered_map，看了boost那个魔法方法后感觉闹袋有点疼
 	//不过我仔细想了想，其实hash和高中学的双射有点联系
@@ -73,7 +85,8 @@ if (offsetBits > bitsInTotal)\
 
 		for (uint32_t i = 0; i < graphicsDesc.NumRenderTargets; i++)
 		{
-			const uint64_t formatIndex = static_cast<uint64_t>(FMT::getRTVFormatIndex(graphicsDesc.RTVFormats[i]));
+			const uint64_t formatIndex =
+				static_cast<uint64_t>(FMT::getRTVFormatIndex(graphicsDesc.RTVFormats[i]));
 
 			uid |= (formatIndex << offsetBits);
 
@@ -85,7 +98,9 @@ if (offsetBits > bitsInTotal)\
 		}
 
 		//填充0
-		offsetBits += (static_cast<uint32_t>(D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT) - graphicsDesc.NumRenderTargets) * FMT::getRTVFormatBits();
+		offsetBits +=
+			(static_cast<uint32_t>(D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT) - graphicsDesc.NumRenderTargets) *
+			FMT::getRTVFormatBits();
 
 		uid |= (static_cast<uint64_t>(FMT::getDSVFormatIndex(graphicsDesc.DSVFormat)) << offsetBits);
 

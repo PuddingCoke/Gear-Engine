@@ -1,16 +1,22 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
 	MyRenderTask() :
 		effect(BloomEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight())),
-		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true))
+		originTexture(ResourceManager::createComputeTexture(Graphics::getWidth(),
+	                                                        Graphics::getHeight(),
+	                                                        FMT::RGBA16UN,
+	                                                        1,
+	                                                        1,
+	                                                        false,
+	                                                        true))
 	{
 		computeState = PipelineStateBuilder::build(Shader::create(L"ComputeCS.cso"));
 
@@ -91,12 +97,12 @@ protected:
 		context->setPipelineState(*computeState);
 
 		SETCONSTS({
-		context->setCSConstants({ originTexture->getUAVMipIndex(0) }, co);
+			context->setCSConstants({ originTexture->getUAVMipIndex(0) }, co);
 
-		context->setCSConstants(param, co);
+			context->setCSConstants(param, co);
 
-		context->setCSConstants(accParam, co);
-			});
+			context->setCSConstants(accParam, co);
+		});
 
 		context->dispatchDim(Graphics::getWidth(), Graphics::getHeight(), 1);
 
@@ -117,9 +123,10 @@ private:
 
 	struct SimulationParam
 	{
-		DirectX::XMFLOAT2 location = { 0.f,0.f };
+		DirectX::XMFLOAT2 location = { 0.f, 0.f };
 		float scale = { 0.f };
-		const DirectX::XMFLOAT2 texelSize = { 1.f / static_cast<float>(Graphics::getWidth()),1.f / static_cast<float>(Graphics::getHeight()) };
+		const DirectX::XMFLOAT2 texelSize = { 1.f / static_cast<float>(Graphics::getWidth()),
+			                                  1.f / static_cast<float>(Graphics::getHeight()) };
 		float lerpFactor = 0.f;
 		float lerpFactor2 = 0.f;
 	} param;
@@ -137,5 +144,4 @@ private:
 	} accParam;
 
 	BloomEffectPtr effect;
-
 };

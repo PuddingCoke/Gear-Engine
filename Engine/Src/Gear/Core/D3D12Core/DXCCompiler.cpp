@@ -1,8 +1,8 @@
-#include<Gear/Core/D3D12Core/DXCCompiler.h>
+#include <Gear/Core/D3D12Core/DXCCompiler.h>
 
-#include<Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
+#include <Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
 
-#include<Gear/Utils/File.h>
+#include <Gear/Utils/File.h>
 
 namespace Gear::Core::D3D12Core::DXCCompiler
 {
@@ -40,7 +40,6 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		ComPtr<IDxcIncludeHandler> dxcIncludeHanlder;
 
 		ComPtr<IDxcContainerReflection> dxcContainerReflection;
-
 	};
 
 	DXCCompilerImpl::DXCCompilerImpl()
@@ -62,7 +61,8 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 	{
 		ComPtr<IDxcBlobEncoding> textBlob;
 
-		CHECKERROR(dxcUtils->CreateBlobFromPinned(bytes, static_cast<uint32_t>(byteSize), CP_NONE, &textBlob));
+		CHECKERROR(
+			dxcUtils->CreateBlobFromPinned(bytes, static_cast<uint32_t>(byteSize), CP_NONE, &textBlob));
 
 		ComPtr<IDxcBlob> shaderBlob = textBlob;
 
@@ -80,7 +80,8 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 
 		ComPtr<IDxcBlobEncoding> textBlob;
 
-		CHECKERROR(dxcUtils->CreateBlobFromPinned(bytes.data(), static_cast<uint32_t>(bytes.size()), codePage, &textBlob));
+		CHECKERROR(dxcUtils->CreateBlobFromPinned(
+			bytes.data(), static_cast<uint32_t>(bytes.size()), codePage, &textBlob));
 
 		DxcBuffer source = {};
 		source.Ptr = textBlob->GetBufferPointer();
@@ -92,16 +93,9 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		const Utils::File::ShaderPath shaderCommonPath = Utils::File::ShaderPath(L"ShaderCommon");
 
 #ifdef _DEBUG
-		const wchar_t* additionalArgs[] = {
-			L"-I",
-			shaderCommonPath.cstr(),
-			L"-D_DEBUG"
-		};
+		const wchar_t* additionalArgs[] = { L"-I", shaderCommonPath.cstr(), L"-D_DEBUG" };
 #else
-		const wchar_t* additionalArgs[] = {
-			L"-I",
-			shaderCommonPath.cstr()
-		};
+		const wchar_t* additionalArgs[] = { L"-I", shaderCommonPath.cstr() };
 #endif // _DEBUG
 
 		const uint32_t additionalArgCount = _countof(additionalArgs);
@@ -109,31 +103,40 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 		switch (type)
 		{
 		case ShaderType::VERTEX:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"vs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"main", L"vs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::HULL:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"hs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"main", L"hs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::DOMAIN:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ds_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"main", L"ds_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::GEOMETRY:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"gs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"main", L"gs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::PIXEL:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ps_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"main", L"ps_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::COMPUTE:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"cs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"main", L"cs_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::AMPLIFICATION:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"as_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"main", L"as_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::MESH:
-			dxcUtils->BuildArguments(filePath.cstr(), L"main", L"ms_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"main", L"ms_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		case ShaderType::LIBRARY:
-			dxcUtils->BuildArguments(filePath.cstr(), L"", L"lib_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
+			dxcUtils->BuildArguments(
+				filePath.cstr(), L"", L"lib_6_6", additionalArgs, additionalArgCount, nullptr, 0, &args);
 			break;
 		default:
 			break;
@@ -141,7 +144,8 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 
 		ComPtr<IDxcOperationResult> result;
 
-		CHECKERROR(dxcCompiler->Compile(&source, args->GetArguments(), args->GetCount(), dxcIncludeHanlder.Get(), IID_PPV_ARGS(&result)));
+		CHECKERROR(dxcCompiler->Compile(
+			&source, args->GetArguments(), args->GetCount(), dxcIncludeHanlder.Get(), IID_PPV_ARGS(&result)));
 
 		ComPtr<IDxcBlob> shaderBlob;
 
@@ -156,14 +160,16 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 
 		ComPtr<IDxcBlobEncoding> textBlob;
 
-		CHECKERROR(dxcUtils->CreateBlob(bytes.data(), static_cast<uint32_t>(bytes.size()), CP_NONE, &textBlob));
+		CHECKERROR(
+			dxcUtils->CreateBlob(bytes.data(), static_cast<uint32_t>(bytes.size()), CP_NONE, &textBlob));
 
 		ComPtr<IDxcBlob> shaderBlob = textBlob;
 
 		return shaderBlob;
 	}
 
-	ComPtr<ID3D12ShaderReflection> DXCCompilerImpl::getReflectionBlob(const ComPtr<IDxcBlob>& shaderBlob) const
+	ComPtr<ID3D12ShaderReflection> DXCCompilerImpl::getReflectionBlob(
+		const ComPtr<IDxcBlob>& shaderBlob) const
 	{
 		dxcContainerReflection->Load(shaderBlob.Get());
 
@@ -177,7 +183,9 @@ namespace Gear::Core::D3D12Core::DXCCompiler
 
 		CHECKERROR(dxcContainerReflection->GetPartContent(partIndex, &reflectionBlob));
 
-		const DxcBuffer reflectionBuffer = { reflectionBlob->GetBufferPointer(),reflectionBlob->GetBufferSize(),0 };
+		const DxcBuffer reflectionBuffer = { reflectionBlob->GetBufferPointer(),
+			                                 reflectionBlob->GetBufferSize(),
+			                                 0 };
 
 		CHECKERROR(dxcUtils->CreateReflection(&reflectionBuffer, IID_PPV_ARGS(&shaderReflection)));
 

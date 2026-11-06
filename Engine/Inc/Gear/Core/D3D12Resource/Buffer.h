@@ -3,13 +3,13 @@
 #ifndef _GEAR_CORE_D3D12RESOURCE_BUFFER_H_
 #define _GEAR_CORE_D3D12RESOURCE_BUFFER_H_
 
-#include"D3D12ResourceBase.h"
+#include "D3D12ResourceBase.h"
 
 namespace Gear::Core::D3D12Resource
 {
 	CREATESAFETYPE(Buffer);
 
-	class Buffer :public D3D12ResourceBase
+	class Buffer : public D3D12ResourceBase
 	{
 	public:
 
@@ -19,7 +19,10 @@ namespace Gear::Core::D3D12Resource
 
 		void operator=(const Buffer&) = delete;
 
-		Buffer(const uint64_t size, const bool stateTracking, const D3D12_RESOURCE_FLAGS resFlags, const uint32_t initialState = D3D12_RESOURCE_STATE_COPY_DEST);
+		Buffer(const uint64_t size,
+		       const bool stateTracking,
+		       const D3D12_RESOURCE_FLAGS resFlags,
+		       const uint32_t initialState = D3D12_RESOURCE_STATE_COPY_DEST);
 
 		Buffer(const ComPtr<ID3D12Resource>& buffer, const bool stateTracking, const uint32_t initialState);
 
@@ -29,7 +32,8 @@ namespace Gear::Core::D3D12Resource
 
 		void updateGlobalStates() override;
 
-		void transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers, std::vector<D3D12ResourceBase*>& pendingResources) override;
+		void transition(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers,
+		                std::vector<D3D12ResourceBase*>& pendingResources) override;
 
 		void resolvePendingState(std::vector<D3D12_RESOURCE_BARRIER>& resourceBarriers) override;
 
@@ -54,7 +58,6 @@ namespace Gear::Core::D3D12Resource
 		uint32_t transitionState;
 
 		uint32_t pendingState;
-
 	};
 }
 

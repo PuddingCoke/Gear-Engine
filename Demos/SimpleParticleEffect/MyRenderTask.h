@@ -1,10 +1,10 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
@@ -16,28 +16,34 @@ public:
 
 		particlePS = Shader::create(L"ParticlePS.hlsl", ShaderType::PIXEL);
 
-		particleComputeState = PipelineStateBuilder::build(Shader::create(L"ParticleCS.hlsl", ShaderType::COMPUTE));
+		particleComputeState =
+			PipelineStateBuilder::build(Shader::create(L"ParticleCS.hlsl", ShaderType::COMPUTE));
 
 		particleRenderState = PipelineStateBuilder()
-			.setInputElements({
-				InputElementDesc(0),
-				InputElementDesc(1)
-				})
-			.setBlendState(PipelineStateHelper::blendAddtive)
-			.setRasterizerState(PipelineStateHelper::rasterCullBack)
-			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setVS(*particleVS)
-			.setGS(*particleGS)
-			.setPS(*particlePS)
-			.build();
+		                          .setInputElements({ InputElementDesc(0), InputElementDesc(1) })
+		                          .setBlendState(PipelineStateHelper::blendAddtive)
+		                          .setRasterizerState(PipelineStateHelper::rasterCullBack)
+		                          .setDepthStencilState(PipelineStateHelper::depthCompareLess)
+		                          .setVS(*particleVS)
+		                          .setGS(*particleGS)
+		                          .setPS(*particlePS)
+		                          .build();
 
 		bloomEffect = BloomEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight());
 
 		fxaaEffect = FXAAEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight());
 
-		originTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true, DirectX::Colors::Black);
+		originTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(),
+		                                                       Graphics::getHeight(),
+		                                                       FMT::RGBA16F,
+		                                                       1,
+		                                                       1,
+		                                                       false,
+		                                                       true,
+		                                                       DirectX::Colors::Black);
 
-		depthTexture = ResourceManager::createDepthTextureView(Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
+		depthTexture = ResourceManager::createDepthTextureView(
+			Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
 
 		{
 			UniquePtr<DirectX::XMFLOAT4[]> positions = makeUnique<DirectX::XMFLOAT4[]>(numParticles);
@@ -52,7 +58,10 @@ public:
 
 				const float phi = Random::genFloat() * Math::twoPi;
 
-				positions[i] = DirectX::XMFLOAT4(radius * cosf(theta) * sinf(phi), radius * cosf(theta) * cosf(phi), radius * sinf(theta), 1.f);
+				positions[i] = DirectX::XMFLOAT4(radius * cosf(theta) * sinf(phi),
+				                                 radius * cosf(theta) * cosf(phi),
+				                                 radius * sinf(theta),
+				                                 1.f);
 
 				if (radius < 0.4f)
 				{
@@ -64,9 +73,25 @@ public:
 				}
 			}
 
-			positionBuffer = resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numParticles, false, true, true, false, false, true, positions.get());
+			positionBuffer = resManager->createTypedBufferView(FMT::RGBA32F,
+			                                                   sizeof(DirectX::XMFLOAT4) * numParticles,
+			                                                   false,
+			                                                   true,
+			                                                   true,
+			                                                   false,
+			                                                   false,
+			                                                   true,
+			                                                   positions.get());
 
-			colorBuffer = resManager->createTypedBufferView(FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numParticles, false, false, true, false, false, true, colors.get());
+			colorBuffer = resManager->createTypedBufferView(FMT::RGBA32F,
+			                                                sizeof(DirectX::XMFLOAT4) * numParticles,
+			                                                false,
+			                                                false,
+			                                                true,
+			                                                false,
+			                                                false,
+			                                                true,
+			                                                colors.get());
 		}
 
 		Graphics::setExposure(0.6f);
@@ -75,7 +100,7 @@ public:
 
 		bloomEffect->setThreshold(1.0f);
 
-		simulationParam = { 0.18f,4 };
+		simulationParam = { 0.18f, 4 };
 	}
 
 	~MyRenderTask()
@@ -104,10 +129,10 @@ protected:
 		context->setPipelineState(*particleComputeState);
 
 		SETCONSTS({
-		context->setCSConstants({ positionBuffer->getUAVIndex() }, co);
+			context->setCSConstants({ positionBuffer->getUAVIndex() }, co);
 
-		context->setCSConstants(simulationParam, co);
-			});
+			context->setCSConstants(simulationParam, co);
+		});
 
 		context->dispatchDim(numParticles, 1, 1);
 
@@ -119,11 +144,9 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::POINTLIST);
 
-		context->setVertexBuffers({ *positionBuffer,*colorBuffer }, 0);
+		context->setVertexBuffers({ *positionBuffer, *colorBuffer }, 0);
 
-		SETCONSTS({
-		context->setGSConstants(simulationParam, co);
-			});
+		SETCONSTS({ context->setGSConstants(simulationParam, co); });
 
 		context->clearRenderTarget(originTexture->getRTVMip(0), DirectX::Colors::Black);
 
@@ -171,5 +194,4 @@ private:
 	BufferViewPtr positionBuffer;
 
 	BufferViewPtr colorBuffer;
-
 };

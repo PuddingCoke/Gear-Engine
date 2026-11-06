@@ -3,7 +3,7 @@
 #ifndef _GEAR_CAMERA_FPSCAMERA_H_
 #define _GEAR_CAMERA_FPSCAMERA_H_
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear
 {
@@ -19,7 +19,10 @@ namespace Gear
 
 			void operator=(const FPSCamera&) = delete;
 
-			FPSCamera(const DirectX::XMVECTOR& eye, const DirectX::XMVECTOR& lookDir, const DirectX::XMVECTOR& up, const float moveSpeed);
+			FPSCamera(const DirectX::XMVECTOR& eye,
+			          const DirectX::XMVECTOR& lookDir,
+			          const DirectX::XMVECTOR& up,
+			          const float moveSpeed);
 
 			~FPSCamera();
 
@@ -42,7 +45,6 @@ namespace Gear
 			DirectX::XMVECTOR lookDir;
 
 			DirectX::XMVECTOR up;
-
 		};
 	}
 }

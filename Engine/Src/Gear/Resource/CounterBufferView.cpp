@@ -1,6 +1,6 @@
-#include<Gear/Resource/CounterBufferView.h>
+#include <Gear/Resource/CounterBufferView.h>
 
-#include<Gear/Core/FMT.h>
+#include <Gear/Core/FMT.h>
 
 namespace Gear::Resource
 {
@@ -10,7 +10,9 @@ namespace Gear::Resource
 		uavIndex(makeShared<uint32_t>(0)),
 		viewGPUHandle(makeShared<D3D12_GPU_DESCRIPTOR_HANDLE>()),
 		viewCPUHandle(makeShared<D3D12_CPU_DESCRIPTOR_HANDLE>()),
-		buffer(makeUnique<D3D12Resource::Buffer>(sizeof(uint32_t), true, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
+		buffer(makeUnique<D3D12Resource::Buffer>(sizeof(uint32_t),
+	                                             true,
+	                                             D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
 	{
 		setNumCBVSRVUAVDescriptors(2);
 
@@ -25,7 +27,8 @@ namespace Gear::Resource
 			desc.Buffer.NumElements = 1;
 			desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
 
-			GraphicsDevice::get()->CreateShaderResourceView(buffer->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
+			GraphicsDevice::get()->CreateShaderResourceView(
+				buffer->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
 
 			*srvIndex = descriptorHandle.getCurrentIndex();
 
@@ -40,7 +43,8 @@ namespace Gear::Resource
 			desc.Buffer.NumElements = 1;
 			desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 
-			GraphicsDevice::get()->CreateUnorderedAccessView(buffer->getResource(), nullptr, &desc, descriptorHandle.getCurrentCPUHandle());
+			GraphicsDevice::get()->CreateUnorderedAccessView(
+				buffer->getResource(), nullptr, &desc, descriptorHandle.getCurrentCPUHandle());
 
 			*uavIndex = descriptorHandle.getCurrentIndex();
 
@@ -48,9 +52,11 @@ namespace Gear::Resource
 			{
 				*viewGPUHandle = descriptorHandle.getCurrentGPUHandle();
 
-				const D3D12Core::DescriptorHandle nonShaderVisibleHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(1);
+				const D3D12Core::DescriptorHandle nonShaderVisibleHandle =
+					LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(1);
 
-				GraphicsDevice::get()->CreateUnorderedAccessView(buffer->getResource(), nullptr, &desc, nonShaderVisibleHandle.getCurrentCPUHandle());
+				GraphicsDevice::get()->CreateUnorderedAccessView(
+					buffer->getResource(), nullptr, &desc, nonShaderVisibleHandle.getCurrentCPUHandle());
 
 				*viewCPUHandle = nonShaderVisibleHandle.getCurrentCPUHandle();
 			}
@@ -79,42 +85,32 @@ namespace Gear::Resource
 
 	ShaderResourceDesc CounterBufferView::getSRVIndex() const
 	{
-		const ShaderResourceDesc desc = {
-		.type = ShaderResourceDesc::BUFFER,
-		.state = ShaderResourceDesc::SRV,
-		.resourceIndex = srvIndex.get(),
-		.bufferDesc = {
-				.buffer = buffer.get(),
-				.counterBuffer = nullptr
-		} };
+		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
+			                              .state = ShaderResourceDesc::SRV,
+			                              .resourceIndex = srvIndex.get(),
+			                              .bufferDesc = { .buffer = buffer.get(),
+			                                              .counterBuffer = nullptr } };
 
 		return desc;
 	}
 
 	ShaderResourceDesc CounterBufferView::getUAVIndex() const
 	{
-		const ShaderResourceDesc desc = {
-		.type = ShaderResourceDesc::BUFFER,
-		.state = ShaderResourceDesc::UAV,
-		.resourceIndex = uavIndex.get(),
-		.bufferDesc = {
-				.buffer = buffer.get(),
-				.counterBuffer = nullptr
-		} };
+		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
+			                              .state = ShaderResourceDesc::UAV,
+			                              .resourceIndex = uavIndex.get(),
+			                              .bufferDesc = { .buffer = buffer.get(),
+			                                              .counterBuffer = nullptr } };
 
 		return desc;
 	}
 
 	UAVClearDesc CounterBufferView::getUAVClearDesc() const
 	{
-		const UAVClearDesc desc = {
-		.type = UAVClearDesc::BUFFER,
-		.bufferDesc = {
-				.buffer = buffer.get()
-		},
-		.viewGPUHandle = *viewGPUHandle,
-		.viewCPUHandle = *viewCPUHandle
-		};
+		const UAVClearDesc desc = { .type = UAVClearDesc::BUFFER,
+			                        .bufferDesc = { .buffer = buffer.get() },
+			                        .viewGPUHandle = *viewGPUHandle,
+			                        .viewCPUHandle = *viewCPUHandle };
 
 		return desc;
 	}

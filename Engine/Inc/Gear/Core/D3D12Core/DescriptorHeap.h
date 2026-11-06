@@ -3,11 +3,11 @@
 #ifndef _GEAR_CORE_D3D12CORE_DESCRIPTORHEAP_H_
 #define _GEAR_CORE_D3D12CORE_DESCRIPTORHEAP_H_
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
-#include<atomic>
+#include <atomic>
 
-#include"DescriptorHandle.h"
+#include "DescriptorHandle.h"
 
 namespace Gear::Core::D3D12Core
 {
@@ -21,7 +21,10 @@ namespace Gear::Core::D3D12Core
 
 		void operator=(const DescriptorHeap&) = delete;
 
-		DescriptorHeap(const uint32_t numDescriptors, const uint32_t numDynamicDescriptors, const D3D12_DESCRIPTOR_HEAP_TYPE type, const D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+		DescriptorHeap(const uint32_t numDescriptors,
+		               const uint32_t numDynamicDescriptors,
+		               const D3D12_DESCRIPTOR_HEAP_TYPE type,
+		               const D3D12_DESCRIPTOR_HEAP_FLAGS flags);
 
 		ID3D12DescriptorHeap* get() const;
 
@@ -54,7 +57,6 @@ namespace Gear::Core::D3D12Core
 		std::atomic<uint64_t> staticIndex;
 
 		std::atomic<uint64_t> dynamicIndex;
-
 	};
 }
 

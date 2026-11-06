@@ -1,9 +1,8 @@
-#include<Gear/Core/VideoEncoder/SoftwareEncoder.h>
+#include <Gear/Core/VideoEncoder/SoftwareEncoder.h>
 
 namespace Gear::Core::VideoEncoder
 {
-	SoftwareEncoder::SoftwareEncoder(const uint32_t frameToEncode) :
-		Encoder(frameToEncode, videoFormat)
+	SoftwareEncoder::SoftwareEncoder(const uint32_t frameToEncode) : Encoder(frameToEncode, videoFormat)
 	{
 		const AVCodec* codec = avcodec_find_encoder_by_name("libx264");
 
@@ -15,7 +14,7 @@ namespace Gear::Core::VideoEncoder
 
 		codecContext->time_base = AVRational{ 1, static_cast<int>(frameRate) };
 
-		codecContext->framerate = AVRational{ static_cast<int32_t>(frameRate),1 };
+		codecContext->framerate = AVRational{ static_cast<int32_t>(frameRate), 1 };
 
 		codecContext->pix_fmt = destFormat;
 
@@ -41,8 +40,16 @@ namespace Gear::Core::VideoEncoder
 
 		avcodec_parameters_from_context(getOutStream()->codecpar, codecContext);
 
-		swsContext = sws_getContext(codecContext->width, codecContext->height, sourceFormat,
-			codecContext->width, codecContext->height, destFormat, SWS_POINT, nullptr, nullptr, nullptr);
+		swsContext = sws_getContext(codecContext->width,
+		                            codecContext->height,
+		                            sourceFormat,
+		                            codecContext->width,
+		                            codecContext->height,
+		                            destFormat,
+		                            SWS_POINT,
+		                            nullptr,
+		                            nullptr,
+		                            nullptr);
 
 		yuvFrame = av_frame_alloc();
 
@@ -64,14 +71,23 @@ namespace Gear::Core::VideoEncoder
 
 		cpSyncFence = makeUnique<D3D12Core::Fence>();
 
-		nv12Texture = makeUnique<D3D12Resource::Texture>(Graphics::getWidth(), Graphics::getHeight(), FMT::NV12, 1, 1, true, D3D12_RESOURCE_FLAG_NONE, nullptr, D3D12_RESOURCE_STATE_COMMON);
+		nv12Texture = makeUnique<D3D12Resource::Texture>(Graphics::getWidth(),
+		                                                 Graphics::getHeight(),
+		                                                 FMT::NV12,
+		                                                 1,
+		                                                 1,
+		                                                 true,
+		                                                 D3D12_RESOURCE_FLAG_NONE,
+		                                                 nullptr,
+		                                                 D3D12_RESOURCE_STATE_COMMON);
 
 		{
 			uint64_t totalBytes;
 
 			const D3D12_RESOURCE_DESC resourceDesc = nv12Texture->getResource()->GetDesc();
 
-			GraphicsDevice::get()->GetCopyableFootprints(&resourceDesc, 0, 2, 0, cpFootPrints, nullptr, nullptr, &totalBytes);
+			GraphicsDevice::get()->GetCopyableFootprints(
+				&resourceDesc, 0, 2, 0, cpFootPrints, nullptr, nullptr, &totalBytes);
 
 			nv12ReadbackHeap = makeUnique<D3D12Resource::ReadbackHeap>(totalBytes);
 		}
@@ -103,7 +119,9 @@ namespace Gear::Core::VideoEncoder
 
 		cpCommandQueue->begin();
 
-		cpCommandList->trackAndSetResourceState(nv12Texture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+		cpCommandList->trackAndSetResourceState(nv12Texture.get(),
+		                                        D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+		                                        D3D12_RESOURCE_STATE_COPY_SOURCE);
 
 		cpCommandList->flushResourceBarriers();
 
@@ -111,12 +129,14 @@ namespace Gear::Core::VideoEncoder
 		{
 			const CD3DX12_TEXTURE_COPY_LOCATION copyDest(nv12ReadbackHeap->getResource(), cpFootPrints[i]);
 
-			const CD3DX12_TEXTURE_COPY_LOCATION copySrc(nv12Texture->getResource(), D3D12CalcSubresource(0, 0, i, 1, 1));
+			const CD3DX12_TEXTURE_COPY_LOCATION copySrc(nv12Texture->getResource(),
+			                                            D3D12CalcSubresource(0, 0, i, 1, 1));
 
 			cpCommandList->get()->CopyTextureRegion(&copyDest, 0, 0, 0, &copySrc, nullptr);
 		}
 
-		cpCommandList->trackAndSetResourceState(nv12Texture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COMMON);
+		cpCommandList->trackAndSetResourceState(
+			nv12Texture.get(), D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS, D3D12_RESOURCE_STATE_COMMON);
 
 		cpCommandList->flushResourceBarriers();
 
@@ -126,16 +146,25 @@ namespace Gear::Core::VideoEncoder
 
 		const uint8_t* const data = reinterpret_cast<const uint8_t*>(nv12ReadbackHeap->map());
 
-		const uint8_t* sourceData[2] = { data + cpFootPrints[0].Offset,data + cpFootPrints[1].Offset };
+		const uint8_t* sourceData[2] = { data + cpFootPrints[0].Offset, data + cpFootPrints[1].Offset };
 
-		const int32_t sourceStride[2] = { static_cast<int32_t>(cpFootPrints[0].Footprint.RowPitch),static_cast<int32_t>(cpFootPrints[1].Footprint.RowPitch) };
+		const int32_t sourceStride[2] = { static_cast<int32_t>(cpFootPrints[0].Footprint.RowPitch),
+			                              static_cast<int32_t>(cpFootPrints[1].Footprint.RowPitch) };
 
-		sws_scale(swsContext, sourceData, sourceStride, 0, codecContext->height, yuvFrame->data, yuvFrame->linesize);
+		sws_scale(swsContext,
+		          sourceData,
+		          sourceStride,
+		          0,
+		          codecContext->height,
+		          yuvFrame->data,
+		          yuvFrame->linesize);
 
 		//强制尾帧为P帧（编码器有可能覆盖为I帧，但不可能为B帧）
 		//因为libx264可能不会以编码顺序输出编码后的比特流
 		//另外，这也可以支持循环动画
-		yuvFrame->pict_type = ((Graphics::getRenderedFrameCount() == frameToEncode - 1u) ? AV_PICTURE_TYPE_P : AV_PICTURE_TYPE_NONE);
+		yuvFrame->pict_type =
+			((Graphics::getRenderedFrameCount() == frameToEncode - 1u) ? AV_PICTURE_TYPE_P :
+		                                                                 AV_PICTURE_TYPE_NONE);
 
 		//YUV帧的呈现时间戳应该等于已渲染帧数
 		yuvFrame->pts = static_cast<int64_t>(Graphics::getRenderedFrameCount());
@@ -150,7 +179,8 @@ namespace Gear::Core::VideoEncoder
 			{
 				av_packet_rescale_ts(packet, codecContext->time_base, getOutStream()->time_base);
 
-				packet->duration = av_rescale_q(1, AVRational{ 1, static_cast<int32_t>(frameRate) }, getOutStream()->time_base);
+				packet->duration = av_rescale_q(
+					1, AVRational{ 1, static_cast<int32_t>(frameRate) }, getOutStream()->time_base);
 
 				packet->stream_index = getOutStream()->index;
 

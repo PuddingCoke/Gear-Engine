@@ -1,25 +1,30 @@
-#include<Gear/Effect/FXAAEffect.h>
+#include <Gear/Effect/FXAAEffect.h>
 
-#include<CompiledShaders/FXAA/ColorToColorLuma.h>
+#include <CompiledShaders/FXAA/ColorToColorLuma.h>
 
-#include<CompiledShaders/FXAA/FXAA.h>
+#include <CompiledShaders/FXAA/FXAA.h>
 
 namespace Gear::Effect
 {
-	FXAAEffectPtr FXAAEffect::create(ResourceManager& refResManager, const uint32_t width, const uint32_t height)
+	FXAAEffectPtr FXAAEffect::create(ResourceManager& refResManager,
+	                                 const uint32_t width,
+	                                 const uint32_t height)
 	{
 		return makeUnique<FXAAEffect>(refResManager, width, height);
 	}
 
 	FXAAEffect::FXAAEffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height) :
-		EffectBase(refResManager, width, height, FMT::RGBA16UN), fxaaParam{ 1.0f,0.75f,0.166f,0.0633f },
-		colorLumaTexture(ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16UN, 1, 1, false, true))
+		EffectBase(refResManager, width, height, FMT::RGBA16UN),
+		fxaaParam{ 1.0f, 0.75f, 0.166f, 0.0633f },
+		colorLumaTexture(
+			ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16UN, 1, 1, false, true))
 	{
 		colorToColorLumaPS = Shader::create(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
 
 		fxaaPS = Shader::create(g_FXAABytes, sizeof(g_FXAABytes));
 
-		colorToColorLumaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*colorToColorLumaPS).build();
+		colorToColorLumaState =
+			PipelineStateBuilder().setDefaultFullScreenState().setPS(*colorToColorLumaPS).build();
 
 		fxaaState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*fxaaPS).build();
 
@@ -40,9 +45,7 @@ namespace Gear::Effect
 
 		context->setRenderTargets({ colorLumaTexture->getRTVMip(0) });
 
-		SETCONSTS({
-		context->setPSConstants({ inputTexture.getAllSRVIndex() }, co);
-			});
+		SETCONSTS({ context->setPSConstants({ inputTexture.getAllSRVIndex() }, co); });
 
 		context->drawQuad();
 
@@ -55,10 +58,10 @@ namespace Gear::Effect
 		context->setRenderTargets({ outputTexture->getRTVMip(0) });
 
 		SETCONSTS({
-		context->setPSConstants({ colorLumaTexture->getAllSRVIndex() }, co);
+			context->setPSConstants({ colorLumaTexture->getAllSRVIndex() }, co);
 
-		context->setPSConstants(fxaaParam, co);
-			});
+			context->setPSConstants(fxaaParam, co);
+		});
 
 		context->drawQuad();
 

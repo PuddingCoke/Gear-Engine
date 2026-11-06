@@ -3,15 +3,15 @@
 #ifndef _GEAR_UTILS_MATH_H_
 #define _GEAR_UTILS_MATH_H_
 
-#include<cmath>
+#include <cmath>
 
-#include<algorithm>
+#include <algorithm>
 
-#include<DirectXMath.h>
+#include <DirectXMath.h>
 
-#include<DirectXPackedVector.h>
+#include <DirectXPackedVector.h>
 
-#include<type_traits>
+#include <type_traits>
 
 #ifdef min
 #undef min
@@ -90,7 +90,8 @@ namespace Gear::Utils::Math
 	}
 
 	template<typename T>
-		requires std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
+		requires std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t> ||
+	             std::is_same_v<T, uint64_t>
 	constexpr T divFloor(const T a, const T b)
 	{
 		return a / b;
@@ -104,14 +105,16 @@ namespace Gear::Utils::Math
 	}
 
 	template<typename T>
-		requires std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
+		requires std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t> ||
+	             std::is_same_v<T, uint64_t>
 	constexpr T divCeil(const T a, const T b)
 	{
 		return (a + b - static_cast<T>(1)) / b;
 	}
 
 	template<typename T>
-		requires std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
+		requires std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> || std::is_same_v<T, uint32_t> ||
+	             std::is_same_v<T, uint64_t>
 	constexpr T align(const T a, const T b)
 	{
 		return divCeil(a, b) * b;
@@ -126,7 +129,8 @@ namespace Gear::Utils::Math
 	}
 
 	template<typename T>
-		requires std::is_floating_point_v<T> || std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> || std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
+		requires std::is_floating_point_v<T> || std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
+	             std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
 	T sign(const T x)
 	{
 		return static_cast<T>(1) - static_cast<T>(2) * static_cast<T>(std::signbit(x));
@@ -165,11 +169,13 @@ namespace Gear::Utils::Math
 	{
 		if constexpr (std::is_same_v<T, float>)
 		{
-			return 1.0f / (sigma * 2.506628274631000502415765284811f) * std::exp(-0.5f * (x / sigma) * (x / sigma));
+			return 1.0f / (sigma * 2.506628274631000502415765284811f) *
+			       std::exp(-0.5f * (x / sigma) * (x / sigma));
 		}
 		else
 		{
-			return 1.0 / (sigma * 2.506628274631000502415765284811) * std::exp(-0.5 * (x / sigma) * (x / sigma));
+			return 1.0 / (sigma * 2.506628274631000502415765284811) *
+			       std::exp(-0.5 * (x / sigma) * (x / sigma));
 		}
 	}
 }

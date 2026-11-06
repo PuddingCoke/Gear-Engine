@@ -1,12 +1,12 @@
-#include<Gear/Core/GlobalShader.h>
+#include <Gear/Core/GlobalShader.h>
 
-#include<Gear/Core/Internal/GlobalShaderInternal.h>
+#include <Gear/Core/Internal/GlobalShaderInternal.h>
 
-#include<CompiledShaders/FullScreen/FullScreenVS.h>
+#include <CompiledShaders/FullScreen/FullScreenVS.h>
 
-#include<CompiledShaders/FullScreen/FullScreenPS.h>
+#include <CompiledShaders/FullScreen/FullScreenPS.h>
 
-#include<CompiledShaders/TextureCube/TextureCubeVS.h>
+#include <CompiledShaders/TextureCube/TextureCubeVS.h>
 
 namespace Gear::Core::GlobalShader
 {
@@ -19,7 +19,6 @@ namespace Gear::Core::GlobalShader
 		D3D12Core::ShaderPtr fullScreenPS;
 
 		D3D12Core::ShaderPtr textureCubeVS;
-
 	};
 
 	GlobalShaderImpl::GlobalShaderImpl()

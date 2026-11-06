@@ -3,7 +3,7 @@
 #ifndef _GEAR_EFFECT_TONEMAPEFFECT_H_
 #define _GEAR_EFFECT_TONEMAPEFFECT_H_
 
-#include"EffectBase.h"
+#include "EffectBase.h"
 
 namespace Gear::Effect::ToneMapEffect
 {
@@ -11,4 +11,3 @@ namespace Gear::Effect::ToneMapEffect
 }
 
 #endif // !_GEAR_EFFECT_TONEMAPEFFECT_H_
-

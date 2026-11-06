@@ -1,10 +1,10 @@
-#include<Gear/Effect/GammaCorrectEffect.h>
+#include <Gear/Effect/GammaCorrectEffect.h>
 
-#include<Gear/Effect/Internal/GammaCorrectEffectInternal.h>
+#include <Gear/Effect/Internal/GammaCorrectEffectInternal.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<CompiledShaders/GammaCorrectCS.h>
+#include <CompiledShaders/GammaCorrectCS.h>
 
 namespace Gear::Effect::GammaCorrectEffect
 {
@@ -23,21 +23,23 @@ namespace Gear::Effect::GammaCorrectEffect
 		RenderTextureViewPtr outputTexture;
 
 		static constexpr DXGI_FORMAT outputTextureFormat = FMT::RGBA16UN;
-
 	};
 
 	GammaCorrectEffectImpl::GammaCorrectEffectImpl()
 	{
-		gammaCorrectState = PipelineStateBuilder::build(Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes)));
+		gammaCorrectState =
+			PipelineStateBuilder::build(Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes)));
 
-		outputTexture = ResourceManager::createComputeTexture(Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true);
+		outputTexture = ResourceManager::createComputeTexture(
+			Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true);
 
 		outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
 
 		LOGSUCCESS() << "创建" << COLORIZESTRUCT(GammaCorrectEffect);
 	}
 
-	RenderTextureView* GammaCorrectEffectImpl::process(GraphicsContext& refContext, RenderTextureView& inputTexture)
+	RenderTextureView* GammaCorrectEffectImpl::process(GraphicsContext& refContext,
+	                                                   RenderTextureView& inputTexture)
 	{
 		GraphicsContext* const context = &refContext;
 
@@ -46,10 +48,10 @@ namespace Gear::Effect::GammaCorrectEffect
 		const float gamma = Graphics::getGamma();
 
 		SETCONSTS({
-		context->setCSConstants({ inputTexture.getSRVMipIndex(0),outputTexture->getUAVMipIndex(0) }, co);
+			context->setCSConstants({ inputTexture.getSRVMipIndex(0), outputTexture->getUAVMipIndex(0) }, co);
 
-		context->setCSConstants(1, &gamma, co);
-			});
+			context->setCSConstants(1, &gamma, co);
+		});
 
 		context->dispatchDim(Graphics::getWidth(), Graphics::getHeight(), 1);
 

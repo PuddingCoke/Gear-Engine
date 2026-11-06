@@ -3,7 +3,7 @@
 #ifndef _GEAR_INPUT_INTERNAL_H_
 #define _GEAR_INPUT_INTERNAL_H_
 
-#include<Gear/Input/Event.h>
+#include <Gear/Input/Event.h>
 
 namespace Gear::Input::Internal
 {

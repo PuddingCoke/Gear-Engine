@@ -5,7 +5,7 @@
 
 namespace Gear::Core::RenderThreadGlobal
 {
-	
+
 }
 
 #endif // !_GEAR_CORE_RENDERTHREADGLOBAL_H_

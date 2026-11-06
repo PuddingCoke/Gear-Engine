@@ -3,21 +3,28 @@
 #ifndef _GEAR_CORE_D3D12CORE_GRAPHICSSTATE_H_
 #define _GEAR_CORE_D3D12CORE_GRAPHICSSTATE_H_
 
-#include"PipelineState.h"
+#include "PipelineState.h"
 
-#include<unordered_map>
+#include <unordered_map>
 
 namespace Gear::Core::D3D12Core
 {
 	CREATESAFETYPE(GraphicsState);
 
-	class GraphicsState :public PipelineState
+	class GraphicsState : public PipelineState
 	{
 	public:
 
-		GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements, std::vector<std::string> semanticNames,const D3D12_GRAPHICS_PIPELINE_STATE_DESC& graphicsDesc, const RootSignature* const rootSignature, const PipelineStateData pipelineStateData);
+		GraphicsState(std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements,
+		              std::vector<std::string> semanticNames,
+		              const D3D12_GRAPHICS_PIPELINE_STATE_DESC& graphicsDesc,
+		              const RootSignature* const rootSignature,
+		              const PipelineStateData pipelineStateData);
 
-		void updatePipelineState(const DXGI_FORMAT* const rtvFormats, const uint32_t numRenderTargets, const DXGI_FORMAT dsvFormat, const D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType);
+		void updatePipelineState(const DXGI_FORMAT* const rtvFormats,
+		                         const uint32_t numRenderTargets,
+		                         const DXGI_FORMAT dsvFormat,
+		                         const D3D12_PRIMITIVE_TOPOLOGY_TYPE topologyType);
 
 	private:
 
@@ -33,7 +40,6 @@ namespace Gear::Core::D3D12Core
 		uint64_t currentUID;
 
 		std::unordered_map<uint64_t, ComPtr<ID3D12PipelineState>> pipelineStates;
-
 	};
 }
 

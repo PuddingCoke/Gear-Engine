@@ -3,7 +3,7 @@
 #ifndef _GEAR_UTILS_DELTATIMEESTIMATOR_H_
 #define _GEAR_UTILS_DELTATIMEESTIMATOR_H_
 
-#include<cstdint>
+#include <cstdint>
 
 namespace Gear::Utils
 {
@@ -45,7 +45,6 @@ namespace Gear::Utils
 		float frameRate;
 
 		bool populated;
-
 	};
 }
 

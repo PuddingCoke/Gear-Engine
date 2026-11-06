@@ -11,21 +11,31 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include<Windows.h>
+#include <Windows.h>
 
-#include<string>
+#include <string>
 
 namespace Gear::Window::Win32Form
 {
-	void initialize(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle,
-		LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam));
+	void initialize(const std::wstring& title,
+	                const uint32_t startX,
+	                const uint32_t startY,
+	                const uint32_t width,
+	                const uint32_t height,
+	                const DWORD windowStyle,
+	                LRESULT (*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam));
 
 	void release();
 
 	struct InitializeToken
 	{
-		InitializeToken(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle,
-			LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
+		InitializeToken(const std::wstring& title,
+		                const uint32_t startX,
+		                const uint32_t startY,
+		                const uint32_t width,
+		                const uint32_t height,
+		                const DWORD windowStyle,
+		                LRESULT (*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
 		{
 			initialize(title, startX, startY, width, height, windowStyle, windowCallback);
 		}

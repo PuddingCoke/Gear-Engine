@@ -1,6 +1,6 @@
 #pragma once
 
-#include"Model.h"
+#include "Model.h"
 
 class Scene
 {
@@ -15,20 +15,20 @@ public:
 	struct SceneInfo
 	{
 		DirectX::XMVECTOR lightPos;
-		DirectX::XMFLOAT4 lightColor = { 5.f,5.f,5.f,1.f };
+		DirectX::XMFLOAT4 lightColor = { 5.f, 5.f, 5.f, 1.f };
 		float metallic = 0.5f;
 		float roughness = 0.5f;
 		uint32_t enableSpecularIBL = 1;
 		uint32_t enableDiffuseIBL = 1;
-	}sceneInfo;
+	} sceneInfo;
 
 	Scene(const std::string& filePath, ResourceManager& resManager, const DXGI_FORMAT rtvFormat) :
-		vertexShader(Shader::create(L"PBRVS.cso")),
-		pixelShader(Shader::create(L"PBRPS.cso"))
+		vertexShader(Shader::create(L"PBRVS.cso")), pixelShader(Shader::create(L"PBRPS.cso"))
 	{
 		Assimp::Importer importer;
 
-		const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_GenSmoothNormals);
+		const aiScene* scene = importer.ReadFile(
+			filePath, aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_GenSmoothNormals);
 
 		for (uint32_t i = 0; i < scene->mNumMeshes; i++)
 		{
@@ -36,19 +36,22 @@ public:
 		}
 
 		pipelineState = PipelineStateBuilder()
-			.setBlendState(PipelineStateHelper::blendReplace)
-			.setRasterizerState(PipelineStateHelper::rasterCullBack)
-			.setDepthStencilState(PipelineStateHelper::depthCompareLess)
-			.setVS(*vertexShader)
-			.setPS(*pixelShader)
-			.build();
+		                    .setBlendState(PipelineStateHelper::blendReplace)
+		                    .setRasterizerState(PipelineStateHelper::rasterCullBack)
+		                    .setDepthStencilState(PipelineStateHelper::depthCompareLess)
+		                    .setVS(*vertexShader)
+		                    .setPS(*pixelShader)
+		                    .build();
 	}
 
 	~Scene()
 	{
 	}
 
-	void draw(GraphicsContext* const context, RenderTextureView& prefilterTexture, RenderTextureView& brdfLUTTexture, RenderTextureView& irradianceTexture)
+	void draw(GraphicsContext* const context,
+	          RenderTextureView& prefilterTexture,
+	          RenderTextureView& brdfLUTTexture,
+	          RenderTextureView& irradianceTexture)
 	{
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
@@ -71,10 +74,13 @@ public:
 		sceneInfo.lightPos = lightPos;
 
 		SETCONSTS({
-		context->setPSConstants(sceneInfo, co);
+			context->setPSConstants(sceneInfo, co);
 
-		context->setPSConstants({ prefilterTexture.getAllSRVIndex(),brdfLUTTexture.getAllSRVIndex(),irradianceTexture.getAllSRVIndex() }, co);
-			});
+			context->setPSConstants({ prefilterTexture.getAllSRVIndex(),
+			                          brdfLUTTexture.getAllSRVIndex(),
+			                          irradianceTexture.getAllSRVIndex() },
+			                        co);
+		});
 
 		for (uint32_t i = 0; i < models.size(); i++)
 		{
@@ -85,5 +91,4 @@ public:
 private:
 
 	std::vector<UniquePtr<Model>> models;
-
 };

@@ -6,25 +6,25 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include<Gear/Utils/File.h>
+#include <Gear/Utils/File.h>
 
-#include<Gear/Utils/Internal/FileInternal.h>
+#include <Gear/Utils/Internal/FileInternal.h>
 
-#include<Gear/Utils/Log.h>
+#include <Gear/Utils/Log.h>
 
-#include<Gear/Utils/String.h>
+#include <Gear/Utils/String.h>
 
-#include<fstream>
+#include <fstream>
 
-#include<sstream>
+#include <sstream>
 
-#include<algorithm>
+#include <algorithm>
 
-#include<vector>
+#include <vector>
 
-#include<Windows.h>
+#include <Windows.h>
 
-#include<filesystem>
+#include <filesystem>
 
 namespace Gear::Utils::File
 {
@@ -136,7 +136,6 @@ namespace Gear::Utils::File
 		const std::wstring assetsFolder;
 
 		const std::wstring userDataFolder;
-
 	};
 
 	FileImpl::FileImpl() :
@@ -171,7 +170,8 @@ namespace Gear::Utils::File
 			THROWLOG(LOGERROR() << "路径为空！");
 		}
 
-		this->pathStr = std::filesystem::path(pathStr).has_root_path() ? pathStr : (impl->getAssetsFolder() + pathStr);
+		this->pathStr =
+			std::filesystem::path(pathStr).has_root_path() ? pathStr : (impl->getAssetsFolder() + pathStr);
 	}
 
 	Path::Path(const wchar_t* const pathStr)
@@ -186,7 +186,8 @@ namespace Gear::Utils::File
 			THROWLOG(LOGERROR() << "路径为空！");
 		}
 
-		this->pathStr = std::filesystem::path(pathStr).has_root_path() ? pathStr : (impl->getAssetsFolder() + pathStr);
+		this->pathStr =
+			std::filesystem::path(pathStr).has_root_path() ? pathStr : (impl->getAssetsFolder() + pathStr);
 	}
 
 	const std::wstring& Path::str() const
@@ -231,15 +232,13 @@ namespace Gear::Utils::File
 		return File::getExtension(pathStr);
 	}
 
-#define GEAR_IMPL_PATH_CLASS(ClassName, PrefixExpr)							\
-		ClassName::ClassName(const std::wstring& subdirectory) :            \
-			Path((PrefixExpr) + subdirectory)								\
-		{																	\
-		}																	\
-		ClassName::ClassName(const wchar_t* const subdirectory) :           \
-			Path((PrefixExpr) + subdirectory)								\
-		{																	\
-		}																	
+#define GEAR_IMPL_PATH_CLASS(ClassName, PrefixExpr) \
+	ClassName::ClassName(const std::wstring& subdirectory) : Path((PrefixExpr) + subdirectory) \
+	{ \
+	} \
+	ClassName::ClassName(const wchar_t* const subdirectory) : Path((PrefixExpr) + subdirectory) \
+	{ \
+	}
 
 	GEAR_IMPL_PATH_CLASS(EngineAssetsPath, std::wstring(L"EngineAssets/"));
 	GEAR_IMPL_PATH_CLASS(RootPath, impl->getRootFolder());

@@ -3,21 +3,21 @@
 #ifndef _GEAR_UTILS_LOGGER_LOGCONTEXT_H_
 #define _GEAR_UTILS_LOGGER_LOGCONTEXT_H_
 
-#include"LogStructs.h"
+#include "LogStructs.h"
 
-#include<Gear/Utils/File.h>
+#include <Gear/Utils/File.h>
 
-#include<Gear/Utils/Memory.h>
+#include <Gear/Utils/Memory.h>
 
-#include<mutex>
+#include <mutex>
 
-#include<condition_variable>
+#include <condition_variable>
 
-#include<array>
+#include <array>
 
-#include<type_traits>
+#include <type_traits>
 
-#include<string_view>
+#include <string_view>
 
 namespace Gear::Utils::Logger
 {
@@ -154,7 +154,6 @@ namespace Gear::Utils::Logger
 		static constexpr uint64_t convertBufferLength = 512ull;
 
 		char convertBuffer[convertBufferLength];
-
 	};
 
 	template<typename Arg>

@@ -3,15 +3,15 @@
 #ifndef _GEAR_CORE_D3D12CORE_SHADER_H_
 #define _GEAR_CORE_D3D12CORE_SHADER_H_
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
-#include<Gear/Utils/File.h>
+#include <Gear/Utils/File.h>
 
-#include"ShaderType.h"
+#include "ShaderType.h"
 
-#include<dxccompiler/dxcapi.h>
+#include <dxccompiler/dxcapi.h>
 
-#include<directx/d3d12shader.h>
+#include <directx/d3d12shader.h>
 
 namespace Gear::Core::D3D12Core
 {
@@ -52,7 +52,6 @@ namespace Gear::Core::D3D12Core
 		ComPtr<IDxcBlob> shaderBlob;
 
 		ComPtr<ID3D12ShaderReflection> shaderReflection;
-
 	};
 }
 

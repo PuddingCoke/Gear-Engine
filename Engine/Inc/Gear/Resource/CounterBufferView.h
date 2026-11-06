@@ -3,15 +3,15 @@
 #ifndef _GEAR_RESOURCE_COUNTERBUFFERVIEW_H_
 #define _GEAR_RESOURCE_COUNTERBUFFERVIEW_H_
 
-#include<Gear/Core/D3D12Resource/Buffer.h>
+#include <Gear/Core/D3D12Resource/Buffer.h>
 
-#include"ResourceBase.h"
+#include "ResourceBase.h"
 
 namespace Gear::Resource
 {
 	CREATESAFETYPE(CounterBufferView);
 
-	class CounterBufferView :public ResourceBase
+	class CounterBufferView : public ResourceBase
 	{
 	public:
 

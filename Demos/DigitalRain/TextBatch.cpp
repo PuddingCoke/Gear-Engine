@@ -1,6 +1,6 @@
 #include "TextBatch.h"
 
-#include<fstream>
+#include <fstream>
 
 std::vector<std::wstring> split(std::wstring str, const wchar_t separator)
 {
@@ -37,17 +37,23 @@ TextBatch::TextBatch(ResourceManager& resManager, const File::Path& filePath) :
 	spriteVS(Shader::create(L"SpriteVS.cso")),
 	spriteGS(Shader::create(L"SpriteGS.cso")),
 	spritePS(Shader::create(L"SpritePS.cso")),
-	textBuffer(ResourceManager::createStructuredBufferView(textArray.elementByteSize(), textArray.totalByteSize(), false, false, true, true, true)),
+	textBuffer(ResourceManager::createStructuredBufferView(textArray.elementByteSize(),
+                                                           textArray.totalByteSize(),
+                                                           false,
+                                                           false,
+                                                           true,
+                                                           true,
+                                                           true)),
 	scale(1.f)
 {
 	spriteState = PipelineStateBuilder()
-		.setBlendState(PipelineStateHelper::blendDefault)
-		.setRasterizerState(PipelineStateHelper::rasterCullBack)
-		.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-		.setVS(*spriteVS)
-		.setGS(*spriteGS)
-		.setPS(*spritePS)
-		.build();
+	                  .setBlendState(PipelineStateHelper::blendDefault)
+	                  .setRasterizerState(PipelineStateHelper::rasterCullBack)
+	                  .setDepthStencilState(PipelineStateHelper::depthCompareNone)
+	                  .setVS(*spriteVS)
+	                  .setGS(*spriteGS)
+	                  .setPS(*spritePS)
+	                  .build();
 
 	std::wifstream fileStream;
 
@@ -139,17 +145,15 @@ TextBatch::TextBatch(ResourceManager& resManager, const File::Path& filePath) :
 
 			const float bitmapHeight = static_cast<float>(fontTexture->get2Dimension().y);
 
-			const Character character{
-				xoffset,
-				-yoffset - height,
-				xadvance,
-				static_cast<float>(width),
-				static_cast<float>(height),
-				startX / static_cast<float>(bitmapWidth),
-				(startX + width) / static_cast<float>(bitmapWidth),
-				(startY + height) / static_cast<float>(bitmapHeight),
-				startY / static_cast<float>(bitmapHeight)
-			};
+			const Character character{ xoffset,
+				                       -yoffset - height,
+				                       xadvance,
+				                       static_cast<float>(width),
+				                       static_cast<float>(height),
+				                       startX / static_cast<float>(bitmapWidth),
+				                       (startX + width) / static_cast<float>(bitmapWidth),
+				                       (startY + height) / static_cast<float>(bitmapHeight),
+				                       startY / static_cast<float>(bitmapHeight) };
 
 			characterMap.insert(std::pair<wchar_t, const Character>(static_cast<wchar_t>(id), character));
 
@@ -162,7 +166,14 @@ TextBatch::TextBatch(ResourceManager& resManager, const File::Path& filePath) :
 	fileStream.close();
 }
 
-void TextBatch::drawText(const wchar_t ch, const float x, const float y, const float z, const float r, const float g, const float b, const float a)
+void TextBatch::drawText(const wchar_t ch,
+                         const float x,
+                         const float y,
+                         const float z,
+                         const float r,
+                         const float g,
+                         const float b,
+                         const float a)
 {
 	const Character& character = characterMap[ch];
 
@@ -193,9 +204,7 @@ void TextBatch::render(GraphicsContext& context, RenderTextureView& outputTextur
 
 	context.setVertexBuffers({ *textBuffer }, 0);
 
-	SETCONSTS({
-	context.setPSConstants({fontTexture->getAllSRVIndex()},co);
-		});
+	SETCONSTS({ context.setPSConstants({ fontTexture->getAllSRVIndex() }, co); });
 
 	context.draw(textArray.size(), 1u, 0u, 0u);
 

@@ -1,6 +1,6 @@
-#include<Gear/Core/GlobalRootSignature.h>
+#include <Gear/Core/GlobalRootSignature.h>
 
-#include<Gear/Core/Internal/GlobalRootSignatureInternal.h>
+#include <Gear/Core/Internal/GlobalRootSignatureInternal.h>
 
 namespace Gear::Core::GlobalRootSignature
 {
@@ -22,7 +22,6 @@ namespace Gear::Core::GlobalRootSignature
 
 		//用于使用计算着色器的时候
 		UniquePtr<D3D12Core::RootSignature> computeShaderRootSignature;
-
 	};
 
 	GlobalRootSignatureImpl::GlobalRootSignatureImpl()
@@ -110,63 +109,113 @@ namespace Gear::Core::GlobalRootSignature
 		}
 
 		//总计 48 DWORDS
-		basicShaderRootSignature = makeUnique<D3D12Core::RootSignature>(8u, 0u, 0u, 0u, 32u, 0u, 0u, 0u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
+		basicShaderRootSignature = makeUnique<D3D12Core::RootSignature>(
+			8u,
+			0u,
+			0u,
+			0u,
+			32u,
+			0u,
+			0u,
+			0u,
+			samplerDesc,
+			static_cast<uint32_t>(_countof(samplerDesc)),
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
-			D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
+				D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
 		basicShaderRootSignature->setName(L"Basic Shader Root Signature");
 
 		LOGSUCCESS() << "创建" << COLORIZEVAR(basicShaderRootSignature);
 
 		//总计 56 DWORDS
-		tessellationRootSignature = makeUnique<D3D12Core::RootSignature>(4u, 4u, 12u, 0u, 24u, 0u, 0u, 0u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
+		tessellationRootSignature = makeUnique<D3D12Core::RootSignature>(
+			4u,
+			4u,
+			12u,
+			0u,
+			24u,
+			0u,
+			0u,
+			0u,
+			samplerDesc,
+			static_cast<uint32_t>(_countof(samplerDesc)),
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
-			D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
+				D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
 		tessellationRootSignature->setName(L"Tessellation Root Signature");
 
 		LOGSUCCESS() << "创建" << COLORIZEVAR(tessellationRootSignature);
 
 		//总计 54 DWORDS
-		geometryShaderRootSignature = makeUnique<D3D12Core::RootSignature>(8u, 0u, 0u, 8u, 28u, 0u, 0u, 0u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
+		geometryShaderRootSignature = makeUnique<D3D12Core::RootSignature>(
+			8u,
+			0u,
+			0u,
+			8u,
+			28u,
+			0u,
+			0u,
+			0u,
+			samplerDesc,
+			static_cast<uint32_t>(_countof(samplerDesc)),
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
-			D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
+				D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
 		geometryShaderRootSignature->setName(L"Geometry Shader Root Signature");
 
 		LOGSUCCESS() << "创建" << COLORIZEVAR(geometryShaderRootSignature);
 
 		//总计 58 DWORDS
-		allGraphicsShaderRootSignature = makeUnique<D3D12Core::RootSignature>(4u, 4u, 8u, 4u, 24u, 0u, 0u, 0u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
+		allGraphicsShaderRootSignature = makeUnique<D3D12Core::RootSignature>(
+			4u,
+			4u,
+			8u,
+			4u,
+			24u,
+			0u,
+			0u,
+			0u,
+			samplerDesc,
+			static_cast<uint32_t>(_countof(samplerDesc)),
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
-			D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
+				D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
 		allGraphicsShaderRootSignature->setName(L"All Graphics Shader Root Signature");
 
 		LOGSUCCESS() << "创建" << COLORIZEVAR(allGraphicsShaderRootSignature);
 
 		//总计 38 DWORDS
-		computeShaderRootSignature = makeUnique<D3D12Core::RootSignature>(0u, 0u, 0u, 0u, 0u, 32u, 0u, 0u, samplerDesc, static_cast<uint32_t>(_countof(samplerDesc)),
-			D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
-			D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
+		computeShaderRootSignature =
+			makeUnique<D3D12Core::RootSignature>(0u,
+		                                         0u,
+		                                         0u,
+		                                         0u,
+		                                         0u,
+		                                         32u,
+		                                         0u,
+		                                         0u,
+		                                         samplerDesc,
+		                                         static_cast<uint32_t>(_countof(samplerDesc)),
+		                                         D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED |
+		                                             D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
 		computeShaderRootSignature->setName(L"Compute Shader Root Signature");
 

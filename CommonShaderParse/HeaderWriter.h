@@ -1,14 +1,14 @@
 #pragma once
 
-#include<fstream>
+#include <fstream>
 
-#include<string>
+#include <string>
 
-#include<stack>
+#include <stack>
 
-#include<cstdint>
+#include <cstdint>
 
-#include<iostream>
+#include <iostream>
 
 enum class DescType;
 
@@ -67,7 +67,6 @@ private:
 	const std::wstring outDirectory;
 
 	std::stack<Desc> descStack;
-
 };
 
 inline HeaderWriter::HeaderWriter(const std::wstring& outDirectory) :
@@ -143,7 +142,7 @@ enum class DescType
 
 inline void HeaderWriter::beginDesc(const VarModifier modifier, const DescType type, const wchar_t* name)
 {
-	descStack.push({ type,std::wstring(name) });
+	descStack.push({ type, std::wstring(name) });
 
 	switch (modifier)
 	{
@@ -192,19 +191,19 @@ inline void HeaderWriter::beginDesc(const DescType type, const wchar_t* name)
 
 enum class VarType
 {
-	FLOAT,//float
-	FLOAT2,//float2
-	FLOAT3,//float3
-	FLOAT4,//float4
-	UINT,//uint
-	UINT2,//uint2
-	UINT3,//uint3
-	UINT4,//uint4
-	MATRIX,//matrix
-	INT,//int
-	INT2,//int2
-	INT3,//int3
-	INT4//int4
+	FLOAT, //float
+	FLOAT2, //float2
+	FLOAT3, //float3
+	FLOAT4, //float4
+	UINT, //uint
+	UINT2, //uint2
+	UINT3, //uint3
+	UINT4, //uint4
+	MATRIX, //matrix
+	INT, //int
+	INT2, //int2
+	INT3, //int3
+	INT4 //int4
 };
 
 inline void HeaderWriter::writeVar(const VarType type, const char* const name, const uint32_t numElement)
@@ -264,7 +263,9 @@ inline void HeaderWriter::writeVar(const VarType type, const char* const name, c
 	write() << L";";
 }
 
-inline void HeaderWriter::writeUint(const VarModifier modifier, const std::wstring& name, const uint32_t value)
+inline void HeaderWriter::writeUint(const VarModifier modifier,
+                                    const std::wstring& name,
+                                    const uint32_t value)
 {
 	switch (modifier)
 	{

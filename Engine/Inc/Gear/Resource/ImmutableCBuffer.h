@@ -3,15 +3,15 @@
 #ifndef _GEAR_RESOURCE_IMMUTABLECBUFFER_H_
 #define _GEAR_RESOURCE_IMMUTABLECBUFFER_H_
 
-#include<Gear/Core/D3D12Resource/Buffer.h>
+#include <Gear/Core/D3D12Resource/Buffer.h>
 
-#include"ResourceBase.h"
+#include "ResourceBase.h"
 
 namespace Gear::Resource
 {
 	CREATESAFETYPE(ImmutableCBuffer);
 
-	class ImmutableCBuffer :public ResourceBase
+	class ImmutableCBuffer : public ResourceBase
 	{
 	public:
 
@@ -38,7 +38,6 @@ namespace Gear::Resource
 		SharedPtr<uint32_t> bufferIndex;
 
 		D3D12Resource::BufferPtr buffer;
-
 	};
 }
 

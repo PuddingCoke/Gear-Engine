@@ -1,16 +1,17 @@
-#include<Gear/Core/GraphicsContext.h>
+#include <Gear/Core/GraphicsContext.h>
 
-#include<Gear/Core/RenderEngine.h>
+#include <Gear/Core/RenderEngine.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Core/TOPOLOGY.h>
+#include <Gear/Core/TOPOLOGY.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear::Core
 {
-	static constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE getPrimitiveTopologyType(const D3D_PRIMITIVE_TOPOLOGY topology)
+	static constexpr D3D12_PRIMITIVE_TOPOLOGY_TYPE getPrimitiveTopologyType(
+		const D3D_PRIMITIVE_TOPOLOGY topology)
 	{
 		switch (topology)
 		{
@@ -67,22 +68,23 @@ namespace Gear::Core
 
 	static constexpr uint64_t primitiveTopologyTypeTableLength = 128;
 
-	static constexpr std::array<D3D12_PRIMITIVE_TOPOLOGY_TYPE, primitiveTopologyTypeTableLength> primitiveTopologyTypeTable = []() constexpr
+	static constexpr std::array<D3D12_PRIMITIVE_TOPOLOGY_TYPE, primitiveTopologyTypeTableLength>
+		primitiveTopologyTypeTable = []() constexpr
+	{
+		std::array<D3D12_PRIMITIVE_TOPOLOGY_TYPE, primitiveTopologyTypeTableLength> table;
+
+		for (uint32_t i = 0; i < primitiveTopologyTypeTableLength; i++)
 		{
-			std::array<D3D12_PRIMITIVE_TOPOLOGY_TYPE, primitiveTopologyTypeTableLength> table;
+			table[i] = getPrimitiveTopologyType(static_cast<D3D12_PRIMITIVE_TOPOLOGY>(i));
+		}
 
-			for (uint32_t i = 0; i < primitiveTopologyTypeTableLength; i++)
-			{
-				table[i] = getPrimitiveTopologyType(static_cast<D3D12_PRIMITIVE_TOPOLOGY>(i));
-			}
-
-			return table;
-		}();
+		return table;
+	}();
 
 	GraphicsContext::GraphicsContext() :
 		commandList(makeUnique<D3D12Core::GraphicsCommandList>()),
-		vp{ 0.f,0.f,0.f,0.f,0.f,1.f },
-		rt{ 0,0,0,0 },
+		vp{ 0.f, 0.f, 0.f, 0.f, 0.f, 1.f },
+		rt{ 0, 0, 0, 0 },
 		numShaderConstantsValues{}
 	{
 		for (uint32_t i = 0; i < static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT); i++)
@@ -97,16 +99,21 @@ namespace Gear::Core
 	{
 	}
 
-	void GraphicsContext::updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size) const
+	void GraphicsContext::updateBuffer(Resource::BufferView& bufferView,
+	                                   const void* const data,
+	                                   const uint32_t size) const
 	{
 		const Resource::BufferView::UpdateStruct updateStruct = bufferView.getUpdateStruct(data, size);
 
 		commandList->copyBufferRegion(updateStruct.buffer, 0, updateStruct.uploadHeap, 0, size);
 	}
 
-	void GraphicsContext::updateBuffer(Resource::DefaultCBuffer& defaultCBuffer, const void* const data, const uint32_t size) const
+	void GraphicsContext::updateBuffer(Resource::DefaultCBuffer& defaultCBuffer,
+	                                   const void* const data,
+	                                   const uint32_t size) const
 	{
-		const Resource::DefaultCBuffer::UpdateStruct updateStruct = defaultCBuffer.getUpdateStruct(data, size);
+		const Resource::DefaultCBuffer::UpdateStruct updateStruct =
+			defaultCBuffer.getUpdateStruct(data, size);
 
 		commandList->copyBufferRegion(updateStruct.buffer, 0, updateStruct.uploadHeap, 0, size);
 	}
@@ -161,7 +168,8 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getVSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getVSConstantBufferParameterIndex(),
+		                             immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setHSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -170,7 +178,8 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getHSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getHSConstantBufferParameterIndex(),
+		                             immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setDSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -179,7 +188,8 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getDSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getDSConstantBufferParameterIndex(),
+		                             immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setGSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -188,7 +198,8 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getGSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getGSConstantBufferParameterIndex(),
+		                             immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setPSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -197,7 +208,8 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getPSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getGraphicsRootSignature()->getPSConstantBufferParameterIndex(),
+		                             immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setCSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
@@ -206,7 +218,8 @@ namespace Gear::Core
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		pushRootConstantBufferDesc({ getComputeRootSignature()->getCSConstantBufferParameterIndex(),immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ getComputeRootSignature()->getCSConstantBufferParameterIndex(),
+		                             immutableCBuffer.getGPUAddress() });
 	}
 
 	void GraphicsContext::setPipelineState(D3D12Core::GraphicsState& graphicsPipelineState)
@@ -260,10 +273,12 @@ namespace Gear::Core
 
 	void GraphicsContext::clearRenderTarget(const Resource::RenderTargetDesc& desc, const float clearValue[4])
 	{
-		renderTargetClearDescs.push(RenderTargetClearDesc{ desc.rtvHandle,{clearValue[0],clearValue[1],clearValue[2],clearValue[3]} });
+		renderTargetClearDescs.push(RenderTargetClearDesc{
+			desc.rtvHandle, { clearValue[0], clearValue[1], clearValue[2], clearValue[3] } });
 	}
 
-	void GraphicsContext::clearRenderTargetInstant(const Resource::RenderTargetDesc& desc, const float clearValue[4])
+	void GraphicsContext::clearRenderTargetInstant(const Resource::RenderTargetDesc& desc,
+	                                               const float clearValue[4])
 	{
 		clearRenderTarget(desc, clearValue);
 
@@ -274,12 +289,17 @@ namespace Gear::Core
 		flushRenderTargetClearDescs();
 	}
 
-	void GraphicsContext::clearDepthStencil(const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
+	void GraphicsContext::clearDepthStencil(const D3D12_CLEAR_FLAGS flags,
+	                                        const float depth,
+	                                        const uint8_t stencil)
 	{
 		depthStencilClearDesc.setClearData(flags, depth, stencil);
 	}
 
-	void GraphicsContext::clearDepthStencilInstant(const Resource::DepthStencilDesc& desc, const D3D12_CLEAR_FLAGS flags, const float depth, const uint8_t stencil)
+	void GraphicsContext::clearDepthStencilInstant(const Resource::DepthStencilDesc& desc,
+	                                               const D3D12_CLEAR_FLAGS flags,
+	                                               const float depth,
+	                                               const uint8_t stencil)
 	{
 		setResourceState(desc);
 
@@ -329,7 +349,10 @@ namespace Gear::Core
 		setViewport(dimension.x, dimension.y);
 	}
 
-	void GraphicsContext::setScissorRect(const int32_t left, const int32_t top, const int32_t right, const int32_t bottom)
+	void GraphicsContext::setScissorRect(const int32_t left,
+	                                     const int32_t top,
+	                                     const int32_t right,
+	                                     const int32_t bottom)
 	{
 		rt.left = left;
 		rt.top = top;
@@ -339,9 +362,15 @@ namespace Gear::Core
 		commandList->setScissorRects(1, &rt);
 	}
 
-	void GraphicsContext::setScissorRect(const float left, const float top, const float right, const float bottom)
+	void GraphicsContext::setScissorRect(const float left,
+	                                     const float top,
+	                                     const float right,
+	                                     const float bottom)
 	{
-		setScissorRect(static_cast<int32_t>(left), static_cast<int32_t>(top), static_cast<int32_t>(right), static_cast<int32_t>(bottom));
+		setScissorRect(static_cast<int32_t>(left),
+		               static_cast<int32_t>(top),
+		               static_cast<int32_t>(right),
+		               static_cast<int32_t>(bottom));
 	}
 
 	void GraphicsContext::setViewportSimple(const float width, const float height)
@@ -375,7 +404,8 @@ namespace Gear::Core
 
 		commandList->flushResourceBarriers();
 
-		commandList->clearUnorderedAccessFloat(desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
+		commandList->clearUnorderedAccessFloat(
+			desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
 
 		commandList->pushResourceBarrier(CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource()));
 
@@ -392,18 +422,23 @@ namespace Gear::Core
 
 		commandList->flushResourceBarriers();
 
-		commandList->clearUnorderedAccessUint(desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
+		commandList->clearUnorderedAccessUint(
+			desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
 
 		commandList->pushResourceBarrier(CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource()));
 
 		commandList->flushResourceBarriers();
 	}
 
-	void GraphicsContext::draw(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation)
+	void GraphicsContext::draw(const uint32_t vertexCountPerInstance,
+	                           const uint32_t instanceCount,
+	                           const uint32_t startVertexLocation,
+	                           const uint32_t startInstanceLocation)
 	{
 		prepareDrawCallResources();
 
-		commandList->drawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
+		commandList->drawInstanced(
+			vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 	}
 
 	void GraphicsContext::drawQuad()
@@ -411,29 +446,40 @@ namespace Gear::Core
 		draw(3, 1, 0, 0);
 	}
 
-	void GraphicsContext::drawIndexed(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation)
+	void GraphicsContext::drawIndexed(const uint32_t indexCountPerInstance,
+	                                  const uint32_t instanceCount,
+	                                  const uint32_t startIndexLocation,
+	                                  const int32_t baseVertexLocation,
+	                                  const uint32_t startInstanceLocation)
 	{
 		prepareDrawCallResources();
 
-		commandList->drawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+		commandList->drawIndexedInstanced(indexCountPerInstance,
+		                                  instanceCount,
+		                                  startIndexLocation,
+		                                  baseVertexLocation,
+		                                  startInstanceLocation);
 	}
 
-	void GraphicsContext::dispatchGrp(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ)
+	void GraphicsContext::dispatchGrp(const uint32_t threadGroupCountX,
+	                                  const uint32_t threadGroupCountY,
+	                                  const uint32_t threadGroupCountZ)
 	{
 		prepareDispatchCallResources();
 
 		commandList->dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 	}
 
-	void GraphicsContext::dispatchDim(const uint32_t dispatchThreadCountX, const uint32_t dispatchThreadCountY, const uint32_t dispatchThreadCountZ)
+	void GraphicsContext::dispatchDim(const uint32_t dispatchThreadCountX,
+	                                  const uint32_t dispatchThreadCountY,
+	                                  const uint32_t dispatchThreadCountZ)
 	{
-		const DirectX::XMUINT3 groupDimension = computeState->getPipelineStateData().computeData.groupDimension;
+		const DirectX::XMUINT3 groupDimension =
+			computeState->getPipelineStateData().computeData.groupDimension;
 
-		dispatchGrp(
-			Utils::Math::divCeil(dispatchThreadCountX, groupDimension.x),
-			Utils::Math::divCeil(dispatchThreadCountY, groupDimension.y),
-			Utils::Math::divCeil(dispatchThreadCountZ, groupDimension.z)
-		);
+		dispatchGrp(Utils::Math::divCeil(dispatchThreadCountX, groupDimension.x),
+		            Utils::Math::divCeil(dispatchThreadCountY, groupDimension.y),
+		            Utils::Math::divCeil(dispatchThreadCountZ, groupDimension.z));
 	}
 
 	void GraphicsContext::dispatchDim(const DirectX::XMUINT3 dispatchThreadCount)
@@ -445,7 +491,8 @@ namespace Gear::Core
 	{
 		commandList->open();
 
-		commandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap()->get(), GlobalDescriptorHeap::getSamplerHeap()->get());
+		commandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap()->get(),
+		                               GlobalDescriptorHeap::getSamplerHeap()->get());
 
 		resetTrackedStates();
 	}
@@ -493,7 +540,8 @@ namespace Gear::Core
 		}
 	}
 
-	void GraphicsContext::setShaderResources(const std::vector<Resource::ShaderResourceDesc>& descs, const uint32_t targetSRVState)
+	void GraphicsContext::setShaderResources(const std::vector<Resource::ShaderResourceDesc>& descs,
+	                                         const uint32_t targetSRVState)
 	{
 		for (const Resource::ShaderResourceDesc& desc : descs)
 		{
@@ -527,7 +575,12 @@ namespace Gear::Core
 	{
 		if (depthStencilClearDesc.getFlags())
 		{
-			commandList->clearDepthStencil(depthStencilClearDesc.getHandle(), depthStencilClearDesc.getFlags(), depthStencilClearDesc.getDepth(), depthStencilClearDesc.getStencil(), 0, nullptr);
+			commandList->clearDepthStencil(depthStencilClearDesc.getHandle(),
+			                               depthStencilClearDesc.getFlags(),
+			                               depthStencilClearDesc.getDepth(),
+			                               depthStencilClearDesc.getStencil(),
+			                               0,
+			                               nullptr);
 
 			depthStencilClearDesc.reset();
 		}
@@ -541,11 +594,15 @@ namespace Gear::Core
 
 			commandList->setGraphicsRootSignature(rootSignature->get());
 
-			commandList->setGraphicsRootConstantBuffer(D3D12Core::RootSignature::getEngineGlobalConstantBufferParameterIndex(), RenderEngine::getEngineGlobalCBuffer()->getGPUAddress());
+			commandList->setGraphicsRootConstantBuffer(
+				D3D12Core::RootSignature::getEngineGlobalConstantBufferParameterIndex(),
+				RenderEngine::getEngineGlobalCBuffer()->getGPUAddress());
 
 			if (userGlobalCBuffer)
 			{
-				commandList->setGraphicsRootConstantBuffer(D3D12Core::RootSignature::getUserGlobalConstantBufferParameterIndex(), userGlobalCBuffer->getGPUAddress());
+				commandList->setGraphicsRootConstantBuffer(
+					D3D12Core::RootSignature::getUserGlobalConstantBufferParameterIndex(),
+					userGlobalCBuffer->getGPUAddress());
 			}
 		}
 	}
@@ -558,11 +615,15 @@ namespace Gear::Core
 
 			commandList->setComputeRootSignature(rootSignature->get());
 
-			commandList->setComputeRootConstantBuffer(D3D12Core::RootSignature::getEngineGlobalConstantBufferParameterIndex(), RenderEngine::getEngineGlobalCBuffer()->getGPUAddress());
+			commandList->setComputeRootConstantBuffer(
+				D3D12Core::RootSignature::getEngineGlobalConstantBufferParameterIndex(),
+				RenderEngine::getEngineGlobalCBuffer()->getGPUAddress());
 
 			if (userGlobalCBuffer)
 			{
-				commandList->setComputeRootConstantBuffer(D3D12Core::RootSignature::getUserGlobalConstantBufferParameterIndex(), userGlobalCBuffer->getGPUAddress());
+				commandList->setComputeRootConstantBuffer(
+					D3D12Core::RootSignature::getUserGlobalConstantBufferParameterIndex(),
+					userGlobalCBuffer->getGPUAddress());
 			}
 		}
 	}
@@ -591,7 +652,8 @@ namespace Gear::Core
 		return computeRootSignature;
 	}
 
-	void GraphicsContext::setResourceState(const Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState)
+	void GraphicsContext::setResourceState(const Resource::ShaderResourceDesc& desc,
+	                                       const uint32_t targetSRVState)
 	{
 		if (desc.type == Resource::ShaderResourceDesc::BUFFER)
 		{
@@ -601,31 +663,38 @@ namespace Gear::Core
 			}
 			else if (desc.state == Resource::ShaderResourceDesc::UAV)
 			{
-				commandList->trackAndSetResourceState(desc.bufferDesc.buffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+				commandList->trackAndSetResourceState(desc.bufferDesc.buffer,
+				                                      D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 
-				commandList->trackAndSetResourceState(desc.bufferDesc.counterBuffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+				commandList->trackAndSetResourceState(desc.bufferDesc.counterBuffer,
+				                                      D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 			}
 			else
 			{
-				commandList->trackAndSetResourceState(desc.bufferDesc.buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+				commandList->trackAndSetResourceState(desc.bufferDesc.buffer,
+				                                      D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 			}
 		}
 		else if (desc.type == Resource::ShaderResourceDesc::TEXTURE)
 		{
 			if (desc.state == Resource::ShaderResourceDesc::SRV)
 			{
-				commandList->trackAndSetResourceState(desc.textureDesc.texture, desc.textureDesc.mipSlice, targetSRVState);
+				commandList->trackAndSetResourceState(
+					desc.textureDesc.texture, desc.textureDesc.mipSlice, targetSRVState);
 			}
 			else if (desc.state == Resource::ShaderResourceDesc::UAV)
 			{
-				commandList->trackAndSetResourceState(desc.textureDesc.texture, desc.textureDesc.mipSlice, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+				commandList->trackAndSetResourceState(desc.textureDesc.texture,
+				                                      desc.textureDesc.mipSlice,
+				                                      D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 			}
 		}
 	}
 
 	void GraphicsContext::setResourceState(const Resource::RenderTargetDesc& desc)
 	{
-		commandList->trackAndSetResourceState(desc.texture, desc.mipSlice, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		commandList->trackAndSetResourceState(
+			desc.texture, desc.mipSlice, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	}
 
 	void GraphicsContext::setResourceState(const Resource::DepthStencilDesc& desc)
@@ -651,19 +720,24 @@ namespace Gear::Core
 		{
 			resource = desc.bufferDesc.buffer;
 
-			commandList->trackAndSetResourceState(desc.bufferDesc.buffer, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+			commandList->trackAndSetResourceState(desc.bufferDesc.buffer,
+			                                      D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		}
 		else if (desc.type == Resource::UAVClearDesc::TEXTURE)
 		{
 			resource = desc.textureDesc.texture;
 
-			commandList->trackAndSetResourceState(desc.textureDesc.texture, desc.textureDesc.mipSlice, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+			commandList->trackAndSetResourceState(
+				desc.textureDesc.texture, desc.textureDesc.mipSlice, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		}
 
 		return resource;
 	}
 
-	void GraphicsContext::setShaderConstants(const D3D12Core::ShaderType shaderType, const uint32_t numValues, const void* const data, uint32_t& offset)
+	void GraphicsContext::setShaderConstants(const D3D12Core::ShaderType shaderType,
+	                                         const uint32_t numValues,
+	                                         const void* const data,
+	                                         uint32_t& offset)
 	{
 #ifdef _DEBUG
 		constantsWriteCheck(shaderType, numValues, offset);
@@ -690,7 +764,10 @@ namespace Gear::Core
 		//所以能保证切换图形管线状态时setPipelineState被调用
 		if (switchGraphicsPipelineState)
 		{
-			graphicsState->updatePipelineState(transientRTVFormats.data(), transientNumRTV, transientDSVFormat, transientPrimitiveTopologyType);
+			graphicsState->updatePipelineState(transientRTVFormats.data(),
+			                                   transientNumRTV,
+			                                   transientDSVFormat,
+			                                   transientPrimitiveTopologyType);
 
 			setPipelineState(graphicsState->getPipelineState());
 
@@ -747,7 +824,9 @@ namespace Gear::Core
 		userGlobalCBuffer = nullptr;
 	}
 
-	void GraphicsContext::constantsWriteCheck(const D3D12Core::ShaderType shaderType, const uint32_t numWrite, const uint32_t offset) const
+	void GraphicsContext::constantsWriteCheck(const D3D12Core::ShaderType shaderType,
+	                                          const uint32_t numWrite,
+	                                          const uint32_t offset) const
 	{
 		uint32_t numShaderConstants = 0u;
 
@@ -803,16 +882,20 @@ namespace Gear::Core
 				break;
 			}
 
-			THROWLOG(LOGERROR() << "侦测到常量写入终止位置" << offset + numWrite - 1u << "越界" << shaderName << "的常量写入终止位置最高为" << numShaderConstants - 1u);
+			THROWLOG(LOGERROR() << "侦测到常量写入终止位置" << offset + numWrite - 1u << "越界" << shaderName
+			                    << "的常量写入终止位置最高为" << numShaderConstants - 1u);
 		}
 	}
 
-	void GraphicsContext::DepthStencilClearDesc::setHandle(const D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle) noexcept
+	void GraphicsContext::DepthStencilClearDesc::setHandle(
+		const D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle) noexcept
 	{
 		handle = cpuHandle;
 	}
 
-	void GraphicsContext::DepthStencilClearDesc::setClearData(const D3D12_CLEAR_FLAGS clearFlags, const float clearDepth, const uint8_t clearStencil) noexcept
+	void GraphicsContext::DepthStencilClearDesc::setClearData(const D3D12_CLEAR_FLAGS clearFlags,
+	                                                          const float clearDepth,
+	                                                          const uint8_t clearStencil) noexcept
 	{
 		flags = clearFlags;
 

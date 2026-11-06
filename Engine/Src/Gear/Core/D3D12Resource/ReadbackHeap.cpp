@@ -1,16 +1,19 @@
-#include<Gear/Core/D3D12Resource/ReadbackHeap.h>
+#include <Gear/Core/D3D12Resource/ReadbackHeap.h>
 
 namespace Gear::Core::D3D12Resource
 {
 	ReadbackHeap::ReadbackHeap(const uint64_t size, const D3D12_HEAP_FLAGS flags) :
-		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK), flags, CD3DX12_RESOURCE_DESC::Buffer(size), false, D3D12_RESOURCE_STATE_COPY_DEST, nullptr),
+		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_READBACK),
+	                      flags,
+	                      CD3DX12_RESOURCE_DESC::Buffer(size),
+	                      false,
+	                      D3D12_RESOURCE_STATE_COPY_DEST,
+	                      nullptr),
 		size(size)
 	{
 	}
 
-	ReadbackHeap::ReadbackHeap(ReadbackHeap& heap) :
-		D3D12ResourceBase(heap),
-		size(heap.size)
+	ReadbackHeap::ReadbackHeap(ReadbackHeap& heap) : D3D12ResourceBase(heap), size(heap.size)
 	{
 	}
 

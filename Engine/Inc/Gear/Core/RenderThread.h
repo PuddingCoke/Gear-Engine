@@ -3,14 +3,14 @@
 #ifndef _GEAR_CORE_RENDERTHREAD_H_
 #define _GEAR_CORE_RENDERTHREAD_H_
 
-#include"RenderTask.h"
+#include "RenderTask.h"
 
-#include<mutex>
+#include <mutex>
 
 namespace Gear::Core
 {
 	CREATESAFETYPE(RenderThread);
-	
+
 	//渲染线程，它会执行与它关联的渲染任务的构造方法和帧任务方法
 	class RenderThread
 	{
@@ -51,24 +51,23 @@ namespace Gear::Core
 		std::thread thread;
 
 		std::string errorStr;
-
 	};
 
 	//异步创建函数，原理很简单
 	//先把RenderThread所有权移交给Game
 	//待RenderTask初始化完毕后，Game调用RenderThread的transferOwnerShip把所有权移交给RenderTask
-	template <typename First, typename... Rest>
+	template<typename First, typename... Rest>
 	UniquePtr<RenderThread> createRenderTaskAsync(First& first, Rest&&... args)
 	{
 		using RenderTaskType = typename First::element_type;
 
 		//这里有点危险，有时间再来想想该怎么改这里
 		auto createFunc = [&](RenderTask** renderTask)
-			{
-				first = makeUnique<RenderTaskType>(std::forward<Rest>(args)...);
+		{
+			first = makeUnique<RenderTaskType>(std::forward<Rest>(args)...);
 
-				*renderTask = first.get();
-			};
+			*renderTask = first.get();
+		};
 
 		return makeUnique<RenderThread>(createFunc);
 	}

@@ -1,6 +1,6 @@
-#include<Gear/Core/VideoEncoder/Encoder.h>
+#include <Gear/Core/VideoEncoder/Encoder.h>
 
-#include<Gear/Utils/Math.h>
+#include <Gear/Utils/Math.h>
 
 namespace Gear::Core::VideoEncoder
 {
@@ -48,7 +48,8 @@ namespace Gear::Core::VideoEncoder
 
 		LOGENGINE() << "视频路径" << outputPath;
 
-		LOGENGINE() << "视频时间" << LogFloatPrecision(1) << static_cast<float>(frameToEncode) / static_cast<float>(frameRate) << "秒";
+		LOGENGINE() << "视频时间" << LogFloatPrecision(1)
+					<< static_cast<float>(frameToEncode) / static_cast<float>(frameRate) << "秒";
 
 		LOGENGINE() << "视频帧率" << frameRate;
 
@@ -79,7 +80,7 @@ namespace Gear::Core::VideoEncoder
 
 		param->height = static_cast<int32_t>(Graphics::getHeight());
 
-		param->framerate = AVRational{ static_cast<int32_t>(frameRate),1 };
+		param->framerate = AVRational{ static_cast<int32_t>(frameRate), 1 };
 
 		avio_open(&outContext->pb, outContext->url, AVIO_FLAG_WRITE);
 
@@ -89,23 +90,28 @@ namespace Gear::Core::VideoEncoder
 
 		LOGENGINE() << "开始编码";
 
-		D3D12_VIDEO_PROCESS_INPUT_STREAM_DESC inputDesc =
-		{
+		D3D12_VIDEO_PROCESS_INPUT_STREAM_DESC inputDesc = {
 			.Format = Graphics::backBufferFormat,
 			.ColorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709,
 			.FrameRate = { frameRate, 1 },
-			.SourceSizeRange = { Graphics::getWidth(), Graphics::getHeight(), Graphics::getWidth(), Graphics::getHeight() },
-			.DestinationSizeRange = { Graphics::getWidth(), Graphics::getHeight(), Graphics::getWidth(), Graphics::getHeight() },
+			.SourceSizeRange = { Graphics::getWidth(),
+			                     Graphics::getHeight(),
+			                     Graphics::getWidth(),
+			                     Graphics::getHeight() },
+			.DestinationSizeRange = { Graphics::getWidth(),
+			                          Graphics::getHeight(),
+			                          Graphics::getWidth(),
+			                          Graphics::getHeight() },
 		};
 
-		D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC outputDesc =
-		{
-		.Format = DXGI_FORMAT_NV12,
-		.ColorSpace = DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709,
-		.FrameRate = { frameRate, 1 },
+		D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC outputDesc = {
+			.Format = DXGI_FORMAT_NV12,
+			.ColorSpace = DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709,
+			.FrameRate = { frameRate, 1 },
 		};
 
-		CHECKERROR(VideoDevice::get()->CreateVideoProcessor(0, &outputDesc, 1, &inputDesc, IID_PPV_ARGS(&videoProcessor)));
+		CHECKERROR(VideoDevice::get()->CreateVideoProcessor(
+			0, &outputDesc, 1, &inputDesc, IID_PPV_ARGS(&videoProcessor)));
 
 		vpCommandList = makeUnique<D3D12Core::VideoProcessCommandList>();
 
@@ -143,14 +149,20 @@ namespace Gear::Core::VideoEncoder
 		avformat_write_header(outContext, nullptr);
 	}
 
-	bool Encoder::writeFrame(void* const bitstreamPtr, const uint32_t bitstreamSize, const bool syncPoint,
-		const int64_t decodeFrameIndex, const int64_t presentFrameIndex)
+	bool Encoder::writeFrame(void* const bitstreamPtr,
+	                         const uint32_t bitstreamSize,
+	                         const bool syncPoint,
+	                         const int64_t decodeFrameIndex,
+	                         const int64_t presentFrameIndex)
 	{
-		rawStreamPacket->pts = av_rescale_q(presentFrameIndex, AVRational{ 1,static_cast<int32_t>(frameRate) }, outStream->time_base);
+		rawStreamPacket->pts = av_rescale_q(
+			presentFrameIndex, AVRational{ 1, static_cast<int32_t>(frameRate) }, outStream->time_base);
 
-		rawStreamPacket->dts = av_rescale_q(decodeFrameIndex, AVRational{ 1,static_cast<int32_t>(frameRate) }, outStream->time_base);
+		rawStreamPacket->dts = av_rescale_q(
+			decodeFrameIndex, AVRational{ 1, static_cast<int32_t>(frameRate) }, outStream->time_base);
 
-		rawStreamPacket->duration = av_rescale_q(1, AVRational{ 1,static_cast<int32_t>(frameRate) }, outStream->time_base);
+		rawStreamPacket->duration =
+			av_rescale_q(1, AVRational{ 1, static_cast<int32_t>(frameRate) }, outStream->time_base);
 
 		rawStreamPacket->stream_index = outStream->index;
 
@@ -185,7 +197,9 @@ namespace Gear::Core::VideoEncoder
 		return frameEncoded != frameToEncode;
 	}
 
-	uint64_t Encoder::bgraToNV12(D3D12Resource::Texture* const inputBGRATexture, D3D12Resource::Texture* const outputNV12Texture, D3D12Core::Fence* const fence)
+	uint64_t Encoder::bgraToNV12(D3D12Resource::Texture* const inputBGRATexture,
+	                             D3D12Resource::Texture* const outputNV12Texture,
+	                             D3D12Core::Fence* const fence)
 	{
 		vpCommandQueue->begin();
 
@@ -216,18 +230,26 @@ namespace Gear::Core::VideoEncoder
 	{
 		if ((frameEncoded % (frameRate / 4)) == 0)
 		{
-			const float progress = Utils::Math::saturate(static_cast<float>(frameEncoded) / static_cast<float>(frameToEncode));
+			const float progress =
+				Utils::Math::saturate(static_cast<float>(frameEncoded) / static_cast<float>(frameToEncode));
 
-			const uint32_t num = static_cast<uint32_t>(Utils::Math::clamp(static_cast<int32_t>(progressBarWidth * progress), 0, static_cast<int32_t>(progressBarWidth)));
+			const uint32_t num =
+				static_cast<uint32_t>(Utils::Math::clamp(static_cast<int32_t>(progressBarWidth * progress),
+			                                             0,
+			                                             static_cast<int32_t>(progressBarWidth)));
 
 			const uint32_t buffLength = 13 + 2 + progressBarWidth + 1 + 6 + 1 + 1 + 8;
 
 			char str[buffLength] = {};
 
-			sprintf_s(str, buffLength, "编码中... [%.*s%.*s] %.2f%%",
-				num, "********************************",
-				progressBarWidth - num, "////////////////////////////////",
-				100.f * progress);
+			sprintf_s(str,
+			          buffLength,
+			          "编码中... [%.*s%.*s] %.2f%%",
+			          num,
+			          "********************************",
+			          progressBarWidth - num,
+			          "////////////////////////////////",
+			          100.f * progress);
 
 			LOGENGINE() << str;
 		}

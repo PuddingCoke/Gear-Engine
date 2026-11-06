@@ -1,6 +1,6 @@
-#include<Gear/Core/FMT.h>
+#include <Gear/Core/FMT.h>
 
-#include<Gear/Core/GraphicsDevice.h>
+#include <Gear/Core/GraphicsDevice.h>
 
 namespace Gear::Core::FMT
 {
@@ -44,7 +44,8 @@ namespace Gear::Core::FMT
 
 					featureSupport.FormatSupport(format, support1, support2);
 
-					rtvFormatIndexTable[i] = (support1 & D3D12_FORMAT_SUPPORT1_RENDER_TARGET) ? rtvFormatIndex++ : 0u;
+					rtvFormatIndexTable[i] =
+						(support1 & D3D12_FORMAT_SUPPORT1_RENDER_TARGET) ? rtvFormatIndex++ : 0u;
 				}
 
 				unsigned long index = 0;
@@ -68,7 +69,8 @@ namespace Gear::Core::FMT
 
 					featureSupport.FormatSupport(format, support1, support2);
 
-					dsvFormatIndexTable[i] = (support1 & D3D12_FORMAT_SUPPORT1_DEPTH_STENCIL) ? dsvFormatIndex++ : 0u;
+					dsvFormatIndexTable[i] =
+						(support1 & D3D12_FORMAT_SUPPORT1_DEPTH_STENCIL) ? dsvFormatIndex++ : 0u;
 				}
 
 				unsigned long index = 0;

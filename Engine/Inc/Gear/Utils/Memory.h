@@ -3,9 +3,9 @@
 #ifndef _GEAR_UTILS_MEMORY_H_
 #define _GEAR_UTILS_MEMORY_H_
 
-#include<memory>
+#include <memory>
 
-#include<wrl/client.h>
+#include <wrl/client.h>
 
 using Microsoft::WRL::ComPtr;
 
@@ -15,7 +15,9 @@ using UniquePtr = std::unique_ptr<T, Deleter>;
 template<typename T>
 using SharedPtr = std::shared_ptr<T>;
 
-#define CREATESAFETYPE(x) class x; using x##Ptr = UniquePtr<x>
+#define CREATESAFETYPE(x) \
+	class x; \
+	using x##Ptr = UniquePtr<x>
 
 template<typename T, typename... Args>
 UniquePtr<T> makeUnique(Args&&... args)

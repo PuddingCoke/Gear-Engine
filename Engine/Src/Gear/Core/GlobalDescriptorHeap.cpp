@@ -1,6 +1,6 @@
-#include<Gear/Core/GlobalDescriptorHeap.h>
+#include <Gear/Core/GlobalDescriptorHeap.h>
 
-#include<Gear/Core/Internal/GlobalDescriptorHeapInternal.h>
+#include <Gear/Core/Internal/GlobalDescriptorHeapInternal.h>
 
 namespace Gear::Core::GlobalDescriptorHeap
 {
@@ -15,9 +15,16 @@ namespace Gear::Core::GlobalDescriptorHeap
 
 	GlobalDescriptorHeapImpl::GlobalDescriptorHeapImpl()
 	{
-		resourceHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numResourceHeapDescriptors, Internal::numResourceHeapDescriptors - Internal::numStaticCBVSRVUAVDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+		resourceHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numResourceHeapDescriptors,
+		                                                     Internal::numResourceHeapDescriptors -
+		                                                         Internal::numStaticCBVSRVUAVDescriptors,
+		                                                     D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		                                                     D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
-		samplerHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numSamplerDescriptors, 0, D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+		samplerHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numSamplerDescriptors,
+		                                                    0,
+		                                                    D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
+		                                                    D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
 		LOGSUCCESS() << "创建" << COLORIZESTRUCT(GlobalDescriptorHeap);
 	}
@@ -47,4 +54,3 @@ namespace Gear::Core::GlobalDescriptorHeap
 		return impl->samplerHeap.get();
 	}
 }
-

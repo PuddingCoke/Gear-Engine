@@ -1,14 +1,14 @@
-#include<Gear/Utils/Logger/Logger.h>
+#include <Gear/Utils/Logger/Logger.h>
 
-#include<Gear/Utils/Internal/LoggerInternal.h>
+#include <Gear/Utils/Internal/LoggerInternal.h>
 
-#include<fileapi.h>
+#include <fileapi.h>
 
-#include<consoleapi.h>
+#include <consoleapi.h>
 
-#include<string>
+#include <string>
 
-#include<queue>
+#include <queue>
 
 namespace Gear::Utils::Logger
 {
@@ -20,10 +20,15 @@ namespace Gear::Utils::Logger
 
 		void operator=(const LoggerImpl&) = delete;
 
-		LoggerImpl() :
-			isRunning(true), fileHandle(nullptr), consoleHandle(nullptr)
+		LoggerImpl() : isRunning(true), fileHandle(nullptr), consoleHandle(nullptr)
 		{
-			fileHandle = CreateFileW(File::UserDataPath(L"log.txt").cstr(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+			fileHandle = CreateFileW(File::UserDataPath(L"log.txt").cstr(),
+			                         GENERIC_WRITE,
+			                         0,
+			                         nullptr,
+			                         CREATE_ALWAYS,
+			                         FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN,
+			                         nullptr);
 
 			if (fileHandle == INVALID_HANDLE_VALUE)
 			{
@@ -123,7 +128,8 @@ namespace Gear::Utils::Logger
 				{
 					DWORD bytesWritten = 0;
 
-					WriteFile(fileHandle, temp.c_str(), static_cast<DWORD>(temp.size()), &bytesWritten, nullptr);
+					WriteFile(
+						fileHandle, temp.c_str(), static_cast<DWORD>(temp.size()), &bytesWritten, nullptr);
 				}
 			}
 		}
@@ -134,7 +140,11 @@ namespace Gear::Utils::Logger
 			{
 				std::unique_lock<std::mutex> lock(queueLock);
 
-				cv.wait(lock, [this]() {return !messages.empty() || !isRunning; });
+				cv.wait(lock,
+				        [this]()
+				{
+					return !messages.empty() || !isRunning;
+				});
 
 				if (!isRunning)
 				{
@@ -156,14 +166,19 @@ namespace Gear::Utils::Logger
 					//ERROR类型在Gear::failureExit处被统一处理
 					if (consoleHandle && message.type != LogType::LOG_ERROR)
 					{
-						WriteConsoleA(consoleHandle, temp.c_str(), static_cast<DWORD>(temp.size()), nullptr, nullptr);
+						WriteConsoleA(
+							consoleHandle, temp.c_str(), static_cast<DWORD>(temp.size()), nullptr, nullptr);
 					}
 
 					if (fileHandle)
 					{
 						DWORD bytesWritten = 0;
 
-						WriteFile(fileHandle, temp.c_str(), static_cast<DWORD>(temp.size()), &bytesWritten, nullptr);
+						WriteFile(fileHandle,
+						          temp.c_str(),
+						          static_cast<DWORD>(temp.size()),
+						          &bytesWritten,
+						          nullptr);
 					}
 
 					lock.lock();

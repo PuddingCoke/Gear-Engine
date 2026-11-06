@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_RENDERTASK_H_
 #define _GEAR_CORE_RENDERTASK_H_
 
-#include<Gear/Core/ResourceManager.h>
+#include <Gear/Core/ResourceManager.h>
 
 namespace Gear::Core
 {
@@ -49,7 +49,6 @@ namespace Gear::Core
 		void frameTask();
 
 		UniquePtr<RenderThread> renderThread;
-
 	};
 }
 

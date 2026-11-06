@@ -3,9 +3,9 @@
 #ifndef _GEAR_CORE_D3D12CORE_RESOURCESTATETRACKER_H_
 #define _GEAR_CORE_D3D12CORE_RESOURCESTATETRACKER_H_
 
-#include<Gear/Core/D3D12Resource/Buffer.h>
+#include <Gear/Core/D3D12Resource/Buffer.h>
 
-#include<Gear/Core/D3D12Resource/Texture.h>
+#include <Gear/Core/D3D12Resource/Texture.h>
 
 namespace Gear::Core::D3D12Core
 {
@@ -15,7 +15,9 @@ namespace Gear::Core::D3D12Core
 
 		//以下的方法会追踪并设置资源状态
 
-		void trackAndSetResourceState(D3D12Resource::Texture* const texture, const uint32_t mipslice, const uint32_t state);
+		void trackAndSetResourceState(D3D12Resource::Texture* const texture,
+		                              const uint32_t mipslice,
+		                              const uint32_t state);
 
 		void trackAndSetResourceState(D3D12Resource::Buffer* const buffer, const uint32_t state);
 
@@ -54,7 +56,6 @@ namespace Gear::Core::D3D12Core
 
 		//暂存BEFORE STATE待定的资源，需要主渲染线程帮忙解决
 		std::vector<D3D12Resource::D3D12ResourceBase*> pendingResources;
-
 	};
 }
 

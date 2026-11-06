@@ -3,7 +3,7 @@
 #ifndef _GEAR_CORE_D3D12CORE_PIPELINESTATE_H_
 #define _GEAR_CORE_D3D12CORE_PIPELINESTATE_H_
 
-#include"RootSignature.h"
+#include "RootSignature.h"
 
 namespace Gear::Core::D3D12Core
 {
@@ -20,8 +20,7 @@ namespace Gear::Core::D3D12Core
 
 			struct GraphicsData
 			{
-
-			}graphicsData;
+			} graphicsData;
 		};
 
 		PipelineState(const RootSignature* const rootSignature, const PipelineStateData pipelineStateData);
@@ -45,7 +44,6 @@ namespace Gear::Core::D3D12Core
 		const RootSignature* const rootSignature;
 
 		const PipelineStateData pipelineStateData;
-
 	};
 }
 

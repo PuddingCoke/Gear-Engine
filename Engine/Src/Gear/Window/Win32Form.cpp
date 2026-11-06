@@ -1,28 +1,31 @@
-#include<Gear/Window/Win32Form.h>
+#include <Gear/Window/Win32Form.h>
 
-#include<Gear/Utils/Log.h>
+#include <Gear/Utils/Log.h>
 
-#include<Gear/Utils/WallpaperHelper.h>
+#include <Gear/Utils/WallpaperHelper.h>
 
-#include<Gear/Core/Graphics.h> 
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Input/Keyboard.h>
+#include <Gear/Input/Keyboard.h>
 
-#include<Gear/Input/Internal/InputInternal.h>
+#include <Gear/Input/Internal/InputInternal.h>
 
-#include<Gear/Input/Internal/KeyboardInternal.h>
+#include <Gear/Input/Internal/KeyboardInternal.h>
 
-#include<Gear/Input/Internal/MouseInternal.h>
+#include <Gear/Input/Internal/MouseInternal.h>
 
-#include<ImGUI/imgui.h>
+#include <ImGUI/imgui.h>
 
-#include<shellapi.h>
+#include <shellapi.h>
 
-#include<hidusage.h>
+#include <hidusage.h>
 
 #define WM_TRAYICON WM_USER
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, uint32_t uMsg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd,
+                                                             uint32_t uMsg,
+                                                             WPARAM wParam,
+                                                             LPARAM lParam);
 
 namespace Gear::Window::Win32Form
 {
@@ -38,8 +41,13 @@ namespace Gear::Window::Win32Form
 
 		void operator=(const Win32FormImpl&) = delete;
 
-		Win32FormImpl(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle,
-			LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam));
+		Win32FormImpl(const std::wstring& title,
+		              const uint32_t startX,
+		              const uint32_t startY,
+		              const uint32_t width,
+		              const uint32_t height,
+		              const DWORD windowStyle,
+		              LRESULT (*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam));
 
 		~Win32FormImpl();
 
@@ -72,11 +80,22 @@ namespace Gear::Window::Win32Form
 		RAWINPUTDEVICE rawInputMouse;
 
 		RAWINPUTDEVICE rawInputKeyboard;
-
 	};
 
-	Win32FormImpl::Win32FormImpl(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam)) :
-		windowHandle(nullptr), menuWindowHandle(nullptr), initTrayIcon(windowCallback == wallpaperCallBack), trayIconData{}, rawInputMouse{}, rawInputKeyboard{}
+	Win32FormImpl::Win32FormImpl(
+		const std::wstring& title,
+		const uint32_t startX,
+		const uint32_t startY,
+		const uint32_t width,
+		const uint32_t height,
+		const DWORD windowStyle,
+		LRESULT (*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam)) :
+		windowHandle(nullptr),
+		menuWindowHandle(nullptr),
+		initTrayIcon(windowCallback == wallpaperCallBack),
+		trayIconData{},
+		rawInputMouse{},
+		rawInputKeyboard{}
 	{
 		//传入的width、height是像素尺度
 		//因此不能让窗口被自动缩放
@@ -98,12 +117,21 @@ namespace Gear::Window::Win32Form
 			RegisterClassEx(&wcex);
 		}
 
-		RECT rect = { 0,0,static_cast<LONG>(width),static_cast<LONG>(height) };
+		RECT rect = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
 
 		AdjustWindowRect(&rect, windowStyle, false);
 
-		windowHandle = CreateWindow(L"MyWindowClass", title.c_str(), windowStyle, startX, startY,
-			rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, hInstance, nullptr);
+		windowHandle = CreateWindow(L"MyWindowClass",
+		                            title.c_str(),
+		                            windowStyle,
+		                            startX,
+		                            startY,
+		                            rect.right - rect.left,
+		                            rect.bottom - rect.top,
+		                            nullptr,
+		                            nullptr,
+		                            hInstance,
+		                            nullptr);
 
 		if (!windowHandle)
 		{
@@ -120,7 +148,8 @@ namespace Gear::Window::Win32Form
 
 			if (!RegisterRawInputDevices(&rawInputMouse, 1, sizeof(rawInputMouse)))
 			{
-				THROWLOG(LOGERROR() << TOSTRING(RegisterRawInputDevices) << "调用失败，失败值" << LogIntegerMode::HEX << static_cast<uint32_t>(GetLastError()));
+				THROWLOG(LOGERROR() << TOSTRING(RegisterRawInputDevices) << "调用失败，失败值"
+				                    << LogIntegerMode::HEX << static_cast<uint32_t>(GetLastError()));
 			}
 		}
 
@@ -132,7 +161,8 @@ namespace Gear::Window::Win32Form
 
 			if (!RegisterRawInputDevices(&rawInputKeyboard, 1, sizeof(rawInputKeyboard)))
 			{
-				THROWLOG(LOGERROR() << TOSTRING(RegisterRawInputDevices) << "调用失败，失败值" << LogIntegerMode::HEX << static_cast<uint32_t>(GetLastError()));
+				THROWLOG(LOGERROR() << TOSTRING(RegisterRawInputDevices) << "调用失败，失败值"
+				                    << LogIntegerMode::HEX << static_cast<uint32_t>(GetLastError()));
 			}
 		}
 
@@ -150,12 +180,18 @@ namespace Gear::Window::Win32Form
 				RegisterClassEx(&wcex);
 			}
 
-			menuWindowHandle = CreateWindowEx(
-				WS_EX_TOOLWINDOW,
-				L"MenuWindowClass", L"",
-				WS_POPUP | WS_BORDER,
-				0, 0, menuWidth, menuHeight,
-				windowHandle, nullptr, GetModuleHandle(0), nullptr);
+			menuWindowHandle = CreateWindowEx(WS_EX_TOOLWINDOW,
+			                                  L"MenuWindowClass",
+			                                  L"",
+			                                  WS_POPUP | WS_BORDER,
+			                                  0,
+			                                  0,
+			                                  menuWidth,
+			                                  menuHeight,
+			                                  windowHandle,
+			                                  nullptr,
+			                                  GetModuleHandle(0),
+			                                  nullptr);
 
 			if (!menuWindowHandle)
 			{
@@ -267,7 +303,9 @@ namespace Gear::Window::Win32Form
 
 			if (!ImGui::GetCurrentContext() || !ImGui::GetIO().WantCaptureMouse)
 			{
-				Input::Mouse::Internal::setPosition(static_cast<float>(LOWORD(lParam)), static_cast<float>(Core::Graphics::getHeight()) - static_cast<float>(HIWORD(lParam)));
+				Input::Mouse::Internal::setPosition(static_cast<float>(LOWORD(lParam)),
+				                                    static_cast<float>(Core::Graphics::getHeight()) -
+				                                        static_cast<float>(HIWORD(lParam)));
 			}
 
 			break;
@@ -276,11 +314,20 @@ namespace Gear::Window::Win32Form
 		{
 			uint32_t dataSize = 0;
 
-			if (!GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, nullptr, &dataSize, sizeof(RAWINPUTHEADER)) && dataSize <= sizeof(RAWINPUT))
+			if (!GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam),
+			                     RID_INPUT,
+			                     nullptr,
+			                     &dataSize,
+			                     sizeof(RAWINPUTHEADER)) &&
+			    dataSize <= sizeof(RAWINPUT))
 			{
 				RAWINPUT raw;
 
-				if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
+				if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam),
+				                    RID_INPUT,
+				                    &raw,
+				                    &dataSize,
+				                    sizeof(RAWINPUTHEADER)) == dataSize)
 				{
 					if (raw.header.dwType == RIM_TYPEMOUSE)
 					{
@@ -310,14 +357,17 @@ namespace Gear::Window::Win32Form
 
 							if (mouse.usButtonFlags & RI_MOUSE_WHEEL)
 							{
-								const float delta = static_cast<float>(static_cast<SHORT>(mouse.usButtonData)) / static_cast<float>(WHEEL_DELTA);
+								const float delta =
+									static_cast<float>(static_cast<SHORT>(mouse.usButtonData)) /
+									static_cast<float>(WHEEL_DELTA);
 
 								Input::Mouse::Internal::scroll(delta);
 							}
 
 							if ((mouse.usFlags & MOUSE_MOVE_ABSOLUTE) == MOUSE_MOVE_RELATIVE)
 							{
-								Input::Mouse::Internal::move(static_cast<float>(mouse.lLastX), static_cast<float>(-mouse.lLastY));
+								Input::Mouse::Internal::move(static_cast<float>(mouse.lLastX),
+								                             static_cast<float>(-mouse.lLastY));
 							}
 						}
 					}
@@ -415,11 +465,20 @@ namespace Gear::Window::Win32Form
 		{
 			uint32_t dataSize = 0;
 
-			if (!GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, nullptr, &dataSize, sizeof(RAWINPUTHEADER)) && dataSize <= sizeof(RAWINPUT))
+			if (!GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam),
+			                     RID_INPUT,
+			                     nullptr,
+			                     &dataSize,
+			                     sizeof(RAWINPUTHEADER)) &&
+			    dataSize <= sizeof(RAWINPUT))
 			{
 				RAWINPUT raw;
 
-				if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
+				if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam),
+				                    RID_INPUT,
+				                    &raw,
+				                    &dataSize,
+				                    sizeof(RAWINPUTHEADER)) == dataSize)
 				{
 					if (raw.header.dwType == RIM_TYPEMOUSE)
 					{
@@ -449,7 +508,9 @@ namespace Gear::Window::Win32Form
 
 							if (mouse.usButtonFlags & RI_MOUSE_WHEEL)
 							{
-								const float delta = static_cast<float>(static_cast<SHORT>(mouse.usButtonData)) / static_cast<float>(WHEEL_DELTA);
+								const float delta =
+									static_cast<float>(static_cast<SHORT>(mouse.usButtonData)) /
+									static_cast<float>(WHEEL_DELTA);
 
 								Input::Mouse::Internal::scroll(delta);
 							}
@@ -460,9 +521,13 @@ namespace Gear::Window::Win32Form
 
 								GetPhysicalCursorPos(&pt);
 
-								Input::Mouse::Internal::setPosition(static_cast<float>(pt.x), static_cast<float>(Core::Graphics::getHeight()) - static_cast<float>(pt.y));
+								Input::Mouse::Internal::setPosition(
+									static_cast<float>(pt.x),
+									static_cast<float>(Core::Graphics::getHeight()) -
+										static_cast<float>(pt.y));
 
-								Input::Mouse::Internal::move(static_cast<float>(mouse.lLastX), static_cast<float>(-mouse.lLastY));
+								Input::Mouse::Internal::move(static_cast<float>(mouse.lLastX),
+								                             static_cast<float>(-mouse.lLastY));
 							}
 						}
 					}
@@ -535,9 +600,13 @@ namespace Gear::Window::Win32Form
 
 				GetCursorPos(&pt);
 
-				SetWindowPos(hWnd, HWND_TOPMOST,
-					pt.x, pt.y - menuHeight, menuWidth, menuHeight,
-					SWP_NOACTIVATE | SWP_SHOWWINDOW);
+				SetWindowPos(hWnd,
+				             HWND_TOPMOST,
+				             pt.x,
+				             pt.y - menuHeight,
+				             menuWidth,
+				             menuHeight,
+				             SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
 				SetForegroundWindow(hWnd);
 
@@ -583,7 +652,13 @@ namespace Gear::Window::Win32Form
 
 	UniquePtr<Win32FormImpl> impl;
 
-	void initialize(const std::wstring& title, const uint32_t startX, const uint32_t startY, const uint32_t width, const uint32_t height, const DWORD windowStyle, LRESULT(*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
+	void initialize(const std::wstring& title,
+	                const uint32_t startX,
+	                const uint32_t startY,
+	                const uint32_t width,
+	                const uint32_t height,
+	                const DWORD windowStyle,
+	                LRESULT (*windowCallback)(HWND hwnd, uint32_t msg, WPARAM wParam, LPARAM lParam))
 	{
 		impl = makeUnique<Win32FormImpl>(title, startX, startY, width, height, windowStyle, windowCallback);
 	}

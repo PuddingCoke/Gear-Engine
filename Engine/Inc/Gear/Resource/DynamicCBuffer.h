@@ -3,14 +3,14 @@
 #ifndef _GEAR_RESOURCE_DYNAMICCBUFFER_H_
 #define _GEAR_RESOURCE_DYNAMICCBUFFER_H_
 
-#include"ImmutableCBuffer.h"
+#include "ImmutableCBuffer.h"
 
 namespace Gear::Resource
 {
 	CREATESAFETYPE(DynamicCBuffer);
 
 	//注意：每帧都必须更新一次
-	class DynamicCBuffer :public ImmutableCBuffer
+	class DynamicCBuffer : public ImmutableCBuffer
 	{
 	public:
 
@@ -36,7 +36,6 @@ namespace Gear::Resource
 		SharedPtr<uint64_t> acquireFrameIndex;
 
 		SharedPtr<uint64_t> updateFrameIndex;
-
 	};
 }
 

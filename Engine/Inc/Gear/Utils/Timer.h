@@ -30,7 +30,6 @@ namespace Gear::Utils
 		float timeLimit;
 
 		float currrentTime;
-
 	};
 }
 

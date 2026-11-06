@@ -1,8 +1,8 @@
 #pragma once
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-#include<vector>
+#include <vector>
 
 class Rain
 {
@@ -22,7 +22,7 @@ public:
 
 	Timer time;
 
-	Rain(int _x, int _len) :time(_len / speedFactor), len(_len), character(_len)
+	Rain(int _x, int _len) : time(_len / speedFactor), len(_len), character(_len)
 	{
 		x = _x;
 
@@ -54,8 +54,8 @@ public:
 
 	void update(const float& dt)
 	{
-		while (time.update(dt)) {
-
+		while (time.update(dt))
+		{
 			for (size_t i = len - 1ull; i > 0; i--)
 			{
 				character[i] = character[i - 1ULL];
@@ -66,7 +66,6 @@ public:
 			y -= stride;
 		}
 	}
-
 };
 
 float Rain::speedFactor = 120.f;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
@@ -13,21 +13,32 @@ public:
 		colorGradingShader(Shader::create(L"ColorGradingPS.cso")),
 		noiseTexture(resManager->createRenderTextureView(L"Noise.png", true)),
 		diskTexture(resManager->createRenderTextureView(L"Disk.jpg", true)),
-		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true)),
-		colorGradingTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16UN, 1, 1, false, true)),
+		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(),
+	                                                         Graphics::getHeight(),
+	                                                         FMT::RGBA16F,
+	                                                         1,
+	                                                         1,
+	                                                         false,
+	                                                         true)),
+		colorGradingTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(),
+	                                                               Graphics::getHeight(),
+	                                                               FMT::RGBA16UN,
+	                                                               1,
+	                                                               1,
+	                                                               false,
+	                                                               true)),
 		effect(BloomEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight()))
 	{
-		pipelineState = PipelineStateBuilder()
-			.setDefaultFullScreenState()
-			.setPS(*blackHoleShader)
-			.build();
+		pipelineState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*blackHoleShader).build();
 
-		colorGradingState = PipelineStateBuilder()
-			.setDefaultFullScreenState()
-			.setPS(*colorGradingShader)
-			.build();
+		colorGradingState =
+			PipelineStateBuilder().setDefaultFullScreenState().setPS(*colorGradingShader).build();
 
-		Keyboard::addKeyDownEvent(Keyboard::K, [this](const uint32_t) {perframeData.useOriginalVer = ~perframeData.useOriginalVer; });
+		Keyboard::addKeyDownEvent(Keyboard::K,
+		                          [this](const uint32_t)
+		{
+			perframeData.useOriginalVer = ~perframeData.useOriginalVer;
+		});
 
 		effect->setIntensity(0.55f);
 
@@ -79,9 +90,9 @@ protected:
 		//perframeData.timeElapsed = 0.f;
 
 		SETCONSTS({
-		context->setPSConstants({ noiseTexture->getAllSRVIndex(),diskTexture->getAllSRVIndex() }, co);
-		context->setPSConstants(perframeData, co);
-			});
+			context->setPSConstants({ noiseTexture->getAllSRVIndex(), diskTexture->getAllSRVIndex() }, co);
+			context->setPSConstants(perframeData, co);
+		});
 
 		context->drawQuad();
 
@@ -97,9 +108,7 @@ protected:
 
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
-		SETCONSTS({
-		context->setPSConstants({toneMappedTexture->getAllSRVIndex()},co);
-			});
+		SETCONSTS({ context->setPSConstants({ toneMappedTexture->getAllSRVIndex() }, co); });
 
 		context->drawQuad();
 
@@ -143,5 +152,4 @@ private:
 		float baseNoise2ScaleFactor = 1.f;
 		float noise2LerpFactor = 0.7f;
 	} perframeData;
-
 };

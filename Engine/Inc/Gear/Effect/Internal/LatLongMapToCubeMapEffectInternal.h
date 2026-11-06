@@ -3,7 +3,7 @@
 #ifndef _GEAR_EFFECT_LATLONGMAPTOCUBEMAPEFFECT_INTERNAL_H_
 #define _GEAR_EFFECT_LATLONGMAPTOCUBEMAPEFFECT_INTERNAL_H_
 
-#include"../EffectBase.h"
+#include "../EffectBase.h"
 
 namespace Gear::Effect::LatLongMapToCubeMapEffect::Internal
 {
@@ -12,7 +12,17 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect::Internal
 
 	void release();
 
-	struct InitializeToken { InitializeToken(ResourceManager* const resManager) { initialize(resManager); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken(ResourceManager* const resManager)
+		{
+			initialize(resManager);
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 
 }
 

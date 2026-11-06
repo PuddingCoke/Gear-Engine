@@ -1,11 +1,18 @@
-#include<Gear/Resource/RenderTextureView.h>
+#include <Gear/Resource/RenderTextureView.h>
 
-#include<Gear/Core/FMT.h>
+#include <Gear/Core/FMT.h>
 
 namespace Gear::Resource
 {
-	RenderTextureView::RenderTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat) :
-		ResourceBase(persistent), rtvFormat(rtvFormat), uavFormat(uavFormat),
+	RenderTextureView::RenderTextureView(D3D12Resource::TexturePtr texturePtr,
+	                                     const bool isTextureCube,
+	                                     const bool persistent,
+	                                     const DXGI_FORMAT srvFormat,
+	                                     const DXGI_FORMAT uavFormat,
+	                                     const DXGI_FORMAT rtvFormat) :
+		ResourceBase(persistent),
+		rtvFormat(rtvFormat),
+		uavFormat(uavFormat),
 		allSRVIndex(makeShared<uint32_t>()),
 		srvMipIndices(makeShared<std::vector<uint32_t>>()),
 		srvMipGPUHandles(makeShared<std::vector<D3D12_GPU_DESCRIPTOR_HANDLE>>()),
@@ -17,7 +24,9 @@ namespace Gear::Resource
 	{
 		//创建SRV、UAV
 		{
-			setNumCBVSRVUAVDescriptors(1 + texture->getMipLevels() + static_cast<uint32_t>(uavFormat != FMT::UNKNOWN) * texture->getMipLevels());
+			setNumCBVSRVUAVDescriptors(1 + texture->getMipLevels() +
+			                           static_cast<uint32_t>(uavFormat != FMT::UNKNOWN) *
+			                               texture->getMipLevels());
 
 			D3D12Core::DescriptorHandle descriptorHandle = allocCBVSRVUAVDescriptors();
 
@@ -78,7 +87,8 @@ namespace Gear::Resource
 					}
 				}
 
-				GraphicsDevice::get()->CreateShaderResourceView(texture->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
+				GraphicsDevice::get()->CreateShaderResourceView(
+					texture->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
 
 				descriptorHandle.move();
 			}
@@ -148,7 +158,8 @@ namespace Gear::Resource
 						}
 					}
 
-					GraphicsDevice::get()->CreateShaderResourceView(texture->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
+					GraphicsDevice::get()->CreateShaderResourceView(
+						texture->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
 
 					descriptorHandle.move();
 				}
@@ -160,7 +171,9 @@ namespace Gear::Resource
 
 				if (persistent)
 				{
-					nonShaderVisibleHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(texture->getMipLevels());
+					nonShaderVisibleHandle =
+						LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(
+							texture->getMipLevels());
 				}
 
 				(*uavMipIndices).resize(texture->getMipLevels());
@@ -192,12 +205,17 @@ namespace Gear::Resource
 						desc.Texture2D.PlaneSlice = 0;
 					}
 
-					GraphicsDevice::get()->CreateUnorderedAccessView(texture->getResource(), nullptr, &desc, descriptorHandle.getCurrentCPUHandle());
+					GraphicsDevice::get()->CreateUnorderedAccessView(
+						texture->getResource(), nullptr, &desc, descriptorHandle.getCurrentCPUHandle());
 
 					if (persistent)
 					{
 						//同一时间在非着色器可见的资源描述符堆创建UAV
-						GraphicsDevice::get()->CreateUnorderedAccessView(texture->getResource(), nullptr, &desc, nonShaderVisibleHandle.getCurrentCPUHandle());
+						GraphicsDevice::get()->CreateUnorderedAccessView(
+							texture->getResource(),
+							nullptr,
+							&desc,
+							nonShaderVisibleHandle.getCurrentCPUHandle());
 
 						(*viewGPUHandles)[i] = descriptorHandle.getCurrentGPUHandle();
 
@@ -222,11 +240,13 @@ namespace Gear::Resource
 
 			if (persistent)
 			{
-				descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(texture->getMipLevels());
+				descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(
+					texture->getMipLevels());
 			}
 			else
 			{
-				descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocDynamicDescriptor(texture->getMipLevels());
+				descriptorHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocDynamicDescriptor(
+					texture->getMipLevels());
 			}
 
 			(*rtvMipHandles).resize(texture->getMipLevels());
@@ -254,7 +274,8 @@ namespace Gear::Resource
 					desc.Texture2D.PlaneSlice = 0;
 				}
 
-				GraphicsDevice::get()->CreateRenderTargetView(texture->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
+				GraphicsDevice::get()->CreateRenderTargetView(
+					texture->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
 
 				descriptorHandle.move();
 			}
@@ -282,28 +303,22 @@ namespace Gear::Resource
 
 	ShaderResourceDesc RenderTextureView::getAllSRVIndex() const
 	{
-		const ShaderResourceDesc desc = {
-		.type = ShaderResourceDesc::TEXTURE,
-		.state = ShaderResourceDesc::SRV,
-		.resourceIndex = allSRVIndex.get(),
-		.textureDesc = {
-				.texture = texture.get(),
-				.mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS
-		} };
+		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::TEXTURE,
+			                              .state = ShaderResourceDesc::SRV,
+			                              .resourceIndex = allSRVIndex.get(),
+			                              .textureDesc = {
+											  .texture = texture.get(),
+											  .mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS } };
 
 		return desc;
 	}
 
 	ShaderResourceDesc RenderTextureView::getSRVMipIndex(const uint32_t mipSlice) const
 	{
-		const ShaderResourceDesc desc = {
-		.type = ShaderResourceDesc::TEXTURE,
-		.state = ShaderResourceDesc::SRV,
-		.resourceIndex = &(*srvMipIndices)[mipSlice],
-		.textureDesc = {
-				.texture = texture.get(),
-				.mipSlice = mipSlice
-		} };
+		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::TEXTURE,
+			                              .state = ShaderResourceDesc::SRV,
+			                              .resourceIndex = &(*srvMipIndices)[mipSlice],
+			                              .textureDesc = { .texture = texture.get(), .mipSlice = mipSlice } };
 
 		return desc;
 	}
@@ -315,41 +330,30 @@ namespace Gear::Resource
 
 	ShaderResourceDesc RenderTextureView::getUAVMipIndex(const uint32_t mipSlice) const
 	{
-		const ShaderResourceDesc desc = {
-		.type = ShaderResourceDesc::TEXTURE,
-		.state = ShaderResourceDesc::UAV,
-		.resourceIndex = &(*uavMipIndices)[mipSlice],
-		.textureDesc = {
-				.texture = texture.get(),
-				.mipSlice = mipSlice
-		} };
+		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::TEXTURE,
+			                              .state = ShaderResourceDesc::UAV,
+			                              .resourceIndex = &(*uavMipIndices)[mipSlice],
+			                              .textureDesc = { .texture = texture.get(), .mipSlice = mipSlice } };
 
 		return desc;
 	}
 
 	RenderTargetDesc RenderTextureView::getRTVMip(const uint32_t mipSlice) const
 	{
-		const RenderTargetDesc desc = {
-		.texture = texture.get(),
-		.mipSlice = mipSlice,
-		.rtvHandle = (*rtvMipHandles)[mipSlice],
-		.rtvFormat = getRTVFormat()
-		};
+		const RenderTargetDesc desc = { .texture = texture.get(),
+			                            .mipSlice = mipSlice,
+			                            .rtvHandle = (*rtvMipHandles)[mipSlice],
+			                            .rtvFormat = getRTVFormat() };
 
 		return desc;
 	}
 
 	UAVClearDesc RenderTextureView::getUAVMipClearDesc(const uint32_t mipSlice) const
 	{
-		const UAVClearDesc desc = {
-		.type = UAVClearDesc::TEXTURE,
-		.textureDesc = {
-				.texture = texture.get(),
-				.mipSlice = mipSlice
-		},
-		.viewGPUHandle = (*viewGPUHandles)[mipSlice],
-		.viewCPUHandle = (*viewCPUHandles)[mipSlice]
-		};
+		const UAVClearDesc desc = { .type = UAVClearDesc::TEXTURE,
+			                        .textureDesc = { .texture = texture.get(), .mipSlice = mipSlice },
+			                        .viewGPUHandle = (*viewGPUHandles)[mipSlice],
+			                        .viewCPUHandle = (*viewCPUHandles)[mipSlice] };
 
 		return desc;
 	}
@@ -410,7 +414,7 @@ namespace Gear::Resource
 	{
 		const DirectX::XMUINT2 dimension = get2Dimension(mipSlice);
 
-		return DirectX::XMUINT3{ dimension.x,dimension.y,1u };
+		return DirectX::XMUINT3{ dimension.x, dimension.y, 1u };
 	}
 
 	DirectX::XMUINT2 RenderTextureView::get2Dimension(const uint32_t mipSlice) const
@@ -422,7 +426,7 @@ namespace Gear::Resource
 		}
 #endif // _DEBUG
 
-		return DirectX::XMUINT2{ texture->getWidth() >> mipSlice,texture->getHeight() >> mipSlice };
+		return DirectX::XMUINT2{ texture->getWidth() >> mipSlice, texture->getHeight() >> mipSlice };
 	}
 
 }

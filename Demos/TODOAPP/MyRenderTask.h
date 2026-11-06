@@ -1,11 +1,11 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
-#include<Gear/DevEssential.h>
+#include <Gear/Core/RenderTask.h>
+#include <Gear/DevEssential.h>
 
-#include<fstream>
-#include<filesystem>
-#include<sstream>
+#include <fstream>
+#include <filesystem>
+#include <sstream>
 
 // ============================================================
 // TodoTaskManager - 任务存储与 JSON 持久化
@@ -94,7 +94,10 @@ struct TodoTaskManager
 		save();
 	}
 
-	size_t size() const { return tasks.size(); }
+	size_t size() const
+	{
+		return tasks.size();
+	}
 };
 
 // ============================================================
@@ -105,7 +108,8 @@ class MyRenderTask : public RenderTask
 public:
 	MyRenderTask()
 	{
-		const File::Path taskJsonPath = File::RootPath(L"").parentPath().parentPath().parentPath() + L"Demos/TODOAPP/tasks.json";
+		const File::Path taskJsonPath =
+			File::RootPath(L"").parentPath().parentPath().parentPath() + L"Demos/TODOAPP/tasks.json";
 
 		LOGUSER() << "读取" << taskJsonPath;
 
@@ -146,12 +150,9 @@ private:
 		ImGui::SetNextWindowPos(viewport->WorkPos);
 		ImGui::SetNextWindowSize(viewport->WorkSize);
 
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar
-			| ImGuiWindowFlags_NoResize
-			| ImGuiWindowFlags_NoMove
-			| ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoBringToFrontOnFocus
-			| ImGuiWindowFlags_NoScrollbar;
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+		                               ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
+		                               ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoScrollbar;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -185,9 +186,11 @@ private:
 		static char inputBuffer[512] = "";
 
 		ImGui::PushItemWidth(-ImGui::GetFrameHeightWithSpacing() - 70.0f);
-		bool enterPressed = ImGui::InputTextWithHint("##TaskInput", "输入一项任务后按 Enter...",
-			inputBuffer, sizeof(inputBuffer),
-			ImGuiInputTextFlags_EnterReturnsTrue);
+		bool enterPressed = ImGui::InputTextWithHint("##TaskInput",
+		                                             "输入一项任务后按 Enter...",
+		                                             inputBuffer,
+		                                             sizeof(inputBuffer),
+		                                             ImGuiInputTextFlags_EnterReturnsTrue);
 		ImGui::PopItemWidth();
 
 		ImGui::SameLine();
@@ -203,7 +206,7 @@ private:
 				taskManager.addTask(text);
 			}
 			inputBuffer[0] = '\0';
-			ImGui::SetKeyboardFocusHere(-1);  // 保持焦点在输入框
+			ImGui::SetKeyboardFocusHere(-1); // 保持焦点在输入框
 		}
 	}
 
@@ -225,8 +228,8 @@ private:
 		{
 			size_t removeIndex = SIZE_MAX;
 
-			if (ImGui::BeginTable("##TaskTable", 2,
-				ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_NoPadInnerX))
+			if (ImGui::BeginTable(
+					"##TaskTable", 2, ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_NoPadInnerX))
 			{
 				ImGui::TableSetupColumn("##Text", ImGuiTableColumnFlags_WidthStretch);
 				ImGui::TableSetupColumn("##Btn", ImGuiTableColumnFlags_WidthFixed, 30.0f);

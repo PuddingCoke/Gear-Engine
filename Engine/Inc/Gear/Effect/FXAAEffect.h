@@ -3,17 +3,19 @@
 #ifndef _GEAR_EFFECT_FXAAEFFECT_H_
 #define _GEAR_EFFECT_FXAAEFFECT_H_
 
-#include"EffectBase.h"
+#include "EffectBase.h"
 
 namespace Gear::Effect
 {
 	CREATESAFETYPE(FXAAEffect);
 
-	class FXAAEffect :public EffectBase
+	class FXAAEffect : public EffectBase
 	{
 	public:
 
-		static FXAAEffectPtr create(ResourceManager& refResManager, const uint32_t width, const uint32_t height);
+		static FXAAEffectPtr create(ResourceManager& refResManager,
+		                            const uint32_t width,
+		                            const uint32_t height);
 
 		FXAAEffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height);
 
@@ -48,7 +50,6 @@ namespace Gear::Effect
 		ShaderPtr fxaaPS;
 
 		GraphicsStatePtr fxaaState;
-
 	};
 }
 

@@ -3,9 +3,9 @@
 #ifndef _GEAR_UTILS_FILE_H_
 #define _GEAR_UTILS_FILE_H_
 
-#include<string>
+#include <string>
 
-#include<vector>
+#include <vector>
 
 namespace Gear::Utils::File
 {
@@ -48,16 +48,15 @@ namespace Gear::Utils::File
 	private:
 
 		std::wstring pathStr;
-
 	};
 
-#define GEAR_DECLARE_PATH_CLASS(ClassName)				\
-	class ClassName: public Path						\
-	{													\
-	public:												\
-		ClassName() = delete;							\
-		ClassName(const std::wstring& subdirectory);	\
-		ClassName(const wchar_t* const subdirectory);	\
+#define GEAR_DECLARE_PATH_CLASS(ClassName) \
+	class ClassName : public Path \
+	{ \
+	public: \
+		ClassName() = delete; \
+		ClassName(const std::wstring& subdirectory); \
+		ClassName(const wchar_t* const subdirectory); \
 	}
 
 	GEAR_DECLARE_PATH_CLASS(EngineAssetsPath);

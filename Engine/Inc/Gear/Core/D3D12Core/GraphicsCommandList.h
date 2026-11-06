@@ -3,15 +3,15 @@
 #ifndef _GEAR_CORE_D3D12CORE_GRAPHICSCOMMANDLIST_H_
 #define _GEAR_CORE_D3D12CORE_GRAPHICSCOMMANDLIST_H_
 
-#include"CommandList.h"
+#include "CommandList.h"
 
-#include<Gear/Core/D3D12Resource/UploadHeap.h>
+#include <Gear/Core/D3D12Resource/UploadHeap.h>
 
 namespace Gear::Core::D3D12Core
 {
 	CREATESAFETYPE(GraphicsCommandList);
 
-	class GraphicsCommandList :public CommandList
+	class GraphicsCommandList : public CommandList
 	{
 	public:
 
@@ -19,7 +19,8 @@ namespace Gear::Core::D3D12Core
 
 		~GraphicsCommandList() = default;
 
-		void resourceBarrier(const uint32_t numBarriers, const D3D12_RESOURCE_BARRIER* const pBarriers) const override;
+		void resourceBarrier(const uint32_t numBarriers,
+		                     const D3D12_RESOURCE_BARRIER* const pBarriers) const override;
 
 		void open() override;
 
@@ -27,7 +28,8 @@ namespace Gear::Core::D3D12Core
 
 		ID3D12GraphicsCommandList6* get() const;
 
-		void setDescriptorHeap(ID3D12DescriptorHeap* const resourceHeap, ID3D12DescriptorHeap* const samplerHeap);
+		void setDescriptorHeap(ID3D12DescriptorHeap* const resourceHeap,
+		                       ID3D12DescriptorHeap* const samplerHeap);
 
 		void setPipelineState(ID3D12PipelineState* const pipelineState) const;
 
@@ -35,31 +37,61 @@ namespace Gear::Core::D3D12Core
 
 		void setComputeRootSignature(ID3D12RootSignature* const rootSignature) const;
 
-		void setGraphicsRootConstantBuffer(const uint32_t rootParameterIndex, const D3D12_GPU_VIRTUAL_ADDRESS bufferLocation) const;
+		void setGraphicsRootConstantBuffer(const uint32_t rootParameterIndex,
+		                                   const D3D12_GPU_VIRTUAL_ADDRESS bufferLocation) const;
 
-		void setComputeRootConstantBuffer(const uint32_t rootParameterIndex, const D3D12_GPU_VIRTUAL_ADDRESS bufferLocation) const;
+		void setComputeRootConstantBuffer(const uint32_t rootParameterIndex,
+		                                  const D3D12_GPU_VIRTUAL_ADDRESS bufferLocation) const;
 
-		void setGraphicsRootConstants(const uint32_t rootParameterIndex, const uint32_t num32BitValuesToSet, const void* const pSrcData, const uint32_t destOffsetIn32BitValues) const;
+		void setGraphicsRootConstants(const uint32_t rootParameterIndex,
+		                              const uint32_t num32BitValuesToSet,
+		                              const void* const pSrcData,
+		                              const uint32_t destOffsetIn32BitValues) const;
 
-		void setComputeRootConstants(const uint32_t rootParameterIndex, const uint32_t num32BitValuesToSet, const void* const pSrcData, const uint32_t destOffsetIn32BitValues) const;
+		void setComputeRootConstants(const uint32_t rootParameterIndex,
+		                             const uint32_t num32BitValuesToSet,
+		                             const void* const pSrcData,
+		                             const uint32_t destOffsetIn32BitValues) const;
 
-		void drawInstanced(const uint32_t vertexCountPerInstance, const uint32_t instanceCount, const uint32_t startVertexLocation, const uint32_t startInstanceLocation) const;
+		void drawInstanced(const uint32_t vertexCountPerInstance,
+		                   const uint32_t instanceCount,
+		                   const uint32_t startVertexLocation,
+		                   const uint32_t startInstanceLocation) const;
 
-		void drawIndexedInstanced(const uint32_t indexCountPerInstance, const uint32_t instanceCount, const uint32_t startIndexLocation, const int32_t baseVertexLocation, const uint32_t startInstanceLocation) const;
+		void drawIndexedInstanced(const uint32_t indexCountPerInstance,
+		                          const uint32_t instanceCount,
+		                          const uint32_t startIndexLocation,
+		                          const int32_t baseVertexLocation,
+		                          const uint32_t startInstanceLocation) const;
 
-		void dispatch(const uint32_t threadGroupCountX, const uint32_t threadGroupCountY, const uint32_t threadGroupCountZ) const;
+		void dispatch(const uint32_t threadGroupCountX,
+		              const uint32_t threadGroupCountY,
+		              const uint32_t threadGroupCountZ) const;
 
-		void setRenderTargets(const uint32_t numRenderTargetDescriptors, const D3D12_CPU_DESCRIPTOR_HANDLE* const pRenderTargetDescriptors, bool singleHandleToDescriptorRange, const D3D12_CPU_DESCRIPTOR_HANDLE* const pDepthStencilDescriptor) const;
+		void setRenderTargets(const uint32_t numRenderTargetDescriptors,
+		                      const D3D12_CPU_DESCRIPTOR_HANDLE* const pRenderTargetDescriptors,
+		                      bool singleHandleToDescriptorRange,
+		                      const D3D12_CPU_DESCRIPTOR_HANDLE* const pDepthStencilDescriptor) const;
 
 		void setDefRenderTarget() const;
 
 		void clearDefRenderTarget(const float clearValue[4]) const;
 
-		void clearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE renderTargetView, const float colorRGBA[4], const uint32_t numRects, const D3D12_RECT* pRects) const;
+		void clearRenderTarget(const D3D12_CPU_DESCRIPTOR_HANDLE renderTargetView,
+		                       const float colorRGBA[4],
+		                       const uint32_t numRects,
+		                       const D3D12_RECT* pRects) const;
 
-		void clearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView, const D3D12_CLEAR_FLAGS clearFlags, const float depth, const uint8_t stencil, const uint32_t numRects, const D3D12_RECT* const pRects) const;
+		void clearDepthStencil(const D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView,
+		                       const D3D12_CLEAR_FLAGS clearFlags,
+		                       const float depth,
+		                       const uint8_t stencil,
+		                       const uint32_t numRects,
+		                       const D3D12_RECT* const pRects) const;
 
-		void setVertexBuffers(const uint32_t startSlot, const uint32_t numViews, const D3D12_VERTEX_BUFFER_VIEW* const pViews) const;
+		void setVertexBuffers(const uint32_t startSlot,
+		                      const uint32_t numViews,
+		                      const D3D12_VERTEX_BUFFER_VIEW* const pViews) const;
 
 		void setIndexBuffer(const D3D12_INDEX_BUFFER_VIEW* const pView) const;
 
@@ -69,19 +101,40 @@ namespace Gear::Core::D3D12Core
 
 		void setScissorRects(const uint32_t numRects, const D3D12_RECT* const pRects) const;
 
-		void clearUnorderedAccessFloat(const D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandleInCurrentHeap, const D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle, ID3D12Resource* const pResource, const float values[4], const uint32_t numRects, const D3D12_RECT* const pRects) const;
+		void clearUnorderedAccessFloat(const D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandleInCurrentHeap,
+		                               const D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle,
+		                               ID3D12Resource* const pResource,
+		                               const float values[4],
+		                               const uint32_t numRects,
+		                               const D3D12_RECT* const pRects) const;
 
-		void clearUnorderedAccessUint(const D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandleInCurrentHeap, const D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle, ID3D12Resource* const pResource, const uint32_t values[4], const uint32_t numRects, const D3D12_RECT* const pRects) const;
+		void clearUnorderedAccessUint(const D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandleInCurrentHeap,
+		                              const D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle,
+		                              ID3D12Resource* const pResource,
+		                              const uint32_t values[4],
+		                              const uint32_t numRects,
+		                              const D3D12_RECT* const pRects) const;
 
-		void copyBufferRegion(D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, D3D12Resource::UploadHeap* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes);
+		void copyBufferRegion(D3D12Resource::Buffer* const dstBuffer,
+		                      const uint64_t dstOffset,
+		                      D3D12Resource::UploadHeap* srcBuffer,
+		                      const uint64_t srcOffset,
+		                      const uint64_t numBytes);
 
-		void copyBufferRegion(D3D12Resource::Buffer* const dstBuffer, const uint64_t dstOffset, D3D12Resource::Buffer* srcBuffer, const uint64_t srcOffset, const uint64_t numBytes);
+		void copyBufferRegion(D3D12Resource::Buffer* const dstBuffer,
+		                      const uint64_t dstOffset,
+		                      D3D12Resource::Buffer* srcBuffer,
+		                      const uint64_t srcOffset,
+		                      const uint64_t numBytes);
 
 		void copyResource(D3D12Resource::Buffer* const dstBuffer, D3D12Resource::UploadHeap* const srcBuffer);
 
 		void copyResource(D3D12Resource::Buffer* const dstBuffer, D3D12Resource::Buffer* const srcBuffer);
 
-		void copyTextureRegion(D3D12Resource::Texture* const dstTexture, const uint32_t dstSubresource, D3D12Resource::Texture* const srcTexture, const uint32_t srcSubresource);
+		void copyTextureRegion(D3D12Resource::Texture* const dstTexture,
+		                       const uint32_t dstSubresource,
+		                       D3D12Resource::Texture* const srcTexture,
+		                       const uint32_t srcSubresource);
 
 	private:
 
@@ -89,7 +142,6 @@ namespace Gear::Core::D3D12Core
 		ID3D12DescriptorHeap* currentDescriptorHeaps[2];
 
 		ComPtr<ID3D12GraphicsCommandList6> commandList;
-
 	};
 }
 

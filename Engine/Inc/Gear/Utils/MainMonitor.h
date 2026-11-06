@@ -3,7 +3,7 @@
 #ifndef _GEAR_UTILS_MAINMONITOR_H_
 #define _GEAR_UTILS_MAINMONITOR_H_
 
-#include<cstdint>
+#include <cstdint>
 
 namespace Gear::Utils::MainMonitor
 {

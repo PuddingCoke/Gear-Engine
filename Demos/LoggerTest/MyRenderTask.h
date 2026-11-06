@@ -1,10 +1,10 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
@@ -26,17 +26,23 @@ public:
 
 		LOGUSER() << "单线程测试";
 
-		LOGUSER() << "32位有符号整数测试" << LogIntegerMode::HEX << 12895 << -123456 << INT_MAX << INT_MIN << LogIntegerMode::DEC << 12895 << -123456 << INT_MAX << INT_MIN;
+		LOGUSER() << "32位有符号整数测试" << LogIntegerMode::HEX << 12895 << -123456 << INT_MAX << INT_MIN
+				  << LogIntegerMode::DEC << 12895 << -123456 << INT_MAX << INT_MIN;
 
-		LOGUSER() << "32位无符号整数测试" << LogIntegerMode::HEX << 13689u << UINT_MAX << LogIntegerMode::DEC << 13689u << UINT_MAX;
+		LOGUSER() << "32位无符号整数测试" << LogIntegerMode::HEX << 13689u << UINT_MAX << LogIntegerMode::DEC
+				  << 13689u << UINT_MAX;
 
-		LOGUSER() << "64位有符号整数测试" << LogIntegerMode::HEX << 1222222ll << -188888ll << INT64_MAX << INT64_MIN << LogIntegerMode::DEC << 1222222ll << -188888ll << INT64_MAX << INT64_MIN;
+		LOGUSER() << "64位有符号整数测试" << LogIntegerMode::HEX << 1222222ll << -188888ll << INT64_MAX
+				  << INT64_MIN << LogIntegerMode::DEC << 1222222ll << -188888ll << INT64_MAX << INT64_MIN;
 
-		LOGUSER() << "64位无符号整数测试" << LogIntegerMode::HEX << 13579ull << UINT64_MAX << LogIntegerMode::DEC << 13579ull << UINT64_MAX;
+		LOGUSER() << "64位无符号整数测试" << LogIntegerMode::HEX << 13579ull << UINT64_MAX
+				  << LogIntegerMode::DEC << 13579ull << UINT64_MAX;
 
-		LOGUSER() << "32位浮点测试" << LogFloatPrecision(4) << 125.6f << FLT_MAX << LogFloatPrecision(2) << 125.6f << FLT_MAX;
+		LOGUSER() << "32位浮点测试" << LogFloatPrecision(4) << 125.6f << FLT_MAX << LogFloatPrecision(2)
+				  << 125.6f << FLT_MAX;
 
-		LOGUSER() << "64位浮点测试" << LogFloatPrecision(6) << 200.123 << DBL_MAX << LogFloatPrecision(5) << 200.123 << DBL_MAX;
+		LOGUSER() << "64位浮点测试" << LogFloatPrecision(6) << 200.123 << DBL_MAX << LogFloatPrecision(5)
+				  << 200.123 << DBL_MAX;
 
 		LOGUSER() << "多线程测试";
 
@@ -49,12 +55,12 @@ public:
 		for (size_t i = 0; i < threadCount; ++i)
 		{
 			workers.emplace_back([i]()
+			{
+				for (int j = 0; j < 11; j++)
 				{
-					for (int j = 0; j < 11; j++)
-					{
-						LOGUSER() << "子线程" << i << "值" << j;
-					}
-				});
+					LOGUSER() << "子线程" << i << "值" << j;
+				}
+			});
 		}
 
 		for (auto& t : workers)
@@ -80,5 +86,4 @@ protected:
 	}
 
 private:
-
 };

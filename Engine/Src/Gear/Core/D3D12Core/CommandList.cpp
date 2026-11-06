@@ -1,11 +1,10 @@
-#include<Gear/Core/D3D12Core/CommandList.h>
+#include <Gear/Core/D3D12Core/CommandList.h>
 
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
 namespace Gear::Core::D3D12Core
 {
-	CommandList::CommandList(const D3D12_COMMAND_LIST_TYPE type) :
-		commandList(nullptr), commandListType(type)
+	CommandList::CommandList(const D3D12_COMMAND_LIST_TYPE type) : commandList(nullptr), commandListType(type)
 	{
 		allocators = makeUnique<ComPtr<ID3D12CommandAllocator>[]>(Graphics::getFrameBufferCount());
 
@@ -54,4 +53,3 @@ namespace Gear::Core::D3D12Core
 		return allocators[Graphics::getFrameIndex()].Get();
 	}
 }
-

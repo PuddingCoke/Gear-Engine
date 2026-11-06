@@ -1,37 +1,43 @@
 #pragma once
 
-#include<Gear/Core/RenderTask.h>
+#include <Gear/Core/RenderTask.h>
 
-#include<Gear/DevEssential.h>
+#include <Gear/DevEssential.h>
 
-class MyRenderTask :public RenderTask
+class MyRenderTask : public RenderTask
 {
 public:
 
 	MyRenderTask() :
 		accumulateShader(Shader::create(L"AccumulateShader.cso")),
-		accumulatedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, false)),
-		accumulateParam{ 0,0.f,8.f },
+		accumulatedTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(),
+	                                                              Graphics::getHeight(),
+	                                                              FMT::RGBA16F,
+	                                                              1,
+	                                                              1,
+	                                                              false,
+	                                                              false)),
+		accumulateParam{ 0, 0.f, 8.f },
 		POWER(8.f)
 	{
 		accumulateState = PipelineStateBuilder()
-			.setDefaultFullScreenState()
-			.setBlendState(PipelineStateHelper::blendDefault)
-			.setPS(*accumulateShader)
-			.build();
+		                      .setDefaultFullScreenState()
+		                      .setBlendState(PipelineStateHelper::blendDefault)
+		                      .setPS(*accumulateShader)
+		                      .build();
 
 		Mouse::addMoveEvent([this](const uint32_t)
-			{
-				if (Mouse::getLeftDown())
-				{
-					accumulateParam.frameIndex = 0;
-				}
-			});
-
-		Mouse::addScrollEvent([this](const uint32_t)
+		{
+			if (Mouse::getLeftDown())
 			{
 				accumulateParam.frameIndex = 0;
-			});
+			}
+		});
+
+		Mouse::addScrollEvent([this](const uint32_t)
+		{
+			accumulateParam.frameIndex = 0;
+		});
 	}
 
 	void imGuiCall() override
@@ -68,9 +74,7 @@ protected:
 
 		context->setPipelineState(*accumulateState);
 
-		SETCONSTS({
-		context->setPSConstants(accumulateParam, co);
-			});
+		SETCONSTS({ context->setPSConstants(accumulateParam, co); });
 
 		context->setRenderTargets({ accumulatedTexture->getRTVMip(0) }, {});
 
@@ -95,5 +99,4 @@ private:
 	} accumulateParam;
 
 	float POWER;
-
 };

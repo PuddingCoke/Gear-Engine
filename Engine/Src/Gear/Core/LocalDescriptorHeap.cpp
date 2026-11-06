@@ -1,6 +1,6 @@
-#include<Gear/Core/LocalDescriptorHeap.h>
+#include <Gear/Core/LocalDescriptorHeap.h>
 
-#include<Gear/Core/Internal/LocalDescriptorHeapInternal.h>
+#include <Gear/Core/Internal/LocalDescriptorHeapInternal.h>
 
 /// <summary>
 /// 之前写多线程日志系统的时候学习了下thread_local
@@ -22,11 +22,23 @@ namespace Gear::Core::LocalDescriptorHeap
 
 	LocalDescriptorHeapImpl::LocalDescriptorHeapImpl()
 	{
-		stagingResourceHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numStagingResourceDescriptors + Internal::numStaticSRVDescriptors, Internal::numStagingResourceDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+		stagingResourceHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numStagingResourceDescriptors +
+		                                                                Internal::numStaticSRVDescriptors,
+		                                                            Internal::numStagingResourceDescriptors,
+		                                                            D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+		                                                            D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
-		renderTargetHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numRTVDescriptors, Internal::numRTVDescriptors - Internal::numStaticRTVDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+		renderTargetHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numRTVDescriptors,
+		                                                         Internal::numRTVDescriptors -
+		                                                             Internal::numStaticRTVDescriptors,
+		                                                         D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+		                                                         D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
-		depthStencilHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numRTVDescriptors, Internal::numRTVDescriptors - Internal::numStaticRTVDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+		depthStencilHeap = makeUnique<D3D12Core::DescriptorHeap>(Internal::numRTVDescriptors,
+		                                                         Internal::numRTVDescriptors -
+		                                                             Internal::numStaticRTVDescriptors,
+		                                                         D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
+		                                                         D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
 		LOGSUCCESS() << "创建" << LogColor::brightMagenta << TOSTRING(LocalDescriptorHeap);
 	}

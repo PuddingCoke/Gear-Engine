@@ -10,7 +10,17 @@ namespace Gear::Core::D3D12Core::DXCCompiler::Internal
 	void release();
 
 	//Token（入场券、令牌）
-	struct InitializeToken {  InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken()
+		{
+			initialize();
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 
 }
 

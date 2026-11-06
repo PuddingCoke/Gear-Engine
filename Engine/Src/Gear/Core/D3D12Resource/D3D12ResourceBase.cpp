@@ -1,4 +1,4 @@
-#include<Gear/Core/D3D12Resource/D3D12ResourceBase.h>
+#include <Gear/Core/D3D12Resource/D3D12ResourceBase.h>
 
 namespace Gear::Core::D3D12Resource
 {
@@ -16,22 +16,38 @@ namespace Gear::Core::D3D12Resource
 	}
 
 	D3D12ResourceBase::D3D12ResourceBase(const ComPtr<ID3D12Resource>& resource, const bool stateTracking) :
-		resource(resource), stateTracking(makeShared<bool>(stateTracking)), sharedResource(makeShared<bool>(false)),
-		inReferredList(false), inTrackingList(false), inPendingList(false)
+		resource(resource),
+		stateTracking(makeShared<bool>(stateTracking)),
+		sharedResource(makeShared<bool>(false)),
+		inReferredList(false),
+		inTrackingList(false),
+		inPendingList(false)
 	{
 	}
 
-	D3D12ResourceBase::D3D12ResourceBase(const D3D12_HEAP_PROPERTIES properties, const D3D12_HEAP_FLAGS flags, const D3D12_RESOURCE_DESC desc,
-		const bool stateTracking, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValues) :
-		stateTracking(makeShared<bool>(stateTracking)), sharedResource(makeShared<bool>(false)),
-		inReferredList(false), inTrackingList(false), inPendingList(false)
+	D3D12ResourceBase::D3D12ResourceBase(const D3D12_HEAP_PROPERTIES properties,
+	                                     const D3D12_HEAP_FLAGS flags,
+	                                     const D3D12_RESOURCE_DESC desc,
+	                                     const bool stateTracking,
+	                                     const D3D12_RESOURCE_STATES initialState,
+	                                     const D3D12_CLEAR_VALUE* clearValues) :
+		stateTracking(makeShared<bool>(stateTracking)),
+		sharedResource(makeShared<bool>(false)),
+		inReferredList(false),
+		inTrackingList(false),
+		inPendingList(false)
 	{
-		GraphicsDevice::get()->CreateCommittedResource(&properties, flags, &desc, initialState, clearValues, IID_PPV_ARGS(&resource));
+		GraphicsDevice::get()->CreateCommittedResource(
+			&properties, flags, &desc, initialState, clearValues, IID_PPV_ARGS(&resource));
 	}
 
 	D3D12ResourceBase::D3D12ResourceBase(D3D12ResourceBase& res) :
-		resource(res.resource), stateTracking(res.stateTracking), sharedResource(res.sharedResource),
-		inReferredList(false), inTrackingList(false), inPendingList(false)
+		resource(res.resource),
+		stateTracking(res.stateTracking),
+		sharedResource(res.sharedResource),
+		inReferredList(false),
+		inTrackingList(false),
+		inPendingList(false)
 	{
 		*sharedResource = true;
 	}

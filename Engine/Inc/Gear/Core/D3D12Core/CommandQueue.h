@@ -3,11 +3,11 @@
 #ifndef _GEAR_CORE_D3D12CORE_COMMANDQUEUE_H_
 #define _GEAR_CORE_D3D12CORE_COMMANDQUEUE_H_
 
-#include<Gear/Utils/StaticVector.h>
+#include <Gear/Utils/StaticVector.h>
 
-#include"CommandList.h"
+#include "CommandList.h"
 
-#include"Fence.h"
+#include "Fence.h"
 
 namespace Gear::Core::D3D12Core
 {
@@ -74,7 +74,6 @@ namespace Gear::Core::D3D12Core
 		CommandList* prepareCommandList;
 
 		CommandList* lastUsableCommandList;
-
 	};
 }
 

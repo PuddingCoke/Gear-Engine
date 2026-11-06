@@ -1,14 +1,18 @@
-#include<Gear/Core/D3D12Resource/UploadHeap.h>
+#include <Gear/Core/D3D12Resource/UploadHeap.h>
 
 namespace Gear::Core::D3D12Resource
 {
 	UploadHeap::UploadHeap(const uint64_t size, const D3D12_HEAP_FLAGS flags) :
-		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), flags, CD3DX12_RESOURCE_DESC::Buffer(size), false, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr)
+		D3D12ResourceBase(CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+	                      flags,
+	                      CD3DX12_RESOURCE_DESC::Buffer(size),
+	                      false,
+	                      D3D12_RESOURCE_STATE_GENERIC_READ,
+	                      nullptr)
 	{
 	}
 
-	UploadHeap::UploadHeap(UploadHeap& heap) :
-		D3D12ResourceBase(heap)
+	UploadHeap::UploadHeap(UploadHeap& heap) : D3D12ResourceBase(heap)
 	{
 	}
 

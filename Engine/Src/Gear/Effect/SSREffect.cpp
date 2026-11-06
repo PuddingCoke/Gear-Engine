@@ -1,35 +1,45 @@
-#include<Gear/Effect/SSREffect.h>
+#include <Gear/Effect/SSREffect.h>
 
-#include<CompiledShaders/SSR/HiZCopyCS.h>
+#include <CompiledShaders/SSR/HiZCopyCS.h>
 
-#include<CompiledShaders/SSR/HiZCreateCS.h>
+#include <CompiledShaders/SSR/HiZCreateCS.h>
 
-#include<CompiledShaders/SSR/HiZProcessPS.h>
+#include <CompiledShaders/SSR/HiZProcessPS.h>
 
 namespace Gear::Effect
 {
-	SSREffectPtr SSREffect::create(ResourceManager& refResManager, const uint32_t width, const uint32_t height)
+	SSREffectPtr SSREffect::create(ResourceManager& refResManager,
+	                               const uint32_t width,
+	                               const uint32_t height)
 	{
 		return makeUnique<SSREffect>(refResManager, width, height);
 	}
 
 	SSREffect::SSREffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height) :
 		EffectBase(refResManager, width, height, outputTextureFormat),
-		hiZTexture(ResourceManager::createComputeTexture(width, height, hiZTextureFormat, 1, hiZMiplvel, false, true))
+		hiZTexture(ResourceManager::createComputeTexture(width,
+	                                                     height,
+	                                                     hiZTextureFormat,
+	                                                     1,
+	                                                     hiZMiplvel,
+	                                                     false,
+	                                                     true))
 	{
 		hiZProcessPS = Shader::create(g_HiZProcessPSBytes, sizeof(g_HiZProcessPSBytes));
 
-		hiZCopyState = PipelineStateBuilder::build(Shader::create(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes)));
+		hiZCopyState =
+			PipelineStateBuilder::build(Shader::create(g_HiZCopyCSBytes, sizeof(g_HiZCopyCSBytes)));
 
-		hiZCreateState = PipelineStateBuilder::build(Shader::create(g_HiZCreateCSBytes, sizeof(g_HiZCreateCSBytes)));
+		hiZCreateState =
+			PipelineStateBuilder::build(Shader::create(g_HiZCreateCSBytes, sizeof(g_HiZCreateCSBytes)));
 
 		hiZProcessState = PipelineStateBuilder()
-			.setBlendState(PipelineStateHelper::blendReplace)
-			.setRasterizerState(PipelineStateHelper::rasterCullNone)
-			.setDepthStencilState(PipelineStateHelper::depthCompareNone)
-			.setVS(*GlobalShader::getFullScreenVS())
-			.setPS(*hiZProcessPS)
-			.build();
+		                      .setBlendState(PipelineStateHelper::blendReplace)
+		                      .setRasterizerState(PipelineStateHelper::rasterCullNone)
+		                      .setDepthStencilState(PipelineStateHelper::depthCompareNone)
+		                      .setVS(*GlobalShader::getFullScreenVS())
+		                      .setPS(*hiZProcessPS)
+		                      .build();
 
 		hiZTexture->getTexture()->setName(L"Hi-Z Accelerate Texture");
 
@@ -42,16 +52,17 @@ namespace Gear::Effect
 
 	void SSREffect::imGuiCall()
 	{
-
 	}
 
-	RenderTextureView* SSREffect::process(DepthTextureView& depthTexture, RenderTextureView& gPosition, RenderTextureView& gNormal)
+	RenderTextureView* SSREffect::process(DepthTextureView& depthTexture,
+	                                      RenderTextureView& gPosition,
+	                                      RenderTextureView& gNormal)
 	{
 		context->setPipelineState(*hiZCopyState);
 
 		SETCONSTS({
-		context->setCSConstants({ depthTexture.getDepthMipIndex(0),hiZTexture->getUAVMipIndex(0) }, co);
-			});
+			context->setCSConstants({ depthTexture.getDepthMipIndex(0), hiZTexture->getUAVMipIndex(0) }, co);
+		});
 
 		context->dispatchDim(hiZTexture->get3Dimension());
 
@@ -60,9 +71,9 @@ namespace Gear::Effect
 		for (uint32_t i = 0; i < hiZMiplvel - 1; i++)
 		{
 			SETCONSTS({
-			context->setCSConstants({ hiZTexture->getSRVMipIndex(i),hiZTexture->getUAVMipIndex(i + 1) }, co);
-				});
-
+				context->setCSConstants({ hiZTexture->getSRVMipIndex(i), hiZTexture->getUAVMipIndex(i + 1) },
+				                        co);
+			});
 
 			context->dispatchDim(hiZTexture->get3Dimension(i + 1u));
 		}
@@ -78,10 +89,11 @@ namespace Gear::Effect
 		int maxLevel = static_cast<int>(hiZTexture->getTexture()->getMipLevels() - 1u);
 
 		SETCONSTS({
-		context->setPSConstants({ gPosition.getAllSRVIndex(),gNormal.getAllSRVIndex(),hiZTexture->getAllSRVIndex() }, co);
+			context->setPSConstants(
+				{ gPosition.getAllSRVIndex(), gNormal.getAllSRVIndex(), hiZTexture->getAllSRVIndex() }, co);
 
-		context->setPSConstants(1, &maxLevel, co);
-			});
+			context->setPSConstants(1, &maxLevel, co);
+		});
 
 		context->drawQuad();
 

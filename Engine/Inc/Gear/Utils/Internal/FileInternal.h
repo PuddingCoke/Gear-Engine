@@ -9,7 +9,17 @@ namespace Gear::Utils::File::Internal
 
 	void release();
 
-	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken()
+		{
+			initialize();
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 }
 
 #endif // !_GEAR_UTILS_FILE_INTERNAL_H_

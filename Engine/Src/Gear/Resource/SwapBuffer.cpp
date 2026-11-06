@@ -1,8 +1,9 @@
-#include<Gear/Resource/SwapBuffer.h>
+#include <Gear/Resource/SwapBuffer.h>
 
 namespace Gear::Resource
 {
-	SwapBuffer::SwapBuffer(const std::function<BufferViewPtr(void)>& readBufferFunc, const std::function<BufferViewPtr(void)>& writeBufferFunc) :
+	SwapBuffer::SwapBuffer(const std::function<BufferViewPtr(void)>& readBufferFunc,
+	                       const std::function<BufferViewPtr(void)>& writeBufferFunc) :
 		SwappableBase(readBufferFunc, writeBufferFunc)
 	{
 	}

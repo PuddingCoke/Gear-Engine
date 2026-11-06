@@ -3,15 +3,15 @@
 #ifndef _GEAR_INPUT_EVENT_H_
 #define _GEAR_INPUT_EVENT_H_
 
-#include<unordered_map>
+#include <unordered_map>
 
-#include<functional>
+#include <functional>
 
-#include<cstdint>
+#include <cstdint>
 
-#include<mutex>
+#include <mutex>
 
-#include<atomic>
+#include <atomic>
 
 namespace Gear::Input
 {
@@ -42,7 +42,6 @@ namespace Gear::Input
 		std::mutex containerMutex;
 
 		uint32_t triggerCount;
-
 	};
 }
 

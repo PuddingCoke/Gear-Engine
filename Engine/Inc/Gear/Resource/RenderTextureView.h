@@ -3,9 +3,9 @@
 #ifndef _GEAR_RESOURCE_RENDERTEXTUREVIEW_H_
 #define _GEAR_RESOURCE_RENDERTEXTUREVIEW_H_
 
-#include<Gear/Core/D3D12Resource/Texture.h>
+#include <Gear/Core/D3D12Resource/Texture.h>
 
-#include"ResourceBase.h"
+#include "ResourceBase.h"
 
 namespace Gear::Resource
 {
@@ -17,13 +17,18 @@ namespace Gear::Resource
 	//texture2darray
 	//texture2d
 	//SRV/RTV/UAV
-	class RenderTextureView :public ResourceBase
+	class RenderTextureView : public ResourceBase
 	{
 	public:
 
 		RenderTextureView() = delete;
 
-		RenderTextureView(D3D12Resource::TexturePtr texturePtr, const bool isTextureCube, const bool persistent, const DXGI_FORMAT srvFormat, const DXGI_FORMAT uavFormat, const DXGI_FORMAT rtvFormat);
+		RenderTextureView(D3D12Resource::TexturePtr texturePtr,
+		                  const bool isTextureCube,
+		                  const bool persistent,
+		                  const DXGI_FORMAT srvFormat,
+		                  const DXGI_FORMAT uavFormat,
+		                  const DXGI_FORMAT rtvFormat);
 
 		RenderTextureView(const RenderTextureView&);
 

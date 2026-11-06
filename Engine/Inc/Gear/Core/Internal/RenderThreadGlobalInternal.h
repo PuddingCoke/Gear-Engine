@@ -9,7 +9,17 @@ namespace Gear::Core::RenderThreadGlobal::Internal
 
 	void release();
 
-	struct InitializeToken { InitializeToken() { initialize(); } ~InitializeToken() { release(); } };
+	struct InitializeToken
+	{
+		InitializeToken()
+		{
+			initialize();
+		}
+		~InitializeToken()
+		{
+			release();
+		}
+	};
 }
 
 #endif // !_GEAR_CORE_RENDERTHREADGLOBAL_INTERNAL_H_

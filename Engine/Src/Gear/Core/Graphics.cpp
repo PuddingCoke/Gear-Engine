@@ -1,14 +1,13 @@
-#include<Gear/Core/Graphics.h>
+#include <Gear/Core/Graphics.h>
 
-#include<Gear/Core/Internal/GraphicsInternal.h>
+#include <Gear/Core/Internal/GraphicsInternal.h>
 
-#include<ImGUI/imgui.h>
+#include <ImGUI/imgui.h>
 
 namespace Gear::Core::Graphics
 {
 	struct GraphicsImpl
 	{
-
 		float exposure = 1.f;
 
 		float gamma = 2.2f;
@@ -31,7 +30,7 @@ namespace Gear::Core::Graphics
 
 		float frameRate = 0.f;
 
-	}impl;
+	} impl;
 
 	namespace Internal
 	{
