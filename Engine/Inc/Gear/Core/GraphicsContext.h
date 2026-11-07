@@ -68,9 +68,6 @@ namespace Gear::Core
 		                  const void* const data,
 		                  const uint32_t size) const;
 
-		//设置用户自定义的全局常量缓冲
-		void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
-
 		//以下的方法用于设置每个着色器独享的根常量
 
 		template<size_t N>
@@ -126,6 +123,9 @@ namespace Gear::Core
 		void setPSConstants(const uint32_t numValues, const void* const data, uint32_t& offset);
 
 		void setCSConstants(const uint32_t numValues, const void* const data, uint32_t& offset);
+
+		//设置每个着色器共享的常量缓冲
+		void setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
 		//以下的方法用于设置每个着色器独享的常量缓冲
 
@@ -370,8 +370,6 @@ namespace Gear::Core
 
 		void resetComputeRootSignature();
 
-		void resetUserGlobalCBuffer();
-
 		//DEBUG用
 		void constantsWriteCheck(const D3D12Core::ShaderType shaderType,
 		                         const uint32_t numWrite,
@@ -387,8 +385,6 @@ namespace Gear::Core
 
 		//以下是内部追踪的状态，用于减少图形API的调用
 		ID3D12PipelineState* currentPipelineState;
-
-		const Resource::ImmutableCBuffer* userGlobalCBuffer;
 
 		D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
 

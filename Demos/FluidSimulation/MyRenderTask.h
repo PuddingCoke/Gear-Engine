@@ -144,6 +144,7 @@ public:
 		if (config.vortex || (Mouse::getOnMove() && Mouse::getLeftDown()))
 		{
 			context->setPipelineState(*splatVelocityState);
+			context->setGlobalConstantBuffer(*simulationParamBuffer);
 			SETCONSTS({
 				context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) },
 				                        co);
@@ -152,6 +153,7 @@ public:
 			velocityTex->swap();
 
 			context->setPipelineState(*splatColorState);
+			context->setGlobalConstantBuffer(*simulationParamBuffer);
 			SETCONSTS({
 				context->setCSConstants({ colorTex->getAllSRVIndex(), colorTex->getUAVMipIndex(0) }, co);
 			});
@@ -164,6 +166,7 @@ public:
 	{
 		//calculate vorticity
 		context->setPipelineState(*vorticityState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants({ velocityTex->getAllSRVIndex(), vorticityTex->getUAVMipIndex(0) }, co);
 		});
@@ -171,6 +174,7 @@ public:
 
 		//apply vorticity confinement
 		context->setPipelineState(*vorticityConfinementState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants({ vorticityTex->getAllSRVIndex(),
 			                          velocityTex->getAllSRVIndex(),
@@ -182,6 +186,7 @@ public:
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) }, co);
 		});
@@ -193,6 +198,7 @@ public:
 	{
 		//calculate divergence
 		context->setPipelineState(*divergenceState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants({ velocityTex->getAllSRVIndex(), divergenceTex->getUAVMipIndex(0) }, co);
 		});
@@ -200,6 +206,7 @@ public:
 
 		//reset pressure
 		context->setPipelineState(*pressureResetState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({ context->setCSConstants({ pressureTex->getUAVMipIndex(0) }, co); });
 		context->dispatchDim(pressureTex->get3Dimension());
 		pressureTex->swap();
@@ -208,6 +215,7 @@ public:
 		for (uint32_t i = 0; i < config.pressureIteraion; i++)
 		{
 			context->setPipelineState(*pressureState);
+			context->setGlobalConstantBuffer(*simulationParamBuffer);
 			SETCONSTS({
 				context->setCSConstants({ divergenceTex->getAllSRVIndex(),
 				                          pressureTex->getAllSRVIndex(),
@@ -219,6 +227,7 @@ public:
 
 			//obstacle
 			context->setPipelineState(*pressureBoundaryState);
+			context->setGlobalConstantBuffer(*simulationParamBuffer);
 			SETCONSTS({
 				context->setCSConstants({ pressureTex->getAllSRVIndex(), pressureTex->getUAVMipIndex(0) },
 				                        co);
@@ -229,6 +238,7 @@ public:
 
 		//velocity subtract gradient of pressure
 		context->setPipelineState(*gradientSubtractState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants({ pressureTex->getAllSRVIndex(),
 			                          velocityTex->getAllSRVIndex(),
@@ -240,6 +250,7 @@ public:
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) }, co);
 		});
@@ -251,6 +262,7 @@ public:
 	{
 		//velocity advection
 		context->setPipelineState(*velocityAdvectionState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) }, co);
 		});
@@ -259,6 +271,7 @@ public:
 
 		//obstacle
 		context->setPipelineState(*velocityBoundaryState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants({ velocityTex->getAllSRVIndex(), velocityTex->getUAVMipIndex(0) }, co);
 		});
@@ -267,6 +280,7 @@ public:
 
 		//color advection
 		context->setPipelineState(*colorAdvectionState);
+		context->setGlobalConstantBuffer(*simulationParamBuffer);
 		SETCONSTS({
 			context->setCSConstants(
 				{ velocityTex->getAllSRVIndex(), colorTex->getAllSRVIndex(), colorTex->getUAVMipIndex(0) },
@@ -315,8 +329,6 @@ public:
 
 		simulationParamBuffer->simpleUpdate(&simulationParam);
 
-		context->setGlobalConstantBuffer(*simulationParamBuffer);
-
 		if (config.logicRunning)
 		{
 			splatVelocityAndColor();
@@ -333,6 +345,7 @@ public:
 		if (config.phongShading)
 		{
 			context->setPipelineState(*phongShadeState);
+			context->setGlobalConstantBuffer(*simulationParamBuffer);
 			SETCONSTS({
 				context->setCSConstants({ colorTex->getAllSRVIndex(), phongShadeTexture->getUAVMipIndex(0) },
 				                        co);
@@ -351,6 +364,7 @@ public:
 		if (config.edgeHighlight)
 		{
 			context->setPipelineState(*edgeHighlightState);
+			context->setGlobalConstantBuffer(*simulationParamBuffer);
 			SETCONSTS({
 				context->setCSConstants(
 					{ outputTexture->getAllSRVIndex(), edgeHighlightTexture->getUAVMipIndex(0) }, co);

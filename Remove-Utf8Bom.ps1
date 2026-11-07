@@ -5,12 +5,14 @@
 
 .DESCRIPTION
     Recursively scans the target directory and reports every file that begins with
-    the UTF-8 BOM byte sequence (EF BB BF). Files in the following directories are
-    skipped:
+    the UTF-8 BOM byte sequence (EF BB BF). Files are skipped when they live in:
       * hidden directories at the root level whose name starts with '.' (e.g. .git, .vs)
       * Build, Illustrations, Libs, out, Runtime
 
-    Hidden files at the root level (names starting with '.') are still scanned.
+    Files with a known binary extension (images, media, fonts, archives, build
+    artifacts, ...) are skipped as well. Files without an extension are always
+    scanned, and hidden files at the root level (names starting with '.') are
+    still scanned.
 
     After the scan the script asks for confirmation before removing the BOM bytes.
 
@@ -19,6 +21,9 @@
 
 .PARAMETER Yes
     Skip the confirmation prompt and remove the BOM without asking.
+
+.PARAMETER IncludeBinary
+    Also scan files whose extension is on the binary blacklist.
 
 .EXAMPLE
     powershell -NoProfile -ExecutionPolicy Bypass -File .\Remove-Utf8Bom.ps1
@@ -29,7 +34,8 @@
 [CmdletBinding()]
 param(
     [string]$Root,
-    [switch]$Yes
+    [switch]$Yes,
+    [switch]$IncludeBinary
 )
 
 Set-StrictMode -Version 2.0
@@ -46,6 +52,36 @@ if ([string]::IsNullOrWhiteSpace($Root)) {
 
 # Directories that are never scanned (matched by name at any depth).
 $IgnoredDirectoryNames = @('Build', 'Illustrations', 'Libs', 'out', 'Runtime')
+
+# Non-text extensions that are never scanned unless -IncludeBinary is given.
+$IgnoredExtensions = @(
+    # images
+    '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tga', '.tif', '.tiff', '.webp',
+    '.ico', '.psd', '.dds', '.exr', '.hdr', '.ktx', '.ktx2', '.basis',
+    # 3D models, fonts, audio and video
+    '.fbx', '.glb', '.blend', '.max', '.ma', '.mb', '.ttf', '.otf', '.woff',
+    '.woff2', '.mp3', '.wav', '.ogg', '.flac', '.mp4', '.mov', '.mkv', '.webm',
+    # build artifacts and executables
+    '.exe', '.dll', '.lib', '.pdb', '.idb', '.obj', '.o', '.a', '.so', '.dylib',
+    '.ilk', '.exp', '.res', '.pyc', '.wasm',
+    # archives
+    '.zip', '.7z', '.rar', '.gz', '.bz2', '.xz', '.tar', '.jar', '.nupkg',
+    # other binary data
+    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.db', '.sqlite',
+    '.dat', '.bin', '.pch', '.gch', '.blend1'
+)
+
+$script:SkippedBinaryCount = 0
+
+function Test-BinaryExtension {
+    param([string]$FileName, [string]$Extension)
+
+    if ([string]::IsNullOrEmpty($Extension)) { return $false }
+    # '.gitignore'-style names report the whole name as their extension.
+    if ($Extension -eq $FileName) { return $false }
+
+    return ($IgnoredExtensions -contains $Extension.ToLowerInvariant())
+}
 
 function Get-TargetFileList {
     param(
@@ -65,6 +101,10 @@ function Get-TargetFileList {
 
     foreach ($entry in $entries) {
         if (-not $entry.PSIsContainer) {
+            if (-not $IncludeBinary -and (Test-BinaryExtension -FileName $entry.Name -Extension $entry.Extension)) {
+                $script:SkippedBinaryCount++
+                continue
+            }
             $result.Add($entry.FullName)
         }
     }
@@ -148,6 +188,9 @@ foreach ($file in $files) {
 }
 
 Write-Host ("Scanned {0} file(s)." -f $files.Count)
+if ($script:SkippedBinaryCount -gt 0) {
+    Write-Host ("Skipped {0} non-text file(s) (use -IncludeBinary to scan them)." -f $script:SkippedBinaryCount) -ForegroundColor DarkGray
+}
 if ($readErrors -gt 0) {
     Write-Host ("{0} file(s) could not be read." -f $readErrors) -ForegroundColor DarkYellow
 }
