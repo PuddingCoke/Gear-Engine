@@ -103,7 +103,7 @@ namespace Gear::Resource
 			BufferClearDesc bufferDesc;
 		};
 
-		D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
+		D3D12_GPU_DESCRIPTOR_HANDLE* viewGPUHandle;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
 	};

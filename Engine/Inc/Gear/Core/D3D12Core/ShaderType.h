@@ -43,6 +43,10 @@
 #undef LIBRARY
 #endif // LIBRARY
 
+#ifdef ALL
+#undef ALL
+#endif // ALL
+
 namespace Gear::Core::D3D12Core
 {
 	enum class ShaderType
@@ -55,8 +59,9 @@ namespace Gear::Core::D3D12Core
 		COMPUTE, //计算
 		AMPLIFICATION, //放大
 		MESH, //网格
-		TYPECOUNT, //不包含库类型，因为它没有入口点
-		LIBRARY //库
+		TYPECOUNT, //不包含库类型，因为它不是可执行的
+		LIBRARY, //库
+		ALL //仅引擎内部使用
 	};
 }
 

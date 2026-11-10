@@ -250,7 +250,7 @@ namespace Gear::Resource
 	{
 		const UAVClearDesc desc = { .type = UAVClearDesc::BUFFER,
 			                        .bufferDesc = { .buffer = buffer.get() },
-			                        .viewGPUHandle = *viewGPUHandle,
+			                        .viewGPUHandle = viewGPUHandle.get(),
 			                        .viewCPUHandle = *viewCPUHandle };
 
 		return desc;

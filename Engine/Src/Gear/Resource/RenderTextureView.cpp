@@ -352,7 +352,7 @@ namespace Gear::Resource
 	{
 		const UAVClearDesc desc = { .type = UAVClearDesc::TEXTURE,
 			                        .textureDesc = { .texture = texture.get(), .mipSlice = mipSlice },
-			                        .viewGPUHandle = (*viewGPUHandles)[mipSlice],
+			                        .viewGPUHandle = &((*viewGPUHandles)[mipSlice]),
 			                        .viewCPUHandle = (*viewCPUHandles)[mipSlice] };
 
 		return desc;
