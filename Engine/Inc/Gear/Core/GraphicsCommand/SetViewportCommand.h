@@ -1,17 +1,13 @@
-#ifndef _GEAR_CORE_SETVIEWPORT_H_
-#define _GEAR_CORE_SETVIEWPORT_H_
+#ifndef _GEAR_CORE_SETVIEWPORTCOMMAND_H_
+#define _GEAR_CORE_SETVIEWPORTCOMMAND_H_
 
 #include "GraphicsCommand.h"
 
 namespace Gear::Core
 {
-	class SetViewportCommand : public GraphicsCommand
+	class SetViewportCommand : public GraphicsCommand, public CommandPool<SetViewportCommand>
 	{
 	public:
-
-		SetViewportCommand() = delete;
-
-		SetViewportCommand(const float width, const float height);
 
 		void set(const float width, const float height);
 
@@ -21,7 +17,7 @@ namespace Gear::Core
 
 		float width;
 
-        float height;
+		float height;
 	};
 }
 

@@ -5,13 +5,9 @@
 
 namespace Gear::Core
 {
-	class SetIndexBufferCommand : public GraphicsCommand
+	class SetIndexBufferCommand : public GraphicsCommand, public CommandPool<SetIndexBufferCommand>
 	{
 	public:
-
-		SetIndexBufferCommand() = delete;
-
-		SetIndexBufferCommand(const Resource::IndexBufferDesc& indexBufferDesc);
 
 		void set(const Resource::IndexBufferDesc& indexBufferDesc);
 

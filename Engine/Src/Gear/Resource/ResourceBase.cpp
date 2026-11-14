@@ -13,10 +13,10 @@ namespace Gear::Resource
 	{
 	}
 
-	//拷贝时persistent无论如何都要被设置为false，因为每个渲染线程都有着独享的LocalDescriptorHeap
+	//拷贝时persistent无论如何都要被设置为true，因为每个渲染线程都有着独享的LocalDescriptorHeap
 	//这意味着只能是创建那个资源的渲染线程调用资源的copyDescriptors方法
 	ResourceBase::ResourceBase(const ResourceBase& resource) :
-		persistent(false),
+		persistent(true),
 		numCBVSRVUAVDescriptors(resource.numCBVSRVUAVDescriptors),
 		copySrcDescriptorHandle(),
 		lastUpdateDynamicIndex(UINT64_MAX),

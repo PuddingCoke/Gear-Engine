@@ -9,21 +9,13 @@
 
 namespace Gear::Core
 {
-	class UpdateBufferCommand : public GraphicsCommand
+	class UpdateBufferCommand : public GraphicsCommand, public CommandPool<UpdateBufferCommand>
 	{
 	public:
 
-		UpdateBufferCommand() = delete;
-
-		UpdateBufferCommand(Resource::BufferView& bufferView, const void* const data, const uint64_t size);
-
-		UpdateBufferCommand(Resource::DefaultCBuffer& defaultCBuffer,
-		                    const void* const data,
-		                    const uint64_t size);
-
-		void set(Resource::BufferView& bufferView, const void* const data, const uint64_t size);
-
-		void set(Resource::DefaultCBuffer& defaultCBuffer, const void* const data, const uint64_t size);
+		void set(D3D12Resource::Buffer* const buffer,
+		         D3D12Resource::UploadHeap* const uploadHeap,
+		         const uint64_t size);
 
 		void execute(GraphicsCommandExecuter& executer) override;
 

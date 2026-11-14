@@ -2,43 +2,14 @@
 
 namespace Gear::Core
 {
-	UpdateBufferCommand::UpdateBufferCommand(Resource::BufferView& bufferView,
-	                                         const void* const data,
-	                                         const uint64_t size)
+
+	void UpdateBufferCommand::set(D3D12Resource::Buffer* const buffer,
+		         D3D12Resource::UploadHeap* const uploadHeap,
+		         const uint64_t size)
 	{
-		set(bufferView, data, size);
-	}
+		this->buffer = buffer;
 
-	UpdateBufferCommand::UpdateBufferCommand(Resource::DefaultCBuffer& defaultCBuffer,
-	                                         const void* const data,
-	                                         const uint64_t size)
-	{
-		set(defaultCBuffer, data, size);
-	}
-
-	void UpdateBufferCommand::set(Resource::BufferView& bufferView,
-	                              const void* const data,
-	                              const uint64_t size)
-	{
-		const Resource::BufferView::UpdateStruct updateStruct = bufferView.getUpdateStruct(data, size);
-
-		this->buffer = updateStruct.buffer;
-
-		this->uploadHeap = updateStruct.uploadHeap;
-
-		this->size = size;
-	}
-
-	void UpdateBufferCommand::set(Resource::DefaultCBuffer& defaultCBuffer,
-	                              const void* const data,
-	                              const uint64_t size)
-	{
-		const Resource::DefaultCBuffer::UpdateStruct updateStruct =
-			defaultCBuffer.getUpdateStruct(data, size);
-
-		this->buffer = updateStruct.buffer;
-
-		this->uploadHeap = updateStruct.uploadHeap;
+		this->uploadHeap = uploadHeap;
 
 		this->size = size;
 	}
@@ -47,4 +18,5 @@ namespace Gear::Core
 	{
 		executer.updateBuffer(buffer, uploadHeap, size);
 	}
+
 }

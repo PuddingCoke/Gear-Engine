@@ -5,17 +5,11 @@
 
 namespace Gear::Core
 {
-	class SetVertexBuffersCommand : public GraphicsCommand
+	class SetVertexBuffersCommand : public GraphicsCommand, public CommandPool<SetVertexBuffersCommand>
 	{
 	public:
 
-		SetVertexBuffersCommand() = delete;
-
-		SetVertexBuffersCommand(const Resource::VertexBufferDesc* const vertexBufferDescs,
-		                        const uint32_t numVertexBuffersDescs,
-		                        const uint32_t startSlot);
-
-		void set(const Resource::VertexBufferDesc* const vertexBufferDescs,
+		void set(const uint64_t vertexBufferDescsPtrOffset,
 		         const uint32_t numVertexBuffersDescs,
 		         const uint32_t startSlot);
 
@@ -23,7 +17,7 @@ namespace Gear::Core
 
 	private:
 
-		Resource::VertexBufferDesc vertexBufferDescs[D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+		uint64_t vertexBufferDescsPtrOffset;
 
 		uint32_t numVertexBufferDescs;
 

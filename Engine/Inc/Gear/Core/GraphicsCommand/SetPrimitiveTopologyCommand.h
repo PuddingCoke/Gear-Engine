@@ -1,17 +1,13 @@
-#ifndef _GEAR_CORE_SETPRIMITIVETOPOLOGY_H_
-#define _GEAR_CORE_SETPRIMITIVETOPOLOGY_H_
+#ifndef _GEAR_CORE_SETPRIMITIVETOPOLOGYCOMMAND_H_
+#define _GEAR_CORE_SETPRIMITIVETOPOLOGYCOMMAND_H_
 
 #include "GraphicsCommand.h"
 
 namespace Gear::Core
 {
-	class SetPrimitiveTopologyCommand : public GraphicsCommand
+	class SetPrimitiveTopologyCommand : public GraphicsCommand, public CommandPool<SetPrimitiveTopologyCommand>
 	{
 	public:
-
-		SetPrimitiveTopologyCommand() = delete;
-
-		SetPrimitiveTopologyCommand(const D3D12_PRIMITIVE_TOPOLOGY topology);
 
 		void set(const D3D12_PRIMITIVE_TOPOLOGY topology);
 

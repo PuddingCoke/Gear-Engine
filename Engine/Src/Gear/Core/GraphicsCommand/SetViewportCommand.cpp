@@ -2,10 +2,6 @@
 
 namespace Gear::Core
 {
-	SetViewportCommand::SetViewportCommand(const float width, const float height)
-	{
-		set(width, height);
-	}
 
 	void SetViewportCommand::set(const float width, const float height)
 	{
@@ -18,4 +14,5 @@ namespace Gear::Core
 	{
 		executer.setViewport(width, height);
 	}
+
 }

@@ -3,23 +3,17 @@
 #ifndef _GEAR_CORE_GRAPHICSCONTEXT_H_
 #define _GEAR_CORE_GRAPHICSCONTEXT_H_
 
-#include <Gear/Core/D3D12Core/GraphicsCommandList.h>
+#include "GraphicsCommand/GraphicsCommandExecuter.h"
 
-#include <Gear/Core/D3D12Core/RootSignature.h>
+#include <Gear/Core/GraphicsCommand/GraphicsCommand.h>
 
-#include <Gear/Core/D3D12Core/GraphicsState.h>
+#include <Gear/Core/GraphicsCommand/SetRenderTargetsCommandBase.h>
 
-#include <Gear/Core/D3D12Core/ComputeState.h>
+#include <Gear/Core/GraphicsCommand/SetVertexBuffersCommand.h>
 
-#include <Gear/Resource/BufferView.h>
+#include <Gear/Core/GraphicsCommand/SetShaderConstantBufferCommand.h>
 
-#include <Gear/Resource/DefaultCBuffer.h>
-
-#include <Gear/Utils/StaticVector.h>
-
-#include <Gear/Core/FMT.h>
-
-#include <type_traits>
+#include <Gear/Core/GraphicsCommand/SetShaderConstantsCommand.h>
 
 //创建一个作用域，内置默认值为0的临时偏移co，它会随着API调用自增，建议搭配CodeSnippets中的片段使用
 //注意：作用域内只允许ctx->set*SConstants调用！因为宏定义是无法处理某些特殊情况的
@@ -59,14 +53,12 @@ namespace Gear::Core
 		~GraphicsContext();
 
 		//更新高级缓冲对象
-		void updateBuffer(Resource::BufferView& bufferView,
-		                  const void* const data,
-		                  const uint32_t size) const;
+		void updateBuffer(Resource::BufferView& bufferView, const void* const data, const uint32_t size);
 
 		//更新默认常量缓冲
 		void updateBuffer(Resource::DefaultCBuffer& defaultCBuffer,
 		                  const void* const data,
-		                  const uint32_t size) const;
+		                  const uint32_t size);
 
 		//以下的方法用于设置每个着色器独享的根常量
 
@@ -157,7 +149,7 @@ namespace Gear::Core
 		void setDefRenderTarget();
 
 		//清理后备缓冲
-		void clearDefRenderTarget(const float clearValue[4]) const;
+		void clearDefRenderTarget(const float clearValue[4]);
 
 		//推迟到draw call清理渲染目标视图
 		void clearRenderTarget(const Resource::RenderTargetDesc& desc, const float clearValue[4]);
@@ -242,261 +234,100 @@ namespace Gear::Core
 		//分发线程（设置线程维度）
 		void dispatchDim(const DirectX::XMUINT3 dispatchThreadCount);
 
+		//推送自定义图形命令
+		void pushGraphicsCommand(GraphicsCommand* command);
+
 		//由RenderTask自动调用
 		void begin();
 
-		//重置内部追踪的状态
-		void resetTrackedStates();
-
-		void resetPipelineState();
-
-		void resetTrackedGraphicsStates();
-
-		void resetTrackedComputeStates();
-		/////////////////
+		//由RenderTask和RenderThread自动调用
+		void end();
 
 		D3D12Core::GraphicsCommandList* getCommandList() const;
 
 	private:
 
-		struct RootConstantBufferDesc
-		{
-			uint32_t rootParameterIndex;
-
-			D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
-		};
-
-		struct RenderTargetClearDesc
-		{
-			D3D12_CPU_DESCRIPTOR_HANDLE handle;
-
-			float clearValue[4];
-		};
-
-		class DepthStencilClearDesc
-		{
-		public:
-
-			DepthStencilClearDesc() = default;
-
-			~DepthStencilClearDesc() = default;
-
-			void setHandle(const D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle) noexcept;
-
-			void setClearData(const D3D12_CLEAR_FLAGS clearFlags,
-			                  const float clearDepth,
-			                  const uint8_t clearStencil) noexcept;
-
-			void reset() noexcept;
-
-			D3D12_CPU_DESCRIPTOR_HANDLE getHandle() const noexcept;
-
-			D3D12_CLEAR_FLAGS getFlags() const noexcept;
-
-			float getDepth() const noexcept;
-
-			uint8_t getStencil() const noexcept;
-
-		private:
-
-			D3D12_CPU_DESCRIPTOR_HANDLE handle = {};
-
-			uint32_t flags = 0;
-
-			float depth = 0;
-
-			uint8_t stencil = 0;
-		};
-
-		void setPipelineState(ID3D12PipelineState* const pipelineState);
-
-		void setShaderResources(const std::vector<Resource::ShaderResourceDesc>& descs,
-		                        const uint32_t targetSRVState);
-
-		template<size_t N>
-		void setShaderResources(const Resource::ShaderResourceDesc (&descs)[N],
-		                        const uint32_t targetSRVState);
-
-		//从提供的ShaderResourceDesc提取索引
-		template<size_t N>
-		void getResourceIndicesFromDescs(const Resource::ShaderResourceDesc (&descs)[N]);
-
-		void pushRootConstantBufferDesc(const RootConstantBufferDesc& desc);
-
-		template<auto IsGraphicsRootSignature>
-		void flushRootConstantBufferDescs();
-
-		void flushRenderTargetClearDescs();
-
-		void resetDepthStencilClearDesc();
-
-		void setGraphicsRootSignature(const D3D12Core::RootSignature* const rootSignature);
-
-		void setComputeRootSignature(const D3D12Core::RootSignature* const rootSignature);
-
-		const D3D12Core::RootSignature* getGraphicsRootSignature() const;
-
-		const D3D12Core::RootSignature* getComputeRootSignature() const;
-
-		//根据Desc设置对应资源的转变状态
-		void setResourceState(const Resource::ShaderResourceDesc& desc, const uint32_t targetSRVState);
-
-		void setResourceState(const Resource::RenderTargetDesc& desc);
-
-		void setResourceState(const Resource::DepthStencilDesc& desc);
-
-		void setResourceState(const Resource::VertexBufferDesc& desc);
-
-		void setResourceState(const Resource::IndexBufferDesc& desc);
-
-		D3D12Resource::D3D12ResourceBase* setResourceState(const Resource::UAVClearDesc& desc);
-
-		void setShaderConstants(const D3D12Core::ShaderType shaderType,
-		                        const uint32_t numValues,
-		                        const void* const data,
-		                        uint32_t& offset);
+		//从提供的ShaderResourceDesc提取索引到shaderConstants
+		template<D3D12Core::ShaderType ShaderType, size_t N>
+		void setShaderConstants(const Resource::ShaderResourceDesc (&descs)[N], uint32_t& offset);
 
 		template<D3D12Core::ShaderType ShaderType>
-		void setRootConstants();
+		void setShaderConstants(const uint32_t numValues, const void* const data, uint32_t& offset);
 
-		void prepareDrawCallResources();
+		template<D3D12Core::ShaderType ShaderType>
+		void flushShaderConstants();
 
-		void prepareDispatchCallResources();
+		GraphicsCommandExecuterPtr graphicsCommandExecuter;
 
-		//重置内部追踪的状态
-		void resetGraphicsRootSignature();
+		std::vector<GraphicsCommand*> graphicsCommands;
 
-		void resetPrimitiveTopology();
-
-		void resetComputeRootSignature();
-
-		//DEBUG用
-		void constantsWriteCheck(const D3D12Core::ShaderType shaderType,
-		                         const uint32_t numWrite,
-		                         const uint32_t offset) const;
-
-		std::array<uint32_t, D3D12Core::RootSignature::maxPerShaderConstants> transientResourceIndices;
-
-		D3D12_VIEWPORT vp;
-
-		D3D12_RECT rt;
-
-		D3D12Core::GraphicsCommandListPtr commandList;
-
-		//以下是内部追踪的状态，用于减少图形API的调用
-		ID3D12PipelineState* currentPipelineState;
-
-		D3D_PRIMITIVE_TOPOLOGY primitiveTopology;
-
-		const D3D12Core::RootSignature* graphicsRootSignature;
-
-		const D3D12Core::RootSignature* computeRootSignature;
+		//需要进行重排序，用户可能在任意位置调用 SetPipelineState，而 SetPipelineState 可能改变根签名，因此需要暂存并将其重排序到仅在 Draw/Dispatch Call 之前
+		//最多有 D3D12Core::RootSignature::maxPerShaderConstants * D3D12Core::ShaderType::TYPECOUNT 个设置常量命令
+		Utils::StaticVector<GraphicsCommand*,
+		                    D3D12Core::RootSignature::maxPerShaderConstants* static_cast<uint32_t>(
+								D3D12Core::ShaderType::TYPECOUNT)>
+			setConstantsCommands;
 
 		//以下是用于每次draw call或dispatch call的临时资源
+
+		uint64_t pixelShaderResourceDescPtrOffset;
+
+		uint64_t nonPixelShaderResourceDescPtrOffset;
+
+		uint64_t renderTargetDescsPtrOffset;
+
+		uint64_t vertexBufferDescsPtrOffset;
+
+		uint64_t shaderConstantsPtrOffsets[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 
 		std::array<uint32_t, D3D12Core::RootSignature::maxPerShaderConstants>
 			shaderConstants[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 
 		uint32_t numShaderConstantsValues[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 
-		uint32_t shaderConstantsStartOffset[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
-
-		//这里有个假设，微软的官方文档说每个根签名最多有 64 个 DWORD
-		Utils::StaticVector<RootConstantBufferDesc,
-		                    D3D12Core::RootSignature::maxDWORD / D3D12Core::RootSignature::perDescriptorDWORD>
-			rootConstantBufferDescs;
-
-		Utils::StaticVector<RenderTargetClearDesc, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT>
-			renderTargetClearDescs;
-
-		DepthStencilClearDesc depthStencilClearDesc;
-
-		std::array<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> transientRTVHandles;
-
-		std::array<DXGI_FORMAT, D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT> transientRTVFormats;
-
-		uint32_t transientNumRTV;
-
-		D3D12_PRIMITIVE_TOPOLOGY_TYPE transientPrimitiveTopologyType;
-
-		DXGI_FORMAT transientDSVFormat;
-
-		bool switchGraphicsPipelineState;
-
-		std::array<D3D12_VERTEX_BUFFER_VIEW, D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT> transientVBViews;
-
-		union
-		{
-			D3D12Core::GraphicsState* graphicsState;
-
-			D3D12Core::ComputeState* computeState;
-		};
+		uint32_t shaderConstantsStartOffsets[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 	};
 
 	template<size_t N>
 	inline void GraphicsContext::setVSConstants(const Resource::ShaderResourceDesc (&descs)[N],
 	                                            uint32_t& offset)
 	{
-		getResourceIndicesFromDescs(descs);
-
-		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-
-		setVSConstants(N, transientResourceIndices.data(), offset);
+		setShaderConstants<D3D12Core::ShaderType::VERTEX>(descs, offset);
 	}
 
 	template<size_t N>
 	inline void GraphicsContext::setHSConstants(const Resource::ShaderResourceDesc (&descs)[N],
 	                                            uint32_t& offset)
 	{
-		getResourceIndicesFromDescs(descs);
-
-		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-
-		setHSConstants(N, transientResourceIndices.data(), offset);
+		setShaderConstants<D3D12Core::ShaderType::HULL>(descs, offset);
 	}
 
 	template<size_t N>
 	inline void GraphicsContext::setDSConstants(const Resource::ShaderResourceDesc (&descs)[N],
 	                                            uint32_t& offset)
 	{
-		getResourceIndicesFromDescs(descs);
-
-		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-
-		setDSConstants(N, transientResourceIndices.data(), offset);
+		setShaderConstants<D3D12Core::ShaderType::DOMAIN>(descs, offset);
 	}
 
 	template<size_t N>
 	inline void GraphicsContext::setGSConstants(const Resource::ShaderResourceDesc (&descs)[N],
 	                                            uint32_t& offset)
 	{
-		getResourceIndicesFromDescs(descs);
-
-		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-
-		setGSConstants(N, transientResourceIndices.data(), offset);
+		setShaderConstants<D3D12Core::ShaderType::GEOMETRY>(descs, offset);
 	}
 
 	template<size_t N>
 	inline void GraphicsContext::setPSConstants(const Resource::ShaderResourceDesc (&descs)[N],
 	                                            uint32_t& offset)
 	{
-		getResourceIndicesFromDescs(descs);
-
-		setShaderResources(descs, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-		setPSConstants(N, transientResourceIndices.data(), offset);
+		setShaderConstants<D3D12Core::ShaderType::PIXEL>(descs, offset);
 	}
 
 	template<size_t N>
 	inline void GraphicsContext::setCSConstants(const Resource::ShaderResourceDesc (&descs)[N],
 	                                            uint32_t& offset)
 	{
-		getResourceIndicesFromDescs(descs);
-
-		setShaderResources(descs, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-
-		setCSConstants(N, transientResourceIndices.data(), offset);
+		setShaderConstants<D3D12Core::ShaderType::COMPUTE>(descs, offset);
 	}
 
 	template<typename StructType>
@@ -553,118 +384,235 @@ namespace Gear::Core
 		setCSConstants(numElements, &structVal, offset);
 	}
 
-	template<size_t N>
-	inline void GraphicsContext::getResourceIndicesFromDescs(const Resource::ShaderResourceDesc (&descs)[N])
+	template<D3D12Core::ShaderType ShaderType, size_t N>
+	inline void GraphicsContext::setShaderConstants(const Resource::ShaderResourceDesc (&descs)[N],
+	                                                uint32_t& offset)
 	{
 #ifdef _DEBUG
-		if (N > D3D12Core::RootSignature::maxPerShaderConstants)
+		if (N == 0)
 		{
-			THROWLOG(LOGERROR() << "对于每个draw call和dispatch call来说，每个着色器的常量写入限制为"
-			                    << D3D12Core::RootSignature::maxPerShaderConstants << "个！");
+			THROWLOG(LOGERROR() << "不可写入" << 0 << "个常量");
 		}
-#endif // _DEBUG
+#endif
 
-		for (uint32_t i = 0; i < N; i++)
+		constexpr uint32_t shaderIndex = static_cast<uint32_t>(ShaderType);
+
+		if (shaderConstantsStartOffsets[shaderIndex] == UINT32_MAX)
 		{
-			transientResourceIndices[i] = *descs[i].resourceIndex;
+			shaderConstantsStartOffsets[shaderIndex] = offset;
 		}
-	}
 
-	template<auto IsGraphicsRootSignature>
-	inline void GraphicsContext::flushRootConstantBufferDescs()
-	{
-		if (rootConstantBufferDescs.size())
+		const uint32_t expectedOffset =
+			shaderConstantsStartOffsets[shaderIndex] + numShaderConstantsValues[shaderIndex];
+
+		//使用expectedOffset来检测是否有非连续写入
+		//如有则结束当前的批次写入
+		if (expectedOffset != offset)
 		{
-			if constexpr (IsGraphicsRootSignature)
+			flushShaderConstants<ShaderType>();
+
+			setShaderConstants<ShaderType>(descs, offset);
+		}
+		else
+		{
+#ifdef _DEBUG
+			if (offset + N > D3D12Core::RootSignature::maxPerShaderConstants)
 			{
-				for (const RootConstantBufferDesc& desc : rootConstantBufferDescs)
+				THROWLOG(LOGERROR() << "侦测到写入终止位置" << (offset + N - 1) << "超出临时缓冲区终止位置"
+				                    << (D3D12Core::RootSignature::maxPerShaderConstants - 1));
+			}
+#endif
+
+			for (uint32_t i = 0; i < N; i++)
+			{
+				if constexpr (ShaderType == D3D12Core::ShaderType::PIXEL)
 				{
-					const uint32_t rootParameterIndex = desc.rootParameterIndex;
+					graphicsCommandExecuter->pushPixelShaderResourceDesc(descs[i]);
+				}
+				else
+				{
+					graphicsCommandExecuter->pushNonPixelShaderResourceDesc(descs[i]);
+				}
 
-					const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = desc.gpuAddress;
+				Resource::ResourceBase* const resource = descs[i].resource;
 
-					commandList->setGraphicsRootConstantBuffer(rootParameterIndex, gpuAddress);
+				if (!resource->getPersistent())
+				{
+					if (!resource->getInCopyingList())
+					{
+						graphicsCommandExecuter->addNonPersistentResource(resource);
+
+						resource->pushToCopyingList();
+					}
+
+					shaderConstants[shaderIndex][offset + i] = UINT32_MAX;
+
+					const uint64_t unsettedLocation = shaderConstantsPtrOffsets[shaderIndex] + i + offset -
+					                                  shaderConstantsStartOffsets[shaderIndex];
+
+					graphicsCommandExecuter->addUnsettedIndex(
+						ShaderType, descs[i].resourceIndex, unsettedLocation);
+				}
+				else
+				{
+					shaderConstants[shaderIndex][offset + i] = *(descs[i].resourceIndex);
 				}
 			}
-			else
-			{
-				for (const RootConstantBufferDesc& desc : rootConstantBufferDescs)
-				{
-					const uint32_t rootParameterIndex = desc.rootParameterIndex;
 
-					const D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = desc.gpuAddress;
+			offset += N;
 
-					commandList->setComputeRootConstantBuffer(rootParameterIndex, gpuAddress);
-				}
-			}
-
-			rootConstantBufferDescs.clear();
+			numShaderConstantsValues[shaderIndex] += N;
 		}
 	}
 
 	template<D3D12Core::ShaderType ShaderType>
-	inline void GraphicsContext::setRootConstants()
+	void GraphicsContext::setShaderConstants(const uint32_t numValues,
+	                                         const void* const data,
+	                                         uint32_t& offset)
+	{
+#ifdef _DEBUG
+		if (numValues == 0)
+		{
+			THROWLOG(LOGERROR() << "不可写入" << 0 << "个常量");
+		}
+
+		if (data == nullptr)
+		{
+			THROWLOG(LOGERROR() << "传入的数据指针不能为 nullptr");
+		}
+#endif
+
+		constexpr uint32_t shaderIndex = static_cast<uint32_t>(ShaderType);
+
+		if (shaderConstantsStartOffsets[shaderIndex] == UINT32_MAX)
+		{
+			shaderConstantsStartOffsets[shaderIndex] = offset;
+		}
+
+		const uint32_t expectedOffset =
+			shaderConstantsStartOffsets[shaderIndex] + numShaderConstantsValues[shaderIndex];
+
+		//使用expectedOffset来检测是否有非连续写入
+		//如有则结束当前的批次写入
+		if (expectedOffset != offset)
+		{
+			flushShaderConstants<ShaderType>();
+
+			setShaderConstants<ShaderType>(numValues, data, offset);
+		}
+		else
+		{
+#ifdef _DEBUG
+			if (offset + numValues > D3D12Core::RootSignature::maxPerShaderConstants)
+			{
+				THROWLOG(LOGERROR() << "侦测到写入终止位置" << (offset + numValues - 1)
+				                    << "超出临时缓冲区终止位置"
+				                    << (D3D12Core::RootSignature::maxPerShaderConstants - 1));
+			}
+#endif
+
+			memcpy(shaderConstants[shaderIndex].data() + offset, data, numValues * sizeof(uint32_t));
+
+			offset += numValues;
+
+			numShaderConstantsValues[shaderIndex] += numValues;
+		}
+	}
+
+	template<D3D12Core::ShaderType ShaderType>
+	void GraphicsContext::flushShaderConstants()
 	{
 		constexpr uint32_t shaderIndex = static_cast<uint32_t>(ShaderType);
 
-		if (numShaderConstantsValues[shaderIndex])
+		if (numShaderConstantsValues[shaderIndex] == 0)
 		{
-			uint32_t rootParameterIndex = 0;
+			shaderConstantsStartOffsets[shaderIndex] = UINT32_MAX;
 
-			if constexpr (ShaderType == D3D12Core::ShaderType::VERTEX)
-			{
-				rootParameterIndex = getGraphicsRootSignature()->getVSConstantsParameterIndex();
-			}
-			else if constexpr (ShaderType == D3D12Core::ShaderType::HULL)
-			{
-				rootParameterIndex = getGraphicsRootSignature()->getHSConstantsParameterIndex();
-			}
-			else if constexpr (ShaderType == D3D12Core::ShaderType::DOMAIN)
-			{
-				rootParameterIndex = getGraphicsRootSignature()->getDSConstantsParameterIndex();
-			}
-			else if constexpr (ShaderType == D3D12Core::ShaderType::GEOMETRY)
-			{
-				rootParameterIndex = getGraphicsRootSignature()->getGSConstantsParameterIndex();
-			}
-			else if constexpr (ShaderType == D3D12Core::ShaderType::PIXEL)
-			{
-				rootParameterIndex = getGraphicsRootSignature()->getPSConstantsParameterIndex();
-			}
-			else if constexpr (ShaderType == D3D12Core::ShaderType::COMPUTE)
-			{
-				rootParameterIndex = getComputeRootSignature()->getCSConstantsParameterIndex();
-			}
-			else if constexpr (ShaderType == D3D12Core::ShaderType::AMPLIFICATION)
-			{
-				rootParameterIndex = getGraphicsRootSignature()->getASConstantsParameterIndex();
-			}
-			else if constexpr (ShaderType == D3D12Core::ShaderType::MESH)
-			{
-				rootParameterIndex = getGraphicsRootSignature()->getMSConstantsParameterIndex();
-			}
-
-			if constexpr (ShaderType == D3D12Core::ShaderType::COMPUTE)
-			{
-				commandList->setComputeRootConstants(rootParameterIndex,
-				                                     numShaderConstantsValues[shaderIndex],
-				                                     shaderConstants[shaderIndex].data() +
-				                                         shaderConstantsStartOffset[shaderIndex],
-				                                     shaderConstantsStartOffset[shaderIndex]);
-			}
-			else
-			{
-				commandList->setGraphicsRootConstants(rootParameterIndex,
-				                                      numShaderConstantsValues[shaderIndex],
-				                                      shaderConstants[shaderIndex].data() +
-				                                          shaderConstantsStartOffset[shaderIndex],
-				                                      shaderConstantsStartOffset[shaderIndex]);
-			}
-
-			numShaderConstantsValues[shaderIndex] = 0u;
-
-			shaderConstantsStartOffset[shaderIndex] = UINT32_MAX;
+			return;
 		}
+
+		const uint64_t dataPtrOffset = shaderConstantsPtrOffsets[shaderIndex];
+
+		const uint32_t numConstantValues = numShaderConstantsValues[shaderIndex];
+
+		const uint32_t constantWriteOffset = shaderConstantsStartOffsets[shaderIndex];
+
+		graphicsCommandExecuter->pushShaderConstants(ShaderType,
+		                                             shaderConstants[shaderIndex].data() +
+		                                                 shaderConstantsStartOffsets[shaderIndex],
+		                                             numShaderConstantsValues[shaderIndex]);
+
+		shaderConstantsPtrOffsets[shaderIndex] =
+			graphicsCommandExecuter->getShaderConstantsWriteLocation(ShaderType);
+
+		if constexpr (ShaderType == D3D12Core::ShaderType::VERTEX)
+		{
+			auto* const command = SetVSConstantsCommand::acquire();
+
+			command->set(dataPtrOffset, numConstantValues, constantWriteOffset);
+
+			setConstantsCommands.push(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::HULL)
+		{
+			auto* const command = SetHSConstantsCommand::acquire();
+
+			command->set(dataPtrOffset, numConstantValues, constantWriteOffset);
+
+			setConstantsCommands.push(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::DOMAIN)
+		{
+			auto* const command = SetDSConstantsCommand::acquire();
+
+			command->set(dataPtrOffset, numConstantValues, constantWriteOffset);
+
+			setConstantsCommands.push(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::GEOMETRY)
+		{
+			auto* const command = SetGSConstantsCommand::acquire();
+
+			command->set(dataPtrOffset, numConstantValues, constantWriteOffset);
+
+			setConstantsCommands.push(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::PIXEL)
+		{
+			auto* const command = SetPSConstantsCommand::acquire();
+
+			command->set(dataPtrOffset, numConstantValues, constantWriteOffset);
+
+			setConstantsCommands.push(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::COMPUTE)
+		{
+			auto* const command = SetCSConstantsCommand::acquire();
+
+			command->set(dataPtrOffset, numConstantValues, constantWriteOffset);
+
+			setConstantsCommands.push(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::AMPLIFICATION)
+		{
+			auto* const command = SetASConstantsCommand::acquire();
+
+			command->set(dataPtrOffset, numConstantValues, constantWriteOffset);
+
+			setConstantsCommands.push(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::MESH)
+		{
+			auto* const command = SetMSConstantsCommand::acquire();
+
+			command->set(dataPtrOffset, numConstantValues, constantWriteOffset);
+
+			setConstantsCommands.push(command);
+		}
+
+		shaderConstantsStartOffsets[shaderIndex] = UINT32_MAX;
+
+		numShaderConstantsValues[shaderIndex] = 0;
 	}
 
 	template<size_t N>
@@ -674,41 +622,22 @@ namespace Gear::Core
 #ifdef _DEBUG
 		if (N > D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT)
 		{
-			THROWLOG(LOGERROR() << "无法绑定更多的渲染目标");
+			THROWLOG(LOGERROR() << "无法绑定超过" << D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT << "个渲染目标");
 		}
 #endif // _DEBUG
 
-		switchGraphicsPipelineState = true;
-
-		transientNumRTV = N;
-
 		for (uint32_t i = 0; i < N; i++)
 		{
-			transientRTVHandles[i] = renderTargets[i].rtvHandle;
-
-			transientRTVFormats[i] = renderTargets[i].rtvFormat;
-
-			setResourceState(renderTargets[i]);
+			graphicsCommandExecuter->pushRenderTargetDesc(renderTargets[i]);
 		}
 
-		if (depthStencil.texture)
-		{
-			setResourceState(depthStencil);
+		auto* const command = SetRenderTargetsCommand::acquire();
 
-			depthStencilClearDesc.setHandle(depthStencil.dsvHandle);
+		command->set(renderTargetDescsPtrOffset, N, depthStencil);
 
-			transientDSVFormat = depthStencil.dsvFormat;
+		pushGraphicsCommand(command);
 
-			commandList->setRenderTargets(
-				static_cast<uint32_t>(N), transientRTVHandles.data(), FALSE, &(depthStencil.dsvHandle));
-		}
-		else
-		{
-			transientDSVFormat = FMT::UNKNOWN;
-
-			commandList->setRenderTargets(
-				static_cast<uint32_t>(N), transientRTVHandles.data(), FALSE, nullptr);
-		}
+		renderTargetDescsPtrOffset = graphicsCommandExecuter->getRenderTargetDescsWriteLocation();
 	}
 
 	template<size_t N>
@@ -718,28 +647,22 @@ namespace Gear::Core
 #ifdef _DEBUG
 		if (startSlot + N > D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)
 		{
-			THROWLOG(LOGERROR() << "无法绑定更多的顶点缓冲");
+			THROWLOG(LOGERROR() << "无法绑定超过" << D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT << "个顶点缓冲");
 		}
 #endif // _DEBUG
 
 		for (uint32_t i = 0; i < N; i++)
 		{
-			transientVBViews[i] = vertexBuffers[i].vbv;
-
-			setResourceState(vertexBuffers[i]);
+			graphicsCommandExecuter->pushVertexBufferDesc(vertexBuffers[i]);
 		}
 
-		commandList->setVertexBuffers(startSlot, static_cast<uint32_t>(N), transientVBViews.data());
-	}
+		auto* const command = SetVertexBuffersCommand::acquire();
 
-	template<size_t N>
-	inline void GraphicsContext::setShaderResources(const Resource::ShaderResourceDesc (&descs)[N],
-	                                                const uint32_t targetSRVState)
-	{
-		for (const Resource::ShaderResourceDesc& desc : descs)
-		{
-			setResourceState(desc, targetSRVState);
-		}
+		command->set(vertexBufferDescsPtrOffset, N, startSlot);
+
+		pushGraphicsCommand(command);
+
+		vertexBufferDescsPtrOffset = graphicsCommandExecuter->getVertexBufferDescsWriteLocation();
 	}
 }
 

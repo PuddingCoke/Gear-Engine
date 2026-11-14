@@ -260,7 +260,7 @@ namespace Gear::Core
 		resetDepthStencilClearDesc();
 	}
 
-	void GraphicsCommandExecuter::setVertexBuffers(const Resource::VertexBufferDesc* const vertexBuffers,
+	void GraphicsCommandExecuter::setVertexBuffers(const uint64_t vertexBufferDescsPtrOffset,
 	                                               const uint32_t numVertexBuffers,
 	                                               const uint32_t startSlot)
 	{
@@ -273,9 +273,9 @@ namespace Gear::Core
 
 		for (uint32_t i = 0; i < numVertexBuffers; i++)
 		{
-			transientVBViews[i] = vertexBuffers[i].vbv;
+			transientVBViews[i] = vertexBufferDescs[vertexBufferDescsPtrOffset + i].vbv;
 
-			setResourceState(vertexBuffers[i]);
+			setResourceState(vertexBufferDescs[vertexBufferDescsPtrOffset + i]);
 		}
 
 		commandList->setVertexBuffers(startSlot, numVertexBuffers, transientVBViews.data());
@@ -328,7 +328,7 @@ namespace Gear::Core
 	void GraphicsCommandExecuter::setPixelShaderResources(const uint64_t pixelShaderResourceDescPtrOffset,
 	                                                      const uint32_t numPixelShaderResourceDesc)
 	{
-		setShaderResources(pixelShaderResources.data() + pixelShaderResourceDescPtrOffset,
+		setShaderResources(pixelShaderResourceDescs.data() + pixelShaderResourceDescPtrOffset,
 		                   numPixelShaderResourceDesc,
 		                   D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	}
@@ -337,7 +337,7 @@ namespace Gear::Core
 		const uint64_t nonPixelShaderResourceDescPtrOffset,
 		const uint32_t numNonPixelShaderResourceDesc)
 	{
-		setShaderResources(nonPixelShaderResources.data() + nonPixelShaderResourceDescPtrOffset,
+		setShaderResources(nonPixelShaderResourceDescs.data() + nonPixelShaderResourceDescPtrOffset,
 		                   numNonPixelShaderResourceDesc,
 		                   D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 	}
@@ -434,7 +434,22 @@ namespace Gear::Core
 		commandList->setDescriptorHeap(GlobalDescriptorHeap::getResourceHeap()->get(),
 		                               GlobalDescriptorHeap::getSamplerHeap()->get());
 
+		switchGraphicsPipelineState = false;
+
 		resetTrackedStates();
+
+		for (uint32_t i = 0; i < static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT); i++)
+		{
+			shaderConstants[i].clear();
+		}
+
+		pixelShaderResourceDescs.clear();
+
+		nonPixelShaderResourceDescs.clear();
+
+		renderTargetDescs.clear();
+
+		vertexBufferDescs.clear();
 	}
 
 	void GraphicsCommandExecuter::resetTrackedStates()
@@ -466,6 +481,100 @@ namespace Gear::Core
 	D3D12Core::GraphicsCommandList* GraphicsCommandExecuter::getCommandList() const
 	{
 		return commandList.get();
+	}
+
+	void GraphicsCommandExecuter::addNonPersistentResource(Resource::ResourceBase* const resource)
+	{
+		nonPersistentResources.push_back(resource);
+	}
+
+	void GraphicsCommandExecuter::addUnsettedIndex(const D3D12Core::ShaderType shaderType,
+	                                               uint32_t* indexAddress,
+	                                               const uint64_t location)
+	{
+		unsettedIndices[static_cast<uint32_t>(shaderType)].push_back({ indexAddress, location });
+	}
+
+	uint64_t GraphicsCommandExecuter::getShaderConstantsWriteLocation(const D3D12Core::ShaderType shaderType)
+	{
+		return shaderConstants[static_cast<uint32_t>(shaderType)].size();
+	}
+
+	uint64_t GraphicsCommandExecuter::getPixelShaderResourceDescsWriteLocation()
+	{
+		return pixelShaderResourceDescs.size();
+	}
+
+	uint64_t GraphicsCommandExecuter::getNonPixelShaderResourceDescsWriteLocation()
+	{
+		return nonPixelShaderResourceDescs.size();
+	}
+
+	uint64_t GraphicsCommandExecuter::getRenderTargetDescsWriteLocation()
+	{
+		return renderTargetDescs.size();
+	}
+
+	uint64_t GraphicsCommandExecuter::getVertexBufferDescsWriteLocation()
+	{
+		return vertexBufferDescs.size();
+	}
+
+	void GraphicsCommandExecuter::pushShaderConstants(const D3D12Core::ShaderType shaderType,
+	                                                  const uint32_t* const srcBegin,
+	                                                  const uint32_t count)
+	{
+		shaderConstants[static_cast<uint32_t>(shaderType)].insert(
+			shaderConstants[static_cast<uint32_t>(shaderType)].end(), srcBegin, srcBegin + count);
+	}
+
+	void GraphicsCommandExecuter::pushPixelShaderResourceDesc(const Resource::ShaderResourceDesc& desc)
+	{
+		pixelShaderResourceDescs.push_back(desc);
+	}
+
+	void GraphicsCommandExecuter::pushNonPixelShaderResourceDesc(const Resource::ShaderResourceDesc& desc)
+	{
+		nonPixelShaderResourceDescs.push_back(desc);
+	}
+
+	void GraphicsCommandExecuter::pushRenderTargetDesc(const Resource::RenderTargetDesc& desc)
+	{
+		renderTargetDescs.push_back(desc);
+	}
+
+	void GraphicsCommandExecuter::pushVertexBufferDesc(const Resource::VertexBufferDesc& desc)
+	{
+		vertexBufferDescs.push_back(desc);
+	}
+
+	void GraphicsCommandExecuter::copyDescriptors()
+	{
+		if (nonPersistentResources.size())
+		{
+			for (Resource::ResourceBase* const resource : nonPersistentResources)
+			{
+				resource->copyDescriptors();
+			}
+
+			nonPersistentResources.clear();
+		}
+	}
+
+	void GraphicsCommandExecuter::resolveDescriptorIndices()
+	{
+		for (uint32_t i = 0; i < static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT); i++)
+		{
+			for (const auto& index : unsettedIndices[i])
+			{
+				if (index.location < shaderConstants[i].size())
+				{
+					shaderConstants[i][index.location] = *index.indexAddress;
+				}
+			}
+
+			unsettedIndices[i].clear();
+		}
 	}
 
 	void GraphicsCommandExecuter::setPipelineState(ID3D12PipelineState* const pipelineState)

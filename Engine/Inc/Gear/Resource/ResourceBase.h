@@ -37,6 +37,12 @@ namespace Gear::Resource
 
 		void setNumCBVSRVUAVDescriptors(const uint32_t numDescriptors);
 
+		bool getInCopyingList() const;
+
+		void pushToCopyingList();
+
+		void popFromCopyingList();
+
 		void resetCopyState();
 
 	protected:
@@ -57,6 +63,8 @@ namespace Gear::Resource
 		static constexpr uint64_t safeMarginNumerator = 1;
 
 		static constexpr uint64_t safeMarginDenominator = 2;
+
+		bool inCopyingList;
 
 		bool currentFrameCopied;
 

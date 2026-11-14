@@ -31,8 +31,6 @@ namespace Gear::Core
 
 		GraphicsCommandExecuter();
 
-		~GraphicsCommandExecuter() = default;
-
 		//将上传堆中的数据拷贝到缓冲
 		void updateBuffer(D3D12Resource::Buffer* const buffer,
 		                  D3D12Resource::UploadHeap* const uploadHeap,
@@ -69,7 +67,7 @@ namespace Gear::Core
 		                              const uint8_t stencil);
 
 		//设置顶点缓冲
-		void setVertexBuffers(const Resource::VertexBufferDesc* const vertexBuffers,
+		void setVertexBuffers(const uint64_t vertexBufferDescsPtrOffset,
 		                      const uint32_t numVertexBuffers,
 		                      const uint32_t startSlot);
 
@@ -96,9 +94,11 @@ namespace Gear::Core
 		template<D3D12Core::ShaderType ShaderType>
 		void setConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
 
-		void setPixelShaderResources(const uint64_t pixelShaderResourceDescPtrOffset, const uint32_t numPixelShaderResourceDesc);
+		void setPixelShaderResources(const uint64_t pixelShaderResourceDescPtrOffset,
+		                             const uint32_t numPixelShaderResourceDesc);
 
-		void setNonPixelShaderResources(const uint64_t nonPixelShaderResourceDescPtrOffset, const uint32_t numNonPixelShaderResourceDesc);
+		void setNonPixelShaderResources(const uint64_t nonPixelShaderResourceDescPtrOffset,
+		                                const uint32_t numNonPixelShaderResourceDesc);
 
 		void draw(const uint32_t vertexCountPerInstance,
 		          const uint32_t instanceCount,
@@ -136,6 +136,38 @@ namespace Gear::Core
 		void resetTrackedComputeStates();
 
 		D3D12Core::GraphicsCommandList* getCommandList() const;
+
+		void addNonPersistentResource(Resource::ResourceBase* const resource);
+
+		void addUnsettedIndex(const D3D12Core::ShaderType shaderType,
+		                      uint32_t* indexAddress,
+		                      const uint64_t location);
+
+		uint64_t getShaderConstantsWriteLocation(const D3D12Core::ShaderType shaderType);
+
+		uint64_t getPixelShaderResourceDescsWriteLocation();
+
+		uint64_t getNonPixelShaderResourceDescsWriteLocation();
+
+		uint64_t getRenderTargetDescsWriteLocation();
+
+		uint64_t getVertexBufferDescsWriteLocation();
+
+		void pushShaderConstants(const D3D12Core::ShaderType shaderType,
+		                         const uint32_t* const srcBegin,
+		                         const uint32_t count);
+
+		void pushPixelShaderResourceDesc(const Resource::ShaderResourceDesc& desc);
+
+		void pushNonPixelShaderResourceDesc(const Resource::ShaderResourceDesc& desc);
+
+		void pushRenderTargetDesc(const Resource::RenderTargetDesc& desc);
+
+		void pushVertexBufferDesc(const Resource::VertexBufferDesc& desc);
+
+		void copyDescriptors();
+
+		void resolveDescriptorIndices();
 
 	private:
 
@@ -286,7 +318,7 @@ namespace Gear::Core
 			D3D12Core::ComputeState* computeState;
 		};
 
-		//需要在指令真正执行前调用这些资源的copyDescriptors方法
+		//需要在指令真正执行前调用这些资源的 copyDescriptors 方法
 		std::vector<Resource::ResourceBase*> nonPersistentResources;
 
 		struct UnsettedIndex
@@ -294,25 +326,27 @@ namespace Gear::Core
 			//用于取回索引的地址
 			uint32_t* indexAddress;
 
-			//在shaderConstants中的位置
+			//在 shaderConstants 中的位置
 			uint64_t location;
 		};
-
-		//缓存一帧需要的所有着色器常量
-		std::vector<uint32_t> shaderConstants[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 
 		//存储暂时未确定的索引
 		std::vector<UnsettedIndex> unsettedIndices[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 
-		//按Draw/Dispatch Call顺序缓存一帧需要状态转变的像素着色器资源
-		std::vector<Resource::ShaderResourceDesc> pixelShaderResources;
+		//缓存一帧需要的所有着色器常量
+		std::vector<uint32_t> shaderConstants[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 
-		//按Draw/Dispatch Call顺序缓存一帧需要状态转变的非像素着色器资源
-		std::vector<Resource::ShaderResourceDesc> nonPixelShaderResources;
+		//按 Draw/Dispatch Call 顺序缓存一帧需要状态转变的像素着色器资源
+		std::vector<Resource::ShaderResourceDesc> pixelShaderResourceDescs;
 
-		//按SetRenderTargets调用顺序缓存一帧需要设置的渲染目标
+		//按 Draw/Dispatch Call 顺序缓存一帧需要状态转变的非像素着色器资源
+		std::vector<Resource::ShaderResourceDesc> nonPixelShaderResourceDescs;
+
+		//按 SetRenderTargets 调用顺序缓存一帧需要设置的渲染目标
 		std::vector<Resource::RenderTargetDesc> renderTargetDescs;
 
+		//按 SetVertexBuffers 调用顺序缓存一帧需要设置的顶点缓冲
+		std::vector<Resource::VertexBufferDesc> vertexBufferDescs;
 	};
 
 	template<D3D12Core::ShaderType ShaderType>

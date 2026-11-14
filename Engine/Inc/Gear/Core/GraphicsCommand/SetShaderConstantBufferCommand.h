@@ -6,41 +6,26 @@
 namespace Gear::Core
 {
 	template<D3D12Core::ShaderType ShaderType>
-	class SetShaderConstantBufferCommand : public GraphicsCommand
+	class SetShaderConstantBufferCommand :
+		public GraphicsCommand,
+		public CommandPool<SetShaderConstantBufferCommand<ShaderType>>
 	{
 	public:
 
-		SetShaderConstantBufferCommand() = delete;
+		void set(const Resource::ImmutableCBuffer& immutableCBuffer)
+		{
+			this->immutableCBuffer = &immutableCBuffer;
+		}
 
-		SetShaderConstantBufferCommand(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-		void set(const Resource::ImmutableCBuffer& immutableCBuffer);
-
-		void execute(GraphicsCommandExecuter& executer) override;
+		void execute(GraphicsCommandExecuter& executer) override
+		{
+			executer.setConstantBuffer<ShaderType>(*immutableCBuffer);
+		}
 
 	private:
 
 		const Resource::ImmutableCBuffer* immutableCBuffer;
 	};
-
-	template<D3D12Core::ShaderType ShaderType>
-	SetShaderConstantBufferCommand<ShaderType>::SetShaderConstantBufferCommand(
-		const Resource::ImmutableCBuffer& immutableCBuffer)
-	{
-		set(immutableCBuffer);
-	}
-
-	template<D3D12Core::ShaderType ShaderType>
-	void SetShaderConstantBufferCommand<ShaderType>::set(const Resource::ImmutableCBuffer& immutableCBuffer)
-	{
-		this->immutableCBuffer = &immutableCBuffer;
-	}
-
-	template<D3D12Core::ShaderType ShaderType>
-	void SetShaderConstantBufferCommand<ShaderType>::execute(GraphicsCommandExecuter& executer)
-	{
-		executer.setConstantBuffer<ShaderType>(*immutableCBuffer);
-	}
 
 	using SetAllShaderConstantBufferCommand = SetShaderConstantBufferCommand<D3D12Core::ShaderType::ALL>;
 

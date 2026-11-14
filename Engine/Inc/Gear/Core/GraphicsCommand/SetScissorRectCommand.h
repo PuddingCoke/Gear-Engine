@@ -5,16 +5,9 @@
 
 namespace Gear::Core
 {
-	class SetScissorRectCommand : public GraphicsCommand
+	class SetScissorRectCommand : public GraphicsCommand, public CommandPool<SetScissorRectCommand>
 	{
 	public:
-
-		SetScissorRectCommand() = delete;
-
-		SetScissorRectCommand(const int32_t left,
-		                      const int32_t top,
-		                      const int32_t right,
-		                      const int32_t bottom);
 
 		void set(const int32_t left, const int32_t top, const int32_t right, const int32_t bottom);
 

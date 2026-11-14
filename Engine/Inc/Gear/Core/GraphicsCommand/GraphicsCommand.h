@@ -1,19 +1,20 @@
 #ifndef _GEAR_CORE_GRAPHICSCOMMAND_H_
 #define _GEAR_CORE_GRAPHICSCOMMAND_H_
 
-#include"GraphicsCommandExecuter.h"
+#include "GraphicsCommandExecuter.h"
+
+#include "CommandPool.h"
 
 namespace Gear::Core
 {
-    class GraphicsCommand
-    {
-        public:
+	class GraphicsCommand
+	{
+	public:
 
-            virtual ~GraphicsCommand() = default;
+		virtual ~GraphicsCommand() = default;
 
-            virtual void execute(GraphicsCommandExecuter& executer) = 0;
-
-    };
+		virtual void execute(GraphicsCommandExecuter& executer) = 0;
+	};
 }
 
 #endif // !_GEAR_CORE_GRAPHICSCOMMAND_H_
