@@ -36,11 +36,11 @@ namespace Gear::Resource
 
 		IndexBufferDesc getIndexBuffer() const;
 
-		ShaderResourceDesc getSRVIndex() const;
+		ShaderResourceDesc getSRVIndex();
 
-		ShaderResourceDesc getUAVIndex() const;
+		ShaderResourceDesc getUAVIndex();
 
-		UAVClearDesc getUAVClearDesc() const;
+		UAVClearDesc getUAVClearDesc();
 
 		CounterBufferView* getCounterBuffer() const;
 

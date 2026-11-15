@@ -9,7 +9,8 @@ namespace Gear::Core
 		context(resManager->getGraphicsContext()),
 		renderThread(nullptr)
 	{
-		context->begin();
+		//自动开始一帧用于资源初始化
+		beginFrame();
 	}
 
 	RenderTask::~RenderTask()
@@ -45,11 +46,19 @@ namespace Gear::Core
 		Effect::BackBufferBlitEffect::process(*context, texture);
 	}
 
+	void RenderTask::beginFrame()
+	{
+		context->begin();
+	}
+
+	void RenderTask::endFrame()
+	{
+		context->end();
+	}
+
 	void RenderTask::frameTask()
 	{
 		resManager->cleanTransientResources();
-
-		context->begin();
 
 		recordCommand();
 	}

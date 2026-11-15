@@ -83,32 +83,33 @@ namespace Gear::Resource
 	{
 	}
 
-	ShaderResourceDesc CounterBufferView::getSRVIndex() const
+	ShaderResourceDesc CounterBufferView::getSRVIndex()
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::SRV,
 			                              .resourceIndex = srvIndex.get(),
-			                              .bufferDesc = { .buffer = buffer.get(),
-			                                              .counterBuffer = nullptr } };
+			                              .bufferDesc = { .buffer = buffer.get(), .counterBuffer = nullptr },
+			                              .resource = this };
 
 		return desc;
 	}
 
-	ShaderResourceDesc CounterBufferView::getUAVIndex() const
+	ShaderResourceDesc CounterBufferView::getUAVIndex()
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::UAV,
 			                              .resourceIndex = uavIndex.get(),
-			                              .bufferDesc = { .buffer = buffer.get(),
-			                                              .counterBuffer = nullptr } };
+			                              .bufferDesc = { .buffer = buffer.get(), .counterBuffer = nullptr },
+			                              .resource = this };
 
 		return desc;
 	}
 
-	UAVClearDesc CounterBufferView::getUAVClearDesc() const
+	UAVClearDesc CounterBufferView::getUAVClearDesc()
 	{
 		const UAVClearDesc desc = { .type = UAVClearDesc::BUFFER,
 			                        .bufferDesc = { .buffer = buffer.get() },
+			                        .resource = this,
 			                        .viewGPUHandle = viewGPUHandle.get(),
 			                        .viewCPUHandle = *viewCPUHandle };
 

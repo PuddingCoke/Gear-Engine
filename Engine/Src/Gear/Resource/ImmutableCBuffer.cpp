@@ -43,13 +43,13 @@ namespace Gear::Resource
 	{
 	}
 
-	ShaderResourceDesc ImmutableCBuffer::getBufferIndex() const
+	ShaderResourceDesc ImmutableCBuffer::getBufferIndex()
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::CBV,
 			                              .resourceIndex = bufferIndex.get(),
-			                              .bufferDesc = { .buffer = buffer.get(),
-			                                              .counterBuffer = nullptr } };
+			                              .bufferDesc = { .buffer = buffer.get(), .counterBuffer = nullptr },
+			                              .resource = this };
 
 		return desc;
 	}

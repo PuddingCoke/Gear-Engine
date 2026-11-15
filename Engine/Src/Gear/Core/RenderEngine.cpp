@@ -341,6 +341,8 @@ namespace Gear::Core::RenderEngine
 
 			renderResourceToken = makeUnique<RenderResourceToken>(resManager.get());
 
+			context->end();
+
 			submitCommandList(resManager->getCommandList());
 		}
 
@@ -639,8 +641,6 @@ namespace Gear::Core::RenderEngine
 
 		//等待准备工作完成
 		waitFrameGPUComplete();
-
-		RenderThreadLocal::Internal::flushCopiedResources();
 
 		//清理静态资源管理器创建的临时资源
 		resManager->cleanTransientResources();

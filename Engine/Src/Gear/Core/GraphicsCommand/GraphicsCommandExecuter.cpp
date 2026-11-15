@@ -89,25 +89,6 @@ namespace Gear::Core
 		resetTrackedStates();
 	}
 
-	// void GraphicsCommandExecuter::updateBuffer(Resource::BufferView& bufferView,
-	//                                            const void* const data,
-	//                                            const uint32_t size) const
-	// {
-	// 	const Resource::BufferView::UpdateStruct updateStruct = bufferView.getUpdateStruct(data, size);
-
-	// 	updateBuffer(updateStruct.buffer, updateStruct.uploadHeap, size);
-	// }
-
-	// void GraphicsCommandExecuter::updateBuffer(Resource::DefaultCBuffer& defaultCBuffer,
-	//                                            const void* const data,
-	//                                            const uint32_t size) const
-	// {
-	// 	const Resource::DefaultCBuffer::UpdateStruct updateStruct =
-	// 		defaultCBuffer.getUpdateStruct(data, size);
-
-	// 	updateBuffer(updateStruct.buffer, updateStruct.uploadHeap, size);
-	// }
-
 	void GraphicsCommandExecuter::updateBuffer(D3D12Resource::Buffer* const buffer,
 	                                           D3D12Resource::UploadHeap* const uploadHeap,
 	                                           const uint64_t size) const
@@ -485,7 +466,24 @@ namespace Gear::Core
 
 	void GraphicsCommandExecuter::addNonPersistentResource(Resource::ResourceBase* const resource)
 	{
-		nonPersistentResources.push_back(resource);
+#ifdef _DEBUG
+		if (!resource)
+		{
+			THROWLOG(LOGERROR() << "资源不能为空");
+		}
+
+		if (resource->getPersistent())
+		{
+			THROWLOG(LOGERROR() << "对于持久性资源来说，调用addNonPersistentResource是非法的");
+		}
+#endif
+
+		if (!resource->getInCopyingList())
+		{
+			nonPersistentResources.push_back(resource);
+
+			resource->pushToCopyingList();
+		}
 	}
 
 	void GraphicsCommandExecuter::addUnsettedIndex(const D3D12Core::ShaderType shaderType,
@@ -555,6 +553,8 @@ namespace Gear::Core
 			for (Resource::ResourceBase* const resource : nonPersistentResources)
 			{
 				resource->copyDescriptors();
+
+				resource->popFromCopyingList();
 			}
 
 			nonPersistentResources.clear();

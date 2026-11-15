@@ -7,6 +7,8 @@
 
 #include <Gear/Core/GraphicsCommand/GraphicsCommand.h>
 
+#include <Gear/Core/GraphicsCommand/LambdaCommand.h>
+
 #include <Gear/Core/GraphicsCommand/SetRenderTargetsCommandBase.h>
 
 #include <Gear/Core/GraphicsCommand/SetVertexBuffersCommand.h>
@@ -436,14 +438,9 @@ namespace Gear::Core
 
 				Resource::ResourceBase* const resource = descs[i].resource;
 
-				if (!resource->getPersistent())
+				if (resource && !resource->getPersistent())
 				{
-					if (!resource->getInCopyingList())
-					{
-						graphicsCommandExecuter->addNonPersistentResource(resource);
-
-						resource->pushToCopyingList();
-					}
+					graphicsCommandExecuter->addNonPersistentResource(resource);
 
 					shaderConstants[shaderIndex][offset + i] = UINT32_MAX;
 
@@ -647,7 +644,8 @@ namespace Gear::Core
 #ifdef _DEBUG
 		if (startSlot + N > D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)
 		{
-			THROWLOG(LOGERROR() << "无法绑定超过" << D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT << "个顶点缓冲");
+			THROWLOG(LOGERROR() << "无法绑定超过" << D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT
+			                    << "个顶点缓冲");
 		}
 #endif // _DEBUG
 

@@ -9,8 +9,6 @@ namespace Gear::Core::RenderThreadLocal::Internal
 
 	void release();
 
-	void flushCopiedResources();
-
 	struct InitializeToken
 	{
 		InitializeToken()

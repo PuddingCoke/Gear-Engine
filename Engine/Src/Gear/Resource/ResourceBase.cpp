@@ -6,10 +6,10 @@ namespace Gear::Resource
 {
 	ResourceBase::ResourceBase(const bool persistent) :
 		persistent(persistent),
-		numCBVSRVUAVDescriptors(0),
-		copySrcDescriptorHandle(),
+		inCopyingList(false),
 		lastUpdateDynamicIndex(UINT64_MAX),
-		currentFrameCopied(false)
+		numCBVSRVUAVDescriptors(0),
+		copySrcDescriptorHandle()
 	{
 	}
 
@@ -17,10 +17,10 @@ namespace Gear::Resource
 	//这意味着只能是创建那个资源的渲染线程调用资源的copyDescriptors方法
 	ResourceBase::ResourceBase(const ResourceBase& resource) :
 		persistent(true),
-		numCBVSRVUAVDescriptors(resource.numCBVSRVUAVDescriptors),
-		copySrcDescriptorHandle(),
+		inCopyingList(false),
 		lastUpdateDynamicIndex(UINT64_MAX),
-		currentFrameCopied(false)
+		numCBVSRVUAVDescriptors(resource.numCBVSRVUAVDescriptors),
+		copySrcDescriptorHandle()
 	{
 	}
 
@@ -48,9 +48,19 @@ namespace Gear::Resource
 		numCBVSRVUAVDescriptors = numDescriptors;
 	}
 
-	void ResourceBase::resetCopyState()
+	bool ResourceBase::getInCopyingList() const
 	{
-		currentFrameCopied = false;
+		return inCopyingList;
+	}
+
+	void ResourceBase::pushToCopyingList()
+	{
+		inCopyingList = true;
+	}
+
+	void ResourceBase::popFromCopyingList()
+	{
+		inCopyingList = false;
 	}
 
 	D3D12Core::DescriptorHandle ResourceBase::allocCBVSRVUAVDescriptors()
@@ -87,18 +97,7 @@ namespace Gear::Resource
 		}
 #endif // _DEBUG
 
-		//这一帧如果拷贝了就不再进行多余的拷贝
-		if (currentFrameCopied)
-		{
-			return false;
-		}
-
-		//currentFrameCopied应该放置在这里，得保证每帧使用数值相同的资源索引
-		currentFrameCopied = true;
-
-		RenderThreadLocal::pushToCopiedResources(this);
-
-		//如果没有拷贝过，但是检测到当前的位置是安全的那么也不更新，同时视为这一帧拷贝完毕
+		//检测到当前的位置是安全的那么不更新
 		if (lastUpdateDynamicIndex != UINT64_MAX)
 		{
 			//>=lastUpdateDynamicIndex

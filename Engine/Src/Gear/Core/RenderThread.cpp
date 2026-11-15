@@ -72,6 +72,8 @@ namespace Gear::Core
 			//开始创建RenderTask
 			createFunc(&renderTask);
 
+			renderTask->endFrame();
+
 			RenderEngine::submitCommandList(renderTask->getCommandList());
 
 			{
@@ -120,9 +122,11 @@ namespace Gear::Core
 						break;
 					}
 
-					RenderThreadLocal::Internal::flushCopiedResources();
+					renderTask->beginFrame();
 
 					renderTask->frameTask();
+
+					renderTask->endFrame();
 
 					taskCompleted = true;
 				}

@@ -45,6 +45,12 @@ namespace Gear::Core
 
 		friend class RenderThread;
 
+		//开始一帧
+		void beginFrame();
+
+		//结束一帧
+		void endFrame();
+
 		//帧任务
 		void frameTask();
 

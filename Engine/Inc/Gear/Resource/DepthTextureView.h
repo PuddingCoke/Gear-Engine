@@ -30,17 +30,17 @@ namespace Gear::Resource
 
 		~DepthTextureView();
 
-		ShaderResourceDesc getAllDepthIndex() const;
+		ShaderResourceDesc getAllDepthIndex();
 
-		ShaderResourceDesc getAllStencilIndex() const;
+		ShaderResourceDesc getAllStencilIndex();
 
-		ShaderResourceDesc getDepthMipIndex(const uint32_t mipSlice) const;
+		ShaderResourceDesc getDepthMipIndex(const uint32_t mipSlice);
 
 		D3D12_GPU_DESCRIPTOR_HANDLE getDepthMipGPUHandle(const uint32_t mipSlice) const;
 
-		ShaderResourceDesc getStencilMipIndex(const uint32_t mipSlice) const;
+		ShaderResourceDesc getStencilMipIndex(const uint32_t mipSlice);
 
-		DepthStencilDesc getDSVMip(const uint32_t mipSlice) const;
+		DepthStencilDesc getDSVMip(const uint32_t mipSlice);
 
 		D3D12Resource::Texture* getTexture() const;
 

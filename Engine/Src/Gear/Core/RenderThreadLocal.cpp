@@ -1,5 +1,7 @@
 #include <Gear/Core/RenderThreadLocal.h>
 
+#include <Gear/Core/GraphicsDevice.h>
+
 #include <Gear/Core/Internal/RenderThreadLocalInternal.h>
 
 #include <Gear/Core/Internal/LocalDescriptorHeapInternal.h>
@@ -30,9 +32,6 @@ namespace Gear::Core::RenderThreadLocal
 
 		//申请每个渲染线程独享的描述符堆
 		LocalDescriptorHeap::Internal::InitializeToken localDescriptorHeapToken;
-
-		//存储这一帧拷贝过的资源
-		std::vector<Resource::ResourceBase*> copiedResources;
 	};
 
 	thread_local UniquePtr<RenderThreadLocalImpl> impl;
@@ -48,23 +47,6 @@ namespace Gear::Core::RenderThreadLocal
 		{
 			impl.reset();
 		}
-
-		void flushCopiedResources()
-		{
-			if (impl->copiedResources.size())
-			{
-				for (Resource::ResourceBase* const resource : impl->copiedResources)
-				{
-					resource->resetCopyState();
-				}
-
-				impl->copiedResources.clear();
-			}
-		}
 	}
 
-	void pushToCopiedResources(Resource::ResourceBase* const resource)
-	{
-		impl->copiedResources.push_back(resource);
-	}
 }

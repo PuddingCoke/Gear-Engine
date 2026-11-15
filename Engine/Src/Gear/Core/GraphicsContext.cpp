@@ -331,14 +331,14 @@ namespace Gear::Core
 	{
 		Resource::ResourceBase* const resource = desc.resource;
 
+		if (resource == nullptr)
+		{
+			THROWLOG(LOGERROR() << "资源不能为空");
+		}
+
 		if (!resource->getPersistent())
 		{
-			if (!resource->getInCopyingList())
-			{
-				graphicsCommandExecuter->addNonPersistentResource(resource);
-
-				resource->pushToCopyingList();
-			}
+			graphicsCommandExecuter->addNonPersistentResource(resource);
 		}
 
 		auto* const command = ClearUnorderedAccessFloatCommand::acquire();
@@ -352,14 +352,14 @@ namespace Gear::Core
 	{
 		Resource::ResourceBase* const resource = desc.resource;
 
+		if (resource == nullptr)
+		{
+			THROWLOG(LOGERROR() << "资源不能为空");
+		}
+
 		if (!resource->getPersistent())
 		{
-			if (!resource->getInCopyingList())
-			{
-				graphicsCommandExecuter->addNonPersistentResource(resource);
-
-				resource->pushToCopyingList();
-			}
+			graphicsCommandExecuter->addNonPersistentResource(resource);
 		}
 
 		auto* const command = ClearUnorderedAccessUintCommand::acquire();
@@ -575,6 +575,8 @@ namespace Gear::Core
 	void GraphicsContext::begin()
 	{
 		graphicsCommandExecuter->begin();
+
+		setConstantsCommands.clear();
 
 		pixelShaderResourceDescPtrOffset =
 			graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation();

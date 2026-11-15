@@ -34,17 +34,17 @@ namespace Gear::Resource
 
 		~RenderTextureView();
 
-		ShaderResourceDesc getAllSRVIndex() const;
+		ShaderResourceDesc getAllSRVIndex();
 
-		ShaderResourceDesc getSRVMipIndex(const uint32_t mipSlice) const;
+		ShaderResourceDesc getSRVMipIndex(const uint32_t mipSlice);
 
 		D3D12_GPU_DESCRIPTOR_HANDLE getSRVMipGPUHandle(const uint32_t mipSlice) const;
 
-		ShaderResourceDesc getUAVMipIndex(const uint32_t mipSlice) const;
+		ShaderResourceDesc getUAVMipIndex(const uint32_t mipSlice);
 
-		RenderTargetDesc getRTVMip(const uint32_t mipSlice) const;
+		RenderTargetDesc getRTVMip(const uint32_t mipSlice);
 
-		UAVClearDesc getUAVMipClearDesc(const uint32_t mipSlice) const;
+		UAVClearDesc getUAVMipClearDesc(const uint32_t mipSlice);
 
 		D3D12Resource::Texture* getTexture() const;
 

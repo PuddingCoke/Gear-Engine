@@ -29,6 +29,7 @@ namespace Gear::Resource
 
 		virtual ~ResourceBase();
 
+		//由引擎自动调用
 		virtual bool copyDescriptors();
 
 		bool getPersistent() const;
@@ -42,8 +43,6 @@ namespace Gear::Resource
 		void pushToCopyingList();
 
 		void popFromCopyingList();
-
-		void resetCopyState();
 
 	protected:
 
@@ -65,8 +64,6 @@ namespace Gear::Resource
 		static constexpr uint64_t safeMarginDenominator = 2;
 
 		bool inCopyingList;
-
-		bool currentFrameCopied;
 
 		uint64_t lastUpdateDynamicIndex;
 
