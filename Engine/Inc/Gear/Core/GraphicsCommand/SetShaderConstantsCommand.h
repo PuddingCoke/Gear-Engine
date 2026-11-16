@@ -12,15 +12,15 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const uint64_t dataPtrOffset,
-		         const uint32_t numConstantValues,
-		         const uint32_t constantWriteOffset)
+		void set(const uint64_t dataPtrOffsetParam,
+		         const uint32_t numConstantValuesParam,
+		         const uint32_t constantWriteOffsetParam)
 		{
-			this->dataPtrOffset = dataPtrOffset;
+			dataPtrOffset = dataPtrOffsetParam;
 
-			this->numConstantValues = numConstantValues;
+			numConstantValues = numConstantValuesParam;
 
-			this->constantWriteOffset = constantWriteOffset;
+			constantWriteOffset = constantWriteOffsetParam;
 		}
 
 		void execute(GraphicsCommandExecuter& executer) override

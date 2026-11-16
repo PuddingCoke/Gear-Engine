@@ -227,12 +227,7 @@ namespace Gear::Core
 
 	protected:
 
-		//处理高级任务，比如从等距柱状图创建立方体贴图
 		GraphicsContextPtr context;
-
-		//处理低级任务，比如用数据初始化纹理
-		//注意：这个指针只是引用
-		D3D12Core::GraphicsCommandList* const commandList;
 
 	private:
 

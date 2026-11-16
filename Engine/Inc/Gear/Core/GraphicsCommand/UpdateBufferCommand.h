@@ -13,9 +13,9 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(D3D12Resource::Buffer* const buffer,
-		         D3D12Resource::UploadHeap* const uploadHeap,
-		         const uint64_t size);
+		void set(D3D12Resource::Buffer* const bufferParam,
+		         D3D12Resource::UploadHeap* const uploadHeapParam,
+		         const uint64_t sizeParam);
 
 		void execute(GraphicsCommandExecuter& executer) override;
 

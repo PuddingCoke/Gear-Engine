@@ -3,15 +3,15 @@
 namespace Gear::Core
 {
 
-	void UpdateBufferCommand::set(D3D12Resource::Buffer* const buffer,
-		         D3D12Resource::UploadHeap* const uploadHeap,
-		         const uint64_t size)
+	void UpdateBufferCommand::set(D3D12Resource::Buffer* const bufferParam,
+	                              D3D12Resource::UploadHeap* const uploadHeapParam,
+	                              const uint64_t sizeParam)
 	{
-		this->buffer = buffer;
+		buffer = bufferParam;
 
-		this->uploadHeap = uploadHeap;
+		uploadHeap = uploadHeapParam;
 
-		this->size = size;
+		size = sizeParam;
 	}
 
 	void UpdateBufferCommand::execute(GraphicsCommandExecuter& executer)

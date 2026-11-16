@@ -9,9 +9,9 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const uint64_t vertexBufferDescsPtrOffset,
-		         const uint32_t numVertexBuffersDescs,
-		         const uint32_t startSlot);
+		void set(const uint64_t vertexBufferDescsPtrOffsetParam,
+		         const uint32_t numVertexBuffersDescsParam,
+		         const uint32_t startSlotParam);
 
 		void execute(GraphicsCommandExecuter& executer) override;
 

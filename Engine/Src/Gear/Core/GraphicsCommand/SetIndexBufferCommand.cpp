@@ -3,9 +3,9 @@
 namespace Gear::Core
 {
 
-	void SetIndexBufferCommand::set(const Resource::IndexBufferDesc& indexBufferDesc)
+	void SetIndexBufferCommand::set(const Resource::IndexBufferDesc& indexBufferDescParam)
 	{
-		this->indexBufferDesc = indexBufferDesc;
+		indexBufferDesc = indexBufferDescParam;
 	}
 
 	void SetIndexBufferCommand::execute(GraphicsCommandExecuter& executer)

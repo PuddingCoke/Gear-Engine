@@ -14,16 +14,16 @@ namespace Gear::Core
 
 		template<bool D = IsGraphicsPipelineState>
 			requires(D)
-		void set(D3D12Core::GraphicsState& graphicsPipelineState)
+		void set(D3D12Core::GraphicsState& graphicsPipelineStateParam)
 		{
-			graphicsState = &graphicsPipelineState;
+			graphicsState = &graphicsPipelineStateParam;
 		}
 
 		template<bool D = IsGraphicsPipelineState>
 			requires(!D)
-		void set(D3D12Core::ComputeState& computePipelineState)
+		void set(D3D12Core::ComputeState& computePipelineStateParam)
 		{
-			computeState = &computePipelineState;
+			computeState = &computePipelineStateParam;
 		}
 
 		void execute(GraphicsCommandExecuter& executer) override

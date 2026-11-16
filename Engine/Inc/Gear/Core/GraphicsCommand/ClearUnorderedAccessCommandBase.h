@@ -14,17 +14,17 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const Resource::UAVClearDesc& desc, const void* const data)
+		void set(const Resource::UAVClearDesc& descParam, const void* const dataParam)
 		{
-			this->desc = desc;
+			desc = descParam;
 
 			if constexpr (ClearFloat)
 			{
-				memcpy(floatValues, data, sizeof(float) * _countof(floatValues));
+				memcpy(floatValues, dataParam, sizeof(float) * _countof(floatValues));
 			}
 			else
 			{
-				memcpy(uintValues, data, sizeof(uint32_t) * _countof(uintValues));
+				memcpy(uintValues, dataParam, sizeof(uint32_t) * _countof(uintValues));
 			}
 		}
 

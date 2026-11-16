@@ -14,15 +14,15 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const uint64_t renderTargetDescsPtrOffset,
-		         const uint32_t numRenderTargetsDescs,
-		         const Resource::DepthStencilDesc& depthStencilDesc)
+		void set(const uint64_t renderTargetDescsPtrOffsetParam,
+		         const uint32_t numRenderTargetsDescsParam,
+		         const Resource::DepthStencilDesc& depthStencilDescParam)
 		{
-			this->renderTargetDescsPtrOffset = renderTargetDescsPtrOffset;
+			renderTargetDescsPtrOffset = renderTargetDescsPtrOffsetParam;
 
-			this->numRenderTargetsDescs = numRenderTargetsDescs;
+			numRenderTargetsDescs = numRenderTargetsDescsParam;
 
-			this->depthStencilDesc = depthStencilDesc;
+			depthStencilDesc = depthStencilDescParam;
 		}
 
 		void execute(GraphicsCommandExecuter& executer) override

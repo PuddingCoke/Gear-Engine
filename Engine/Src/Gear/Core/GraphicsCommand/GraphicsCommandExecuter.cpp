@@ -487,7 +487,7 @@ namespace Gear::Core
 	}
 
 	void GraphicsCommandExecuter::addUnsettedIndex(const D3D12Core::ShaderType shaderType,
-	                                               uint32_t* indexAddress,
+	                                               const uint32_t* indexAddress,
 	                                               const uint64_t location)
 	{
 		unsettedIndices[static_cast<uint32_t>(shaderType)].push_back({ indexAddress, location });

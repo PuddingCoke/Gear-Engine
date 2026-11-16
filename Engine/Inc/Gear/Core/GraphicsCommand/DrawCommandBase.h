@@ -12,61 +12,61 @@ namespace Gear::Core
 
 		template<bool D = DrawIndexed>
 			requires(!D)
-		void set(const uint64_t pixelShaderResourceDescPtrOffset,
-		         const uint32_t numPixelShaderResourceDesc,
-				 const uint64_t nonPixelShaderResourceDescPtrOffset,
-		         const uint32_t numNonPixelShaderResourceDesc,
-		         const uint32_t vertexCountPerInstance,
-		         const uint32_t instanceCount,
-		         const uint32_t startVertexLocation,
-		         const uint32_t startInstanceLocation)
+		void set(const uint64_t pixelShaderResourceDescPtrOffsetParam,
+		         const uint32_t numPixelShaderResourceDescParam,
+		         const uint64_t nonPixelShaderResourceDescPtrOffsetParam,
+		         const uint32_t numNonPixelShaderResourceDescParam,
+		         const uint32_t vertexCountPerInstanceParam,
+		         const uint32_t instanceCountParam,
+		         const uint32_t startVertexLocationParam,
+		         const uint32_t startInstanceLocationParam)
 		{
-			this->pixelShaderResourceDescPtrOffset = pixelShaderResourceDescPtrOffset;
+			pixelShaderResourceDescPtrOffset = pixelShaderResourceDescPtrOffsetParam;
 
-			this->numPixelShaderResourceDesc = numPixelShaderResourceDesc;
+			numPixelShaderResourceDesc = numPixelShaderResourceDescParam;
 
-			this->nonPixelShaderResourceDescPtrOffset = nonPixelShaderResourceDescPtrOffset;
+			nonPixelShaderResourceDescPtrOffset = nonPixelShaderResourceDescPtrOffsetParam;
 
-			this->numNonPixelShaderResourceDesc = numNonPixelShaderResourceDesc;
+			numNonPixelShaderResourceDesc = numNonPixelShaderResourceDescParam;
 
-			this->drawData.vertexCountPerInstance = vertexCountPerInstance;
+			drawData.vertexCountPerInstance = vertexCountPerInstanceParam;
 
-			this->drawData.instanceCount = instanceCount;
+			drawData.instanceCount = instanceCountParam;
 
-			this->drawData.startVertexLocation = startVertexLocation;
+			drawData.startVertexLocation = startVertexLocationParam;
 
-			this->drawData.startInstanceLocation = startInstanceLocation;
+			drawData.startInstanceLocation = startInstanceLocationParam;
 		}
 
 		template<bool D = DrawIndexed>
 			requires(D)
-		void set(const uint64_t pixelShaderResourceDescPtrOffset,
-		         const uint32_t numPixelShaderResourceDesc,
-				 const uint64_t nonPixelShaderResourceDescPtrOffset,
-		         const uint32_t numNonPixelShaderResourceDesc,
-		         const uint32_t indexCountPerInstance,
-		         const uint32_t instanceCount,
-		         const uint32_t startIndexLocation,
-		         const int32_t baseVertexLocation,
-		         const uint32_t startInstanceLocation)
+		void set(const uint64_t pixelShaderResourceDescPtrOffsetParam,
+		         const uint32_t numPixelShaderResourceDescParam,
+		         const uint64_t nonPixelShaderResourceDescPtrOffsetParam,
+		         const uint32_t numNonPixelShaderResourceDescParam,
+		         const uint32_t indexCountPerInstanceParam,
+		         const uint32_t instanceCountParam,
+		         const uint32_t startIndexLocationParam,
+		         const int32_t baseVertexLocationParam,
+		         const uint32_t startInstanceLocationParam)
 		{
-			this->pixelShaderResourceDescPtrOffset = pixelShaderResourceDescPtrOffset;
+			pixelShaderResourceDescPtrOffset = pixelShaderResourceDescPtrOffsetParam;
 
-			this->numPixelShaderResourceDesc = numPixelShaderResourceDesc;
+			numPixelShaderResourceDesc = numPixelShaderResourceDescParam;
 
-			this->nonPixelShaderResourceDescPtrOffset = nonPixelShaderResourceDescPtrOffset;
+			nonPixelShaderResourceDescPtrOffset = nonPixelShaderResourceDescPtrOffsetParam;
 
-			this->numNonPixelShaderResourceDesc = numNonPixelShaderResourceDesc;
+			numNonPixelShaderResourceDesc = numNonPixelShaderResourceDescParam;
 
-			this->drawIndexedData.indexCountPerInstance = indexCountPerInstance;
+			drawIndexedData.indexCountPerInstance = indexCountPerInstanceParam;
 
-			this->drawIndexedData.instanceCount = instanceCount;
+			drawIndexedData.instanceCount = instanceCountParam;
 
-			this->drawIndexedData.startIndexLocation = startIndexLocation;
+			drawIndexedData.startIndexLocation = startIndexLocationParam;
 
-			this->drawIndexedData.baseVertexLocation = baseVertexLocation;
+			drawIndexedData.baseVertexLocation = baseVertexLocationParam;
 
-			this->drawIndexedData.startInstanceLocation = startInstanceLocation;
+			drawIndexedData.startInstanceLocation = startInstanceLocationParam;
 		}
 
 		void execute(GraphicsCommandExecuter& executer) override

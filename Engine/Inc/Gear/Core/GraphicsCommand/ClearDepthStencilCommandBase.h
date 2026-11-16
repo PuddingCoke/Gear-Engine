@@ -12,18 +12,18 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const Resource::DepthStencilDesc& desc,
-		         const D3D12_CLEAR_FLAGS flags,
-		         const float depth,
-		         const uint8_t stencil)
+		void set(const Resource::DepthStencilDesc& descParam,
+		         const D3D12_CLEAR_FLAGS flagsParam,
+		         const float depthParam,
+		         const uint8_t stencilParam)
 		{
-			this->desc = desc;
+			desc = descParam;
 
-			this->flags = flags;
+			flags = flagsParam;
 
-			this->depth = depth;
+			depth = depthParam;
 
-			this->stencil = stencil;
+			stencil = stencilParam;
 		}
 
 		void execute(GraphicsCommandExecuter& executer) override

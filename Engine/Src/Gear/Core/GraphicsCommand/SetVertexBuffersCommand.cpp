@@ -3,15 +3,15 @@
 namespace Gear::Core
 {
 
-	void SetVertexBuffersCommand::set(const uint64_t vertexBufferDescsPtrOffset,
-	                                  const uint32_t numVertexBufferDescs,
-	                                  const uint32_t startSlot)
+	void SetVertexBuffersCommand::set(const uint64_t vertexBufferDescsPtrOffsetParam,
+	                                  const uint32_t numVertexBufferDescsParam,
+	                                  const uint32_t startSlotParam)
 	{
-		this->vertexBufferDescsPtrOffset = vertexBufferDescsPtrOffset;
+		vertexBufferDescsPtrOffset = vertexBufferDescsPtrOffsetParam;
 
-		this->numVertexBufferDescs = numVertexBufferDescs;
+		numVertexBufferDescs = numVertexBufferDescsParam;
 
-		this->startSlot = startSlot;
+		startSlot = startSlotParam;
 	}
 
 	void SetVertexBuffersCommand::execute(GraphicsCommandExecuter& executer)

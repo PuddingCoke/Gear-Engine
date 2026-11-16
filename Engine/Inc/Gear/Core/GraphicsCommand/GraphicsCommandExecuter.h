@@ -140,7 +140,7 @@ namespace Gear::Core
 		void addNonPersistentResource(Resource::ResourceBase* const resource);
 
 		void addUnsettedIndex(const D3D12Core::ShaderType shaderType,
-		                      uint32_t* indexAddress,
+		                      const uint32_t* indexAddress,
 		                      const uint64_t location);
 
 		uint64_t getShaderConstantsWriteLocation(const D3D12Core::ShaderType shaderType);
@@ -324,7 +324,7 @@ namespace Gear::Core
 		struct UnsettedIndex
 		{
 			//用于取回索引的地址
-			uint32_t* indexAddress;
+			const uint32_t* indexAddress;
 
 			//在 shaderConstants 中的位置
 			uint64_t location;

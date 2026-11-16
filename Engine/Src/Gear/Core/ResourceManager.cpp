@@ -22,9 +22,75 @@
 
 namespace Gear::Core
 {
+	namespace
+	{
+		//UpdateSubresources前半段：算footprint并把数据立刻写进上传堆
+		std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> writeUploadHeap(
+			ID3D12Resource* const destinationResource,
+			ID3D12Resource* const intermediateResource,
+			const uint64_t intermediateOffset,
+			const uint32_t firstSubresource,
+			const uint32_t numSubresources,
+			const D3D12_SUBRESOURCE_DATA* const srcData)
+		{
+			const D3D12_RESOURCE_DESC desc = destinationResource->GetDesc();
+
+			std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> layouts(numSubresources);
+			std::vector<UINT> numRows(numSubresources);
+			std::vector<UINT64> rowSizesInBytes(numSubresources);
+
+			UINT64 requiredSize = 0;
+			GraphicsDevice::get()->GetCopyableFootprints(&desc,
+			                                             firstSubresource,
+			                                             numSubresources,
+			                                             intermediateOffset,
+			                                             layouts.data(),
+			                                             numRows.data(),
+			                                             rowSizesInBytes.data(),
+			                                             &requiredSize);
+
+			BYTE* data = nullptr;
+
+			CHECKERROR(intermediateResource->Map(0, nullptr, reinterpret_cast<void**>(&data)));
+
+			for (uint32_t i = 0; i < numSubresources; i++)
+			{
+				const D3D12_MEMCPY_DEST destData = { data + layouts[i].Offset,
+					                                 layouts[i].Footprint.RowPitch,
+					                                 static_cast<SIZE_T>(layouts[i].Footprint.RowPitch) *
+					                                     static_cast<SIZE_T>(numRows[i]) };
+
+				MemcpySubresource(&destData,
+				                  &srcData[i],
+				                  static_cast<SIZE_T>(rowSizesInBytes[i]),
+				                  numRows[i],
+				                  layouts[i].Footprint.Depth);
+			}
+
+			intermediateResource->Unmap(0, nullptr);
+
+			return layouts;
+		}
+
+		//UpdateSubresources后半段：录制拷贝指令
+		void recordUploadCopies(ID3D12GraphicsCommandList* const commandList,
+		                        ID3D12Resource* const destinationResource,
+		                        ID3D12Resource* const intermediateResource,
+		                        const uint32_t firstSubresource,
+		                        const std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT>& layouts)
+		{
+			for (uint32_t i = 0; i < static_cast<uint32_t>(layouts.size()); i++)
+			{
+				const CD3DX12_TEXTURE_COPY_LOCATION dst(destinationResource, i + firstSubresource);
+				const CD3DX12_TEXTURE_COPY_LOCATION src(intermediateResource, layouts[i]);
+
+				commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+			}
+		}
+	}
+
 	ResourceManager::ResourceManager() :
 		context(makeUnique<GraphicsContext>()),
-		commandList(context->getCommandList()),
 		d3d12Resources(makeUnique<std::vector<UniquePtr<D3D12Resource::D3D12ResourceBase>>[]>(
 			Graphics::getFrameBufferCount())),
 		resources(
@@ -60,7 +126,7 @@ namespace Gear::Core
 
 	D3D12Core::CommandList* ResourceManager::getCommandList() const
 	{
-		return commandList;
+		return context->getCommandList();
 	}
 
 	D3D12Resource::BufferPtr ResourceManager::createBuffer(const void* const data,
@@ -73,7 +139,12 @@ namespace Gear::Core
 
 		uploadHeap->update(data, size);
 
-		commandList->copyBufferRegion(buffer.get(), 0, uploadHeap.get(), 0, size);
+		//uploadHeap由deferredRelease保管，生命周期覆盖到命令执行完毕
+		context->pushGraphicsCommand(makeLambdaCommand(
+			[buffer = buffer.get(), uploadHeap = uploadHeap.get(), size](GraphicsCommandExecuter& executer)
+		{
+			executer.getCommandList()->copyBufferRegion(buffer, 0, uploadHeap, 0, size);
+		}));
 
 		deferredRelease(std::move(uploadHeap));
 
@@ -131,8 +202,15 @@ namespace Gear::Core
 			UniquePtr<D3D12Resource::UploadHeap> uploadHeap =
 				makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
-			UpdateSubresources(
-				commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
+			const std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> layouts =
+				writeUploadHeap(texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
+
+			context->pushGraphicsCommand(makeLambdaCommand([dst = texture->getResource(),
+			                                                src = uploadHeap->getResource(),
+			                                                layouts](GraphicsCommandExecuter& executer)
+			{
+				recordUploadCopies(executer.getCommandList()->get(), dst, src, 0, layouts);
+			}));
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -163,13 +241,22 @@ namespace Gear::Core
 			UniquePtr<D3D12Resource::UploadHeap> uploadHeap =
 				makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
-			UpdateSubresources(commandList->get(),
-			                   texture->getResource(),
-			                   uploadHeap->getResource(),
-			                   0,
-			                   0,
-			                   static_cast<uint32_t>(subresources.size()),
-			                   subresources.data());
+			const uint32_t numSubresources = static_cast<uint32_t>(subresources.size());
+
+			const std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> layouts =
+				writeUploadHeap(texture->getResource(),
+			                    uploadHeap->getResource(),
+			                    0,
+			                    0,
+			                    numSubresources,
+			                    subresources.data());
+
+			context->pushGraphicsCommand(makeLambdaCommand([dst = texture->getResource(),
+			                                                src = uploadHeap->getResource(),
+			                                                layouts](GraphicsCommandExecuter& executer)
+			{
+				recordUploadCopies(executer.getCommandList()->get(), dst, src, 0, layouts);
+			}));
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -211,8 +298,15 @@ namespace Gear::Core
 			UniquePtr<D3D12Resource::UploadHeap> uploadHeap =
 				makeUnique<D3D12Resource::UploadHeap>(uploadHeapSize);
 
-			UpdateSubresources(
-				commandList->get(), texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
+			const std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> layouts =
+				writeUploadHeap(texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresource);
+
+			context->pushGraphicsCommand(makeLambdaCommand([dst = texture->getResource(),
+			                                                src = uploadHeap->getResource(),
+			                                                layouts](GraphicsCommandExecuter& executer)
+			{
+				recordUploadCopies(executer.getCommandList()->get(), dst, src, 0, layouts);
+			}));
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -262,13 +356,15 @@ namespace Gear::Core
 			subresourceData.RowPitch = width * 4u;
 			subresourceData.SlicePitch = subresourceData.RowPitch * height;
 
-			UpdateSubresources(commandList->get(),
-			                   texture->getResource(),
-			                   uploadHeap->getResource(),
-			                   0,
-			                   0,
-			                   1,
-			                   &subresourceData);
+			const std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> layouts =
+				writeUploadHeap(texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresourceData);
+
+			context->pushGraphicsCommand(makeLambdaCommand([dst = texture->getResource(),
+			                                                src = uploadHeap->getResource(),
+			                                                layouts](GraphicsCommandExecuter& executer)
+			{
+				recordUploadCopies(executer.getCommandList()->get(), dst, src, 0, layouts);
+			}));
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -301,13 +397,15 @@ namespace Gear::Core
 			subresourceData.RowPitch = width * 8u;
 			subresourceData.SlicePitch = subresourceData.RowPitch * height;
 
-			UpdateSubresources(commandList->get(),
-			                   texture->getResource(),
-			                   uploadHeap->getResource(),
-			                   0,
-			                   0,
-			                   1,
-			                   &subresourceData);
+			const std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> layouts =
+				writeUploadHeap(texture->getResource(), uploadHeap->getResource(), 0, 0, 1, &subresourceData);
+
+			context->pushGraphicsCommand(makeLambdaCommand([dst = texture->getResource(),
+			                                                src = uploadHeap->getResource(),
+			                                                layouts](GraphicsCommandExecuter& executer)
+			{
+				recordUploadCopies(executer.getCommandList()->get(), dst, src, 0, layouts);
+			}));
 
 			deferredRelease(std::move(uploadHeap));
 		}
@@ -321,11 +419,17 @@ namespace Gear::Core
 	{
 		D3D12Resource::BufferPtr buffer = createBuffer(data, size, D3D12_RESOURCE_FLAG_NONE);
 
-		commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		context->pushGraphicsCommand(
+			makeLambdaCommand([buffer = buffer.get()](GraphicsCommandExecuter& executer)
+		{
+			D3D12Core::GraphicsCommandList* const commandList = executer.getCommandList();
 
-		commandList->flushResourceBarriers();
+			commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
-		buffer->setStateTracking(false);
+			commandList->flushResourceBarriers();
+
+			buffer->setStateTracking(false);
+		}));
 
 		return makeUnique<Resource::ImmutableCBuffer>(std::move(buffer), persistent);
 	}
@@ -404,11 +508,17 @@ namespace Gear::Core
 				finalState |= D3D12_RESOURCE_STATE_INDEX_BUFFER;
 			}
 
-			commandList->trackAndSetResourceState(buffer.get(), finalState);
+			context->pushGraphicsCommand(
+				makeLambdaCommand([buffer = buffer.get(), finalState](GraphicsCommandExecuter& executer)
+			{
+				D3D12Core::GraphicsCommandList* const commandList = executer.getCommandList();
 
-			commandList->flushResourceBarriers();
+				commandList->trackAndSetResourceState(buffer, finalState);
 
-			buffer->setStateTracking(false);
+				commandList->flushResourceBarriers();
+
+				buffer->setStateTracking(false);
+			}));
 		}
 
 		return makeUnique<Resource::BufferView>(std::move(buffer),
@@ -488,11 +598,17 @@ namespace Gear::Core
 				finalState |= D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 			}
 
-			commandList->trackAndSetResourceState(buffer.get(), finalState);
+			context->pushGraphicsCommand(
+				makeLambdaCommand([buffer = buffer.get(), finalState](GraphicsCommandExecuter& executer)
+			{
+				D3D12Core::GraphicsCommandList* const commandList = executer.getCommandList();
 
-			commandList->flushResourceBarriers();
+				commandList->trackAndSetResourceState(buffer, finalState);
 
-			buffer->setStateTracking(false);
+				commandList->flushResourceBarriers();
+
+				buffer->setStateTracking(false);
+			}));
 		}
 
 		return makeUnique<Resource::BufferView>(std::move(buffer),
@@ -559,11 +675,17 @@ namespace Gear::Core
 				finalState |= D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE;
 			}
 
-			commandList->trackAndSetResourceState(buffer.get(), finalState);
+			context->pushGraphicsCommand(
+				makeLambdaCommand([buffer = buffer.get(), finalState](GraphicsCommandExecuter& executer)
+			{
+				D3D12Core::GraphicsCommandList* const commandList = executer.getCommandList();
 
-			commandList->flushResourceBarriers();
+				commandList->trackAndSetResourceState(buffer, finalState);
 
-			buffer->setStateTracking(false);
+				commandList->flushResourceBarriers();
+
+				buffer->setStateTracking(false);
+			}));
 		}
 
 		return makeUnique<Resource::BufferView>(
@@ -672,13 +794,19 @@ namespace Gear::Core
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(texture.get(),
-			                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
-			                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			context->pushGraphicsCommand(
+				makeLambdaCommand([texture = texture.get()](GraphicsCommandExecuter& executer)
+			{
+				D3D12Core::GraphicsCommandList* const commandList = executer.getCommandList();
 
-			commandList->flushResourceBarriers();
+				commandList->trackAndSetResourceState(texture,
+				                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+				                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
-			texture->setStateTracking(false);
+				commandList->flushResourceBarriers();
+
+				texture->setStateTracking(false);
+			}));
 		}
 
 		if (stateTracking)
@@ -738,13 +866,19 @@ namespace Gear::Core
 
 		if (!stateTracking)
 		{
-			commandList->trackAndSetResourceState(texture.get(),
-			                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
-			                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+			context->pushGraphicsCommand(
+				makeLambdaCommand([texture = texture.get()](GraphicsCommandExecuter& executer)
+			{
+				D3D12Core::GraphicsCommandList* const commandList = executer.getCommandList();
 
-			commandList->flushResourceBarriers();
+				commandList->trackAndSetResourceState(texture,
+				                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+				                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
-			texture->setStateTracking(false);
+				commandList->flushResourceBarriers();
+
+				texture->setStateTracking(false);
+			}));
 		}
 
 		if (srvFormat == FMT::UNKNOWN)
@@ -917,8 +1051,6 @@ namespace Gear::Core
 			deferredRelease(std::move(equirectangularMapRet));
 		}
 
-		equirectangularMap->copyDescriptors();
-
 		Effect::HDRClampEffect::process(*context, *equirectangularMap);
 
 		DXGI_FORMAT resFormat = FMT::UNKNOWN;
@@ -978,27 +1110,34 @@ namespace Gear::Core
 
 		D3D12Resource::Texture* srcTexture = cubeMap->getTexture();
 
-		for (uint32_t i = 0; i < 6; i++)
+		//立方体贴图的内容依赖前面两个effect的输出，所以拷贝必须等到命令真正执行时再做
+		context->pushGraphicsCommand(makeLambdaCommand(
+			[dstTexture = dstTexture.get(), srcTexture, stateTracking](GraphicsCommandExecuter& executer)
 		{
-			const uint32_t dstSubresource =
-				D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
+			D3D12Core::GraphicsCommandList* const commandList = executer.getCommandList();
 
-			const uint32_t srcSubresource =
-				D3D12CalcSubresource(0, i, 0, srcTexture->getMipLevels(), srcTexture->getArraySize());
+			for (uint32_t i = 0; i < 6; i++)
+			{
+				const uint32_t dstSubresource =
+					D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
 
-			commandList->copyTextureRegion(dstTexture.get(), dstSubresource, srcTexture, srcSubresource);
-		}
+				const uint32_t srcSubresource =
+					D3D12CalcSubresource(0, i, 0, srcTexture->getMipLevels(), srcTexture->getArraySize());
 
-		if (!stateTracking)
-		{
-			commandList->trackAndSetResourceState(dstTexture.get(),
-			                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
-			                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+				commandList->copyTextureRegion(dstTexture, dstSubresource, srcTexture, srcSubresource);
+			}
 
-			commandList->flushResourceBarriers();
+			if (!stateTracking)
+			{
+				commandList->trackAndSetResourceState(dstTexture,
+				                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+				                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
-			dstTexture->setStateTracking(false);
-		}
+				commandList->flushResourceBarriers();
+
+				dstTexture->setStateTracking(false);
+			}
+		}));
 
 		if (stateTracking)
 		{
@@ -1075,27 +1214,34 @@ namespace Gear::Core
 		                                                                          true,
 		                                                                          resFlags);
 
-		for (uint32_t i = 0; i < 6; i++)
+		//立方体贴图的内容依赖源纹理，所以拷贝必须等到命令真正执行时再做
+		context->pushGraphicsCommand(makeLambdaCommand(
+			[dstTexture = dstTexture.get(), srcTextures, stateTracking](GraphicsCommandExecuter& executer)
 		{
-			const uint32_t dstSubresource =
-				D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
+			D3D12Core::GraphicsCommandList* const commandList = executer.getCommandList();
 
-			const uint32_t srcSubresource =
-				D3D12CalcSubresource(0, 0, 0, srcTextures[i]->getMipLevels(), srcTextures[i]->getArraySize());
+			for (uint32_t i = 0; i < 6; i++)
+			{
+				const uint32_t dstSubresource =
+					D3D12CalcSubresource(0, i, 0, dstTexture->getMipLevels(), dstTexture->getArraySize());
 
-			commandList->copyTextureRegion(dstTexture.get(), dstSubresource, srcTextures[i], srcSubresource);
-		}
+				const uint32_t srcSubresource = D3D12CalcSubresource(
+					0, 0, 0, srcTextures[i]->getMipLevels(), srcTextures[i]->getArraySize());
 
-		if (!stateTracking)
-		{
-			commandList->trackAndSetResourceState(dstTexture.get(),
-			                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
-			                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
+				commandList->copyTextureRegion(dstTexture, dstSubresource, srcTextures[i], srcSubresource);
+			}
 
-			commandList->flushResourceBarriers();
+			if (!stateTracking)
+			{
+				commandList->trackAndSetResourceState(dstTexture,
+				                                      D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
+				                                      D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
-			dstTexture->setStateTracking(false);
-		}
+				commandList->flushResourceBarriers();
+
+				dstTexture->setStateTracking(false);
+			}
+		}));
 
 		if (srvFormat == FMT::UNKNOWN)
 		{

@@ -9,7 +9,10 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const int32_t left, const int32_t top, const int32_t right, const int32_t bottom);
+		void set(const int32_t leftParam,
+		         const int32_t topParam,
+		         const int32_t rightParam,
+		         const int32_t bottomParam);
 
 		void execute(GraphicsCommandExecuter& executer) override;
 

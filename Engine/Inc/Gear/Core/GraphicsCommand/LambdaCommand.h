@@ -13,7 +13,7 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(std::function<void(GraphicsCommandExecuter&)>&& lambda, const std::string& name);
+		void set(std::function<void(GraphicsCommandExecuter&)>&& lambdaParam, const std::string& nameParam);
 
 		void execute(GraphicsCommandExecuter& executer) override;
 

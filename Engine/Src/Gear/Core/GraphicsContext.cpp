@@ -399,13 +399,13 @@ namespace Gear::Core
 			setConstantsCommands.clear();
 		}
 
-		const uint64_t numPixelShaderResourceDesc =
-			graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation() -
-			pixelShaderResourceDescPtrOffset;
+		const uint32_t numPixelShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation() -
+		                          pixelShaderResourceDescPtrOffset);
 
-		const uint64_t numNonPixelShaderResourceDesc =
-			graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
-			nonPixelShaderResourceDescPtrOffset;
+		const uint32_t numNonPixelShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
+		                          nonPixelShaderResourceDescPtrOffset);
 
 		auto* const command = DrawCommand::acquire();
 
@@ -463,13 +463,13 @@ namespace Gear::Core
 			setConstantsCommands.clear();
 		}
 
-		const uint64_t numPixelShaderResourceDesc =
-			graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation() -
-			pixelShaderResourceDescPtrOffset;
+		const uint32_t numPixelShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation() -
+		                          pixelShaderResourceDescPtrOffset);
 
-		const uint64_t numNonPixelShaderResourceDesc =
-			graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
-			nonPixelShaderResourceDescPtrOffset;
+		const uint32_t numNonPixelShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
+		                          nonPixelShaderResourceDescPtrOffset);
 
 		auto* const command = DrawIndexedCommand::acquire();
 
@@ -509,9 +509,9 @@ namespace Gear::Core
 			setConstantsCommands.clear();
 		}
 
-		const uint64_t numNonPixelShaderResourceDesc =
-			graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
-			nonPixelShaderResourceDescPtrOffset;
+		const uint32_t numNonPixelShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
+		                          nonPixelShaderResourceDescPtrOffset);
 
 		auto* const command = DispatchGrpCommand::acquire();
 
@@ -544,9 +544,9 @@ namespace Gear::Core
 			setConstantsCommands.clear();
 		}
 
-		const uint64_t numNonPixelShaderResourceDesc =
-			graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
-			nonPixelShaderResourceDescPtrOffset;
+		const uint32_t numNonPixelShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
+		                          nonPixelShaderResourceDescPtrOffset);
 
 		auto* const command = DispatchDimCommand::acquire();
 

@@ -3,9 +3,9 @@
 namespace Gear::Core
 {
 
-	void SetPrimitiveTopologyCommand::set(const D3D12_PRIMITIVE_TOPOLOGY topology)
+	void SetPrimitiveTopologyCommand::set(const D3D12_PRIMITIVE_TOPOLOGY topologyParam)
 	{
-		this->topology = topology;
+		topology = topologyParam;
 	}
 
 	void SetPrimitiveTopologyCommand::execute(GraphicsCommandExecuter& executer)

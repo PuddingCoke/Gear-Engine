@@ -66,8 +66,6 @@ protected:
 
 		accumulateParam.floatSeed = Graphics::getTimeElapsed();
 
-		accumulatedTexture->copyDescriptors();
-
 		context->setPrimitiveTopology(TOPOLOGY::TRIANGLELIST);
 
 		context->setViewportSimple(Graphics::getWidth(), Graphics::getHeight());

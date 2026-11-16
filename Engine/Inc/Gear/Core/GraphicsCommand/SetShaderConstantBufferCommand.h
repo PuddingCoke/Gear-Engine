@@ -12,9 +12,9 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const Resource::ImmutableCBuffer& immutableCBuffer)
+		void set(const Resource::ImmutableCBuffer& immutableCBufferParam)
 		{
-			this->immutableCBuffer = &immutableCBuffer;
+			immutableCBuffer = &immutableCBufferParam;
 		}
 
 		void execute(GraphicsCommandExecuter& executer) override

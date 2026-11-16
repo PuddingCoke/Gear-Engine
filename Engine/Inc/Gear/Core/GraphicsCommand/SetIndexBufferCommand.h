@@ -9,7 +9,7 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const Resource::IndexBufferDesc& indexBufferDesc);
+		void set(const Resource::IndexBufferDesc& indexBufferDescParam);
 
 		void execute(GraphicsCommandExecuter& executer) override;
 

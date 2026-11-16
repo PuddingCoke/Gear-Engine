@@ -9,7 +9,7 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const D3D12_PRIMITIVE_TOPOLOGY topology);
+		void set(const D3D12_PRIMITIVE_TOPOLOGY topologyParam);
 
 		void execute(GraphicsCommandExecuter& executer) override;
 

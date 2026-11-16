@@ -9,7 +9,7 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const float width, const float height);
+		void set(const float widthParam, const float heightParam);
 
 		void execute(GraphicsCommandExecuter& executer) override;
 

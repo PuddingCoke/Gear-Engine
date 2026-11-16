@@ -85,80 +85,89 @@ namespace Gear::Effect
 
 	RenderTextureView* HBAOPlusEffect::process(DepthTextureView& depthTexture, RenderTextureView& gNormal)
 	{
-		GFSDK_SSAO_InputData_D3D12 inputData = {};
-
-		const DirectX::XMMATRIX projMatrix = MainCamera::getProj();
-
-		const DirectX::XMMATRIX viewMatrix = MainCamera::getView();
-
-		inputData.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
-		inputData.DepthData.FullResDepthTextureSRV.pResource = depthTexture.getTexture()->getResource();
-		inputData.DepthData.FullResDepthTextureSRV.GpuHandle = depthTexture.getDepthMipGPUHandle(0).ptr;
-		inputData.DepthData.ProjectionMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&projMatrix);
-		inputData.DepthData.ProjectionMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
-		inputData.DepthData.MetersToViewSpaceUnits = 1.f;
-
-		inputData.NormalData.Enable = true;
-		inputData.NormalData.FullResNormalTextureSRV.pResource = gNormal.getTexture()->getResource();
-		inputData.NormalData.FullResNormalTextureSRV.GpuHandle = gNormal.getSRVMipGPUHandle(0).ptr;
-		inputData.NormalData.WorldToViewMatrix.Data =
-			GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&viewMatrix);
-		inputData.NormalData.WorldToViewMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
-
-		GFSDK_SSAO_RenderMask renderMask = GFSDK_SSAO_RENDER_AO;
-
-		GFSDK_SSAO_Output_D3D12 output;
-
-		GFSDK_SSAO_RenderTargetView_D3D12 rtv{};
-
-		auto renderTargetDesc = outputTexture->getRTVMip(0);
-
-		rtv.pResource = outputTexture->getTexture()->getResource();
-
-		rtv.CpuHandle = renderTargetDesc.rtvHandle.ptr;
-
-		output.pRenderTargetView = &rtv;
-
-		// Renders SSAO.
-		//
-		// Remarks:
-		//    * Allocates internal D3D render targets on first use, and re-allocates them when the viewport dimensions change.
-		//    * Setting RenderMask = GFSDK_SSAO_RENDER_DEBUG_NORMAL_Z can be useful to visualize the normals used for the AO rendering.
-		//    * The input depth & normal textures are assumed to have state D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE.
-		//    * The output AO render target is assumed to have state D3D12_RESOURCE_STATE_RENDER_TARGET.
-
-		GraphicsCommandList* const commandList = context->getCommandList();
-
-		commandList->trackAndSetResourceState(
-			depthTexture.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-		commandList->trackAndSetResourceState(
-			gNormal.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-		commandList->trackAndSetResourceState(
-			outputTexture->getTexture(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-		commandList->flushResourceBarriers();
-
-		const GFSDK_SSAO_Status status = aoContext->RenderAO(RenderEngine::getCommandQueue()->get(),
-		                                                     commandList->get(),
-		                                                     inputData,
-		                                                     aoParameters,
-		                                                     output,
-		                                                     renderMask);
-
-		if (status != GFSDK_SSAO_OK)
+		context->pushGraphicsCommand(
+			makeLambdaCommand([&depthTexture,
+		                       &gNormal,
+		                       outputTexture = this->outputTexture.get(),
+		                       aoParameters = this->aoParameters,
+		                       aoContext = this->aoContext](GraphicsCommandExecuter& executer)
 		{
-			THROWLOG(LOGERROR() << TOSTRING(aoContext->RenderAO) << "调用失败, 失败码"
-			                    << static_cast<uint32_t>(status));
-		}
+			GFSDK_SSAO_InputData_D3D12 inputData = {};
 
-		//使用Nsight调试后发现RenderAO不会恢复图形相关的状态
-		//这会让引擎内部追踪的一些图形状态失效
-		//所以得在这里重置内部追踪的图形状态
-		context->resetPipelineState();
+			const DirectX::XMMATRIX projMatrix = MainCamera::getProj();
 
-		context->resetTrackedGraphicsStates();
+			const DirectX::XMMATRIX viewMatrix = MainCamera::getView();
+
+			inputData.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
+			inputData.DepthData.FullResDepthTextureSRV.pResource = depthTexture.getTexture()->getResource();
+			inputData.DepthData.FullResDepthTextureSRV.GpuHandle = depthTexture.getDepthMipGPUHandle(0).ptr;
+			inputData.DepthData.ProjectionMatrix.Data =
+				GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&projMatrix);
+			inputData.DepthData.ProjectionMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
+			inputData.DepthData.MetersToViewSpaceUnits = 1.f;
+
+			inputData.NormalData.Enable = true;
+			inputData.NormalData.FullResNormalTextureSRV.pResource = gNormal.getTexture()->getResource();
+			inputData.NormalData.FullResNormalTextureSRV.GpuHandle = gNormal.getSRVMipGPUHandle(0).ptr;
+			inputData.NormalData.WorldToViewMatrix.Data =
+				GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&viewMatrix);
+			inputData.NormalData.WorldToViewMatrix.Layout = GFSDK_SSAO_ROW_MAJOR_ORDER;
+
+			GFSDK_SSAO_RenderMask renderMask = GFSDK_SSAO_RENDER_AO;
+
+			GFSDK_SSAO_Output_D3D12 output;
+
+			GFSDK_SSAO_RenderTargetView_D3D12 rtv{};
+
+			auto renderTargetDesc = outputTexture->getRTVMip(0);
+
+			rtv.pResource = outputTexture->getTexture()->getResource();
+
+			rtv.CpuHandle = renderTargetDesc.rtvHandle.ptr;
+
+			output.pRenderTargetView = &rtv;
+
+			// Renders SSAO.
+			//
+			// Remarks:
+			//    * Allocates internal D3D render targets on first use, and re-allocates them when the viewport dimensions change.
+			//    * Setting RenderMask = GFSDK_SSAO_RENDER_DEBUG_NORMAL_Z can be useful to visualize the normals used for the AO rendering.
+			//    * The input depth & normal textures are assumed to have state D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE.
+			//    * The output AO render target is assumed to have state D3D12_RESOURCE_STATE_RENDER_TARGET.
+
+			GraphicsCommandList* const commandList = executer.getCommandList();
+
+			commandList->trackAndSetResourceState(
+				depthTexture.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+			commandList->trackAndSetResourceState(
+				gNormal.getTexture(), 0, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+			commandList->trackAndSetResourceState(
+				outputTexture->getTexture(), 0, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+			commandList->flushResourceBarriers();
+
+			const GFSDK_SSAO_Status status = aoContext->RenderAO(RenderEngine::getCommandQueue()->get(),
+			                                                     commandList->get(),
+			                                                     inputData,
+			                                                     aoParameters,
+			                                                     output,
+			                                                     renderMask);
+
+			if (status != GFSDK_SSAO_OK)
+			{
+				THROWLOG(LOGERROR() << TOSTRING(aoContext->RenderAO) << "调用失败, 失败码"
+				                    << static_cast<uint32_t>(status));
+			}
+
+			//使用Nsight调试后发现RenderAO不会恢复图形相关的状态
+			//这会让引擎内部追踪的一些图形状态失效
+			//所以得在这里重置内部追踪的图形状态
+			executer.resetPipelineState();
+
+			executer.resetTrackedGraphicsStates();
+		}));
 
 		return outputTexture.get();
 	}

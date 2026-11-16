@@ -3,18 +3,18 @@
 namespace Gear::Core
 {
 
-	void SetScissorRectCommand::set(const int32_t left,
-	                                const int32_t top,
-	                                const int32_t right,
-	                                const int32_t bottom)
+	void SetScissorRectCommand::set(const int32_t leftParam,
+	                                const int32_t topParam,
+	                                const int32_t rightParam,
+	                                const int32_t bottomParam)
 	{
-		this->left = left;
+		left = leftParam;
 
-		this->top = top;
+		top = topParam;
 
-		this->right = right;
+		right = rightParam;
 
-		this->bottom = bottom;
+		bottom = bottomParam;
 	}
 
 	void SetScissorRectCommand::execute(GraphicsCommandExecuter& executer)

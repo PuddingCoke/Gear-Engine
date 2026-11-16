@@ -3,11 +3,11 @@
 namespace Gear::Core
 {
 
-	void SetViewportCommand::set(const float width, const float height)
+	void SetViewportCommand::set(const float widthParam, const float heightParam)
 	{
-		this->width = width;
+		width = widthParam;
 
-		this->height = height;
+		height = heightParam;
 	}
 
 	void SetViewportCommand::execute(GraphicsCommandExecuter& executer)

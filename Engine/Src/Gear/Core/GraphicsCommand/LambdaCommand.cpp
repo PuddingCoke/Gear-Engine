@@ -2,11 +2,12 @@
 
 namespace Gear::Core
 {
-	void LambdaCommand::set(std::function<void(GraphicsCommandExecuter&)>&& lambda, const std::string& name)
+	void LambdaCommand::set(std::function<void(GraphicsCommandExecuter&)>&& lambdaParam,
+	                        const std::string& nameParam)
 	{
-		this->lambda = std::move(lambda);
+		lambda = std::move(lambdaParam);
 
-		this->name = name;
+		name = nameParam;
 	}
 
 	void LambdaCommand::execute(GraphicsCommandExecuter& executer)

@@ -14,18 +14,18 @@ namespace Gear::Core
 
 		template<bool D = ClearDefRenderTarget>
 			requires(!D)
-		void set(const Resource::RenderTargetDesc& desc, const float clearValue[4])
+		void set(const Resource::RenderTargetDesc& descParam, const float clearValueParam[4])
 		{
-			this->desc = desc;
+			desc = descParam;
 
-			memcpy(this->clearValue, clearValue, sizeof(float) * _countof(this->clearValue));
+			memcpy(clearValue, clearValueParam, sizeof(float) * _countof(clearValue));
 		}
 
 		template<bool D = ClearDefRenderTarget>
 			requires(D)
-		void set(const float clearValue[4])
+		void set(const float clearValueParam[4])
 		{
-			memcpy(this->clearValue, clearValue, sizeof(float) * _countof(this->clearValue));
+			memcpy(clearValue, clearValueParam, sizeof(float) * _countof(clearValue));
 		}
 
 		void execute(GraphicsCommandExecuter& executer) override

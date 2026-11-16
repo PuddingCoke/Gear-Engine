@@ -10,21 +10,21 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const uint64_t nonPixelShaderResourceDescPtrOffset,
-		         const uint32_t numNonPixelShaderResourceDesc,
-		         const uint32_t dispatchCountX,
-		         const uint32_t dispatchCountY,
-		         const uint32_t dispatchCountZ)
+		void set(const uint64_t nonPixelShaderResourceDescPtrOffsetParam,
+		         const uint32_t numNonPixelShaderResourceDescParam,
+		         const uint32_t dispatchCountXParam,
+		         const uint32_t dispatchCountYParam,
+		         const uint32_t dispatchCountZParam)
 		{
-			this->nonPixelShaderResourceDescPtrOffset = nonPixelShaderResourceDescPtrOffset;
+			nonPixelShaderResourceDescPtrOffset = nonPixelShaderResourceDescPtrOffsetParam;
 
-			this->numNonPixelShaderResourceDesc = numNonPixelShaderResourceDesc;
+			numNonPixelShaderResourceDesc = numNonPixelShaderResourceDescParam;
 
-			this->dispatchCountX = dispatchCountX;
+			dispatchCountX = dispatchCountXParam;
 
-			this->dispatchCountY = dispatchCountY;
+			dispatchCountY = dispatchCountYParam;
 
-			this->dispatchCountZ = dispatchCountZ;
+			dispatchCountZ = dispatchCountZParam;
 		}
 
 		void execute(GraphicsCommandExecuter& executer) override
@@ -58,7 +58,7 @@ namespace Gear::Core
 	using DispatchDimCommand = DispatchCommandBase<false>;
 
 	using DispatchGrpCommand = DispatchCommandBase<true>;
-	
+
 }
 
 #endif // _GEAR_CORE_DISPATCHCOMMANDBASE_H_
