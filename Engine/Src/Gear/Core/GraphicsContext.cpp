@@ -576,7 +576,20 @@ namespace Gear::Core
 	{
 		graphicsCommandExecuter->begin();
 
-		setConstantsCommands.clear();
+#ifdef _DEBUG
+		if (graphicsCommands.size())
+		{
+			THROWLOG(LOGERROR()
+			         << "侦测到" << COLORIZEVAR(graphicsCommands)
+			         << "非空，是否忘记调用 end 方法又或者是在调用 begin 方法前调用了图形上下文的方法？");
+		}
+
+		if (setConstantsCommands.size())
+		{
+			THROWLOG(LOGERROR() << "侦测到" << COLORIZEVAR(setConstantsCommands)
+			                    << "非空，是否忘记调用 draw/dispatch 命令？");
+		}
+#endif // _DEBUG
 
 		pixelShaderResourceDescPtrOffset =
 			graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation();

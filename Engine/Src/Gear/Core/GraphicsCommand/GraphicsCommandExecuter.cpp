@@ -277,6 +277,8 @@ namespace Gear::Core
 
 			transientPrimitiveTopologyType = primitiveTopologyTypeTable[topology];
 
+			switchGraphicsPipelineState = true;
+
 			commandList->setPrimitiveTopology(primitiveTopology);
 		}
 	}
