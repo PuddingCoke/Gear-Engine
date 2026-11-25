@@ -147,7 +147,11 @@ using Gear::Utils::Logger::LogNewLine;
 	Gear::Utils::Logger::Log(TOSHORTFUNCNAME(__FUNCTION__), Gear::Utils::Logger::LogType::LOG_ERROR) \
 		<< __FILE__ << "LINE" << static_cast<int32_t>(__LINE__)
 
-#define THROWLOG(_log_) Gear::Utils::Logger::ThrowLog(_log_)
+#define THROWLOG(_log_) \
+	do \
+	{ \
+		Gear::Utils::Logger::ThrowLog(_log_); \
+	} while (false)
 
 #define COLORIZE(_content_, _color_) _color_ << _content_ << LogColor::defaultColor
 

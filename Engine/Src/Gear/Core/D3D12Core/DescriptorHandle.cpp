@@ -2,31 +2,20 @@
 
 namespace Gear::Core::D3D12Core
 {
-	DescriptorHandle::DescriptorHandle() :
-		cpuHandleStart{},
-		gpuHandleStart{},
-		currentOffset(),
-		incrementSize(),
-		baseIndex(),
-		offsetLimit(),
-		descriptorHeap(nullptr)
-	{
-	}
 
-	DescriptorHandle::DescriptorHandle(const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleStart,
-	                                   const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandleStart,
-	                                   const uint32_t currentOffset,
-	                                   const uint32_t incrementSize,
-	                                   const uint32_t baseIndex,
-	                                   const uint32_t offsetLimit,
-	                                   const DescriptorHeap* descriptorHeap) :
-		cpuHandleStart(cpuHandleStart),
-		gpuHandleStart(gpuHandleStart),
-		currentOffset(currentOffset),
-		incrementSize(incrementSize),
-		baseIndex(baseIndex),
-		offsetLimit(offsetLimit),
-		descriptorHeap(descriptorHeap)
+	DescriptorHandle::DescriptorHandle(DescriptorHeap* const descriptorHeapParam,
+	                                   const CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleStartParam,
+	                                   const CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandleStartParam,
+	                                   const uint32_t baseOffsetParam,
+	                                   const uint32_t incrementSizeParam,
+	                                   const uint32_t numDescriptorsParam) :
+		descriptorHeap(descriptorHeapParam),
+		cpuHandleStart(cpuHandleStartParam),
+		gpuHandleStart(gpuHandleStartParam),
+		baseOffset(baseOffsetParam),
+		incrementSize(incrementSizeParam),
+		numDescriptors(numDescriptorsParam),
+		currentOffset(baseOffsetParam)
 	{
 	}
 
@@ -40,22 +29,12 @@ namespace Gear::Core::D3D12Core
 		return CD3DX12_GPU_DESCRIPTOR_HANDLE(gpuHandleStart, getCurrentIndex(), incrementSize);
 	}
 
-	uint32_t DescriptorHandle::getCurrentIndex() const
+	uint32_t DescriptorHandle::getNumDescriptors() const
 	{
-		return baseIndex + currentOffset;
+		return numDescriptors;
 	}
 
-	uint32_t DescriptorHandle::getIncrementSize() const
-	{
-		return incrementSize;
-	}
-
-	uint32_t DescriptorHandle::getDistToEnd() const
-	{
-		return offsetLimit - currentOffset;
-	}
-
-	const DescriptorHeap* DescriptorHandle::getDescriptorHeap() const
+	DescriptorHeap* DescriptorHandle::getDescriptorHeap() const
 	{
 		return descriptorHeap;
 	}
@@ -63,107 +42,33 @@ namespace Gear::Core::D3D12Core
 	void DescriptorHandle::move(const uint32_t num)
 	{
 		currentOffset += num;
-
-		currentOffset %= offsetLimit;
 	}
 
-	void DescriptorHandle::copyDescriptors(const uint32_t numCopy,
-	                                       DescriptorHandle copyDestHandle,
-	                                       DescriptorHandle copySrcHandle,
-	                                       const D3D12_DESCRIPTOR_HEAP_TYPE heapType)
+	void DescriptorHandle::reset()
 	{
-		const uint32_t copyDestDistToEnd = copyDestHandle.getDistToEnd();
-
-		const uint32_t copySrcDistToEnd = copySrcHandle.getDistToEnd();
-
-		//拷贝目标有环绕
-		if (copyDestDistToEnd < numCopy)
-		{
-			//拷贝源也有环绕
-			if (copySrcDistToEnd < numCopy)
-			{
-				//环绕前的长度不一致
-				if (copyDestDistToEnd > copySrcDistToEnd || copyDestDistToEnd < copySrcDistToEnd)
-				{
-					//这里要分三个部分进行拷贝
-
-					//第一个拷贝部分的长度取两个环绕前长度最短的那个
-					const uint32_t numCopyFirst =
-						((copyDestDistToEnd < copySrcDistToEnd) ? copyDestDistToEnd : copySrcDistToEnd);
-
-					//第二个拷贝部分的长度取两个环绕前长度相减的绝对值
-					const uint32_t numCopySecond =
-						((copyDestDistToEnd < copySrcDistToEnd) ? copySrcDistToEnd - copyDestDistToEnd :
-					                                              copyDestDistToEnd - copySrcDistToEnd);
-
-					//第三个拷贝部分的长度为剩余拷贝长度
-					const uint32_t numCopyThird = numCopy - numCopyFirst - numCopySecond;
-
-					copyDescriptorsSimple(numCopyFirst, copyDestHandle, copySrcHandle, heapType);
-
-					copyDescriptorsSimple(numCopySecond, copyDestHandle, copySrcHandle, heapType);
-
-					copyDescriptorsSimple(numCopyThird, copyDestHandle, copySrcHandle, heapType);
-				}
-				//环绕前的长度一致
-				else
-				{
-					//这里要分两个部分进行拷贝
-					const uint32_t numCopyFirst = copyDestDistToEnd;
-
-					const uint32_t numCopySecond = numCopy - numCopyFirst;
-
-					copyDescriptorsSimple(numCopyFirst, copyDestHandle, copySrcHandle, heapType);
-
-					copyDescriptorsSimple(numCopySecond, copyDestHandle, copySrcHandle, heapType);
-				}
-			}
-			//拷贝目标有环绕但是拷贝源无环绕
-			else
-			{
-				//分两个部分
-				const uint32_t numCopyFirst = copyDestDistToEnd;
-
-				const uint32_t numCopySecond = numCopy - numCopyFirst;
-
-				copyDescriptorsSimple(numCopyFirst, copyDestHandle, copySrcHandle, heapType);
-
-				copyDescriptorsSimple(numCopySecond, copyDestHandle, copySrcHandle, heapType);
-			}
-		}
-		//拷贝目标无环绕
-		else
-		{
-			//拷贝目标无环绕但是拷贝源有环绕
-			if (copySrcDistToEnd < numCopy)
-			{
-				//分两个部分
-				const uint32_t numCopyFirst = copySrcDistToEnd;
-
-				const uint32_t numCopySecond = numCopy - numCopyFirst;
-
-				copyDescriptorsSimple(numCopyFirst, copyDestHandle, copySrcHandle, heapType);
-
-				copyDescriptorsSimple(numCopySecond, copyDestHandle, copySrcHandle, heapType);
-			}
-			//两个都没环绕，绝大多数情况
-			else
-			{
-				copyDescriptorsSimple(numCopy, copyDestHandle, copySrcHandle, heapType);
-			}
-		}
+		currentOffset = baseOffset;
 	}
 
-	void DescriptorHandle::copyDescriptorsSimple(const uint32_t numCopy,
-	                                             DescriptorHandle& copyDestHandle,
-	                                             DescriptorHandle& copySrcHandle,
-	                                             const D3D12_DESCRIPTOR_HEAP_TYPE heapType)
+	uint32_t DescriptorHandle::getCurrentOffset() const
 	{
-		GraphicsDevice::get()->CopyDescriptorsSimple(
-			numCopy, copyDestHandle.getCurrentCPUHandle(), copySrcHandle.getCurrentCPUHandle(), heapType);
+#ifdef _DEBUG
+		if (currentOffset - baseOffset >= numDescriptors)
+		{
+			THROWLOG(LOGERROR() << "偏移越界！");
+		}
+#endif
 
-		copyDestHandle.move(numCopy);
-
-		copySrcHandle.move(numCopy);
+		return currentOffset;
 	}
+
+	uint32_t DescriptorHandle::getBaseOffset() const
+	{
+		return baseOffset;
+	}
+
+	uint32_t DescriptorHandle::getIncrementSize() const
+	{
+		return incrementSize;
+	}
+
 }

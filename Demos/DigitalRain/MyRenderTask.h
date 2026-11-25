@@ -20,7 +20,6 @@ public:
 	                                                         1,
 	                                                         1,
 	                                                         false,
-	                                                         true,
 	                                                         DirectX::Colors::Black)),
 		bloomEffect(BloomEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight()))
 	{

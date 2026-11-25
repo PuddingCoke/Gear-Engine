@@ -6,7 +6,7 @@ namespace Gear::Effect
 	                       const uint32_t width,
 	                       const uint32_t height,
 	                       const DXGI_FORMAT rtvFormat) :
-		outputTexture(ResourceManager::createGraphicsTexture(width, height, rtvFormat, 1, 1, false, true)),
+		outputTexture(ResourceManager::createGraphicsTexture(width, height, rtvFormat, 1, 1, false)),
 		resManager(&refResManager),
 		context(refResManager.getGraphicsContext()),
 		width(width),
@@ -30,7 +30,6 @@ namespace Gear::Effect
 	                                                           arraySize,
 	                                                           mipLevels,
 	                                                           isTextureCube,
-	                                                           true,
 	                                                           srvFormat,
 	                                                           uavFormat,
 	                                                           rtvFormat)),

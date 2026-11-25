@@ -17,7 +17,7 @@ namespace Gear::Resource
 
 		ImmutableCBuffer() = delete;
 
-		ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const bool persistent);
+		ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr);
 
 		ImmutableCBuffer(const ImmutableCBuffer&);
 
@@ -28,8 +28,6 @@ namespace Gear::Resource
 		D3D12_GPU_VIRTUAL_ADDRESS getGPUAddress() const;
 
 		D3D12Resource::Buffer* getBuffer() const;
-
-		bool copyDescriptors() override;
 
 	protected:
 

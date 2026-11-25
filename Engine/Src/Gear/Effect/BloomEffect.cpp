@@ -30,10 +30,8 @@ namespace Gear::Effect
 	BloomEffect::BloomEffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height) :
 		EffectBase(refResManager, width, height, FMT::RGBA16F),
 		lensDirtTexture(
-			refResManager.createRenderTextureView(Utils::File::EngineAssetsPath(L"bloom_dirt_mask.png"),
-	                                              true)),
-		filteredTexture(
-			ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16F, 1, 1, false, true))
+			refResManager.createRenderTextureView(Utils::File::EngineAssetsPath(L"bloom_dirt_mask.png"))),
+		filteredTexture(ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16F, 1, 1, false))
 	{
 		filteredTexture->getTexture()->setName(L"Bloom Effect Filtered Texture");
 
@@ -52,14 +50,14 @@ namespace Gear::Effect
 				swapTexture[i] = ResourceManager::createSwapTexture([=]
 				{
 					return ResourceManager::createRenderTextureView(
-						resolutions.x, resolutions.y, FMT::RGBA16F, 1, 1, false, true);
+						resolutions.x, resolutions.y, FMT::RGBA16F, 1, 1, false);
 				});
 
 				blurParam[i].texelSize = DirectX::XMFLOAT2(1.f / resolutions.x, 1.f / resolutions.y);
 				blurParam[i].iteration = iteration[i];
 				blurParam[i].sigma = sigma[i];
 
-				blurParamBuffer[i] = ResourceManager::createDefaultCBuffer(sizeof(BlurParam), true);
+				blurParamBuffer[i] = ResourceManager::createDefaultCBuffer(sizeof(BlurParam));
 
 				const std::wstring name = L"Blur Param Buffer ";
 

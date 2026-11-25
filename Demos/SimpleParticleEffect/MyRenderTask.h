@@ -33,17 +33,11 @@ public:
 
 		fxaaEffect = FXAAEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight());
 
-		originTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(),
-		                                                       Graphics::getHeight(),
-		                                                       FMT::RGBA16F,
-		                                                       1,
-		                                                       1,
-		                                                       false,
-		                                                       true,
-		                                                       DirectX::Colors::Black);
+		originTexture = ResourceManager::createGraphicsTexture(
+			Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, DirectX::Colors::Black);
 
 		depthTexture = ResourceManager::createDepthTextureView(
-			Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
+			Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false);
 
 		{
 			UniquePtr<DirectX::XMFLOAT4[]> positions = makeUnique<DirectX::XMFLOAT4[]>(numParticles);
@@ -80,7 +74,6 @@ public:
 			                                                   true,
 			                                                   false,
 			                                                   false,
-			                                                   true,
 			                                                   positions.get());
 
 			colorBuffer = resManager->createTypedBufferView(FMT::RGBA32F,
@@ -90,7 +83,6 @@ public:
 			                                                true,
 			                                                false,
 			                                                false,
-			                                                true,
 			                                                colors.get());
 		}
 

@@ -15,8 +15,7 @@ public:
 	                                                        FMT::RGBA16UN,
 	                                                        1,
 	                                                        1,
-	                                                        false,
-	                                                        true))
+	                                                        false))
 	{
 		computeState = PipelineStateBuilder::build(Shader::create(L"ComputeCS.cso"));
 

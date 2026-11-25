@@ -25,8 +25,7 @@ namespace Gear::Resource
 		           const bool createUAV,
 		           const bool createVBV,
 		           const bool createIBV,
-		           const bool cpuWritable,
-		           const bool persistent);
+		           const bool cpuWritable);
 
 		BufferView(const BufferView&);
 
@@ -45,8 +44,6 @@ namespace Gear::Resource
 		CounterBufferView* getCounterBuffer() const;
 
 		D3D12Resource::Buffer* getBuffer() const;
-
-		bool copyDescriptors() override;
 
 		struct UpdateStruct
 		{
@@ -70,28 +67,28 @@ namespace Gear::Resource
 
 		DXGI_FORMAT uavFormat;
 
-		CounterBufferViewPtr counterBuffer;
+		uint32_t srvIndex;
 
-		SharedPtr<uint32_t> srvIndex;
+		uint32_t uavIndex;
 
-		SharedPtr<uint32_t> uavIndex;
+		D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
 
-		SharedPtr<D3D12_GPU_DESCRIPTOR_HANDLE> viewGPUHandle;
+		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
 
-		SharedPtr<D3D12_CPU_DESCRIPTOR_HANDLE> viewCPUHandle;
-
-		union BufferViewStruct
+		union BufferViewUnion
 		{
 			D3D12_VERTEX_BUFFER_VIEW vbv;
 
 			D3D12_INDEX_BUFFER_VIEW ibv;
 		};
 
-		SharedPtr<BufferViewStruct> bufferViewStruct;
+		BufferViewUnion bufferViewUnion;
 
-		UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeaps;
+		UniquePtr<D3D12Resource::UploadHeapPtr[]> uploadHeaps;
 
 		D3D12Resource::BufferPtr buffer;
+
+		CounterBufferViewPtr counterBuffer;
 	};
 }
 

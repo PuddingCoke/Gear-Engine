@@ -165,7 +165,7 @@ private:
 
 	static RenderTextureViewPtr createTexture(const uint32_t& resolution, const DXGI_FORMAT& format)
 	{
-		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false, true);
+		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false);
 	}
 
 	const uint32_t size;

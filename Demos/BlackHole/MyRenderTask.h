@@ -11,22 +11,20 @@ public:
 	MyRenderTask() :
 		blackHoleShader(Shader::create(L"BlackHolePS.cso")),
 		colorGradingShader(Shader::create(L"ColorGradingPS.cso")),
-		noiseTexture(resManager->createRenderTextureView(L"Noise.png", true)),
-		diskTexture(resManager->createRenderTextureView(L"Disk.jpg", true)),
+		noiseTexture(resManager->createRenderTextureView(L"Noise.png")),
+		diskTexture(resManager->createRenderTextureView(L"Disk.jpg")),
 		originTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(),
 	                                                         Graphics::getHeight(),
 	                                                         FMT::RGBA16F,
 	                                                         1,
 	                                                         1,
-	                                                         false,
-	                                                         true)),
+	                                                         false)),
 		colorGradingTexture(ResourceManager::createGraphicsTexture(Graphics::getWidth(),
 	                                                               Graphics::getHeight(),
 	                                                               FMT::RGBA16UN,
 	                                                               1,
 	                                                               1,
-	                                                               false,
-	                                                               true)),
+	                                                               false)),
 		effect(BloomEffect::create(*resManager, Graphics::getWidth(), Graphics::getHeight()))
 	{
 		pipelineState = PipelineStateBuilder().setDefaultFullScreenState().setPS(*blackHoleShader).build();

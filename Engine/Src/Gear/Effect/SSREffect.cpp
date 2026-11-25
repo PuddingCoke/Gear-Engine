@@ -17,13 +17,8 @@ namespace Gear::Effect
 
 	SSREffect::SSREffect(ResourceManager& refResManager, const uint32_t width, const uint32_t height) :
 		EffectBase(refResManager, width, height, outputTextureFormat),
-		hiZTexture(ResourceManager::createComputeTexture(width,
-	                                                     height,
-	                                                     hiZTextureFormat,
-	                                                     1,
-	                                                     hiZMiplvel,
-	                                                     false,
-	                                                     true))
+		hiZTexture(
+			ResourceManager::createComputeTexture(width, height, hiZTextureFormat, 1, hiZMiplvel, false))
 	{
 		hiZProcessPS = Shader::create(g_HiZProcessPSBytes, sizeof(g_HiZProcessPSBytes));
 

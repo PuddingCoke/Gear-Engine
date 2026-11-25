@@ -10,12 +10,18 @@ namespace Gear::Core
 	{
 	public:
 
-		void set(const uint64_t nonPixelShaderResourceDescPtrOffsetParam,
+		void set(const uint64_t allShaderResourceDescPtrOffsetParam,
+		         const uint32_t numAllShaderResourceDescParam,
+		         const uint64_t nonPixelShaderResourceDescPtrOffsetParam,
 		         const uint32_t numNonPixelShaderResourceDescParam,
 		         const uint32_t dispatchCountXParam,
 		         const uint32_t dispatchCountYParam,
 		         const uint32_t dispatchCountZParam)
 		{
+			allShaderResourceDescPtrOffset = allShaderResourceDescPtrOffsetParam;
+
+			numAllShaderResourceDesc = numAllShaderResourceDescParam;
+
 			nonPixelShaderResourceDescPtrOffset = nonPixelShaderResourceDescPtrOffsetParam;
 
 			numNonPixelShaderResourceDesc = numNonPixelShaderResourceDescParam;
@@ -29,6 +35,10 @@ namespace Gear::Core
 
 		void execute(GraphicsCommandExecuter& executer) override
 		{
+			executer.setAllShaderResources(allShaderResourceDescPtrOffset,
+			                               numAllShaderResourceDesc,
+			                               D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+
 			executer.setNonPixelShaderResources(nonPixelShaderResourceDescPtrOffset,
 			                                    numNonPixelShaderResourceDesc);
 
@@ -43,6 +53,10 @@ namespace Gear::Core
 		}
 
 	private:
+
+		uint64_t allShaderResourceDescPtrOffset;
+
+		uint32_t numAllShaderResourceDesc;
 
 		uint64_t nonPixelShaderResourceDescPtrOffset;
 

@@ -80,14 +80,12 @@ namespace Gear::Core
 		//以下的方法用于创建高级资源
 
 		Resource::ImmutableCBufferPtr createImmutableCBuffer(const uint32_t size,
-		                                                     const void* const data,
-		                                                     const bool persistent);
+		                                                     const void* const data);
 
 		Resource::DefaultCBufferPtr createDefaultCBuffer(const uint32_t size,
-		                                                 const void* const data,
-		                                                 const bool persistent);
+		                                                 const void* const data);
 
-		static Resource::DefaultCBufferPtr createDefaultCBuffer(const uint32_t size, const bool persistent);
+		static Resource::DefaultCBufferPtr createDefaultCBuffer(const uint32_t size);
 
 		static Resource::DynamicCBufferPtr createDynamicCBuffer(const uint32_t size,
 		                                                        const void* const data = nullptr);
@@ -99,7 +97,6 @@ namespace Gear::Core
 		                                              const bool createVBV,
 		                                              const bool createIBV,
 		                                              const bool cpuWritable,
-		                                              const bool persistent,
 		                                              const void* const data);
 
 		static Resource::BufferViewPtr createTypedBufferView(const DXGI_FORMAT format,
@@ -108,8 +105,7 @@ namespace Gear::Core
 		                                                     const bool createUAV,
 		                                                     const bool createVBV,
 		                                                     const bool createIBV,
-		                                                     const bool cpuWritable,
-		                                                     const bool persistent);
+		                                                     const bool cpuWritable);
 
 		Resource::BufferViewPtr createStructuredBufferView(const uint32_t structureByteStride,
 		                                                   const uint64_t size,
@@ -117,7 +113,6 @@ namespace Gear::Core
 		                                                   const bool createUAV,
 		                                                   const bool createVBV,
 		                                                   const bool cpuWritable,
-		                                                   const bool persistent,
 		                                                   const void* const data);
 
 		static Resource::BufferViewPtr createStructuredBufferView(const uint32_t structureByteStride,
@@ -125,39 +120,33 @@ namespace Gear::Core
 		                                                          const bool createSRV,
 		                                                          const bool createUAV,
 		                                                          const bool createVBV,
-		                                                          const bool cpuWritable,
-		                                                          const bool persistent);
+		                                                          const bool cpuWritable);
 
 		Resource::BufferViewPtr createByteAddressBufferView(const uint64_t size,
 		                                                    const bool createSRV,
 		                                                    const bool createUAV,
 		                                                    const bool cpuWritable,
-		                                                    const bool persistent,
 		                                                    const void* const data);
 
 		static Resource::BufferViewPtr createByteAddressBufferView(const uint64_t size,
 		                                                           const bool createSRV,
 		                                                           const bool createUAV,
-		                                                           const bool cpuWritable,
-		                                                           const bool persistent);
+		                                                           const bool cpuWritable);
 
 		static Resource::DepthTextureViewPtr createDepthTextureView(const uint32_t width,
 		                                                            const uint32_t height,
 		                                                            const DXGI_FORMAT resFormat,
 		                                                            const uint32_t arraySize,
 		                                                            const uint32_t mipLevels,
-		                                                            const bool isTextureCube,
-		                                                            const bool persistent);
+		                                                            const bool isTextureCube);
 
 		Resource::RenderTextureViewPtr createRenderTextureView(const Utils::File::Path& filePath,
-		                                                       const bool persistent,
 		                                                       const bool hasUAV = false,
 		                                                       const bool hasRTV = false);
 
 		Resource::RenderTextureViewPtr createRenderTextureView(const uint32_t width,
 		                                                       const uint32_t height,
 		                                                       const RandomDataType type,
-		                                                       const bool persistent,
 		                                                       const DXGI_FORMAT srvFormat = FMT::UNKNOWN,
 		                                                       const DXGI_FORMAT uavFormat = FMT::UNKNOWN,
 		                                                       const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
@@ -169,7 +158,6 @@ namespace Gear::Core
 		                                                              const uint32_t arraySize,
 		                                                              const uint32_t mipLevels,
 		                                                              const bool isTextureCube,
-		                                                              const bool persistent,
 		                                                              DXGI_FORMAT srvFormat = FMT::UNKNOWN,
 		                                                              DXGI_FORMAT uavFormat = FMT::UNKNOWN,
 		                                                              DXGI_FORMAT rtvFormat = FMT::UNKNOWN,
@@ -182,7 +170,6 @@ namespace Gear::Core
 		                                                            const uint32_t arraySize,
 		                                                            const uint32_t mipLevels,
 		                                                            const bool isTextureCube,
-		                                                            const bool persistent,
 		                                                            const float* const color = nullptr,
 		                                                            DXGI_FORMAT srvFormat = FMT::UNKNOWN,
 		                                                            DXGI_FORMAT rtvFormat = FMT::UNKNOWN);
@@ -194,19 +181,16 @@ namespace Gear::Core
 		                                                           const uint32_t arraySize,
 		                                                           const uint32_t mipLevels,
 		                                                           const bool isTextureCube,
-		                                                           const bool persistent,
 		                                                           DXGI_FORMAT srvFormat = FMT::UNKNOWN,
 		                                                           DXGI_FORMAT uavFormat = FMT::UNKNOWN);
 
 		Resource::RenderTextureViewPtr createTextureCube(const Utils::File::Path& filePath,
 		                                                 const uint32_t texturecubeResolution,
-		                                                 const bool persistent,
 		                                                 const bool hasUAV = false,
 		                                                 const bool hasRTV = false);
 
 		Resource::RenderTextureViewPtr createTextureCube(
 			const std::initializer_list<Utils::File::Path>& texturesPath,
-			const bool persistent,
 			const DXGI_FORMAT srvFormat = FMT::UNKNOWN,
 			const DXGI_FORMAT uavFormat = FMT::UNKNOWN,
 			const DXGI_FORMAT rtvFormat = FMT::UNKNOWN);

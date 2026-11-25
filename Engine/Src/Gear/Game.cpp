@@ -57,24 +57,38 @@ namespace Gear
 
 		while (createQueue.size())
 		{
-			if (createQueue.front()->waitTask())
+			RenderThread* const renderThread = createQueue.front().get();
+
+			//如果出错了，暂时先只抛出遇到的第一个异常
+			if (renderThread->waitTask())
 			{
-				const std::string errorStr = createQueue.front()->getErrorStr();
+				const std::string errorStr = renderThread->getErrorStr();
+
+				//RenderThread需要在由RenderTask基类析构
+				//要不然DescriptorHandle析构会使用一个已释放的指针
+				if (renderThread->getRenderTask())
+				{
+					renderThread->transferOwnerShip(std::move(createQueue.front()));
+				}
 
 				createQueue.pop();
 
-				//当下就改成这个样子，以后可能还会再改改
+				//进行排空
 				while (createQueue.size())
 				{
 					createQueue.front()->waitTask();
+
+					//排空只管RenderTask是否成功创建，成功创建了就转移所有权
+					if (createQueue.front()->getRenderTask())
+					{
+						createQueue.front()->transferOwnerShip(std::move(createQueue.front()));
+					}
 
 					createQueue.pop();
 				}
 
 				throw std::runtime_error(errorStr);
 			}
-
-			RenderThread* const renderThread = createQueue.front().get();
 
 			renderThread->transferOwnerShip(std::move(createQueue.front()));
 

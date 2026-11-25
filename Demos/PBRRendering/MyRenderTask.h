@@ -17,23 +17,17 @@ public:
 		prefilterPS(Shader::create(L"PrefilterPS.cso")),
 		irradiancePS(Shader::create(L"IrradiancePS.cso"))
 	{
-		renderTexture = ResourceManager::createGraphicsTexture(Graphics::getWidth(),
-		                                                       Graphics::getHeight(),
-		                                                       FMT::RGBA16F,
-		                                                       1,
-		                                                       1,
-		                                                       false,
-		                                                       true,
-		                                                       DirectX::Colors::Black);
+		renderTexture = ResourceManager::createGraphicsTexture(
+			Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, DirectX::Colors::Black);
 
 		depthTexture = ResourceManager::createDepthTextureView(
-			Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false, true);
+			Graphics::getWidth(), Graphics::getHeight(), FMT::D32F, 1, 1, false);
 
-		brdfLUTTexture = resManager->createRenderTextureView(L"BRDFLUT.dds", true);
+		brdfLUTTexture = resManager->createRenderTextureView(L"BRDFLUT.dds");
 
 		brdfLUTTexture->getTexture()->setName(L"BRDFLUT");
 
-		envCube = resManager->createTextureCube(L"E:\\Assets\\sundowner_deck_4k.hdr", 1024, true);
+		envCube = resManager->createTextureCube(L"E:\\Assets\\sundowner_deck_4k.hdr", 1024);
 
 		skyboxState = PipelineStateBuilder()
 		                  .setBlendState(PipelineStateHelper::blendReplace)
@@ -43,7 +37,7 @@ public:
 		                  .setPS(*skyboxPS)
 		                  .build();
 
-		prefilterCube = ResourceManager::createGraphicsTexture(1024, 1024, FMT::RGBA16F, 6, 6, true, true);
+		prefilterCube = ResourceManager::createGraphicsTexture(1024, 1024, FMT::RGBA16F, 6, 6, true);
 
 		prefilterCube->getTexture()->setName(L"Prefilter Cube");
 
@@ -75,7 +69,7 @@ public:
 				}
 			}
 
-			viewProjMatrixBuffer = resManager->createImmutableCBuffer(sizeof(Matrices), &matrices, false);
+			viewProjMatrixBuffer = resManager->createImmutableCBuffer(sizeof(Matrices), &matrices);
 		}
 
 		prefilterState = PipelineStateBuilder()
@@ -86,7 +80,7 @@ public:
 		                     .setDepthStencilState(PipelineStateHelper::depthCompareNone)
 		                     .build();
 
-		irradianceCube = ResourceManager::createGraphicsTexture(128, 128, FMT::RGBA16F, 6, 1, true, true);
+		irradianceCube = ResourceManager::createGraphicsTexture(128, 128, FMT::RGBA16F, 6, 1, true);
 
 		irradianceCube->getTexture()->setName(L"Irradiance Cube");
 

@@ -4,19 +4,16 @@
 
 namespace Gear::Resource
 {
-	CounterBufferView::CounterBufferView(const bool persistent) :
-		ResourceBase(persistent),
-		srvIndex(makeShared<uint32_t>(0)),
-		uavIndex(makeShared<uint32_t>(0)),
-		viewGPUHandle(makeShared<D3D12_GPU_DESCRIPTOR_HANDLE>()),
-		viewCPUHandle(makeShared<D3D12_CPU_DESCRIPTOR_HANDLE>()),
+	CounterBufferView::CounterBufferView() :
+		srvIndex(UINT32_MAX),
+		uavIndex(UINT32_MAX),
+		viewGPUHandle{},
+		viewCPUHandle{},
 		buffer(makeUnique<D3D12Resource::Buffer>(sizeof(uint32_t),
 	                                             true,
 	                                             D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
 	{
-		setNumCBVSRVUAVDescriptors(2);
-
-		D3D12Core::DescriptorHandle descriptorHandle = allocCBVSRVUAVDescriptors();
+		D3D12Core::DescriptorHandle* const descriptorHandle = createResourceDescriptorHandle(2);
 
 		{
 			D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
@@ -28,11 +25,11 @@ namespace Gear::Resource
 			desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW;
 
 			GraphicsDevice::get()->CreateShaderResourceView(
-				buffer->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
+				buffer->getResource(), &desc, descriptorHandle->getCurrentCPUHandle());
 
-			*srvIndex = descriptorHandle.getCurrentIndex();
+			srvIndex = descriptorHandle->getCurrentIndex();
 
-			descriptorHandle.move();
+			descriptorHandle->move();
 		}
 
 		{
@@ -44,28 +41,18 @@ namespace Gear::Resource
 			desc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 
 			GraphicsDevice::get()->CreateUnorderedAccessView(
-				buffer->getResource(), nullptr, &desc, descriptorHandle.getCurrentCPUHandle());
+				buffer->getResource(), nullptr, &desc, descriptorHandle->getCurrentCPUHandle());
 
-			*uavIndex = descriptorHandle.getCurrentIndex();
+			uavIndex = descriptorHandle->getCurrentIndex();
 
-			if (persistent)
-			{
-				*viewGPUHandle = descriptorHandle.getCurrentGPUHandle();
+			viewGPUHandle = descriptorHandle->getCurrentGPUHandle();
 
-				const D3D12Core::DescriptorHandle nonShaderVisibleHandle =
-					LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(1);
+			D3D12Core::DescriptorHandle* const nonShaderVisibleHandle = createNonShaderVisibleResourceDescriptorHandle(1);
 
-				GraphicsDevice::get()->CreateUnorderedAccessView(
-					buffer->getResource(), nullptr, &desc, nonShaderVisibleHandle.getCurrentCPUHandle());
+			GraphicsDevice::get()->CreateUnorderedAccessView(
+				buffer->getResource(), nullptr, &desc, nonShaderVisibleHandle->getCurrentCPUHandle());
 
-				*viewCPUHandle = nonShaderVisibleHandle.getCurrentCPUHandle();
-			}
-			else
-			{
-				*viewCPUHandle = descriptorHandle.getCurrentCPUHandle();
-
-				//之后获取viewGPUHandle
-			}
+			viewCPUHandle = nonShaderVisibleHandle->getCurrentCPUHandle();
 		}
 	}
 
@@ -87,9 +74,10 @@ namespace Gear::Resource
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::SRV,
-			                              .resourceIndex = srvIndex.get(),
-			                              .bufferDesc = { .buffer = buffer.get(), .counterBuffer = nullptr },
-			                              .resource = this };
+			                              .resource = this,
+			                              .resourceIndex = &srvIndex,
+			                              .bufferDesc = { .buffer = buffer.get(),
+			                                              .counterBuffer = nullptr } };
 
 		return desc;
 	}
@@ -98,9 +86,10 @@ namespace Gear::Resource
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::UAV,
-			                              .resourceIndex = uavIndex.get(),
-			                              .bufferDesc = { .buffer = buffer.get(), .counterBuffer = nullptr },
-			                              .resource = this };
+			                              .resource = this,
+			                              .resourceIndex = &uavIndex,
+			                              .bufferDesc = { .buffer = buffer.get(),
+			                                              .counterBuffer = nullptr } };
 
 		return desc;
 	}
@@ -109,31 +98,10 @@ namespace Gear::Resource
 	{
 		const UAVClearDesc desc = { .type = UAVClearDesc::BUFFER,
 			                        .bufferDesc = { .buffer = buffer.get() },
-			                        .resource = this,
-			                        .viewGPUHandle = viewGPUHandle.get(),
-			                        .viewCPUHandle = *viewCPUHandle };
+			                        .viewGPUHandle = viewGPUHandle,
+			                        .viewCPUHandle = viewCPUHandle };
 
 		return desc;
-	}
-
-	bool CounterBufferView::copyDescriptors()
-	{
-		D3D12Core::DescriptorHandle shaderVisibleHandle;
-
-		const bool copied = copyToResourceHeap(shaderVisibleHandle);
-
-		if (copied)
-		{
-			*srvIndex = shaderVisibleHandle.getCurrentIndex();
-
-			shaderVisibleHandle.move();
-
-			*uavIndex = shaderVisibleHandle.getCurrentIndex();
-
-			*viewGPUHandle = shaderVisibleHandle.getCurrentGPUHandle();
-		}
-
-		return copied;
 	}
 
 	D3D12Resource::Buffer* CounterBufferView::getBuffer() const

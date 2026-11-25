@@ -12,7 +12,9 @@ namespace Gear::Core
 
 		template<bool D = DrawIndexed>
 			requires(!D)
-		void set(const uint64_t pixelShaderResourceDescPtrOffsetParam,
+		void set(const uint64_t allShaderResourceDescPtrOffsetParam,
+		         const uint32_t numAllShaderResourceDescParam,
+		         const uint64_t pixelShaderResourceDescPtrOffsetParam,
 		         const uint32_t numPixelShaderResourceDescParam,
 		         const uint64_t nonPixelShaderResourceDescPtrOffsetParam,
 		         const uint32_t numNonPixelShaderResourceDescParam,
@@ -21,6 +23,10 @@ namespace Gear::Core
 		         const uint32_t startVertexLocationParam,
 		         const uint32_t startInstanceLocationParam)
 		{
+			allShaderResourceDescPtrOffset = allShaderResourceDescPtrOffsetParam;
+
+			numAllShaderResourceDesc = numAllShaderResourceDescParam;
+
 			pixelShaderResourceDescPtrOffset = pixelShaderResourceDescPtrOffsetParam;
 
 			numPixelShaderResourceDesc = numPixelShaderResourceDescParam;
@@ -40,7 +46,9 @@ namespace Gear::Core
 
 		template<bool D = DrawIndexed>
 			requires(D)
-		void set(const uint64_t pixelShaderResourceDescPtrOffsetParam,
+		void set(const uint64_t allShaderResourceDescPtrOffsetParam,
+		         const uint32_t numAllShaderResourceDescParam,
+		         const uint64_t pixelShaderResourceDescPtrOffsetParam,
 		         const uint32_t numPixelShaderResourceDescParam,
 		         const uint64_t nonPixelShaderResourceDescPtrOffsetParam,
 		         const uint32_t numNonPixelShaderResourceDescParam,
@@ -50,6 +58,10 @@ namespace Gear::Core
 		         const int32_t baseVertexLocationParam,
 		         const uint32_t startInstanceLocationParam)
 		{
+			allShaderResourceDescPtrOffset = allShaderResourceDescPtrOffsetParam;
+
+			numAllShaderResourceDesc = numAllShaderResourceDescParam;
+
 			pixelShaderResourceDescPtrOffset = pixelShaderResourceDescPtrOffsetParam;
 
 			numPixelShaderResourceDesc = numPixelShaderResourceDescParam;
@@ -71,6 +83,8 @@ namespace Gear::Core
 
 		void execute(GraphicsCommandExecuter& executer) override
 		{
+			executer.setAllShaderResources(allShaderResourceDescPtrOffset, numAllShaderResourceDesc);
+
 			executer.setPixelShaderResources(pixelShaderResourceDescPtrOffset, numPixelShaderResourceDesc);
 
 			executer.setNonPixelShaderResources(nonPixelShaderResourceDescPtrOffset,
@@ -94,6 +108,10 @@ namespace Gear::Core
 		}
 
 	private:
+
+		uint64_t allShaderResourceDescPtrOffset;
+
+		uint32_t numAllShaderResourceDesc;
 
 		uint64_t pixelShaderResourceDescPtrOffset;
 

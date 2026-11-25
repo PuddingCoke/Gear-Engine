@@ -31,7 +31,11 @@ namespace Gear::Core::Graphics
 
 	float getAspectRatio();
 
+	//已经渲染的帧数
 	uint64_t getRenderedFrameCount();
+
+	//当前帧的epoch 初始化为0，渲染第一帧时从1开始，每帧完成后自增1
+	uint64_t getFrameEpoch();
 
 	//据说把后背缓冲设置成FMT::BGRA8UN格式会有更好的性能
 	constexpr DXGI_FORMAT backBufferFormat = FMT::BGRA8UN;

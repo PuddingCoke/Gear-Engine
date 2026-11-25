@@ -42,7 +42,6 @@ TextBatch::TextBatch(ResourceManager& resManager, const File::Path& filePath) :
                                                            false,
                                                            false,
                                                            true,
-                                                           true,
                                                            true)),
 	scale(1.f)
 {
@@ -87,7 +86,7 @@ TextBatch::TextBatch(ResourceManager& resManager, const File::Path& filePath) :
 
 			fontTexturePath = fontTexturePath.substr(1ull, fontTexturePath.length() - 2ull);
 
-			fontTexture = resManager.createRenderTextureView(fontTexturePath, true);
+			fontTexture = resManager.createRenderTextureView(fontTexturePath);
 
 			break;
 		}

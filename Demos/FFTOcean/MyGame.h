@@ -21,7 +21,6 @@ public:
 	                                                         1,
 	                                                         1,
 	                                                         false,
-	                                                         true,
 	                                                         DirectX::Colors::Black))
 	{
 		MainCamera::setProj(Math::pi / 3.f, Graphics::getAspectRatio(), 1.f, 5000.f);

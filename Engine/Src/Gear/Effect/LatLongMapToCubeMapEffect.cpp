@@ -73,7 +73,7 @@ namespace Gear::Effect::LatLongMapToCubeMapEffect
 				}
 			}
 
-			matricesBuffer = resManager->createImmutableCBuffer(sizeof(Matrices), &matrices, false);
+			matricesBuffer = resManager->createImmutableCBuffer(sizeof(Matrices), &matrices);
 
 			matricesBuffer->getBuffer()->setName(L"LatLongMap To Cubemap Matrices");
 		}

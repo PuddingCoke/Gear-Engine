@@ -2,135 +2,154 @@
 
 #include <Gear/Core/RenderThreadLocal.h>
 
+#include <Gear/Core/Graphics.h>
+
 namespace Gear::Resource
 {
-	ResourceBase::ResourceBase(const bool persistent) :
-		persistent(persistent),
-		inCopyingList(false),
-		lastUpdateDynamicIndex(UINT64_MAX),
-		numCBVSRVUAVDescriptors(0),
-		copySrcDescriptorHandle()
+	ResourceBase::ResourceBase() :
+		inVolatileResourceList(false),
+		preparedFrameEpoch(makeShared<uint64_t>(UINT64_MAX)),
+		prepareMutex(makeShared<std::mutex>())
 	{
 	}
 
-	//拷贝时persistent无论如何都要被设置为true，因为每个渲染线程都有着独享的LocalDescriptorHeap
-	//这意味着只能是创建那个资源的渲染线程调用资源的copyDescriptors方法
 	ResourceBase::ResourceBase(const ResourceBase& resource) :
-		persistent(true),
-		inCopyingList(false),
-		lastUpdateDynamicIndex(UINT64_MAX),
-		numCBVSRVUAVDescriptors(resource.numCBVSRVUAVDescriptors),
-		copySrcDescriptorHandle()
+		inVolatileResourceList(false),
+		preparedFrameEpoch(resource.preparedFrameEpoch),
+		prepareMutex(resource.prepareMutex),
+		resourceDescriptorHandle(resource.resourceDescriptorHandle),
+		nonShaderVisibleResourceDescriptorHandle(resource.nonShaderVisibleResourceDescriptorHandle),
+		renderTargetDescriptorHandle(resource.renderTargetDescriptorHandle),
+		depthStencilDescriptorHandle(resource.depthStencilDescriptorHandle)
 	{
+		//使用的描述符是全局堆上的，因此使用共享模式
 	}
 
 	ResourceBase::~ResourceBase()
 	{
 	}
 
-	bool ResourceBase::copyDescriptors()
+	bool ResourceBase::hasVolatileDescriptor() const
 	{
 		return false;
 	}
 
-	bool ResourceBase::getPersistent() const
+	void ResourceBase::prepareDescriptors()
 	{
-		return persistent;
-	}
-
-	uint32_t ResourceBase::getNumCBVSRVUAVDescriptors() const
-	{
-		return numCBVSRVUAVDescriptors;
-	}
-
-	void ResourceBase::setNumCBVSRVUAVDescriptors(const uint32_t numDescriptors)
-	{
-		numCBVSRVUAVDescriptors = numDescriptors;
-	}
-
-	bool ResourceBase::getInCopyingList() const
-	{
-		return inCopyingList;
-	}
-
-	void ResourceBase::pushToCopyingList()
-	{
-		inCopyingList = true;
-	}
-
-	void ResourceBase::popFromCopyingList()
-	{
-		inCopyingList = false;
-	}
-
-	D3D12Core::DescriptorHandle ResourceBase::allocCBVSRVUAVDescriptors()
-	{
-#ifdef _DEBUG
-		if (getNumCBVSRVUAVDescriptors() == 0u)
+		if (!hasVolatileDescriptor())
 		{
-			THROWLOG(LOGERROR() << "调用" << TOSTRING(allocCBVSRVUAVDescriptors) << "前应该先调用"
-			                    << TOSTRING(setNumCBVSRVUAVDescriptors));
-		}
-#endif // _DEBUG
-
-		if (getPersistent())
-		{
-			copySrcDescriptorHandle =
-				GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(getNumCBVSRVUAVDescriptors());
-		}
-		else
-		{
-			copySrcDescriptorHandle = LocalDescriptorHeap::getStagingResourceHeap()->allocDynamicDescriptor(
-				getNumCBVSRVUAVDescriptors());
+			THROWLOG(LOGERROR() << "对于无易变描述符的资源来说，不应该调用" << TOSTRING(prepareDescriptors));
 		}
 
-		return copySrcDescriptorHandle;
+		std::lock_guard lock(*prepareMutex);
+
+		if (*preparedFrameEpoch == Graphics::getFrameEpoch())
+		{
+			return;
+		}
+
+		prepareDescriptorsImpl();
+
+		*preparedFrameEpoch = Graphics::getFrameEpoch();
 	}
 
-	bool ResourceBase::copyToResourceHeap(D3D12Core::DescriptorHandle& descriptorHandle)
+	bool ResourceBase::getInVolatileResourceList() const
 	{
-#ifdef _DEBUG
-		if (getPersistent())
-		{
-			THROWLOG(LOGERROR() << "对于持久性资源来说，调用" << TOSTRING(copyToResourceHeap)
-			                    << "是非法的！");
-		}
-#endif // _DEBUG
-
-		//检测到当前的位置是安全的那么不更新
-		if (lastUpdateDynamicIndex != UINT64_MAX)
-		{
-			//>=lastUpdateDynamicIndex
-			const uint64_t currentDynamicIndex = GlobalDescriptorHeap::getResourceHeap()->getDynamicIndex();
-
-			const uint64_t numDynamicDescriptors =
-				GlobalDescriptorHeap::getResourceHeap()->getNumDynamicDescriptors();
-
-			//获取lastUpdateDynamicIndex下一个循环的对应位置
-			const uint64_t nextLoopDynamicIndex = lastUpdateDynamicIndex + numDynamicDescriptors;
-
-			//安全余量
-			const uint64_t safeMargin = numDynamicDescriptors * safeMarginNumerator / safeMarginDenominator;
-
-			//如果大于安全余量就不更新
-			if (nextLoopDynamicIndex > currentDynamicIndex &&
-			    nextLoopDynamicIndex - currentDynamicIndex > safeMargin)
-			{
-				return false;
-			}
-		}
-
-		D3D12Core::DescriptorHandle copyDestDescriptorHandle =
-			GlobalDescriptorHeap::getResourceHeap()->allocDynamicDescriptor(getNumCBVSRVUAVDescriptors(),
-		                                                                    lastUpdateDynamicIndex);
-
-		D3D12Core::DescriptorHandle::copyDescriptors(getNumCBVSRVUAVDescriptors(),
-		                                             copyDestDescriptorHandle,
-		                                             copySrcDescriptorHandle,
-		                                             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-		descriptorHandle = copyDestDescriptorHandle;
-
-		return true;
+		return inVolatileResourceList;
 	}
+
+	void ResourceBase::pushToVolatileResourceList(std::vector<ResourceBase*>& volatileResourceList)
+	{
+		if (!inVolatileResourceList)
+		{
+			volatileResourceList.push_back(this);
+
+			inVolatileResourceList = true;
+		}
+	}
+
+	void ResourceBase::popFromVolatileResourceList()
+	{
+		inVolatileResourceList = false;
+	}
+
+	D3D12Core::DescriptorHandle* ResourceBase::createResourceDescriptorHandle(const uint32_t numDescriptors)
+	{
+		if (numDescriptors == 0)
+		{
+			return nullptr;
+		}
+
+		resourceDescriptorHandle =
+			GlobalDescriptorHeap::getResourceHeap()->allocUnorderedDescriptor(numDescriptors);
+
+		return getResourceDescriptorHandle();
+	}
+
+	D3D12Core::DescriptorHandle* ResourceBase::createNonShaderVisibleResourceDescriptorHandle(
+		const uint32_t numDescriptors)
+	{
+		if (numDescriptors == 0)
+		{
+			return nullptr;
+		}
+
+		nonShaderVisibleResourceDescriptorHandle =
+			GlobalDescriptorHeap::getNonShaderVisibleResourceHeap()->allocUnorderedDescriptor(numDescriptors);
+
+		return getNonShaderVisibleResourceDescriptorHandle();
+	}
+
+	D3D12Core::DescriptorHandle* ResourceBase::createRenderTargetDescriptorHandle(
+		const uint32_t numDescriptors)
+	{
+		if (numDescriptors == 0)
+		{
+			return nullptr;
+		}
+
+		renderTargetDescriptorHandle =
+			GlobalDescriptorHeap::getRenderTargetHeap()->allocUnorderedDescriptor(numDescriptors);
+
+		return getRenderTargetDescriptorHandle();
+	}
+
+	D3D12Core::DescriptorHandle* ResourceBase::createDepthStencilDescriptorHandle(
+		const uint32_t numDescriptors)
+	{
+		if (numDescriptors == 0)
+		{
+			return nullptr;
+		}
+
+		depthStencilDescriptorHandle =
+			GlobalDescriptorHeap::getDepthStencilHeap()->allocUnorderedDescriptor(numDescriptors);
+
+		return getDepthStencilDescriptorHandle();
+	}
+
+	D3D12Core::DescriptorHandle* ResourceBase::getResourceDescriptorHandle() const
+	{
+		return resourceDescriptorHandle.get();
+	}
+
+	D3D12Core::DescriptorHandle* ResourceBase::getNonShaderVisibleResourceDescriptorHandle() const
+	{
+		return nonShaderVisibleResourceDescriptorHandle.get();
+	}
+
+	D3D12Core::DescriptorHandle* ResourceBase::getRenderTargetDescriptorHandle() const
+	{
+		return renderTargetDescriptorHandle.get();
+	}
+
+	D3D12Core::DescriptorHandle* ResourceBase::getDepthStencilDescriptorHandle() const
+	{
+		return depthStencilDescriptorHandle.get();
+	}
+
+	void ResourceBase::prepareDescriptorsImpl()
+	{
+	}
+
 }

@@ -145,8 +145,13 @@ namespace Gear::Utils::Math
 
 	template<typename T>
 		requires std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
-	uint32_t log2(const T x)
+	uint32_t log2Floor(const T x)
 	{
+		if (x == 0)
+		{
+			return 0;
+		}
+
 		unsigned long y;
 
 		bool nonZero;
@@ -161,6 +166,20 @@ namespace Gear::Utils::Math
 		}
 
 		return static_cast<uint32_t>(nonZero) & static_cast<uint32_t>(y);
+	}
+
+	template<typename T>
+		requires std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
+	uint32_t log2Ceil(const T x)
+	{
+		if (x <= 1)
+		{
+			return 0;
+		}
+
+		const uint32_t floorIndex = log2Floor(x);
+
+		return (static_cast<T>(1) << floorIndex) == x ? floorIndex : floorIndex + 1;
 	}
 
 	template<typename T>

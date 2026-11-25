@@ -17,7 +17,7 @@ namespace Gear::Effect
 		EffectBase(refResManager, width, height, FMT::RGBA16UN),
 		fxaaParam{ 1.0f, 0.75f, 0.166f, 0.0633f },
 		colorLumaTexture(
-			ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16UN, 1, 1, false, true))
+			ResourceManager::createGraphicsTexture(width, height, FMT::RGBA16UN, 1, 1, false))
 	{
 		colorToColorLumaPS = Shader::create(g_ColorToColorLumaBytes, sizeof(g_ColorToColorLumaBytes));
 

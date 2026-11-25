@@ -11,23 +11,22 @@ namespace Gear::Resource
 	                       const bool createUAV,
 	                       const bool createVBV,
 	                       const bool createIBV,
-	                       const bool cpuWritable,
-	                       const bool persistent) :
-		ResourceBase(persistent),
+	                       const bool cpuWritable) :
 		hasSRV(createSRV),
 		hasUAV(createUAV),
 		srvFormat(FMT::UNKNOWN),
 		uavFormat(FMT::UNKNOWN),
-		counterBuffer(nullptr),
-		srvIndex(makeShared<uint32_t>()),
-		uavIndex(makeShared<uint32_t>()),
-		viewGPUHandle(makeShared<D3D12_GPU_DESCRIPTOR_HANDLE>()),
-		viewCPUHandle(makeShared<D3D12_CPU_DESCRIPTOR_HANDLE>()),
-		bufferViewStruct(makeShared<BufferViewStruct>()),
+		srvIndex(UINT32_MAX),
+		uavIndex(UINT32_MAX),
+		viewGPUHandle{},
+		viewCPUHandle{},
+		bufferViewUnion{},
 		uploadHeaps(nullptr),
-		buffer(std::move(bufferPtr))
+		buffer(std::move(bufferPtr)),
+		counterBuffer(nullptr)
 	{
-		setNumCBVSRVUAVDescriptors(static_cast<uint32_t>(createSRV) + static_cast<uint32_t>(createUAV));
+		const uint32_t numGlobalResourceHeapDescriptors =
+			static_cast<uint32_t>(createSRV) + static_cast<uint32_t>(createUAV);
 
 		const bool isTypedBuffer = (structureByteStride == 0 && format != FMT::UNKNOWN);
 
@@ -35,15 +34,16 @@ namespace Gear::Resource
 
 		const bool isByteAddressBuffer = (structureByteStride == 0 && format == FMT::UNKNOWN);
 
-		if (getNumCBVSRVUAVDescriptors())
+		if (numGlobalResourceHeapDescriptors)
 		{
 			//为结构化缓冲创建计数器缓冲
 			if (isStructuredBuffer && createUAV)
 			{
-				counterBuffer = makeUnique<CounterBufferView>(persistent);
+				counterBuffer = makeUnique<CounterBufferView>();
 			}
 
-			D3D12Core::DescriptorHandle descriptorHandle = allocCBVSRVUAVDescriptors();
+			D3D12Core::DescriptorHandle* const descriptorHandle =
+				createResourceDescriptorHandle(numGlobalResourceHeapDescriptors);
 
 			if (createSRV)
 			{
@@ -74,11 +74,11 @@ namespace Gear::Resource
 				}
 
 				GraphicsDevice::get()->CreateShaderResourceView(
-					buffer->getResource(), &desc, descriptorHandle.getCurrentCPUHandle());
+					buffer->getResource(), &desc, descriptorHandle->getCurrentCPUHandle());
 
-				*srvIndex = descriptorHandle.getCurrentIndex();
+				srvIndex = descriptorHandle->getCurrentIndex();
 
-				descriptorHandle.move();
+				descriptorHandle->move();
 			}
 
 			if (createUAV)
@@ -114,66 +114,51 @@ namespace Gear::Resource
 						buffer->getResource(),
 						counterBuffer->getBuffer()->getResource(),
 						&desc,
-						descriptorHandle.getCurrentCPUHandle());
+						descriptorHandle->getCurrentCPUHandle());
 				}
 				else
 				{
 					GraphicsDevice::get()->CreateUnorderedAccessView(
-						buffer->getResource(), nullptr, &desc, descriptorHandle.getCurrentCPUHandle());
+						buffer->getResource(), nullptr, &desc, descriptorHandle->getCurrentCPUHandle());
 				}
 
-				*uavIndex = descriptorHandle.getCurrentIndex();
+				uavIndex = descriptorHandle->getCurrentIndex();
 
-				//对于持久性资源我们需要在非着色器可见的描述符堆创建一个额外的描述符来获得一个viewCPUHandle
-				//而对于非持久性资源，我们已经有了
-				if (persistent)
+				viewGPUHandle = descriptorHandle->getCurrentGPUHandle();
+
+				D3D12Core::DescriptorHandle* const nonShaderVisibleHandle = createNonShaderVisibleResourceDescriptorHandle(1);
+
+				if (isStructuredBuffer)
 				{
-					*viewGPUHandle = descriptorHandle.getCurrentGPUHandle();
-
-					const D3D12Core::DescriptorHandle nonShaderVisibleHandle =
-						LocalDescriptorHeap::getStagingResourceHeap()->allocStaticDescriptor(1);
-
-					if (isStructuredBuffer)
-					{
-						GraphicsDevice::get()->CreateUnorderedAccessView(
-							buffer->getResource(),
-							counterBuffer->getBuffer()->getResource(),
-							&desc,
-							nonShaderVisibleHandle.getCurrentCPUHandle());
-					}
-					else
-					{
-						GraphicsDevice::get()->CreateUnorderedAccessView(
-							buffer->getResource(),
-							nullptr,
-							&desc,
-							nonShaderVisibleHandle.getCurrentCPUHandle());
-					}
-
-					*viewCPUHandle = nonShaderVisibleHandle.getCurrentCPUHandle();
+					GraphicsDevice::get()->CreateUnorderedAccessView(
+						buffer->getResource(),
+						counterBuffer->getBuffer()->getResource(),
+						&desc,
+						nonShaderVisibleHandle->getCurrentCPUHandle());
 				}
 				else
 				{
-					*viewCPUHandle = descriptorHandle.getCurrentCPUHandle();
-
-					//之后获取viewGPUHandle
+					GraphicsDevice::get()->CreateUnorderedAccessView(
+						buffer->getResource(), nullptr, &desc, nonShaderVisibleHandle->getCurrentCPUHandle());
 				}
+
+				viewCPUHandle = nonShaderVisibleHandle->getCurrentCPUHandle();
 			}
 		}
 
 		if (createVBV)
 		{
-			bufferViewStruct->vbv.BufferLocation = buffer->getGPUAddress();
-			bufferViewStruct->vbv.SizeInBytes = static_cast<uint32_t>(buffer->getSize());
-			bufferViewStruct->vbv.StrideInBytes =
+			bufferViewUnion.vbv.BufferLocation = buffer->getGPUAddress();
+			bufferViewUnion.vbv.SizeInBytes = static_cast<uint32_t>(buffer->getSize());
+			bufferViewUnion.vbv.StrideInBytes =
 				(isStructuredBuffer ? structureByteStride : FMT::getByteSize(format));
 		}
 
 		if (createIBV)
 		{
-			bufferViewStruct->ibv.BufferLocation = buffer->getGPUAddress();
-			bufferViewStruct->ibv.SizeInBytes = static_cast<uint32_t>(buffer->getSize());
-			bufferViewStruct->ibv.Format = format;
+			bufferViewUnion.ibv.BufferLocation = buffer->getGPUAddress();
+			bufferViewUnion.ibv.SizeInBytes = static_cast<uint32_t>(buffer->getSize());
+			bufferViewUnion.ibv.Format = format;
 		}
 
 		if (cpuWritable)
@@ -187,20 +172,23 @@ namespace Gear::Resource
 		}
 	}
 
+	// TODO 待办 #1：拷贝构造没有重建 uploadHeaps，也没有自己的描述符句柄
+	// 拷贝出来的对象调用 getUpdateStruct 会解引用空指针，句柄槽位也归源对象所有
+#pragma message("TODO: BufferView 的拷贝构造尚未完成（uploadHeaps 为 nullptr / 描述符句柄与源对象共享）")
 	BufferView::BufferView(const BufferView& bv) :
 		ResourceBase(bv),
 		hasSRV(bv.hasSRV),
 		hasUAV(bv.hasUAV),
 		srvFormat(bv.srvFormat),
 		uavFormat(bv.uavFormat),
-		counterBuffer(bv.counterBuffer ? makeUnique<CounterBufferView>(*bv.counterBuffer) : nullptr),
 		srvIndex(bv.srvIndex),
 		uavIndex(bv.uavIndex),
 		viewGPUHandle(bv.viewGPUHandle),
 		viewCPUHandle(bv.viewCPUHandle),
-		bufferViewStruct(bv.bufferViewStruct),
+		bufferViewUnion(bv.bufferViewUnion),
 		uploadHeaps(nullptr),
-		buffer(bv.buffer ? makeUnique<D3D12Resource::Buffer>(*bv.buffer) : nullptr)
+		buffer(bv.buffer ? makeUnique<D3D12Resource::Buffer>(*bv.buffer) : nullptr),
+		counterBuffer(bv.counterBuffer ? makeUnique<CounterBufferView>(*bv.counterBuffer) : nullptr)
 	{
 	}
 
@@ -210,14 +198,14 @@ namespace Gear::Resource
 
 	VertexBufferDesc BufferView::getVertexBuffer() const
 	{
-		const VertexBufferDesc desc = { .buffer = buffer.get(), .vbv = bufferViewStruct->vbv };
+		const VertexBufferDesc desc = { .buffer = buffer.get(), .vbv = bufferViewUnion.vbv };
 
 		return desc;
 	}
 
 	IndexBufferDesc BufferView::getIndexBuffer() const
 	{
-		const IndexBufferDesc desc = { .buffer = buffer.get(), .ibv = bufferViewStruct->ibv };
+		const IndexBufferDesc desc = { .buffer = buffer.get(), .ibv = bufferViewUnion.ibv };
 
 		return desc;
 	}
@@ -226,9 +214,10 @@ namespace Gear::Resource
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::SRV,
-			                              .resourceIndex = srvIndex.get(),
-			                              .bufferDesc = { .buffer = buffer.get(), .counterBuffer = nullptr },
-			                              .resource = this };
+			                              .resource = this,
+			                              .resourceIndex = &srvIndex,
+			                              .bufferDesc = { .buffer = buffer.get(),
+			                                              .counterBuffer = nullptr } };
 
 		return desc;
 	}
@@ -238,10 +227,10 @@ namespace Gear::Resource
 		const ShaderResourceDesc desc = {
 			.type = ShaderResourceDesc::BUFFER,
 			.state = ShaderResourceDesc::UAV,
-			.resourceIndex = uavIndex.get(),
+			.resource = this,
+			.resourceIndex = &uavIndex,
 			.bufferDesc = { .buffer = buffer.get(),
-			                .counterBuffer = (counterBuffer ? counterBuffer->getBuffer() : nullptr) },
-			.resource = this
+			                .counterBuffer = (counterBuffer ? counterBuffer->getBuffer() : nullptr) }
 		};
 
 		return desc;
@@ -251,9 +240,8 @@ namespace Gear::Resource
 	{
 		const UAVClearDesc desc = { .type = UAVClearDesc::BUFFER,
 			                        .bufferDesc = { .buffer = buffer.get() },
-			                        .resource = this,
-			                        .viewGPUHandle = viewGPUHandle.get(),
-			                        .viewCPUHandle = *viewCPUHandle };
+			                        .viewGPUHandle = viewGPUHandle,
+			                        .viewCPUHandle = viewCPUHandle };
 
 		return desc;
 	}
@@ -266,32 +254,6 @@ namespace Gear::Resource
 	D3D12Resource::Buffer* BufferView::getBuffer() const
 	{
 		return buffer.get();
-	}
-
-	bool BufferView::copyDescriptors()
-	{
-		D3D12Core::DescriptorHandle shaderVisibleHandle;
-
-		const bool copied = copyToResourceHeap(shaderVisibleHandle);
-
-		if (copied)
-		{
-			if (hasSRV)
-			{
-				*srvIndex = shaderVisibleHandle.getCurrentIndex();
-
-				shaderVisibleHandle.move();
-			}
-
-			if (hasUAV)
-			{
-				*uavIndex = shaderVisibleHandle.getCurrentIndex();
-
-				*viewGPUHandle = shaderVisibleHandle.getCurrentGPUHandle();
-			}
-		}
-
-		return copied;
 	}
 
 	BufferView::UpdateStruct BufferView::getUpdateStruct(const void* const data, const uint64_t size)

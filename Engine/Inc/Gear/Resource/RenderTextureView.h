@@ -25,7 +25,6 @@ namespace Gear::Resource
 
 		RenderTextureView(D3D12Resource::TexturePtr texturePtr,
 		                  const bool isTextureCube,
-		                  const bool persistent,
 		                  const DXGI_FORMAT srvFormat,
 		                  const DXGI_FORMAT uavFormat,
 		                  const DXGI_FORMAT rtvFormat);
@@ -48,8 +47,6 @@ namespace Gear::Resource
 
 		D3D12Resource::Texture* getTexture() const;
 
-		bool copyDescriptors() override;
-
 		DXGI_FORMAT getRTVFormat() const;
 
 		DXGI_FORMAT getUAVFormat() const;
@@ -64,19 +61,19 @@ namespace Gear::Resource
 
 		const DXGI_FORMAT uavFormat;
 
-		SharedPtr<uint32_t> allSRVIndex;
+		uint32_t allSRVIndex;
 
-		SharedPtr<std::vector<uint32_t>> srvMipIndices;
+		std::vector<uint32_t> srvMipIndices;
 
-		SharedPtr<std::vector<D3D12_GPU_DESCRIPTOR_HANDLE>> srvMipGPUHandles;
+		std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> srvMipGPUHandles;
 
-		SharedPtr<std::vector<uint32_t>> uavMipIndices;
+		std::vector<uint32_t> uavMipIndices;
 
-		SharedPtr<std::vector<D3D12_CPU_DESCRIPTOR_HANDLE>> rtvMipHandles;
+		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvMipHandles;
 
-		SharedPtr<std::vector<D3D12_GPU_DESCRIPTOR_HANDLE>> viewGPUHandles;
+		std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> viewGPUHandles;
 
-		SharedPtr<std::vector<D3D12_CPU_DESCRIPTOR_HANDLE>> viewCPUHandles;
+		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> viewCPUHandles;
 
 		D3D12Resource::TexturePtr texture;
 	};

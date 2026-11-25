@@ -2,10 +2,9 @@
 
 namespace Gear::Resource
 {
-	ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr, const bool persistent) :
-		ResourceBase(persistent),
+	ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr) :
 		gpuAddress(makeShared<D3D12_GPU_VIRTUAL_ADDRESS>()),
-		bufferIndex(makeShared<uint32_t>()),
+		bufferIndex(makeShared<uint32_t>(UINT32_MAX)),
 		buffer(std::move(bufferPtr))
 	{
 		if (buffer)
@@ -19,15 +18,13 @@ namespace Gear::Resource
 			desc.BufferLocation = buffer->getGPUAddress();
 			desc.SizeInBytes = static_cast<uint32_t>(buffer->getSize());
 
-			setNumCBVSRVUAVDescriptors(1);
+			D3D12Core::DescriptorHandle* const descriptorHandle = createResourceDescriptorHandle(1);
 
-			D3D12Core::DescriptorHandle descriptorHandle = allocCBVSRVUAVDescriptors();
-
-			GraphicsDevice::get()->CreateConstantBufferView(&desc, descriptorHandle.getCurrentCPUHandle());
+			GraphicsDevice::get()->CreateConstantBufferView(&desc, descriptorHandle->getCurrentCPUHandle());
 
 			*gpuAddress = buffer->getGPUAddress();
 
-			*bufferIndex = descriptorHandle.getCurrentIndex();
+			*bufferIndex = descriptorHandle->getCurrentIndex();
 		}
 	}
 
@@ -47,9 +44,10 @@ namespace Gear::Resource
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::CBV,
+			                              .resource = this,
 			                              .resourceIndex = bufferIndex.get(),
-			                              .bufferDesc = { .buffer = buffer.get(), .counterBuffer = nullptr },
-			                              .resource = this };
+			                              .bufferDesc = { .buffer = buffer.get(),
+			                                              .counterBuffer = nullptr } };
 
 		return desc;
 	}
@@ -62,19 +60,5 @@ namespace Gear::Resource
 	D3D12Resource::Buffer* ImmutableCBuffer::getBuffer() const
 	{
 		return buffer.get();
-	}
-
-	bool ImmutableCBuffer::copyDescriptors()
-	{
-		D3D12Core::DescriptorHandle shaderVisibleHandle;
-
-		const bool copied = copyToResourceHeap(shaderVisibleHandle);
-
-		if (copied)
-		{
-			*bufferIndex = shaderVisibleHandle.getCurrentIndex();
-		}
-
-		return copied;
 	}
 }

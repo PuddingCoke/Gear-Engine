@@ -14,9 +14,9 @@ public:
 		vertices((gridSize + 1) * (gridSize + 1)),
 		camera(camera),
 		renderParamBuffer(ResourceManager::createDynamicCBuffer(sizeof(RenderParam))),
-		spectrumParamBuffer{ ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true),
-		                     ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true),
-		                     ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam), true) },
+		spectrumParamBuffer{ ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam)),
+		                     ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam)),
+		                     ResourceManager::createDefaultCBuffer(sizeof(SpectrumParam)) },
 		cascade{ makeUnique<WaveCascade>(textureResolution, context),
 		         makeUnique<WaveCascade>(textureResolution, context),
 		         makeUnique<WaveCascade>(textureResolution, context) },
@@ -96,14 +96,13 @@ public:
 		WaveCascade::tempTexture = tempTexture.get();
 
 		depthTexture = ResourceManager::createDepthTextureView(
-			Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false, true);
+			Graphics::getWidth(), Graphics::getHeight(), FMT::R32TL, 1, 1, false);
 
 		vertexBuffer = resManager->createStructuredBufferView(
 			sizeof(DirectX::XMFLOAT3),
 			static_cast<uint32_t>(sizeof(DirectX::XMFLOAT3) * vertices.size()),
 			false,
 			false,
-			true,
 			true,
 			true,
 			vertices.data());
@@ -142,17 +141,16 @@ public:
 			                                                false,
 			                                                true,
 			                                                false,
-			                                                true,
 			                                                indices.data());
 		}
 
 		randomGaussTexture = resManager->createRenderTextureView(
-			textureResolution, textureResolution, RandomDataType::GAUSS, true);
+			textureResolution, textureResolution, RandomDataType::GAUSS);
 
 		WaveCascade::randomGaussTexture = randomGaussTexture.get();
 
 		enviromentCube =
-			resManager->createTextureCube(L"E:/Assets/Ocean/autumn_field_puresky_4k.exr", 1024, true);
+			resManager->createTextureCube(L"E:/Assets/Ocean/autumn_field_puresky_4k.exr", 1024);
 
 		enviromentCube->getTexture()->setName(L"Enviroment Cube");
 
@@ -217,7 +215,7 @@ private:
 
 	static RenderTextureViewPtr createTexture(const uint32_t& resolution, const DXGI_FORMAT& format)
 	{
-		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false, true);
+		return ResourceManager::createComputeTexture(resolution, resolution, format, 1, 1, false);
 	}
 
 	void calculateInitialSpectrum()
@@ -285,7 +283,7 @@ private:
 
 		context->drawIndexed(indices.size(), 1, 0, 0, 0);*/
 
-		renderParamBuffer->simpleUpdate(&renderParam);
+		renderParamBuffer->update(&renderParam, sizeof(renderParam));
 
 		context->setPipelineState(*textureCubeState);
 

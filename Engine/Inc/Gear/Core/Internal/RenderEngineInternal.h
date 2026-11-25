@@ -83,6 +83,9 @@ namespace Gear::Core::RenderEngine::Internal
 
 	//使总帧数渲染自增1
 	void renderedFrameCountInc();
+
+	//使帧纪元自增1
+	void frameEpochInc();
 }
 
 #endif // !_GEAR_CORE_RENDERENGINE_INTERNAL_H_

@@ -9,6 +9,12 @@ namespace Gear::Core
 {
 	class RenderTask
 	{
+		friend class RenderThread;
+
+	private:
+
+		UniquePtr<RenderThread> renderThread;
+
 	public:
 
 		RenderTask(const RenderTask&) = delete;
@@ -43,8 +49,6 @@ namespace Gear::Core
 
 	private:
 
-		friend class RenderThread;
-
 		//开始一帧
 		void beginFrame();
 
@@ -53,8 +57,6 @@ namespace Gear::Core
 
 		//帧任务
 		void frameTask();
-
-		UniquePtr<RenderThread> renderThread;
 	};
 }
 

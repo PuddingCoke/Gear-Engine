@@ -8,13 +8,21 @@
 
 namespace Gear::Resource
 {
-	DynamicCBuffer::DynamicCBuffer(const uint32_t size) :
-		ImmutableCBuffer(nullptr, true),
-		regionIndex(Utils::Math::log2(size / 256u)),
-		dataPtr(makeShared<void*>(nullptr)),
-		acquireFrameIndex(makeShared<uint64_t>(UINT64_MAX)),
-		updateFrameIndex(makeShared<uint64_t>(UINT64_MAX))
+	DynamicCBuffer::DynamicCBuffer(const uint32_t sizeParam) :
+		ImmutableCBuffer(nullptr),
+		regionIndex(Utils::Math::log2Ceil((static_cast<uint64_t>(sizeParam) + 255ull) / 256ull)),
+		size(static_cast<uint32_t>(256ull << regionIndex)),
+		dataPtr(makeShared<uint8_t[]>(size)),
+		mappedDataPtr(makeShared<void*>(nullptr)),
+		updateDataPtrFrameEpoch(makeShared<uint64_t>(UINT64_MAX)),
+		acquireFrameEpoch(makeShared<uint64_t>(UINT64_MAX)),
+		updateMappedDataPtrFrameEpoch(makeShared<uint64_t>(UINT64_MAX))
 	{
+		if (sizeParam == 0)
+		{
+			THROWLOG(LOGERROR() << "动态常量缓冲的大小不能为0");
+		}
+
 		if (regionIndex >= DynamicCBufferManager::getNumRegion())
 		{
 			std::string errorString = "动态常量缓冲的大小只能是以下这些";
@@ -35,61 +43,84 @@ namespace Gear::Resource
 	DynamicCBuffer::DynamicCBuffer(const DynamicCBuffer& dcb) :
 		ImmutableCBuffer(dcb),
 		regionIndex(dcb.regionIndex),
+		size(dcb.size),
 		dataPtr(dcb.dataPtr),
-		acquireFrameIndex(dcb.acquireFrameIndex),
-		updateFrameIndex(dcb.updateFrameIndex)
+		mappedDataPtr(dcb.mappedDataPtr),
+		updateDataPtrFrameEpoch(dcb.updateDataPtrFrameEpoch),
+		acquireFrameEpoch(dcb.acquireFrameEpoch),
+		updateMappedDataPtrFrameEpoch(dcb.updateMappedDataPtrFrameEpoch)
 	{
 	}
 
-	void DynamicCBuffer::acquireDataPtr()
+	void DynamicCBuffer::update(const void* const data, const uint32_t updateSize)
 	{
 #ifdef _DEBUG
-		if (Graphics::getRenderedFrameCount() == *acquireFrameIndex)
+		if (Graphics::getFrameEpoch() == *updateDataPtrFrameEpoch)
 		{
-			THROWLOG(LOGERROR() << "对于动态常量缓冲来说，每帧的数据指针获取只能有一次！");
+			THROWLOG(LOGERROR() << "一个动态常量缓冲每帧只能更新一次！");
 		}
 
-		if (regionIndex >= DynamicCBufferManager::getNumRegion())
+		if (updateSize > size)
 		{
-			THROWLOG(LOGERROR() << "这个动态常量缓冲没有被分配位置");
+			THROWLOG(LOGERROR() << "更新大小不能大于动态常量缓冲的大小！");
 		}
 #endif // _DEBUG
 
-		*acquireFrameIndex = Graphics::getRenderedFrameCount();
+		*updateDataPtrFrameEpoch = Graphics::getFrameEpoch();
+
+		memcpy(dataPtr.get(), data, updateSize);
+	}
+
+	bool DynamicCBuffer::hasVolatileDescriptor() const
+	{
+		return true;
+	}
+
+	void DynamicCBuffer::acquireMappedDataPtr()
+	{
+#ifdef _DEBUG
+		if (*acquireFrameEpoch == Graphics::getFrameEpoch())
+		{
+			THROWLOG(LOGERROR() << "对于动态常量缓冲来说，每帧的数据指针获取只能有一次！");
+		}
+#endif // _DEBUG
+
+		*acquireFrameEpoch = Graphics::getFrameEpoch();
 
 		const DynamicCBufferManager::AvailableLocation& location =
 			DynamicCBufferManager::requestLocation(regionIndex);
 
-		*dataPtr = location.dataPtr;
+		*mappedDataPtr = location.dataPtr;
 
 		*gpuAddress = location.gpuAddress;
 
 		*bufferIndex = location.descriptorIndex;
 	}
 
-	void DynamicCBuffer::updateData(const void* const data)
+	void DynamicCBuffer::updateMappedData()
 	{
 #ifdef _DEBUG
-		if (Graphics::getRenderedFrameCount() != *acquireFrameIndex)
+		if(*acquireFrameEpoch != Graphics::getFrameEpoch())
 		{
-			THROWLOG(LOGERROR() << "你还没有为这个动态常量缓冲获取这一帧可用的数据指针！");
+			THROWLOG(LOGERROR() << "对于动态常量缓冲来说，必须先获取数据指针才能更新映射数据！");
 		}
 
-		if (Graphics::getRenderedFrameCount() == *updateFrameIndex)
+		if (*updateMappedDataPtrFrameEpoch == Graphics::getFrameEpoch())
 		{
-			THROWLOG(LOGERROR() << "一个动态常量缓冲每帧只能更新一次！");
+			THROWLOG(LOGERROR() << "对于动态常量缓冲来说，每帧的更新只能有一次！");
 		}
 #endif // _DEBUG
 
-		*updateFrameIndex = Graphics::getRenderedFrameCount();
+		*updateMappedDataPtrFrameEpoch = Graphics::getFrameEpoch();
 
-		memcpy(*dataPtr, data, 256ull << regionIndex);
+		memcpy(*mappedDataPtr, dataPtr.get(), size);
 	}
 
-	void DynamicCBuffer::simpleUpdate(const void* const data)
+	void DynamicCBuffer::prepareDescriptorsImpl()
 	{
-		acquireDataPtr();
+		acquireMappedDataPtr();
 
-		updateData(data);
+		updateMappedData();
 	}
+
 }

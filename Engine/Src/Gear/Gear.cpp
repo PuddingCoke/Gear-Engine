@@ -250,6 +250,8 @@ namespace Gear
 
 		RenderEngine::Internal::initializeResources();
 
+		RenderEngine::Internal::frameEpochInc();
+
 		switch (initParam.usage)
 		{
 		case InitializationParam::REALTIMERENDER:
@@ -316,6 +318,8 @@ namespace Gear
 			}
 
 			RenderEngine::Internal::renderedFrameCountInc();
+
+			RenderEngine::Internal::frameEpochInc();
 
 			if (needScreenGrab)
 			{
@@ -407,12 +411,12 @@ namespace Gear
 		                                       D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
 		                                       nullptr);
 
+		D3D12Core::DescriptorHandlePtr descriptorHandle =
+			GlobalDescriptorHeap::getRenderTargetHeap()->allocUnorderedDescriptor(1);
+
 		D3D12_CPU_DESCRIPTOR_HANDLE textureHandle;
 
 		{
-			DescriptorHandle descriptorHandle =
-				LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(1);
-
 			D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 			rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 			rtvDesc.Format = Graphics::backBufferFormat;
@@ -420,9 +424,9 @@ namespace Gear
 			rtvDesc.Texture2D.PlaneSlice = 0;
 
 			GraphicsDevice::get()->CreateRenderTargetView(
-				renderTexture->getResource(), &rtvDesc, descriptorHandle.getCurrentCPUHandle());
+				renderTexture->getResource(), &rtvDesc, descriptorHandle->getCurrentCPUHandle());
 
-			textureHandle = descriptorHandle.getCurrentCPUHandle();
+			textureHandle = descriptorHandle->getCurrentCPUHandle();
 		}
 
 		RenderEngine::Internal::setDeltaTime(1.f / static_cast<float>(VideoEncoder::Encoder::frameRate));
@@ -457,6 +461,8 @@ namespace Gear
 			RenderEngine::Internal::updateTimeElapsed();
 
 			RenderEngine::Internal::renderedFrameCountInc();
+
+			RenderEngine::Internal::frameEpochInc();
 
 		} while (encoding);
 	}
@@ -534,6 +540,8 @@ namespace Gear
 			RenderEngine::Internal::present();
 
 			RenderEngine::Internal::renderedFrameCountInc();
+
+			RenderEngine::Internal::frameEpochInc();
 
 			targetEndPoint += targetFrameDuration;
 

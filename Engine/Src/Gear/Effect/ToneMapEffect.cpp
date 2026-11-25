@@ -31,7 +31,7 @@ namespace Gear::Effect::ToneMapEffect
 			PipelineStateBuilder::build(Shader::create(g_ToneMapCSBytes, sizeof(g_ToneMapCSBytes)));
 
 		outputTexture = ResourceManager::createComputeTexture(
-			Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true);
+			Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false);
 
 		outputTexture->getTexture()->setName(L"Tone Mapped Texture");
 

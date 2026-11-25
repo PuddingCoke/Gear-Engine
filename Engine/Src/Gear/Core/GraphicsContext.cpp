@@ -98,68 +98,75 @@ namespace Gear::Core
 		setShaderConstants<D3D12Core::ShaderType::COMPUTE>(numValues, data, offset);
 	}
 
-	void GraphicsContext::setGlobalConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
+	void GraphicsContext::setGlobalConstantBuffer(Resource::ImmutableCBuffer& constantBuffer)
 	{
-		auto* const command = SetAllShaderConstantBufferCommand::acquire();
-
-		command->set(immutableCBuffer);
-
-		pushGraphicsCommand(command);
+		setShaderConstantBuffer<D3D12Core::ShaderType::ALL>(constantBuffer);
 	}
 
-	void GraphicsContext::setVSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
+	void GraphicsContext::setVSConstantBuffer(Resource::ImmutableCBuffer& constantBuffer)
 	{
-		auto* const command = SetVSConstantBufferCommand::acquire();
-
-		command->set(immutableCBuffer);
-
-		pushGraphicsCommand(command);
+		setShaderConstantBuffer<D3D12Core::ShaderType::VERTEX>(constantBuffer);
 	}
 
-	void GraphicsContext::setHSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
+	void GraphicsContext::setHSConstantBuffer(Resource::ImmutableCBuffer& constantBuffer)
 	{
-		auto* const command = SetHSConstantBufferCommand::acquire();
-
-		command->set(immutableCBuffer);
-
-		pushGraphicsCommand(command);
+		setShaderConstantBuffer<D3D12Core::ShaderType::HULL>(constantBuffer);
 	}
 
-	void GraphicsContext::setDSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
+	void GraphicsContext::setDSConstantBuffer(Resource::ImmutableCBuffer& constantBuffer)
 	{
-		auto* const command = SetDSConstantBufferCommand::acquire();
-
-		command->set(immutableCBuffer);
-
-		pushGraphicsCommand(command);
+		setShaderConstantBuffer<D3D12Core::ShaderType::DOMAIN>(constantBuffer);
 	}
 
-	void GraphicsContext::setGSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
+	void GraphicsContext::setGSConstantBuffer(Resource::ImmutableCBuffer& constantBuffer)
 	{
-		auto* const command = SetGSConstantBufferCommand::acquire();
-
-		command->set(immutableCBuffer);
-
-		pushGraphicsCommand(command);
+		setShaderConstantBuffer<D3D12Core::ShaderType::GEOMETRY>(constantBuffer);
 	}
 
-	void GraphicsContext::setPSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
+	void GraphicsContext::setPSConstantBuffer(Resource::ImmutableCBuffer& constantBuffer)
 	{
-		auto* const command = SetPSConstantBufferCommand::acquire();
-
-		command->set(immutableCBuffer);
-
-		pushGraphicsCommand(command);
+		setShaderConstantBuffer<D3D12Core::ShaderType::PIXEL>(constantBuffer);
 	}
 
-	void GraphicsContext::setCSConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
+	void GraphicsContext::setCSConstantBuffer(Resource::ImmutableCBuffer& constantBuffer)
 	{
-		auto* const command = SetCSConstantBufferCommand::acquire();
-
-		command->set(immutableCBuffer);
-
-		pushGraphicsCommand(command);
+		setShaderConstantBuffer<D3D12Core::ShaderType::COMPUTE>(constantBuffer);
 	}
+
+	// void GraphicsContext::setGlobalIndexTable(Resource::IndexTable& indexTable)
+	// {
+	// 	setShaderIndexTable<D3D12Core::ShaderType::ALL>(indexTable);
+	// }
+
+	// void GraphicsContext::setVSIndexTable(Resource::IndexTable& indexTable)
+	// {
+	// 	setShaderIndexTable<D3D12Core::ShaderType::VERTEX>(indexTable);
+	// }
+
+	// void GraphicsContext::setHSIndexTable(Resource::IndexTable& indexTable)
+	// {
+	// 	setShaderIndexTable<D3D12Core::ShaderType::HULL>(indexTable);
+	// }
+
+	// void GraphicsContext::setDSIndexTable(Resource::IndexTable& indexTable)
+	// {
+	// 	setShaderIndexTable<D3D12Core::ShaderType::DOMAIN>(indexTable);
+	// }
+
+	// void GraphicsContext::setGSIndexTable(Resource::IndexTable& indexTable)
+	// {
+	// 	setShaderIndexTable<D3D12Core::ShaderType::GEOMETRY>(indexTable);
+	// }
+
+	// void GraphicsContext::setPSIndexTable(Resource::IndexTable& indexTable)
+	// {
+	// 	setShaderIndexTable<D3D12Core::ShaderType::PIXEL>(indexTable);
+	// }
+
+	// void GraphicsContext::setCSIndexTable(Resource::IndexTable& indexTable)
+	// {
+	// 	setShaderIndexTable<D3D12Core::ShaderType::COMPUTE>(indexTable);
+	// }
 
 	void GraphicsContext::setPipelineState(D3D12Core::GraphicsState& graphicsPipelineState)
 	{
@@ -329,18 +336,6 @@ namespace Gear::Core
 
 	void GraphicsContext::clearUnorderedAccess(const Resource::UAVClearDesc& desc, const float values[4])
 	{
-		Resource::ResourceBase* const resource = desc.resource;
-
-		if (resource == nullptr)
-		{
-			THROWLOG(LOGERROR() << "资源不能为空");
-		}
-
-		if (!resource->getPersistent())
-		{
-			graphicsCommandExecuter->addNonPersistentResource(resource);
-		}
-
 		auto* const command = ClearUnorderedAccessFloatCommand::acquire();
 
 		command->set(desc, values);
@@ -350,18 +345,6 @@ namespace Gear::Core
 
 	void GraphicsContext::clearUnorderedAccess(const Resource::UAVClearDesc& desc, const uint32_t values[4])
 	{
-		Resource::ResourceBase* const resource = desc.resource;
-
-		if (resource == nullptr)
-		{
-			THROWLOG(LOGERROR() << "资源不能为空");
-		}
-
-		if (!resource->getPersistent())
-		{
-			graphicsCommandExecuter->addNonPersistentResource(resource);
-		}
-
 		auto* const command = ClearUnorderedAccessUintCommand::acquire();
 
 		command->set(desc, values);
@@ -399,6 +382,10 @@ namespace Gear::Core
 			setConstantsCommands.clear();
 		}
 
+		const uint32_t numAllShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation() -
+		                          allShaderResourceDescPtrOffset);
+
 		const uint32_t numPixelShaderResourceDesc =
 			static_cast<uint32_t>(graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation() -
 		                          pixelShaderResourceDescPtrOffset);
@@ -409,7 +396,9 @@ namespace Gear::Core
 
 		auto* const command = DrawCommand::acquire();
 
-		command->set(pixelShaderResourceDescPtrOffset,
+		command->set(allShaderResourceDescPtrOffset,
+		             numAllShaderResourceDesc,
+		             pixelShaderResourceDescPtrOffset,
 		             numPixelShaderResourceDesc,
 		             nonPixelShaderResourceDescPtrOffset,
 		             numNonPixelShaderResourceDesc,
@@ -419,6 +408,8 @@ namespace Gear::Core
 		             startInstanceLocation);
 
 		pushGraphicsCommand(command);
+
+		allShaderResourceDescPtrOffset = graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation();
 
 		pixelShaderResourceDescPtrOffset =
 			graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation();
@@ -463,6 +454,10 @@ namespace Gear::Core
 			setConstantsCommands.clear();
 		}
 
+		const uint32_t numAllShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation() -
+		                          allShaderResourceDescPtrOffset);
+
 		const uint32_t numPixelShaderResourceDesc =
 			static_cast<uint32_t>(graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation() -
 		                          pixelShaderResourceDescPtrOffset);
@@ -473,7 +468,9 @@ namespace Gear::Core
 
 		auto* const command = DrawIndexedCommand::acquire();
 
-		command->set(pixelShaderResourceDescPtrOffset,
+		command->set(allShaderResourceDescPtrOffset,
+		             numAllShaderResourceDesc,
+		             pixelShaderResourceDescPtrOffset,
 		             numPixelShaderResourceDesc,
 		             nonPixelShaderResourceDescPtrOffset,
 		             numNonPixelShaderResourceDesc,
@@ -484,6 +481,8 @@ namespace Gear::Core
 		             startInstanceLocation);
 
 		pushGraphicsCommand(command);
+
+		allShaderResourceDescPtrOffset = graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation();
 
 		pixelShaderResourceDescPtrOffset =
 			graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation();
@@ -509,19 +508,27 @@ namespace Gear::Core
 			setConstantsCommands.clear();
 		}
 
+		const uint32_t numAllShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation() -
+		                          allShaderResourceDescPtrOffset);
+
 		const uint32_t numNonPixelShaderResourceDesc =
 			static_cast<uint32_t>(graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
 		                          nonPixelShaderResourceDescPtrOffset);
 
 		auto* const command = DispatchGrpCommand::acquire();
 
-		command->set(nonPixelShaderResourceDescPtrOffset,
+		command->set(allShaderResourceDescPtrOffset,
+		             numAllShaderResourceDesc,
+		             nonPixelShaderResourceDescPtrOffset,
 		             numNonPixelShaderResourceDesc,
 		             threadGroupCountX,
 		             threadGroupCountY,
 		             threadGroupCountZ);
 
 		pushGraphicsCommand(command);
+
+		allShaderResourceDescPtrOffset = graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation();
 
 		nonPixelShaderResourceDescPtrOffset =
 			graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation();
@@ -544,19 +551,27 @@ namespace Gear::Core
 			setConstantsCommands.clear();
 		}
 
+		const uint32_t numAllShaderResourceDesc =
+			static_cast<uint32_t>(graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation() -
+		                          allShaderResourceDescPtrOffset);
+
 		const uint32_t numNonPixelShaderResourceDesc =
 			static_cast<uint32_t>(graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation() -
 		                          nonPixelShaderResourceDescPtrOffset);
 
 		auto* const command = DispatchDimCommand::acquire();
 
-		command->set(nonPixelShaderResourceDescPtrOffset,
+		command->set(allShaderResourceDescPtrOffset,
+		             numAllShaderResourceDesc,
+		             nonPixelShaderResourceDescPtrOffset,
 		             numNonPixelShaderResourceDesc,
 		             dispatchThreadCountX,
 		             dispatchThreadCountY,
 		             dispatchThreadCountZ);
 
 		pushGraphicsCommand(command);
+
+		allShaderResourceDescPtrOffset = graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation();
 
 		nonPixelShaderResourceDescPtrOffset =
 			graphicsCommandExecuter->getNonPixelShaderResourceDescsWriteLocation();
@@ -591,6 +606,8 @@ namespace Gear::Core
 		}
 #endif // _DEBUG
 
+		allShaderResourceDescPtrOffset = graphicsCommandExecuter->getAllShaderResourceDescsWriteLocation();
+
 		pixelShaderResourceDescPtrOffset =
 			graphicsCommandExecuter->getPixelShaderResourceDescsWriteLocation();
 
@@ -617,10 +634,7 @@ namespace Gear::Core
 	void GraphicsContext::end()
 	{
 		//拷贝描述符到全局唯一着色器可见堆，从而获得描述符索引
-		graphicsCommandExecuter->copyDescriptors();
-
-		//获得描述符索引后解析描述符索引
-		graphicsCommandExecuter->resolveDescriptorIndices();
+		graphicsCommandExecuter->prepare();
 
 		//执行所有命令
 		if (graphicsCommands.size())

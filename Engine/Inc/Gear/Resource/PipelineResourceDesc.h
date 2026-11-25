@@ -31,6 +31,8 @@ namespace Gear::Resource
 			CBV
 		} state;
 
+		ResourceBase* resource;
+
 		const uint32_t* resourceIndex;
 
 		struct TextureTransitionDesc
@@ -50,14 +52,11 @@ namespace Gear::Resource
 			TextureTransitionDesc textureDesc;
 			BufferTransitionDesc bufferDesc;
 		};
-
-		ResourceBase* resource;
 	};
 
 	struct RenderTargetDesc
 	{
 		Core::D3D12Resource::Texture* texture;
-		ResourceBase* resource;
 		uint32_t mipSlice;
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
 		DXGI_FORMAT rtvFormat;
@@ -66,7 +65,6 @@ namespace Gear::Resource
 	struct DepthStencilDesc
 	{
 		Core::D3D12Resource::Texture* texture;
-		ResourceBase* resource;
 		uint32_t mipSlice;
 		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 		DXGI_FORMAT dsvFormat;
@@ -109,9 +107,7 @@ namespace Gear::Resource
 			BufferClearDesc bufferDesc;
 		};
 
-		ResourceBase* resource;
-
-		D3D12_GPU_DESCRIPTOR_HANDLE* viewGPUHandle;
+		D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
 	};

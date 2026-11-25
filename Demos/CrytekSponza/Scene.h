@@ -166,7 +166,6 @@ public:
 		                                                    false,
 		                                                    true,
 		                                                    false,
-		                                                    true,
 		                                                    vertices.data());
 
 		indexBuffer = resManager.createTypedBufferView(FMT::R32UI,
@@ -176,7 +175,6 @@ public:
 		                                               false,
 		                                               true,
 		                                               false,
-		                                               true,
 		                                               indices.data());
 	}
 

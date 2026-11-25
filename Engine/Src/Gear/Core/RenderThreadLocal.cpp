@@ -4,8 +4,6 @@
 
 #include <Gear/Core/Internal/RenderThreadLocalInternal.h>
 
-#include <Gear/Core/Internal/LocalDescriptorHeapInternal.h>
-
 #include <Gear/Core/D3D12Core/Internal/DXCCompilerInternal.h>
 
 namespace Gear::Core::RenderThreadLocal
@@ -29,9 +27,6 @@ namespace Gear::Core::RenderThreadLocal
 
 		//初始化每个渲染线程独享的DXC编译器
 		D3D12Core::DXCCompiler::Internal::InitializeToken dxcCompilerToken;
-
-		//申请每个渲染线程独享的描述符堆
-		LocalDescriptorHeap::Internal::InitializeToken localDescriptorHeapToken;
 	};
 
 	thread_local UniquePtr<RenderThreadLocalImpl> impl;

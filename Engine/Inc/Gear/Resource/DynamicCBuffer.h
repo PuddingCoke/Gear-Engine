@@ -14,28 +14,42 @@ namespace Gear::Resource
 	{
 	public:
 
-		DynamicCBuffer(const uint32_t size);
+		DynamicCBuffer(const uint32_t sizeParam);
 
 		DynamicCBuffer(const DynamicCBuffer&);
 
-		//获取可用的数据指针
-		void acquireDataPtr();
+		//更新CPU侧的缓冲区，用户只需调用此方法
+		void update(const void* const data, const uint32_t updateSize);
 
-		//更新数据指针的内容
-		void updateData(const void* const data);
+		bool hasVolatileDescriptor() const override;
 
-		//先获取再更新数据指针的内容
-		void simpleUpdate(const void* const data);
+		//获取可用的GPU映射指针（引擎内部使用）
+		void acquireMappedDataPtr();
+
+		//更新GPU侧的映射指针指向的数据（引擎内部使用）
+		void updateMappedData();
 
 	private:
 
+		void prepareDescriptorsImpl() override;
+
+		//根据请求大小向上取整得到的区域索引，必须先于size初始化
 		const uint32_t regionIndex;
 
-		SharedPtr<void*> dataPtr;
+		//区域大小（256 << regionIndex），也是影子缓冲和上传的长度
+		const uint32_t size;
 
-		SharedPtr<uint64_t> acquireFrameIndex;
+		//CPU侧的缓冲区，用于暂存数据
+		SharedPtr<uint8_t[]> dataPtr;
 
-		SharedPtr<uint64_t> updateFrameIndex;
+		//GPU侧的映射指针
+		SharedPtr<void*> mappedDataPtr;
+
+		SharedPtr<uint64_t> updateDataPtrFrameEpoch;
+
+		SharedPtr<uint64_t> acquireFrameEpoch;
+
+		SharedPtr<uint64_t> updateMappedDataPtrFrameEpoch;
 	};
 }
 

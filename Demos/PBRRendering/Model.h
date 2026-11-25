@@ -32,7 +32,7 @@ public:
 			}
 
 			vertexBuffer = resManager.createStructuredBufferView(
-				sizeof(Vertex), sizeof(Vertex) * vertexNum, false, false, true, false, true, vertices.data());
+				sizeof(Vertex), sizeof(Vertex) * vertexNum, false, false, true, false, vertices.data());
 		}
 
 		{
@@ -58,7 +58,7 @@ public:
 
 			property.specularColor = DirectX::XMFLOAT4(color.r, color.g, color.b, 1.f);
 
-			materialBuffer = resManager.createImmutableCBuffer(sizeof(MaterialProperty), &property, true);
+			materialBuffer = resManager.createImmutableCBuffer(sizeof(MaterialProperty), &property);
 		}
 	}
 

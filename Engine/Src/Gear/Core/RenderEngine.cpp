@@ -52,8 +52,10 @@
 
 namespace Gear::Core::RenderEngine
 {
-	struct ImGuiToken
+	class ImGuiToken
 	{
+	public:
+
 		ImGuiToken(const HWND hWnd, ImFont** mediumFont, ImFont** largeFont)
 		{
 			IMGUI_CHECKVERSION();
@@ -65,16 +67,15 @@ namespace Gear::Core::RenderEngine
 
 			ImGui::GetStyle().ScaleAllSizes(Utils::MainMonitor::getScale());
 
-			const D3D12Core::DescriptorHandle handle =
-				GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(1);
+			descriptorHandle = GlobalDescriptorHeap::getResourceHeap()->allocUnorderedDescriptor(1);
 
 			ImGui_ImplWin32_Init(hWnd);
 			ImGui_ImplDX12_Init(GraphicsDevice::get(),
 			                    Graphics::getFrameBufferCount(),
 			                    Graphics::backBufferFormat,
 			                    GlobalDescriptorHeap::getResourceHeap()->get(),
-			                    handle.getCurrentCPUHandle(),
-			                    handle.getCurrentGPUHandle());
+			                    descriptorHandle->getCurrentCPUHandle(),
+			                    descriptorHandle->getCurrentGPUHandle());
 
 			//显示输入法的待选框
 			ImGui::GetMainViewport()->PlatformHandleRaw = (void*)hWnd;
@@ -114,6 +115,10 @@ namespace Gear::Core::RenderEngine
 			ImGui_ImplWin32_Shutdown();
 			ImGui::DestroyContext();
 		}
+
+	private:
+
+		D3D12Core::DescriptorHandlePtr descriptorHandle;
 	};
 
 	struct RenderResourceToken
@@ -230,6 +235,8 @@ namespace Gear::Core::RenderEngine
 		UniquePtr<RenderResourceToken> renderResourceToken;
 
 		ComPtr<IDXGISwapChain4> swapChain;
+
+		D3D12Core::DescriptorHandlePtr backBufferRTVHandle;
 
 		UniquePtr<D3D12_CPU_DESCRIPTOR_HANDLE[]> backBufferHandles;
 
@@ -372,9 +379,8 @@ namespace Gear::Core::RenderEngine
 		//那么需要取出纹理用于状态追踪并为其纹理创建RTV
 		if (useSwapChainBuffer)
 		{
-			D3D12Core::DescriptorHandle descriptorHandle =
-				LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(
-					Graphics::getFrameBufferCount());
+			backBufferRTVHandle = GlobalDescriptorHeap::getRenderTargetHeap()->allocUnorderedDescriptor(
+				Graphics::getFrameBufferCount());
 
 			backBufferHandles = makeUnique<D3D12_CPU_DESCRIPTOR_HANDLE[]>(Graphics::getFrameBufferCount());
 
@@ -391,11 +397,11 @@ namespace Gear::Core::RenderEngine
 				texture->SetName(backBufferName.c_str());
 
 				GraphicsDevice::get()->CreateRenderTargetView(
-					texture.Get(), nullptr, descriptorHandle.getCurrentCPUHandle());
+					texture.Get(), nullptr, backBufferRTVHandle->getCurrentCPUHandle());
 
-				backBufferHandles[i] = descriptorHandle.getCurrentCPUHandle();
+				backBufferHandles[i] = backBufferRTVHandle->getCurrentCPUHandle();
 
-				descriptorHandle.move();
+				backBufferRTVHandle->move();
 
 				//后备缓冲的初态为D3D12_RESOURCE_STATE_PRESENT
 				backBufferTextures[i] =
@@ -493,7 +499,7 @@ namespace Gear::Core::RenderEngine
 		lastUsableGraphicsCommandList = nullptr;
 
 		//先获取可用的位置，供GraphicsContext在这一帧使用
-		engineGlobalCBuffer->acquireDataPtr();
+		engineGlobalCBuffer->acquireMappedDataPtr();
 
 		//把后备缓冲转变到STATE_RENDER_TARGET，并暂存资源屏障
 		prepareGraphicsCommandList->trackAndSetResourceState(getRenderTexture(),
@@ -579,7 +585,9 @@ namespace Gear::Core::RenderEngine
 				DirectX::XMFLOAT2(1.f / perframeResource.screenSize.x, 1.f / perframeResource.screenSize.y);
 		}
 
-		engineGlobalCBuffer->updateData(&perframeResource);
+		engineGlobalCBuffer->update(&perframeResource, sizeof(perframeResource));
+
+		engineGlobalCBuffer->updateMappedData();
 
 		//使用收尾命令列表绘制ImGui界面
 		drawImGuiFrame();
@@ -935,6 +943,11 @@ namespace Gear::Core::RenderEngine
 		void renderedFrameCountInc()
 		{
 			Graphics::Internal::renderedFrameCountInc();
+		}
+
+		void frameEpochInc()
+		{
+			Graphics::Internal::frameEpochInc();
 		}
 	}
 

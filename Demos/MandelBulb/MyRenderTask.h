@@ -15,7 +15,6 @@ public:
 	                                                              FMT::RGBA16F,
 	                                                              1,
 	                                                              1,
-	                                                              false,
 	                                                              false)),
 		accumulateParam{ 0, 0.f, 8.f },
 		POWER(8.f)

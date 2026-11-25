@@ -13,6 +13,8 @@
 
 #include <Gear/Resource/DefaultCBuffer.h>
 
+// #include <Gear/Resource/IndexTable.h>
+
 #include <Gear/Utils/StaticVector.h>
 
 #include <Gear/Core/FMT.h>
@@ -92,7 +94,14 @@ namespace Gear::Core
 		                        const uint32_t constantWriteOffset);
 
 		template<D3D12Core::ShaderType ShaderType>
-		void setConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer);
+		void setConstantBuffer(const Resource::ImmutableCBuffer& constantBuffer);
+
+		// template<D3D12Core::ShaderType ShaderType>
+		// void setIndexTable(Resource::IndexTable& indexTable);
+
+		void setAllShaderResources(const uint64_t allShaderResourceDescPtrOffset,
+		                           const uint32_t numAllShaderResourceDesc,
+		                           const uint32_t stateToOverride = D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE);
 
 		void setPixelShaderResources(const uint64_t pixelShaderResourceDescPtrOffset,
 		                             const uint32_t numPixelShaderResourceDesc);
@@ -137,25 +146,29 @@ namespace Gear::Core
 
 		D3D12Core::GraphicsCommandList* getCommandList() const;
 
-		void addNonPersistentResource(Resource::ResourceBase* const resource);
+		void pushVolatileResource(Resource::ResourceBase* const resource);
 
-		void addUnsettedIndex(const D3D12Core::ShaderType shaderType,
-		                      const uint32_t* indexAddress,
-		                      const uint64_t location);
+		void pushUnsettedIndex(const D3D12Core::ShaderType shaderType,
+		                       const uint32_t* indexAddress,
+		                       const uint64_t location);
 
-		uint64_t getShaderConstantsWriteLocation(const D3D12Core::ShaderType shaderType);
+		uint64_t getShaderConstantsWriteLocation(const D3D12Core::ShaderType shaderType) const;
 
-		uint64_t getPixelShaderResourceDescsWriteLocation();
+		uint64_t getAllShaderResourceDescsWriteLocation() const;
 
-		uint64_t getNonPixelShaderResourceDescsWriteLocation();
+		uint64_t getPixelShaderResourceDescsWriteLocation() const;
 
-		uint64_t getRenderTargetDescsWriteLocation();
+		uint64_t getNonPixelShaderResourceDescsWriteLocation() const;
 
-		uint64_t getVertexBufferDescsWriteLocation();
+		uint64_t getRenderTargetDescsWriteLocation() const;
+
+		uint64_t getVertexBufferDescsWriteLocation() const;
 
 		void pushShaderConstants(const D3D12Core::ShaderType shaderType,
 		                         const uint32_t* const srcBegin,
 		                         const uint32_t count);
+
+		void pushAllShaderResourceDesc(const Resource::ShaderResourceDesc& desc);
 
 		void pushPixelShaderResourceDesc(const Resource::ShaderResourceDesc& desc);
 
@@ -165,9 +178,7 @@ namespace Gear::Core
 
 		void pushVertexBufferDesc(const Resource::VertexBufferDesc& desc);
 
-		void copyDescriptors();
-
-		void resolveDescriptorIndices();
+		void prepare();
 
 	private:
 
@@ -269,6 +280,8 @@ namespace Gear::Core
 		                         const uint32_t numWrite,
 		                         const uint32_t offset) const;
 
+		// void prepareIndexTables();
+
 		D3D12_VIEWPORT vp;
 
 		D3D12_RECT rt;
@@ -318,8 +331,7 @@ namespace Gear::Core
 			D3D12Core::ComputeState* computeState;
 		};
 
-		//需要在指令真正执行前调用这些资源的 copyDescriptors 方法
-		std::vector<Resource::ResourceBase*> nonPersistentResources;
+		std::vector<Resource::ResourceBase*> volatileResourceList;
 
 		struct UnsettedIndex
 		{
@@ -336,6 +348,9 @@ namespace Gear::Core
 		//缓存一帧需要的所有着色器常量
 		std::vector<uint32_t> shaderConstants[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 
+		//按 Draw/Dispatch Call 顺序缓存一帧需要状态转变的像素同时又是非像素着色器资源
+		std::vector<Resource::ShaderResourceDesc> allShaderResourceDescs;
+
 		//按 Draw/Dispatch Call 顺序缓存一帧需要状态转变的像素着色器资源
 		std::vector<Resource::ShaderResourceDesc> pixelShaderResourceDescs;
 
@@ -347,6 +362,12 @@ namespace Gear::Core
 
 		//按 SetVertexBuffers 调用顺序缓存一帧需要设置的顶点缓冲
 		std::vector<Resource::VertexBufferDesc> vertexBufferDescs;
+
+		// //存储检查过的是否需要更新的索引表来防止多次检查
+		// std::vector<Resource::IndexTable*> indexTableCheckedList;
+
+		// //存储需要更新的索引表
+		// std::vector<Resource::IndexTable*> indexTableUpdateList;
 	};
 
 	template<D3D12Core::ShaderType ShaderType>
@@ -412,9 +433,9 @@ namespace Gear::Core
 	}
 
 	template<D3D12Core::ShaderType ShaderType>
-	void GraphicsCommandExecuter::setConstantBuffer(const Resource::ImmutableCBuffer& immutableCBuffer)
+	void GraphicsCommandExecuter::setConstantBuffer(const Resource::ImmutableCBuffer& constantBuffer)
 	{
-		D3D12Resource::Buffer* const buffer = immutableCBuffer.getBuffer();
+		D3D12Resource::Buffer* const buffer = constantBuffer.getBuffer();
 
 		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
@@ -457,8 +478,139 @@ namespace Gear::Core
 			rootParameterIndex = getGraphicsRootSignature()->getMSConstantBufferParameterIndex();
 		}
 
-		pushRootConstantBufferDesc({ rootParameterIndex, immutableCBuffer.getGPUAddress() });
+		pushRootConstantBufferDesc({ rootParameterIndex, constantBuffer.getGPUAddress() });
 	}
+
+	// template<D3D12Core::ShaderType ShaderType>
+	// void GraphicsCommandExecuter::setIndexTable(Resource::IndexTable& indexTable)
+	// {
+	// 	D3D12Resource::Buffer* const buffer = indexTable.getBuffer();
+
+	// 	//用户指定需要更新
+	// 	if (indexTable.getUserUpdate())
+	// 	{
+	// 		if (buffer != nullptr)
+	// 		{
+	// 			if (!indexTable.getInCheckedList() && !indexTable.getInUpdateList())
+	// 			{
+	// 				const bool updated = indexTable.updateIndices();
+
+	// 				indexTableCheckedList.push_back(&indexTable);
+
+	// 				indexTable.pushToCheckedList();
+
+	// 				//如果真的更新了索引，那么表示缓冲区需要被更新
+	// 				if (updated)
+	// 				{
+	// 					commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_COPY_DEST);
+
+	// 					indexTableUpdateList.push_back(&indexTable);
+
+	// 					indexTable.pushToUpdateList();
+	// 				}
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			if (!indexTable.getInCheckedList())
+	// 			{
+	// 				//对于动态类型的索引常量缓冲来说，每帧都需要获取可用位置并更新数据指针指向的内容就行
+	// 				indexTable.updateIndices();
+
+	// 				indexTableCheckedList.push_back(&indexTable);
+
+	// 				indexTable.pushToCheckedList();
+	// 			}
+	// 		}
+	// 	}
+	// 	//用户未指定需要更新
+	// 	else
+	// 	{
+	// 		if (buffer != nullptr)
+	// 		{
+	// 			//如果包含非持久性索引，那么需要进行隐式更新
+	// 			if (indexTable.hasNonPersistentResource())
+	// 			{
+	// 				if (!indexTable.getInCheckedList() && !indexTable.getInUpdateList())
+	// 				{
+	// 					const bool updated = indexTable.updateIndices();
+
+	// 					indexTableCheckedList.push_back(&indexTable);
+
+	// 					indexTable.pushToCheckedList();
+
+	// 					//如果真的更新了索引，那么表示缓冲区需要被更新
+	// 					if (updated)
+	// 					{
+	// 						commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_COPY_DEST);
+
+	// 						indexTableUpdateList.push_back(&indexTable);
+
+	// 						indexTable.pushToUpdateList();
+	// 					}
+	// 				}
+	// 			}
+	// 			else
+	// 			{
+	// 				commandList->trackAndSetResourceState(buffer,
+	// 				                                      D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			if (!indexTable.getInCheckedList())
+	// 			{
+	// 				//对于动态类型的索引常量缓冲来说，每帧都需要获取可用位置并更新数据指针指向的内容就行
+	// 				indexTable.updateIndices();
+
+	// 				indexTableCheckedList.push_back(&indexTable);
+
+	// 				indexTable.pushToCheckedList();
+	// 			}
+	// 		}
+	// 	}
+
+	// 	uint32_t rootParameterIndex = 0;
+
+	// 	if constexpr (ShaderType == D3D12Core::ShaderType::ALL)
+	// 	{
+	// 		rootParameterIndex = D3D12Core::RootSignature::getUserGlobalConstantBufferParameterIndex();
+	// 	}
+	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::VERTEX)
+	// 	{
+	// 		rootParameterIndex = getGraphicsRootSignature()->getVSConstantBufferParameterIndex();
+	// 	}
+	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::HULL)
+	// 	{
+	// 		rootParameterIndex = getGraphicsRootSignature()->getHSConstantBufferParameterIndex();
+	// 	}
+	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::DOMAIN)
+	// 	{
+	// 		rootParameterIndex = getGraphicsRootSignature()->getDSConstantBufferParameterIndex();
+	// 	}
+	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::GEOMETRY)
+	// 	{
+	// 		rootParameterIndex = getGraphicsRootSignature()->getGSConstantBufferParameterIndex();
+	// 	}
+	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::PIXEL)
+	// 	{
+	// 		rootParameterIndex = getGraphicsRootSignature()->getPSConstantBufferParameterIndex();
+	// 	}
+	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::COMPUTE)
+	// 	{
+	// 		rootParameterIndex = getComputeRootSignature()->getCSConstantBufferParameterIndex();
+	// 	}
+	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::AMPLIFICATION)
+	// 	{
+	// 		rootParameterIndex = getGraphicsRootSignature()->getASConstantBufferParameterIndex();
+	// 	}
+	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::MESH)
+	// 	{
+	// 		rootParameterIndex = getGraphicsRootSignature()->getMSConstantBufferParameterIndex();
+	// 	}
+
+	// 	pushRootConstantBufferDesc({ rootParameterIndex, indexTable.getGPUAddress() });
+	// }
 
 	template<bool IsGraphicsRootSignature>
 	void GraphicsCommandExecuter::flushRootConstantBufferDescs()

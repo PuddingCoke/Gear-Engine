@@ -31,7 +31,7 @@ namespace Gear::Effect::GammaCorrectEffect
 			PipelineStateBuilder::build(Shader::create(g_GammaCorrectCSBytes, sizeof(g_GammaCorrectCSBytes)));
 
 		outputTexture = ResourceManager::createComputeTexture(
-			Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false, true);
+			Graphics::getWidth(), Graphics::getHeight(), outputTextureFormat, 1, 1, false);
 
 		outputTexture->getTexture()->setName(L"Gamma Corrected Texture");
 

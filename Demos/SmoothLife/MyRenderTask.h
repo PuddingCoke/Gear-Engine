@@ -15,8 +15,7 @@ public:
 	                                                        FMT::RGBA8UN,
 	                                                        1,
 	                                                        1,
-	                                                        false,
-	                                                        true))
+	                                                        false))
 	{
 		whiteNoiseState = PipelineStateBuilder::build(Shader::create(L"WhiteNoiseCS.cso"));
 
@@ -27,7 +26,7 @@ public:
 		swapTexture = ResourceManager::createSwapTexture([]
 		{
 			return ResourceManager::createComputeTexture(
-				Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false, true);
+				Graphics::getWidth(), Graphics::getHeight(), FMT::R32F, 1, 1, false);
 		});
 
 		initialize();

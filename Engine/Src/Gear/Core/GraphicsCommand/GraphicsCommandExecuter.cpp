@@ -93,6 +93,10 @@ namespace Gear::Core
 	                                           D3D12Resource::UploadHeap* const uploadHeap,
 	                                           const uint64_t size) const
 	{
+		commandList->trackAndSetResourceState(buffer, D3D12_RESOURCE_STATE_COPY_DEST);
+
+		commandList->flushResourceBarriers();
+
 		commandList->copyBufferRegion(buffer, 0, uploadHeap, 0, size);
 	}
 
@@ -308,6 +312,15 @@ namespace Gear::Core
 		commandList->setScissorRects(1, &rt);
 	}
 
+	void GraphicsCommandExecuter::setAllShaderResources(const uint64_t allShaderResourceDescPtrOffset,
+	                                                    const uint32_t numAllShaderResourceDesc,
+	                                                    const uint32_t stateToOverride)
+	{
+		setShaderResources(allShaderResourceDescs.data() + allShaderResourceDescPtrOffset,
+		                   numAllShaderResourceDesc,
+		                   stateToOverride);
+	}
+
 	void GraphicsCommandExecuter::setPixelShaderResources(const uint64_t pixelShaderResourceDescPtrOffset,
 	                                                      const uint32_t numPixelShaderResourceDesc)
 	{
@@ -384,7 +397,7 @@ namespace Gear::Core
 		commandList->flushResourceBarriers();
 
 		commandList->clearUnorderedAccessFloat(
-			*desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
+			desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
 
 		commandList->pushResourceBarrier(CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource()));
 
@@ -403,7 +416,7 @@ namespace Gear::Core
 		commandList->flushResourceBarriers();
 
 		commandList->clearUnorderedAccessUint(
-			*desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
+			desc.viewGPUHandle, desc.viewCPUHandle, resource->getResource(), values, 0, nullptr);
 
 		commandList->pushResourceBarrier(CD3DX12_RESOURCE_BARRIER::UAV(resource->getResource()));
 
@@ -426,6 +439,8 @@ namespace Gear::Core
 			shaderConstants[i].clear();
 		}
 
+		allShaderResourceDescs.clear();
+
 		pixelShaderResourceDescs.clear();
 
 		nonPixelShaderResourceDescs.clear();
@@ -433,6 +448,13 @@ namespace Gear::Core
 		renderTargetDescs.clear();
 
 		vertexBufferDescs.clear();
+
+		// #ifdef _DEBUG
+		// 		if (indexTableUpdateList.size())
+		// 		{
+		// 			THROWLOG(LOGERROR() << "侦测到索引表更新列表非空！");
+		// 		}
+		// #endif
 	}
 
 	void GraphicsCommandExecuter::resetTrackedStates()
@@ -466,7 +488,7 @@ namespace Gear::Core
 		return commandList.get();
 	}
 
-	void GraphicsCommandExecuter::addNonPersistentResource(Resource::ResourceBase* const resource)
+	void GraphicsCommandExecuter::pushVolatileResource(Resource::ResourceBase* const resource)
 	{
 #ifdef _DEBUG
 		if (!resource)
@@ -474,48 +496,49 @@ namespace Gear::Core
 			THROWLOG(LOGERROR() << "资源不能为空");
 		}
 
-		if (resource->getPersistent())
+		if (!resource->hasVolatileDescriptor())
 		{
-			THROWLOG(LOGERROR() << "对于持久性资源来说，调用addNonPersistentResource是非法的");
+			THROWLOG(LOGERROR() << "对于没有易变描述符的资源来说，调用这个方法是非法的");
 		}
 #endif
 
-		if (!resource->getInCopyingList())
-		{
-			nonPersistentResources.push_back(resource);
-
-			resource->pushToCopyingList();
-		}
+		resource->pushToVolatileResourceList(volatileResourceList);
 	}
 
-	void GraphicsCommandExecuter::addUnsettedIndex(const D3D12Core::ShaderType shaderType,
-	                                               const uint32_t* indexAddress,
-	                                               const uint64_t location)
+	void GraphicsCommandExecuter::pushUnsettedIndex(const D3D12Core::ShaderType shaderType,
+	                                                const uint32_t* indexAddress,
+	                                                const uint64_t location)
 	{
 		unsettedIndices[static_cast<uint32_t>(shaderType)].push_back({ indexAddress, location });
 	}
 
-	uint64_t GraphicsCommandExecuter::getShaderConstantsWriteLocation(const D3D12Core::ShaderType shaderType)
+	uint64_t GraphicsCommandExecuter::getShaderConstantsWriteLocation(
+		const D3D12Core::ShaderType shaderType) const
 	{
 		return shaderConstants[static_cast<uint32_t>(shaderType)].size();
 	}
 
-	uint64_t GraphicsCommandExecuter::getPixelShaderResourceDescsWriteLocation()
+	uint64_t GraphicsCommandExecuter::getAllShaderResourceDescsWriteLocation() const
+	{
+		return allShaderResourceDescs.size();
+	}
+
+	uint64_t GraphicsCommandExecuter::getPixelShaderResourceDescsWriteLocation() const
 	{
 		return pixelShaderResourceDescs.size();
 	}
 
-	uint64_t GraphicsCommandExecuter::getNonPixelShaderResourceDescsWriteLocation()
+	uint64_t GraphicsCommandExecuter::getNonPixelShaderResourceDescsWriteLocation() const
 	{
 		return nonPixelShaderResourceDescs.size();
 	}
 
-	uint64_t GraphicsCommandExecuter::getRenderTargetDescsWriteLocation()
+	uint64_t GraphicsCommandExecuter::getRenderTargetDescsWriteLocation() const
 	{
 		return renderTargetDescs.size();
 	}
 
-	uint64_t GraphicsCommandExecuter::getVertexBufferDescsWriteLocation()
+	uint64_t GraphicsCommandExecuter::getVertexBufferDescsWriteLocation() const
 	{
 		return vertexBufferDescs.size();
 	}
@@ -526,6 +549,11 @@ namespace Gear::Core
 	{
 		shaderConstants[static_cast<uint32_t>(shaderType)].insert(
 			shaderConstants[static_cast<uint32_t>(shaderType)].end(), srcBegin, srcBegin + count);
+	}
+
+	void GraphicsCommandExecuter::pushAllShaderResourceDesc(const Resource::ShaderResourceDesc& desc)
+	{
+		allShaderResourceDescs.push_back(desc);
 	}
 
 	void GraphicsCommandExecuter::pushPixelShaderResourceDesc(const Resource::ShaderResourceDesc& desc)
@@ -548,23 +576,20 @@ namespace Gear::Core
 		vertexBufferDescs.push_back(desc);
 	}
 
-	void GraphicsCommandExecuter::copyDescriptors()
+	void GraphicsCommandExecuter::prepare()
 	{
-		if (nonPersistentResources.size())
+		if (volatileResourceList.size())
 		{
-			for (Resource::ResourceBase* const resource : nonPersistentResources)
+			for (Resource::ResourceBase* const resource : volatileResourceList)
 			{
-				resource->copyDescriptors();
+				resource->prepareDescriptors();
 
-				resource->popFromCopyingList();
+				resource->popFromVolatileResourceList();
 			}
 
-			nonPersistentResources.clear();
+			volatileResourceList.clear();
 		}
-	}
 
-	void GraphicsCommandExecuter::resolveDescriptorIndices()
-	{
 		for (uint32_t i = 0; i < static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT); i++)
 		{
 			for (const auto& index : unsettedIndices[i])
@@ -577,6 +602,13 @@ namespace Gear::Core
 
 			unsettedIndices[i].clear();
 		}
+
+		// for (Resource::IndexTable* const table : indexTableCheckedList)
+		// {
+		// 	table->popFromCheckedList();
+		// }
+
+		// indexTableCheckedList.clear();
 	}
 
 	void GraphicsCommandExecuter::setPipelineState(ID3D12PipelineState* const pipelineState)
@@ -790,6 +822,8 @@ namespace Gear::Core
 
 		commandList->flushResourceBarriers();
 
+		// prepareIndexTables();
+
 		flushRootConstantBufferDescs<true>();
 
 		flushRenderTargetClearDescs();
@@ -800,6 +834,8 @@ namespace Gear::Core
 	void GraphicsCommandExecuter::prepareDispatchCallResources()
 	{
 		commandList->flushResourceBarriers();
+
+		// prepareIndexTables();
 
 		flushRootConstantBufferDescs<false>();
 	}
@@ -883,6 +919,37 @@ namespace Gear::Core
 			                    << "的常量写入终止位置最高为" << numShaderConstants - 1u);
 		}
 	}
+
+	// void GraphicsCommandExecuter::prepareIndexTables()
+	// {
+	// 	if (indexTableUpdateList.size())
+	// 	{
+	// 		for (Resource::IndexTable* const table : indexTableUpdateList)
+	// 		{
+	// 			const Resource::IndexTable::UpdateStruct updateStruct = table->getUpdateStruct();
+
+	// 			commandList->copyBufferRegion(
+	// 				updateStruct.buffer, 0, updateStruct.uploadHeap, 0, updateStruct.size);
+
+	// 			commandList->trackAndSetResourceState(updateStruct.buffer,
+	// 			                                      D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+	// 			if (table->getUserUpdate())
+	// 			{
+	// 				table->setUserUpdate(false);
+	// 			}
+	// 		}
+
+	// 		commandList->flushResourceBarriers();
+
+	// 		for (Resource::IndexTable* const table : indexTableUpdateList)
+	// 		{
+	// 			table->popFromUpdateList();
+	// 		}
+
+	// 		indexTableUpdateList.clear();
+	// 	}
+	// }
 
 	void GraphicsCommandExecuter::DepthStencilClearDesc::setHandle(
 		const D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle) noexcept

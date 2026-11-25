@@ -15,9 +15,7 @@ namespace Gear::Resource
 	{
 	public:
 
-		CounterBufferView() = delete;
-
-		CounterBufferView(const bool persistent);
+		CounterBufferView();
 
 		CounterBufferView(const CounterBufferView&);
 
@@ -29,19 +27,17 @@ namespace Gear::Resource
 
 		UAVClearDesc getUAVClearDesc();
 
-		bool copyDescriptors() override;
-
 		D3D12Resource::Buffer* getBuffer() const;
 
 	private:
 
-		SharedPtr<uint32_t> srvIndex;
+		uint32_t srvIndex;
 
-		SharedPtr<uint32_t> uavIndex;
+		uint32_t uavIndex;
 
-		SharedPtr<D3D12_GPU_DESCRIPTOR_HANDLE> viewGPUHandle;
+		D3D12_GPU_DESCRIPTOR_HANDLE viewGPUHandle;
 
-		SharedPtr<D3D12_CPU_DESCRIPTOR_HANDLE> viewCPUHandle;
+		D3D12_CPU_DESCRIPTOR_HANDLE viewCPUHandle;
 
 		D3D12Resource::BufferPtr buffer;
 	};

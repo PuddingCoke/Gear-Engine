@@ -62,6 +62,11 @@ namespace Gear::Core
 		return errorStr;
 	}
 
+	RenderTask* RenderThread::getRenderTask() const
+	{
+		return renderTask;
+	}
+
 	void RenderThread::workerLoop()
 	{
 		//初始化线程局部资源
@@ -96,6 +101,14 @@ namespace Gear::Core
 
 			//通知主渲染线程子渲染线程创建完毕
 			taskCondition.notify_one();
+
+			std::unique_lock lock(taskMutex);
+
+			taskCondition.wait(lock,
+			                   [this]
+			{
+				return !isRunning;
+			});
 
 			return;
 		}
@@ -148,6 +161,14 @@ namespace Gear::Core
 			}
 
 			taskCondition.notify_one();
+
+			std::unique_lock lock(taskMutex);
+
+			taskCondition.wait(lock,
+			                   [this]
+			{
+				return !isRunning;
+			});
 
 			return;
 		}

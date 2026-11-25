@@ -5,7 +5,9 @@
 
 #include <Gear/Core/GraphicsDevice.h>
 
-#include <atomic>
+#include <mutex>
+
+#include <vector>
 
 #include "DescriptorHandle.h"
 
@@ -21,28 +23,35 @@ namespace Gear::Core::D3D12Core
 
 		void operator=(const DescriptorHeap&) = delete;
 
-		DescriptorHeap(const uint32_t numDescriptors,
-		               const uint32_t numDynamicDescriptors,
-		               const D3D12_DESCRIPTOR_HEAP_TYPE type,
-		               const D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+		DescriptorHeap(const uint32_t numDescriptorsParam,
+		               const uint32_t numContiguousDescriptorsParam,
+		               const D3D12_DESCRIPTOR_HEAP_TYPE typeParam,
+		               const D3D12_DESCRIPTOR_HEAP_FLAGS flagsParam);
 
 		ID3D12DescriptorHeap* get() const;
 
-		DescriptorHandle allocStaticDescriptor(const uint32_t num);
+		//请尽可能使用无序描述符分配，因为后者可分配范围大得多且性能最好，连续描述符仅用于引擎内部的快速实现和兼容少数旧的模块
+		UniquePtr<DescriptorHandle> allocContiguousDescriptor(const uint32_t num);
 
-		DescriptorHandle allocDynamicDescriptor(const uint32_t num);
+		UniquePtr<DescriptorHandle> allocUnorderedDescriptor(const uint32_t num);
 
-		DescriptorHandle allocDynamicDescriptor(const uint32_t num, uint64_t& currentDynamicIndex);
+		void freeContiguousDescriptor(const uint32_t start, const uint32_t count);
 
-		uint64_t getDynamicIndex() const;
+		void freeUnorderedDescriptor(const std::vector<uint32_t>& indices);
 
-		uint64_t getNumDynamicDescriptors() const;
+		uint32_t getNumDescriptors() const;
+
+		uint32_t getNumContiguousDescriptors() const;
+
+		uint32_t getNumUnorderedDescriptors() const;
 
 	private:
 
 		const uint32_t numDescriptors;
 
-		const uint32_t numDynamicDescriptors;
+		const uint32_t numContiguousDescriptors;
+
+		const uint32_t numUnorderedDescriptors;
 
 		const D3D12_DESCRIPTOR_HEAP_TYPE type;
 
@@ -54,10 +63,22 @@ namespace Gear::Core::D3D12Core
 
 		CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandleStart;
 
-		std::atomic<uint64_t> staticIndex;
+		std::mutex contiguousMutex;
 
-		std::atomic<uint64_t> dynamicIndex;
+		struct Run
+		{
+			uint32_t start;
+
+			uint32_t count;
+		};
+
+		std::vector<Run> runs;
+
+		std::mutex unorderedMutex;
+
+		std::vector<uint32_t> unorderedIndices;
 	};
+
 }
 
 #endif // !_GEAR_CORE_D3D12CORE_DESCRIPTORHEAP_H_

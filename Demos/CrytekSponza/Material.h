@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Gear/Core/GraphicsContext.h>
+
 #include <Gear/Core/ResourceManager.h>
 
 class Material
@@ -12,12 +13,12 @@ public:
 	         const std::string& roughnessMetallicPath,
 	         std::string& normalPath)
 	{
-		diffuse = resManager.createRenderTextureView(String::stringToWString(diffusePath), true);
+		diffuse = resManager.createRenderTextureView(String::stringToWString(diffusePath));
 
 		roughnessMetallic =
-			resManager.createRenderTextureView(String::stringToWString(roughnessMetallicPath), true);
+			resManager.createRenderTextureView(String::stringToWString(roughnessMetallicPath));
 
-		normal = resManager.createRenderTextureView(String::stringToWString(normalPath), true);
+		normal = resManager.createRenderTextureView(String::stringToWString(normalPath));
 	}
 
 	~Material()

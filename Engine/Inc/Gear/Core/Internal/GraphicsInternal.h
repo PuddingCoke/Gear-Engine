@@ -11,6 +11,8 @@ namespace Gear::Core::Graphics::Internal
 
 	void renderedFrameCountInc();
 
+	void frameEpochInc();
+
 	void setFrameIndex(const uint32_t frameIndex);
 
 	void setDeltaTime(const float deltaTime);

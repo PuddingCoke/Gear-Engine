@@ -29,6 +29,10 @@ namespace Gear::Effect
 
 	private:
 
+		D3D12Core::DescriptorHandlePtr globalResourceHeapHandle;
+
+		D3D12Core::DescriptorHandlePtr rtvHeapHandle;
+
 		GFSDK_SSAO_Context_D3D12* aoContext;
 
 		GFSDK_SSAO_Parameters aoParameters;

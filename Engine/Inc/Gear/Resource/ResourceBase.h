@@ -5,8 +5,6 @@
 
 #include <Gear/Core/GlobalDescriptorHeap.h>
 
-#include <Gear/Core/LocalDescriptorHeap.h>
-
 #include <Gear/Utils/Math.h>
 
 #include "PipelineResourceDesc.h"
@@ -19,59 +17,64 @@ namespace Gear::Resource
 	{
 	public:
 
-		ResourceBase() = delete;
-
 		//初始化
-		ResourceBase(const bool persistent);
+		ResourceBase();
 
 		//深拷贝
 		ResourceBase(const ResourceBase&);
 
 		virtual ~ResourceBase();
 
-		//由引擎自动调用
-		virtual bool copyDescriptors();
+		virtual bool hasVolatileDescriptor() const;
 
-		bool getPersistent() const;
+		//准备描述符（引擎内部使用）
+		void prepareDescriptors();
 
-		uint32_t getNumCBVSRVUAVDescriptors() const;
+		bool getInVolatileResourceList() const;
 
-		void setNumCBVSRVUAVDescriptors(const uint32_t numDescriptors);
+		void pushToVolatileResourceList(std::vector<ResourceBase*>& volatileResourceList);
 
-		bool getInCopyingList() const;
-
-		void pushToCopyingList();
-
-		void popFromCopyingList();
+		void popFromVolatileResourceList();
 
 	protected:
 
-		//从描述器堆申请可用的描述符并返回DescriptorHandle
-		//在调用前要设置numCBVSRVUAVDescriptors！
-		D3D12Core::DescriptorHandle allocCBVSRVUAVDescriptors();
+		D3D12Core::DescriptorHandle* createResourceDescriptorHandle(const uint32_t numDescriptors);
 
-		//把非持久性资源的描述符从线程独享的暂存资源描述符堆拷贝到全局资源描述符堆上
-		//返回值代表是否需要更新
-		//注意：仅用于非持久性资源！
-		bool copyToResourceHeap(D3D12Core::DescriptorHandle& descriptorHandle);
+		D3D12Core::DescriptorHandle* createNonShaderVisibleResourceDescriptorHandle(
+			const uint32_t numDescriptors);
 
-		const bool persistent;
+		D3D12Core::DescriptorHandle* createRenderTargetDescriptorHandle(const uint32_t numDescriptors);
+
+		D3D12Core::DescriptorHandle* createDepthStencilDescriptorHandle(const uint32_t numDescriptors);
+
+		D3D12Core::DescriptorHandle* getResourceDescriptorHandle() const;
+
+		D3D12Core::DescriptorHandle* getNonShaderVisibleResourceDescriptorHandle() const;
+
+		D3D12Core::DescriptorHandle* getRenderTargetDescriptorHandle() const;
+
+		D3D12Core::DescriptorHandle* getDepthStencilDescriptorHandle() const;
+
+		virtual void prepareDescriptorsImpl();
 
 	private:
 
-		static constexpr uint64_t safeMarginNumerator = 1;
+		bool inVolatileResourceList;
 
-		static constexpr uint64_t safeMarginDenominator = 2;
+		//由于指令是并行录制的，所以各个渲染线程需要竞争调用 prepareDescriptors
+		//因此需要记录上一次调用 prepareDescriptors 的帧纪元和互斥锁
 
-		bool inCopyingList;
+		SharedPtr<uint64_t> preparedFrameEpoch;
 
-		uint64_t lastUpdateDynamicIndex;
+		SharedPtr<std::mutex> prepareMutex;
 
-		//资源需要的CBV、SRV、UAV描述符的数量
-		uint32_t numCBVSRVUAVDescriptors;
+		SharedPtr<D3D12Core::DescriptorHandle> resourceDescriptorHandle;
 
-		//对于非持久性资源的拷贝开始位置
-		D3D12Core::DescriptorHandle copySrcDescriptorHandle;
+		SharedPtr<D3D12Core::DescriptorHandle> nonShaderVisibleResourceDescriptorHandle;
+
+		SharedPtr<D3D12Core::DescriptorHandle> renderTargetDescriptorHandle;
+
+		SharedPtr<D3D12Core::DescriptorHandle> depthStencilDescriptorHandle;
 	};
 }
 

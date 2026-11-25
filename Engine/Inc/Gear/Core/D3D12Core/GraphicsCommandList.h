@@ -115,22 +115,27 @@ namespace Gear::Core::D3D12Core
 		                              const uint32_t numRects,
 		                              const D3D12_RECT* const pRects) const;
 
+		//注意：dstBuffer应处于COPY_DEST状态
 		void copyBufferRegion(D3D12Resource::Buffer* const dstBuffer,
 		                      const uint64_t dstOffset,
 		                      D3D12Resource::UploadHeap* srcBuffer,
 		                      const uint64_t srcOffset,
 		                      const uint64_t numBytes);
 
+		//注意：dstBuffer应处于COPY_DEST状态，srcBuffer应处于COPY_SOURCE状态
 		void copyBufferRegion(D3D12Resource::Buffer* const dstBuffer,
 		                      const uint64_t dstOffset,
 		                      D3D12Resource::Buffer* srcBuffer,
 		                      const uint64_t srcOffset,
 		                      const uint64_t numBytes);
 
+		//注意：dstBuffer应处于COPY_DEST状态
 		void copyResource(D3D12Resource::Buffer* const dstBuffer, D3D12Resource::UploadHeap* const srcBuffer);
 
+		//注意：dstBuffer应处于COPY_DEST状态，srcBuffer应处于COPY_SOURCE状态
 		void copyResource(D3D12Resource::Buffer* const dstBuffer, D3D12Resource::Buffer* const srcBuffer);
 
+		//注意：dstTexture应处于COPY_DEST状态，srcTexture应处于COPY_SOURCE状态
 		void copyTextureRegion(D3D12Resource::Texture* const dstTexture,
 		                       const uint32_t dstSubresource,
 		                       D3D12Resource::Texture* const srcTexture,

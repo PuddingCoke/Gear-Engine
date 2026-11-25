@@ -15,7 +15,7 @@ public:
 
 		velocityTex = ResourceManager::createSwapTexture([=]
 		{
-			return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::RG32F, 1, 1, false, true);
+			return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::RG32F, 1, 1, false);
 		});
 
 		velocityTex->setName(L"Velocity Texture");
@@ -23,33 +23,33 @@ public:
 		colorTex = ResourceManager::createSwapTexture([=]
 		{
 			return ResourceManager::createComputeTexture(
-				Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true);
+				Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false);
 		});
 
 		colorTex->setName(L"Color Texture");
 
 		divergenceTex =
-			ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
+			ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false);
 
 		divergenceTex->getTexture()->setName(L"Divergence Texture");
 
 		pressureTex = ResourceManager::createSwapTexture([=]
 		{
-			return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
+			return ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false);
 		});
 
 		pressureTex->setName(L"Pressure Texture");
 
 		vorticityTex =
-			ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false, true);
+			ResourceManager::createComputeTexture(simRes.x, simRes.y, FMT::R32F, 1, 1, false);
 
 		vorticityTex->getTexture()->setName(L"Vorticity Texture");
 
 		phongShadeTexture = ResourceManager::createComputeTexture(
-			Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false, true);
+			Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA16F, 1, 1, false);
 
 		edgeHighlightTexture = ResourceManager::createComputeTexture(
-			Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false, true);
+			Graphics::getWidth(), Graphics::getHeight(), FMT::RGBA8UN, 1, 1, false);
 
 		simulationParamBuffer = ResourceManager::createDynamicCBuffer(sizeof(SimulationParam));
 
@@ -327,7 +327,7 @@ public:
 
 		simulationParam.bumpScale = 1.f / config.bumpScale;
 
-		simulationParamBuffer->simpleUpdate(&simulationParam);
+		simulationParamBuffer->update(&simulationParam, sizeof(simulationParam));
 
 		if (config.logicRunning)
 		{

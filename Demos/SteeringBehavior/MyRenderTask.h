@@ -15,9 +15,8 @@ public:
 	                                                         1,
 	                                                         1,
 	                                                         false,
-	                                                         true,
 	                                                         DirectX::Colors::White)),
-		arrowTexture(resManager->createRenderTextureView(L"arrow.png", true)),
+		arrowTexture(resManager->createRenderTextureView(L"arrow.png")),
 		vehicleVS(Shader::create(L"VehicleVS.cso")),
 		vehicleGS(Shader::create(L"VehicleGS.cso")),
 		vehiclePS(Shader::create(L"VehiclePS.cso")),
@@ -56,19 +55,12 @@ public:
 				                                         true,
 				                                         false,
 				                                         false,
-				                                         true,
 				                                         positionVelocityArray.get());
 			},
 				[&]
 			{
-				return ResourceManager::createTypedBufferView(FMT::RGBA32F,
-				                                              sizeof(DirectX::XMFLOAT4) * numVehicle,
-				                                              true,
-				                                              true,
-				                                              true,
-				                                              false,
-				                                              false,
-				                                              true);
+				return ResourceManager::createTypedBufferView(
+					FMT::RGBA32F, sizeof(DirectX::XMFLOAT4) * numVehicle, true, true, true, false, false);
 			});
 
 			maxSpeedMaxForce = resManager->createTypedBufferView(FMT::RG32F,
@@ -78,7 +70,6 @@ public:
 			                                                     false,
 			                                                     false,
 			                                                     false,
-			                                                     true,
 			                                                     maxSpeedMaxForceArray.get());
 
 			maxSpeedMaxForce->getBuffer()->setName(L"Max Speed Max Force Buffer");

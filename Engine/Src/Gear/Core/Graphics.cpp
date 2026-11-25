@@ -22,6 +22,8 @@ namespace Gear::Core::Graphics
 
 		uint64_t renderedFrameCount = 0;
 
+		uint64_t frameEpoch = 0;
+
 		float aspectRatio = 0.f;
 
 		float deltaTime = 0.f;
@@ -48,6 +50,11 @@ namespace Gear::Core::Graphics
 		void renderedFrameCountInc()
 		{
 			impl.renderedFrameCount++;
+		}
+		
+		void frameEpochInc()
+		{
+			impl.frameEpoch++;
 		}
 
 		void setFrameIndex(const uint32_t frameIndex)
@@ -142,5 +149,10 @@ namespace Gear::Core::Graphics
 	uint64_t getRenderedFrameCount()
 	{
 		return impl.renderedFrameCount;
+	}
+
+	uint64_t getFrameEpoch()
+	{
+		return impl.frameEpoch;
 	}
 }

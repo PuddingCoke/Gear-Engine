@@ -29,6 +29,8 @@ namespace Gear::Core
 
 		std::string getErrorStr() const;
 
+		RenderTask* getRenderTask() const;
+
 	private:
 
 		void workerLoop();

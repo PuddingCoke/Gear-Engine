@@ -23,8 +23,7 @@ namespace Gear::Resource
 		//R32G8X24_TYPELESS
 		//R24G8_TYPELESS
 		DepthTextureView(D3D12Resource::TexturePtr texturePtr,
-		                 const bool isTextureCube,
-		                 const bool persistent);
+		                 const bool isTextureCube);
 
 		DepthTextureView(const DepthTextureView&);
 
@@ -44,8 +43,6 @@ namespace Gear::Resource
 
 		D3D12Resource::Texture* getTexture() const;
 
-		bool copyDescriptors() override;
-
 		DXGI_FORMAT getDSVFormat() const;
 
 	private:
@@ -56,17 +53,17 @@ namespace Gear::Resource
 
 		DXGI_FORMAT dsvFormat;
 
-		SharedPtr<uint32_t> allDepthSRVIndex;
+		uint32_t allDepthSRVIndex;
 
-		SharedPtr<uint32_t> allStencilSRVIndex;
+		uint32_t allStencilSRVIndex;
 
-		SharedPtr<std::vector<uint32_t>> depthSRVMipIndices;
+		std::vector<uint32_t> depthSRVMipIndices;
 
-		SharedPtr<std::vector<D3D12_GPU_DESCRIPTOR_HANDLE>> depthSRVMipGPUHandles;
+		std::vector<D3D12_GPU_DESCRIPTOR_HANDLE> depthSRVMipGPUHandles;
 
-		SharedPtr<std::vector<uint32_t>> stencilSRVMipIndices;
+		std::vector<uint32_t> stencilSRVMipIndices;
 
-		SharedPtr<std::vector<D3D12_CPU_DESCRIPTOR_HANDLE>> dsvMipHandles;
+		std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> dsvMipHandles;
 
 		D3D12Resource::TexturePtr texture;
 	};

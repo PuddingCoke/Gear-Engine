@@ -26,21 +26,21 @@ namespace Gear::Effect
 
 		customHeap.delete_ = ::operator delete;
 
-		DescriptorHandle srvUAVCBVHandle = GlobalDescriptorHeap::getResourceHeap()->allocStaticDescriptor(
+		globalResourceHeapHandle = GlobalDescriptorHeap::getResourceHeap()->allocContiguousDescriptor(
 			GFSDK_SSAO_NUM_DESCRIPTORS_CBV_SRV_UAV_HEAP_D3D12);
 
-		DescriptorHandle rtvHandle = LocalDescriptorHeap::getRenderTargetHeap()->allocStaticDescriptor(
+		rtvHeapHandle = GlobalDescriptorHeap::getRenderTargetHeap()->allocContiguousDescriptor(
 			GFSDK_SSAO_NUM_DESCRIPTORS_RTV_HEAP_D3D12);
 
 		GFSDK_SSAO_DescriptorHeaps_D3D12 descriptorHeaps;
 
-		descriptorHeaps.CBV_SRV_UAV.pDescHeap = srvUAVCBVHandle.getDescriptorHeap()->get();
+		descriptorHeaps.CBV_SRV_UAV.pDescHeap = globalResourceHeapHandle->getDescriptorHeap()->get();
 
-		descriptorHeaps.CBV_SRV_UAV.BaseIndex = srvUAVCBVHandle.getCurrentIndex();
+		descriptorHeaps.CBV_SRV_UAV.BaseIndex = globalResourceHeapHandle->getCurrentIndex();
 
-		descriptorHeaps.RTV.pDescHeap = rtvHandle.getDescriptorHeap()->get();
+		descriptorHeaps.RTV.pDescHeap = rtvHeapHandle->getDescriptorHeap()->get();
 
-		descriptorHeaps.RTV.BaseIndex = rtvHandle.getCurrentIndex();
+		descriptorHeaps.RTV.BaseIndex = rtvHeapHandle->getCurrentIndex();
 
 		GFSDK_SSAO_Status status = GFSDK_SSAO_CreateContext_D3D12(
 			GraphicsDevice::get(), 1, descriptorHeaps, &aoContext, &customHeap);
