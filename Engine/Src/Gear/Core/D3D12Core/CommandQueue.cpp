@@ -49,9 +49,9 @@ namespace Gear::Core::D3D12Core
 	void CommandQueue::waitFrameCPUReusable()
 	{
 		//如果completedValue小于记录的fenceValue，那么要等待CPU可复用
-		if (frameBufferFence->getCompletedValue() < frameBufferFenceValues[Graphics::getFrameIndex()])
+		if (frameBufferFence->getCompletedValue() < frameBufferFenceValues[Graphics::getFrameBufferIndex()])
 		{
-			frameBufferFence->waitValue(frameBufferFenceValues[Graphics::getFrameIndex()]);
+			frameBufferFence->waitValue(frameBufferFenceValues[Graphics::getFrameBufferIndex()]);
 		}
 	}
 
@@ -175,6 +175,6 @@ namespace Gear::Core::D3D12Core
 		currentFrameBufferFenceValue = signal(frameBufferFence.get());
 
 		//用于多重缓冲机制
-		frameBufferFenceValues[Graphics::getFrameIndex()] = currentFrameBufferFenceValue;
+		frameBufferFenceValues[Graphics::getFrameBufferIndex()] = currentFrameBufferFenceValue;
 	}
 }

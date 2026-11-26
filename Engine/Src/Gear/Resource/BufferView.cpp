@@ -256,9 +256,9 @@ namespace Gear::Resource
 
 	BufferView::UpdateStruct BufferView::getUpdateStruct(const void* const data, const uint64_t size)
 	{
-		uploadHeaps[Graphics::getFrameIndex()]->update(data, size);
+		uploadHeaps[Graphics::getFrameBufferIndex()]->update(data, size);
 
-		const UpdateStruct updateStruct = { buffer.get(), uploadHeaps[Graphics::getFrameIndex()].get() };
+		const UpdateStruct updateStruct = { buffer.get(), uploadHeaps[Graphics::getFrameBufferIndex()].get() };
 
 		return updateStruct;
 	}

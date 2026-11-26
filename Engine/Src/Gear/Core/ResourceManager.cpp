@@ -104,19 +104,19 @@ namespace Gear::Core
 
 	void ResourceManager::deferredRelease(UniquePtr<D3D12Resource::D3D12ResourceBase> d3d12Resource)
 	{
-		d3d12Resources[Graphics::getFrameIndex()].emplace_back(std::move(d3d12Resource));
+		d3d12Resources[Graphics::getFrameBufferIndex()].emplace_back(std::move(d3d12Resource));
 	}
 
 	void ResourceManager::deferredRelease(UniquePtr<Resource::ResourceBase> resource)
 	{
-		resources[Graphics::getFrameIndex()].emplace_back(std::move(resource));
+		resources[Graphics::getFrameBufferIndex()].emplace_back(std::move(resource));
 	}
 
 	void ResourceManager::cleanTransientResources()
 	{
-		d3d12Resources[Graphics::getFrameIndex()].clear();
+		d3d12Resources[Graphics::getFrameBufferIndex()].clear();
 
-		resources[Graphics::getFrameIndex()].clear();
+		resources[Graphics::getFrameBufferIndex()].clear();
 	}
 
 	GraphicsContext* ResourceManager::getGraphicsContext() const

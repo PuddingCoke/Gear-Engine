@@ -126,7 +126,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 	void* DynamicCBufferRegion::getUploadPtr(const uint32_t subRegionIndex) const
 	{
-		return dataPtr[Graphics::getFrameIndex()] + subRegionIndex * subRegionSize;
+		return dataPtr[Graphics::getFrameBufferIndex()] + subRegionIndex * subRegionSize;
 	}
 
 	uint64_t DynamicCBufferRegion::getUpdateSize() const
@@ -141,7 +141,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 	D3D12Resource::UploadHeap* DynamicCBufferRegion::getUploadHeap() const
 	{
-		return uploadHeap[Graphics::getFrameIndex()].get();
+		return uploadHeap[Graphics::getFrameBufferIndex()].get();
 	}
 
 	class DynamicCBufferManagerImpl

@@ -288,8 +288,8 @@ namespace Gear
 
 			startPoint = endPoint;
 
-			//更新帧索引，使用交换链指定的帧缓冲
-			RenderEngine::Internal::updateFrameIndex();
+			//更新帧缓冲索引，使用交换链指定的帧缓冲
+			RenderEngine::Internal::updateFrameBufferIndex();
 
 			RenderEngine::Internal::waitFrameCPUReusable();
 
@@ -522,8 +522,8 @@ namespace Gear
 
 			startPoint = endPoint;
 
-			//更新帧索引，使用交换链指定的帧缓冲
-			RenderEngine::Internal::updateFrameIndex();
+			//更新帧缓冲索引，使用交换链指定的帧缓冲
+			RenderEngine::Internal::updateFrameBufferIndex();
 
 			RenderEngine::Internal::waitFrameCPUReusable();
 

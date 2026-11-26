@@ -39,9 +39,9 @@ namespace Gear::Resource
 
 	DefaultCBuffer::UpdateStruct DefaultCBuffer::getUpdateStruct(const void* const data, const uint64_t size)
 	{
-		memcpy(dataPtrs[Graphics::getFrameIndex()], data, size);
+		memcpy(dataPtrs[Graphics::getFrameBufferIndex()], data, size);
 
-		const UpdateStruct updateStruct = { buffer.get(), uploadHeaps[Graphics::getFrameIndex()].get() };
+		const UpdateStruct updateStruct = { buffer.get(), uploadHeaps[Graphics::getFrameBufferIndex()].get() };
 
 		return updateStruct;
 	}

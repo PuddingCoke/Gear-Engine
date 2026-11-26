@@ -14,7 +14,7 @@ namespace Gear::Core::Graphics
 
 		uint32_t frameBufferCount = 0;
 
-		uint32_t frameIndex = 0;
+		uint32_t frameBufferIndex = 0;
 
 		uint32_t width = 0;
 
@@ -51,15 +51,15 @@ namespace Gear::Core::Graphics
 		{
 			impl.renderedFrameCount++;
 		}
-		
+
 		void frameEpochInc()
 		{
 			impl.frameEpoch++;
 		}
 
-		void setFrameIndex(const uint32_t frameIndex)
+		void setFrameBufferIndex(const uint32_t frameBufferIndex)
 		{
-			impl.frameIndex = frameIndex;
+			impl.frameBufferIndex = frameBufferIndex;
 		}
 
 		void setDeltaTime(const float deltaTime)
@@ -111,9 +111,9 @@ namespace Gear::Core::Graphics
 		return impl.frameBufferCount;
 	}
 
-	uint32_t getFrameIndex()
+	uint32_t getFrameBufferIndex()
 	{
-		return impl.frameIndex;
+		return impl.frameBufferIndex;
 	}
 
 	float getDeltaTime()

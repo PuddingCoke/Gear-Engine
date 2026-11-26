@@ -32,8 +32,8 @@ namespace Gear::Core::RenderEngine::Internal
 		}
 	};
 
-	//更新帧索引
-	void updateFrameIndex();
+	//更新帧缓冲索引
+	void updateFrameBufferIndex();
 
 	//等待可销毁
 	void waitDestroyable();

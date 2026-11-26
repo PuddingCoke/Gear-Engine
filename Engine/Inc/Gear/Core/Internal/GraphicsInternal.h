@@ -13,7 +13,7 @@ namespace Gear::Core::Graphics::Internal
 
 	void frameEpochInc();
 
-	void setFrameIndex(const uint32_t frameIndex);
+	void setFrameBufferIndex(const uint32_t frameBufferIndex);
 
 	void setDeltaTime(const float deltaTime);
 

@@ -168,7 +168,7 @@ namespace Gear::Core::RenderEngine
 
 		const Resource::ImmutableCBuffer* getEngineGlobalCBuffer() const;
 
-		void updateFrameIndex();
+		void updateFrameBufferIndex();
 
 		void waitDestroyable();
 
@@ -284,7 +284,7 @@ namespace Gear::Core::RenderEngine
 		syncInterval(1),
 		perframeResource{}
 	{
-		//初始化一些渲染需要的信息，如width、height、frameIndex等
+		//初始化一些渲染需要的信息，如width、height、frameBufferIndex等
 		Graphics::Internal::initialize(useSwapChainBuffer ? 3 : 1, width, height);
 
 		ComPtr<IDXGIFactory7> factory;
@@ -470,9 +470,9 @@ namespace Gear::Core::RenderEngine
 		return engineGlobalCBuffer.get();
 	}
 
-	void RenderEngineImpl::updateFrameIndex()
+	void RenderEngineImpl::updateFrameBufferIndex()
 	{
-		Graphics::Internal::setFrameIndex(swapChain->GetCurrentBackBufferIndex());
+		Graphics::Internal::setFrameBufferIndex(swapChain->GetCurrentBackBufferIndex());
 	}
 
 	void RenderEngineImpl::waitDestroyable()
@@ -617,8 +617,8 @@ namespace Gear::Core::RenderEngine
 
 	void RenderEngineImpl::setDefRenderTexture()
 	{
-		setRenderTexture(backBufferTextures[Graphics::getFrameIndex()].get(),
-		                 backBufferHandles[Graphics::getFrameIndex()]);
+		setRenderTexture(backBufferTextures[Graphics::getFrameBufferIndex()].get(),
+		                 backBufferHandles[Graphics::getFrameBufferIndex()]);
 	}
 
 	void RenderEngineImpl::setRenderTexture(D3D12Resource::Texture* const texture,
@@ -852,9 +852,9 @@ namespace Gear::Core::RenderEngine
 			impl.reset();
 		}
 
-		void updateFrameIndex()
+		void updateFrameBufferIndex()
 		{
-			impl->updateFrameIndex();
+			impl->updateFrameBufferIndex();
 		}
 
 		void waitDestroyable()

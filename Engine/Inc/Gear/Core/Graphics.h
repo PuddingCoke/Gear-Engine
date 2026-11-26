@@ -17,7 +17,7 @@ namespace Gear::Core::Graphics
 
 	uint32_t getFrameBufferCount();
 
-	uint32_t getFrameIndex();
+	uint32_t getFrameBufferIndex();
 
 	float getDeltaTime();
 

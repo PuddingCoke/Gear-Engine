@@ -45,11 +45,11 @@ namespace Gear::Core::D3D12Core
 
 	void CommandList::resetCommandAllocator() const
 	{
-		allocators[Graphics::getFrameIndex()]->Reset();
+		allocators[Graphics::getFrameBufferIndex()]->Reset();
 	}
 
 	ID3D12CommandAllocator* CommandList::getCommandAllocator() const
 	{
-		return allocators[Graphics::getFrameIndex()].Get();
+		return allocators[Graphics::getFrameBufferIndex()].Get();
 	}
 }
