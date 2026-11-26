@@ -22,6 +22,10 @@ namespace Gear::Core::D3D12Core
 		                 const uint32_t incrementSizeParam,
 		                 const uint32_t numDescriptorsParam);
 
+		DescriptorHandle(const DescriptorHandle&) = delete;
+
+		void operator=(const DescriptorHandle&) = delete;
+
 		virtual ~DescriptorHandle() = default;
 
 		CD3DX12_CPU_DESCRIPTOR_HANDLE getCurrentCPUHandle() const;

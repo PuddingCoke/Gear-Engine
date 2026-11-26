@@ -488,30 +488,6 @@ namespace Gear::Core
 		return commandList.get();
 	}
 
-	void GraphicsCommandExecuter::pushVolatileResource(Resource::ResourceBase* const resource)
-	{
-#ifdef _DEBUG
-		if (!resource)
-		{
-			THROWLOG(LOGERROR() << "资源不能为空");
-		}
-
-		if (!resource->hasVolatileDescriptor())
-		{
-			THROWLOG(LOGERROR() << "对于没有易变描述符的资源来说，调用这个方法是非法的");
-		}
-#endif
-
-		resource->pushToVolatileResourceList(volatileResourceList);
-	}
-
-	void GraphicsCommandExecuter::pushUnsettedIndex(const D3D12Core::ShaderType shaderType,
-	                                                const uint32_t* indexAddress,
-	                                                const uint64_t location)
-	{
-		unsettedIndices[static_cast<uint32_t>(shaderType)].push_back({ indexAddress, location });
-	}
-
 	uint64_t GraphicsCommandExecuter::getShaderConstantsWriteLocation(
 		const D3D12Core::ShaderType shaderType) const
 	{
@@ -578,31 +554,6 @@ namespace Gear::Core
 
 	void GraphicsCommandExecuter::prepare()
 	{
-		if (volatileResourceList.size())
-		{
-			for (Resource::ResourceBase* const resource : volatileResourceList)
-			{
-				resource->prepareDescriptors();
-
-				resource->popFromVolatileResourceList();
-			}
-
-			volatileResourceList.clear();
-		}
-
-		for (uint32_t i = 0; i < static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT); i++)
-		{
-			for (const auto& index : unsettedIndices[i])
-			{
-				if (index.location < shaderConstants[i].size())
-				{
-					shaderConstants[i][index.location] = *index.indexAddress;
-				}
-			}
-
-			unsettedIndices[i].clear();
-		}
-
 		// for (Resource::IndexTable* const table : indexTableCheckedList)
 		// {
 		// 	table->popFromCheckedList();

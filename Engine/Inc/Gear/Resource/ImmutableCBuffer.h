@@ -31,9 +31,9 @@ namespace Gear::Resource
 
 	protected:
 
-		SharedPtr<D3D12_GPU_VIRTUAL_ADDRESS> gpuAddress;
+		D3D12_GPU_VIRTUAL_ADDRESS gpuAddress;
 
-		SharedPtr<uint32_t> bufferIndex;
+		uint32_t bufferIndex;
 
 		D3D12Resource::BufferPtr buffer;
 	};

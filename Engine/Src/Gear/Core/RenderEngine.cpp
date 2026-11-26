@@ -498,9 +498,6 @@ namespace Gear::Core::RenderEngine
 
 		lastUsableGraphicsCommandList = nullptr;
 
-		//先获取可用的位置，供GraphicsContext在这一帧使用
-		engineGlobalCBuffer->acquireMappedDataPtr();
-
 		//把后备缓冲转变到STATE_RENDER_TARGET，并暂存资源屏障
 		prepareGraphicsCommandList->trackAndSetResourceState(getRenderTexture(),
 		                                                     D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS,
@@ -511,7 +508,6 @@ namespace Gear::Core::RenderEngine
 
 	void RenderEngineImpl::endFrame()
 	{
-		//到这里我们已经知道了哪些动态常量缓冲需要更新
 		updateDynamicCBuffers();
 
 		//一些比较基础的信息的设置
@@ -586,8 +582,6 @@ namespace Gear::Core::RenderEngine
 		}
 
 		engineGlobalCBuffer->update(&perframeResource, sizeof(perframeResource));
-
-		engineGlobalCBuffer->updateMappedData();
 
 		//使用收尾命令列表绘制ImGui界面
 		drawImGuiFrame();

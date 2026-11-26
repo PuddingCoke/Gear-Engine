@@ -457,24 +457,7 @@ namespace Gear::Core
 					graphicsCommandExecuter->pushNonPixelShaderResourceDesc(descs[i]);
 				}
 
-				Resource::ResourceBase* const resource = descs[i].resource;
-
-				if (resource && resource->hasVolatileDescriptor())
-				{
-					graphicsCommandExecuter->pushVolatileResource(resource);
-
-					shaderConstants[shaderIndex][offset + i] = UINT32_MAX;
-
-					const uint64_t unsettedLocation = shaderConstantsPtrOffsets[shaderIndex] + i + offset -
-					                                  shaderConstantsStartOffsets[shaderIndex];
-
-					graphicsCommandExecuter->pushUnsettedIndex(
-						ShaderType, descs[i].resourceIndex, unsettedLocation);
-				}
-				else
-				{
-					shaderConstants[shaderIndex][offset + i] = *(descs[i].resourceIndex);
-				}
+				shaderConstants[shaderIndex][offset + i] = descs[i].resourceIndex;
 			}
 
 			offset += N;
@@ -636,11 +619,6 @@ namespace Gear::Core
 	template<D3D12Core::ShaderType ShaderType>
 	void GraphicsContext::setShaderConstantBuffer(Resource::ImmutableCBuffer& constantBuffer)
 	{
-		if (constantBuffer.hasVolatileDescriptor())
-		{
-			graphicsCommandExecuter->pushVolatileResource(&constantBuffer);
-		}
-
 		if constexpr (ShaderType == D3D12Core::ShaderType::ALL)
 		{
 			auto* const command = SetAllShaderConstantBufferCommand::acquire();

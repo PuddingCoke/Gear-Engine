@@ -17,8 +17,6 @@ namespace Gear::Resource
 		}
 	}
 
-	// TODO 待办 #1：拷贝构造没有重建 uploadHeaps，dataPtrs 还指向源对象的映射内存
-	// 拷贝出来的对象调用 getUpdateStruct 会解引用空指针
 #pragma message("TODO: DefaultCBuffer 的拷贝构造尚未完成（uploadHeaps 为 nullptr）")
 	DefaultCBuffer::DefaultCBuffer(const DefaultCBuffer& scb) :
 		ImmutableCBuffer(scb), uploadHeaps(nullptr), dataPtrs(scb.dataPtrs)

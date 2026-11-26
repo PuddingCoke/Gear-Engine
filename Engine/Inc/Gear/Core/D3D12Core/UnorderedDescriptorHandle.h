@@ -17,6 +17,10 @@ namespace Gear::Core::D3D12Core
 		                          const uint32_t incrementSizeParam,
 		                          const std::vector<uint32_t>& descriptorIndicesParam);
 
+		UnorderedDescriptorHandle(const UnorderedDescriptorHandle&) = delete;
+
+		void operator=(const UnorderedDescriptorHandle&) = delete;
+
 		~UnorderedDescriptorHandle();
 
 		uint32_t getCurrentIndex() const override;

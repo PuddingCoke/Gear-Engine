@@ -18,6 +18,10 @@ namespace Gear::Core::D3D12Core
 		                           const uint32_t incrementSizeParam,
 		                           const uint32_t numDescriptorsParam);
 
+		ContiguousDescriptorHandle(const ContiguousDescriptorHandle&) = delete;
+
+		void operator=(const ContiguousDescriptorHandle&) = delete;
+
 		~ContiguousDescriptorHandle();
 
 		uint32_t getCurrentIndex() const override;

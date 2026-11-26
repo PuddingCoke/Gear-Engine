@@ -214,8 +214,7 @@ namespace Gear::Resource
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::SRV,
-			                              .resource = this,
-			                              .resourceIndex = &srvIndex,
+			                              .resourceIndex = srvIndex,
 			                              .bufferDesc = { .buffer = buffer.get(),
 			                                              .counterBuffer = nullptr } };
 
@@ -227,8 +226,7 @@ namespace Gear::Resource
 		const ShaderResourceDesc desc = {
 			.type = ShaderResourceDesc::BUFFER,
 			.state = ShaderResourceDesc::UAV,
-			.resource = this,
-			.resourceIndex = &uavIndex,
+			.resourceIndex = uavIndex,
 			.bufferDesc = { .buffer = buffer.get(),
 			                .counterBuffer = (counterBuffer ? counterBuffer->getBuffer() : nullptr) }
 		};

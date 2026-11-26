@@ -3,9 +3,7 @@
 namespace Gear::Resource
 {
 	ImmutableCBuffer::ImmutableCBuffer(D3D12Resource::BufferPtr bufferPtr) :
-		gpuAddress(makeShared<D3D12_GPU_VIRTUAL_ADDRESS>()),
-		bufferIndex(makeShared<uint32_t>(UINT32_MAX)),
-		buffer(std::move(bufferPtr))
+		gpuAddress(D3D12_GPU_VIRTUAL_ADDRESS()), bufferIndex(UINT32_MAX), buffer(std::move(bufferPtr))
 	{
 		if (buffer)
 		{
@@ -22,9 +20,9 @@ namespace Gear::Resource
 
 			GraphicsDevice::get()->CreateConstantBufferView(&desc, descriptorHandle->getCurrentCPUHandle());
 
-			*gpuAddress = buffer->getGPUAddress();
+			gpuAddress = buffer->getGPUAddress();
 
-			*bufferIndex = descriptorHandle->getCurrentIndex();
+			bufferIndex = descriptorHandle->getCurrentIndex();
 		}
 	}
 
@@ -44,8 +42,7 @@ namespace Gear::Resource
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::BUFFER,
 			                              .state = ShaderResourceDesc::CBV,
-			                              .resource = this,
-			                              .resourceIndex = bufferIndex.get(),
+			                              .resourceIndex = bufferIndex,
 			                              .bufferDesc = { .buffer = buffer.get(),
 			                                              .counterBuffer = nullptr } };
 
@@ -54,7 +51,7 @@ namespace Gear::Resource
 
 	D3D12_GPU_VIRTUAL_ADDRESS ImmutableCBuffer::getGPUAddress() const
 	{
-		return *gpuAddress;
+		return gpuAddress;
 	}
 
 	D3D12Resource::Buffer* ImmutableCBuffer::getBuffer() const

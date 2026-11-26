@@ -165,7 +165,7 @@ namespace Gear::Utils::Math
 			nonZero = _BitScanReverse64(&y, x);
 		}
 
-		return static_cast<uint32_t>(nonZero) & static_cast<uint32_t>(y);
+		return static_cast<uint32_t>(y);
 	}
 
 	template<typename T>

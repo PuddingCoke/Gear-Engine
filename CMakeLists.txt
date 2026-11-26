@@ -84,7 +84,9 @@ add_compile_options(
 # 字符集：对应各工程 vcxproj 的 <CharacterSet>Unicode</CharacterSet>。
 # 这些定义会出现在 %(PreprocessorDefinitions) 的继承值中（_UNICODE UNICODE），
 # 缺少时会选中 Win32 API 的 ...A 版本（如 CreateWindowExA）。
-add_compile_definitions(UNICODE _UNICODE)
+# NOMINMAX：阻止 windows.h 定义 min/max 宏，避免 std::min/std::max 被宏展开。
+# WIN32_LEAN_AND_MEAN：裁剪 windows.h 中不常用的部分，减少宏污染与编译时间。
+add_compile_definitions(UNICODE _UNICODE NOMINMAX WIN32_LEAN_AND_MEAN)
 
 # -----------------------------------------------------------------------------
 # 预编译依赖库

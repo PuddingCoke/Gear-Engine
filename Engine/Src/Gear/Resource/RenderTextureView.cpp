@@ -279,8 +279,7 @@ namespace Gear::Resource
 		const ShaderResourceDesc desc = {
 			.type = ShaderResourceDesc::TEXTURE,
 			.state = ShaderResourceDesc::SRV,
-			.resource = this,
-			.resourceIndex = &allSRVIndex,
+			.resourceIndex = allSRVIndex,
 			.textureDesc = { .texture = texture.get(),
 			                 .mipSlice = D3D12Resource::D3D12_TRANSITION_ALL_MIPLEVELS },
 		};
@@ -292,8 +291,7 @@ namespace Gear::Resource
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::TEXTURE,
 			                              .state = ShaderResourceDesc::SRV,
-			                              .resource = this,
-			                              .resourceIndex = &srvMipIndices[mipSlice],
+			                              .resourceIndex = srvMipIndices[mipSlice],
 			                              .textureDesc = { .texture = texture.get(), .mipSlice = mipSlice } };
 
 		return desc;
@@ -308,8 +306,7 @@ namespace Gear::Resource
 	{
 		const ShaderResourceDesc desc = { .type = ShaderResourceDesc::TEXTURE,
 			                              .state = ShaderResourceDesc::UAV,
-			                              .resource = this,
-			                              .resourceIndex = &uavMipIndices[mipSlice],
+			                              .resourceIndex = uavMipIndices[mipSlice],
 			                              .textureDesc = { .texture = texture.get(), .mipSlice = mipSlice } };
 
 		return desc;

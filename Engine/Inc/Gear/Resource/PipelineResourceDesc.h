@@ -31,9 +31,7 @@ namespace Gear::Resource
 			CBV
 		} state;
 
-		ResourceBase* resource;
-
-		const uint32_t* resourceIndex;
+		uint32_t resourceIndex;
 
 		struct TextureTransitionDesc
 		{

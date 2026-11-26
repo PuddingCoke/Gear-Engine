@@ -8,6 +8,8 @@
 
 #include <Gear/Core/GlobalDescriptorHeap.h>
 
+#include <Gear/Utils/Math.h>
+
 #include <atomic>
 
 namespace Gear::Core::DynamicCBufferManager
@@ -20,17 +22,15 @@ namespace Gear::Core::DynamicCBufferManager
 
 		~DynamicCBufferRegion();
 
-		struct Location
-		{
-			void* const dataPtr;
-			const uint32_t subregionIndex;
-		};
+		uint32_t allocate();
 
-		Location acquireLocation();
+		void retire(const uint32_t subRegionIndex);
 
-		void reset();
+		void* getUploadPtr(const uint32_t subRegionIndex) const;
 
 		uint64_t getUpdateSize() const;
+
+		uint64_t getSubRegionSize() const;
 
 		D3D12Resource::UploadHeap* getUploadHeap() const;
 
@@ -44,7 +44,13 @@ namespace Gear::Core::DynamicCBufferManager
 
 		UniquePtr<uint8_t*[]> dataPtr;
 
-		std::atomic<uint64_t> currentOffset;
+		std::vector<bool> occupied;
+
+		uint32_t nextAllocateSearchStart;
+
+		uint32_t updateSubRegionNum;
+
+		std::mutex mutex;
 	};
 
 	DynamicCBufferRegion::DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t subRegionNum) :
@@ -52,7 +58,9 @@ namespace Gear::Core::DynamicCBufferManager
 		subRegionNum(subRegionNum),
 		uploadHeap(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
 		dataPtr(makeUnique<uint8_t*[]>(Graphics::getFrameBufferCount())),
-		currentOffset(0)
+		occupied(subRegionNum, false),
+		nextAllocateSearchStart(0),
+		updateSubRegionNum(0)
 	{
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
@@ -77,27 +85,58 @@ namespace Gear::Core::DynamicCBufferManager
 		}
 	}
 
-	DynamicCBufferRegion::Location DynamicCBufferRegion::acquireLocation()
+	uint32_t DynamicCBufferRegion::allocate()
 	{
-		const uint64_t tempOffset = currentOffset.fetch_add(subRegionSize, std::memory_order_relaxed);
+		std::lock_guard lock(mutex);
 
-		if (tempOffset >= subRegionNum * subRegionSize)
+		uint32_t searchLocation = nextAllocateSearchStart;
+
+		while (searchLocation < subRegionNum && occupied[searchLocation])
 		{
-			THROWLOG(LOGERROR() << "动态常量缓冲子区域游标越界");
+			searchLocation++;
 		}
 
-		return { dataPtr[Graphics::getFrameIndex()] + tempOffset,
-			     static_cast<uint32_t>(tempOffset / subRegionSize) };
+		if (searchLocation == subRegionNum)
+		{
+			THROWLOG(LOGERROR() << "区域已满");
+		}
+
+		occupied[searchLocation] = true;
+
+		nextAllocateSearchStart = searchLocation + 1;
+
+		updateSubRegionNum = Utils::Math::max(updateSubRegionNum, searchLocation + 1);
+
+		return searchLocation;
 	}
 
-	void DynamicCBufferRegion::reset()
+	void DynamicCBufferRegion::retire(uint32_t subRegionIndex)
 	{
-		currentOffset.store(0ull, std::memory_order_relaxed);
+		std::lock_guard lock(mutex);
+
+		occupied[subRegionIndex] = false;
+
+		nextAllocateSearchStart = Utils::Math::min(nextAllocateSearchStart, subRegionIndex);
+
+		while (updateSubRegionNum > 0 && !occupied[updateSubRegionNum - 1])
+		{
+			--updateSubRegionNum;
+		}
+	}
+
+	void* DynamicCBufferRegion::getUploadPtr(const uint32_t subRegionIndex) const
+	{
+		return dataPtr[Graphics::getFrameIndex()] + subRegionIndex * subRegionSize;
 	}
 
 	uint64_t DynamicCBufferRegion::getUpdateSize() const
 	{
-		return currentOffset.load(std::memory_order_relaxed);
+		return updateSubRegionNum * subRegionSize;
+	}
+
+	uint64_t DynamicCBufferRegion::getSubRegionSize() const
+	{
+		return subRegionSize;
 	}
 
 	D3D12Resource::UploadHeap* DynamicCBufferRegion::getUploadHeap() const
@@ -113,7 +152,16 @@ namespace Gear::Core::DynamicCBufferManager
 
 		~DynamicCBufferManagerImpl();
 
-		DynamicCBufferManager::AvailableLocation requestLocation(const uint32_t regionIndex);
+		uint32_t requestLocation(const uint32_t regionIndex);
+
+		void releaseLocation(const uint32_t regionIndex, const uint32_t subRegionIndex);
+
+		D3D12_GPU_VIRTUAL_ADDRESS getGPUAddress(const uint32_t regionIndex,
+		                                        const uint32_t subRegionIndex) const;
+
+		uint32_t getDescriptorIndex(const uint32_t regionIndex, const uint32_t subRegionIndex) const;
+
+		void* getUploadPtr(const uint32_t regionIndex, const uint32_t subRegionIndex) const;
 
 		void recordCommands(D3D12Core::GraphicsCommandList* const commandList);
 
@@ -133,8 +181,8 @@ namespace Gear::Core::DynamicCBufferManager
 
 		uint64_t dstOffset[numRegion];
 
-		//constantBufferAddress = baseAddressOffsets[regionIndex] + (256 << regionIndex) * subregionIndex
-		uint64_t baseAddressOffsets[numRegion];
+		//constantBufferAddress = baseAddress[regionIndex] + (256 << regionIndex) * subregionIndex
+		uint64_t baseAddress[numRegion];
 
 		//descriptorIndex = baseDescriptorIndices[regionIndex] + subregionIndex
 		uint32_t baseDescriptorIndices[numRegion];
@@ -187,7 +235,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 			for (uint32_t regionIndex = 0; regionIndex < numRegion; regionIndex++)
 			{
-				baseAddressOffsets[regionIndex] = bufferLocationOffset;
+				baseAddress[regionIndex] = bufferLocationOffset;
 
 				baseDescriptorIndices[regionIndex] = descriptorHandle->getCurrentIndex();
 
@@ -213,14 +261,48 @@ namespace Gear::Core::DynamicCBufferManager
 	{
 	}
 
-	DynamicCBufferManager::AvailableLocation DynamicCBufferManagerImpl::requestLocation(
-		const uint32_t regionIndex)
+	uint32_t DynamicCBufferManagerImpl::requestLocation(const uint32_t regionIndex)
 	{
-		const DynamicCBufferRegion::Location location = bufferRegions[regionIndex]->acquireLocation();
+		if (regionIndex >= numRegion)
+		{
+			std::string errorString = "动态常量缓冲的大小只能是以下这些";
 
-		return { location.dataPtr,
-			     baseAddressOffsets[regionIndex] + (256u << regionIndex) * location.subregionIndex,
-			     baseDescriptorIndices[regionIndex] + location.subregionIndex };
+			uint32_t factor = 1u;
+
+			for (uint32_t i = 0; i < numRegion; i++)
+			{
+				errorString += " " + std::to_string(256u * factor) + "Bytes";
+
+				factor <<= 1u;
+			}
+
+			THROWLOG(LOGERROR() << errorString);
+		}
+
+		return bufferRegions[regionIndex]->allocate();
+	}
+
+	void DynamicCBufferManagerImpl::releaseLocation(const uint32_t regionIndex, const uint32_t subRegionIndex)
+	{
+		bufferRegions[regionIndex]->retire(subRegionIndex);
+	}
+
+	D3D12_GPU_VIRTUAL_ADDRESS DynamicCBufferManagerImpl::getGPUAddress(const uint32_t regionIndex,
+	                                                                   const uint32_t subRegionIndex) const
+	{
+		return baseAddress[regionIndex] + (256u << regionIndex) * subRegionIndex;
+	}
+
+	uint32_t DynamicCBufferManagerImpl::getDescriptorIndex(const uint32_t regionIndex,
+	                                                       const uint32_t subRegionIndex) const
+	{
+		return baseDescriptorIndices[regionIndex] + subRegionIndex;
+	}
+
+	void* DynamicCBufferManagerImpl::getUploadPtr(const uint32_t regionIndex,
+	                                              const uint32_t subRegionIndex) const
+	{
+		return bufferRegions[regionIndex]->getUploadPtr(subRegionIndex);
 	}
 
 	void DynamicCBufferManagerImpl::recordCommands(D3D12Core::GraphicsCommandList* const commandList)
@@ -240,8 +322,6 @@ namespace Gear::Core::DynamicCBufferManager
 				                              bufferRegions[regionIndex]->getUploadHeap(),
 				                              0,
 				                              bufferRegions[regionIndex]->getUpdateSize());
-
-				bufferRegions[regionIndex]->reset();
 			}
 		}
 
@@ -271,14 +351,56 @@ namespace Gear::Core::DynamicCBufferManager
 		}
 	}
 
-	uint32_t DynamicCBufferManager::getNumRegion()
+	DynamicCBufferManager::AvailableLocation::AvailableLocation(const uint32_t sizeParam) :
+		regionIndex(checkAndGetRegionIndex(sizeParam)),
+		subRegionIndex(impl->requestLocation(regionIndex)),
+		size(256u << regionIndex)
 	{
-		return DynamicCBufferManagerImpl::numRegion;
 	}
 
-	DynamicCBufferManager::AvailableLocation DynamicCBufferManager::requestLocation(
-		const uint32_t regionIndex)
+	DynamicCBufferManager::AvailableLocation::~AvailableLocation()
 	{
-		return impl->requestLocation(regionIndex);
+		impl->releaseLocation(regionIndex, subRegionIndex);
 	}
+
+	uint32_t DynamicCBufferManager::AvailableLocation::getRegionIndex() const
+	{
+		return regionIndex;
+	}
+
+	uint32_t DynamicCBufferManager::AvailableLocation::getSubRegionIndex() const
+	{
+		return subRegionIndex;
+	}
+
+	uint32_t DynamicCBufferManager::AvailableLocation::getSize() const
+	{
+		return size;
+	}
+
+	D3D12_GPU_VIRTUAL_ADDRESS DynamicCBufferManager::AvailableLocation::getGPUAddress() const
+	{
+		return impl->getGPUAddress(regionIndex, subRegionIndex);
+	}
+
+	uint32_t DynamicCBufferManager::AvailableLocation::getDescriptorIndex() const
+	{
+		return impl->getDescriptorIndex(regionIndex, subRegionIndex);
+	}
+
+	void* DynamicCBufferManager::AvailableLocation::getUploadPtr() const
+	{
+		return impl->getUploadPtr(regionIndex, subRegionIndex);
+	}
+
+	uint32_t DynamicCBufferManager::AvailableLocation::checkAndGetRegionIndex(const uint32_t sizeParam)
+	{
+		if (sizeParam == 0u)
+		{
+			THROWLOG(LOGERROR() << "动态常量缓冲的大小不能为0！");
+		}
+
+		return Utils::Math::log2Ceil((static_cast<uint64_t>(sizeParam) + 255ull) / 256ull);
+	}
+
 }

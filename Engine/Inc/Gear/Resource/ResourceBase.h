@@ -17,24 +17,11 @@ namespace Gear::Resource
 	{
 	public:
 
-		//初始化
-		ResourceBase();
+		ResourceBase() = default;
 
-		//深拷贝
-		ResourceBase(const ResourceBase&);
+		ResourceBase(const ResourceBase&) = default;
 
-		virtual ~ResourceBase();
-
-		virtual bool hasVolatileDescriptor() const;
-
-		//准备描述符（引擎内部使用）
-		void prepareDescriptors();
-
-		bool getInVolatileResourceList() const;
-
-		void pushToVolatileResourceList(std::vector<ResourceBase*>& volatileResourceList);
-
-		void popFromVolatileResourceList();
+		virtual ~ResourceBase() = default;
 
 	protected:
 
@@ -55,18 +42,9 @@ namespace Gear::Resource
 
 		D3D12Core::DescriptorHandle* getDepthStencilDescriptorHandle() const;
 
-		virtual void prepareDescriptorsImpl();
-
 	private:
 
-		bool inVolatileResourceList;
-
-		//由于指令是并行录制的，所以各个渲染线程需要竞争调用 prepareDescriptors
-		//因此需要记录上一次调用 prepareDescriptors 的帧纪元和互斥锁
-
-		SharedPtr<uint64_t> preparedFrameEpoch;
-
-		SharedPtr<std::mutex> prepareMutex;
+		//使用的描述符是全局堆上的，因此使用共享模式
 
 		SharedPtr<D3D12Core::DescriptorHandle> resourceDescriptorHandle;
 

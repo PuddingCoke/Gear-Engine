@@ -8,119 +8,60 @@
 
 namespace Gear::Resource
 {
-	DynamicCBuffer::DynamicCBuffer(const uint32_t sizeParam) :
+	DynamicCBuffer::DynamicCBuffer(const uint32_t size) :
 		ImmutableCBuffer(nullptr),
-		regionIndex(Utils::Math::log2Ceil((static_cast<uint64_t>(sizeParam) + 255ull) / 256ull)),
-		size(static_cast<uint32_t>(256ull << regionIndex)),
-		dataPtr(makeShared<uint8_t[]>(size)),
-		mappedDataPtr(makeShared<void*>(nullptr)),
-		updateDataPtrFrameEpoch(makeShared<uint64_t>(UINT64_MAX)),
-		acquireFrameEpoch(makeShared<uint64_t>(UINT64_MAX)),
-		updateMappedDataPtrFrameEpoch(makeShared<uint64_t>(UINT64_MAX))
+		location(makeShared<DynamicCBufferManager::AvailableLocation>(size)),
+		updateMutex(makeShared<std::mutex>()),
+		updateFrameEpoch(makeShared<uint64_t>(UINT64_MAX))
 	{
-		if (sizeParam == 0)
-		{
-			THROWLOG(LOGERROR() << "动态常量缓冲的大小不能为0");
-		}
+		gpuAddress = location->getGPUAddress();
 
-		if (regionIndex >= DynamicCBufferManager::getNumRegion())
-		{
-			std::string errorString = "动态常量缓冲的大小只能是以下这些";
-
-			uint32_t factor = 1u;
-
-			for (uint32_t i = 0; i < DynamicCBufferManager::getNumRegion(); i++)
-			{
-				errorString += " " + std::to_string(256u * factor) + "Bytes";
-
-				factor <<= 1u;
-			}
-
-			THROWLOG(LOGERROR() << errorString);
-		}
+		bufferIndex = location->getDescriptorIndex();
 	}
 
 	DynamicCBuffer::DynamicCBuffer(const DynamicCBuffer& dcb) :
 		ImmutableCBuffer(dcb),
-		regionIndex(dcb.regionIndex),
-		size(dcb.size),
-		dataPtr(dcb.dataPtr),
-		mappedDataPtr(dcb.mappedDataPtr),
-		updateDataPtrFrameEpoch(dcb.updateDataPtrFrameEpoch),
-		acquireFrameEpoch(dcb.acquireFrameEpoch),
-		updateMappedDataPtrFrameEpoch(dcb.updateMappedDataPtrFrameEpoch)
+		location(dcb.location),
+		updateMutex(dcb.updateMutex),
+		updateFrameEpoch(dcb.updateFrameEpoch)
 	{
 	}
 
+	DynamicCBuffer::~DynamicCBuffer()
+	{
+	}
+
+	#pragma message("TODO: 这里检查动态常量缓冲每帧是否都更新的代码不妥当")
 	void DynamicCBuffer::update(const void* const data, const uint32_t updateSize)
 	{
-#ifdef _DEBUG
-		if (Graphics::getFrameEpoch() == *updateDataPtrFrameEpoch)
-		{
-			THROWLOG(LOGERROR() << "一个动态常量缓冲每帧只能更新一次！");
-		}
-
-		if (updateSize > size)
+		if (updateSize > location->getSize())
 		{
 			THROWLOG(LOGERROR() << "更新大小不能大于动态常量缓冲的大小！");
 		}
-#endif // _DEBUG
 
-		*updateDataPtrFrameEpoch = Graphics::getFrameEpoch();
+		std::lock_guard<std::mutex> lock(*updateMutex);
 
-		memcpy(dataPtr.get(), data, updateSize);
-	}
-
-	bool DynamicCBuffer::hasVolatileDescriptor() const
-	{
-		return true;
-	}
-
-	void DynamicCBuffer::acquireMappedDataPtr()
-	{
-#ifdef _DEBUG
-		if (*acquireFrameEpoch == Graphics::getFrameEpoch())
+		//跳过初始化和第一帧，检测每帧是否都更新了
+		if (*updateFrameEpoch != 0ull && *updateFrameEpoch != UINT64_MAX &&
+		    Graphics::getFrameEpoch() - *updateFrameEpoch > 1)
 		{
-			THROWLOG(LOGERROR() << "对于动态常量缓冲来说，每帧的数据指针获取只能有一次！");
-		}
-#endif // _DEBUG
-
-		*acquireFrameEpoch = Graphics::getFrameEpoch();
-
-		const DynamicCBufferManager::AvailableLocation& location =
-			DynamicCBufferManager::requestLocation(regionIndex);
-
-		*mappedDataPtr = location.dataPtr;
-
-		*gpuAddress = location.gpuAddress;
-
-		*bufferIndex = location.descriptorIndex;
-	}
-
-	void DynamicCBuffer::updateMappedData()
-	{
-#ifdef _DEBUG
-		if(*acquireFrameEpoch != Graphics::getFrameEpoch())
-		{
-			THROWLOG(LOGERROR() << "对于动态常量缓冲来说，必须先获取数据指针才能更新映射数据！");
+			THROWLOG(LOGERROR() << "动态常量缓冲跳过了 "
+			                    << (Graphics::getFrameEpoch() - *updateFrameEpoch - 1) << " 帧未更新");
 		}
 
-		if (*updateMappedDataPtrFrameEpoch == Graphics::getFrameEpoch())
+		if (*updateFrameEpoch == Graphics::getFrameEpoch())
 		{
 			THROWLOG(LOGERROR() << "对于动态常量缓冲来说，每帧的更新只能有一次！");
 		}
-#endif // _DEBUG
 
-		*updateMappedDataPtrFrameEpoch = Graphics::getFrameEpoch();
+		*updateFrameEpoch = Graphics::getFrameEpoch();
 
-		memcpy(*mappedDataPtr, dataPtr.get(), size);
+		memcpy(location->getUploadPtr(), data, updateSize);
 	}
 
-	void DynamicCBuffer::prepareDescriptorsImpl()
+	uint32_t DynamicCBuffer::getSize() const
 	{
-		acquireMappedDataPtr();
-
-		updateMappedData();
+		return location->getSize();
 	}
 
 }

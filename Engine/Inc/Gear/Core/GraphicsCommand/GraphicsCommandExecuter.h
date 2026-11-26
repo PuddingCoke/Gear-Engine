@@ -146,12 +146,6 @@ namespace Gear::Core
 
 		D3D12Core::GraphicsCommandList* getCommandList() const;
 
-		void pushVolatileResource(Resource::ResourceBase* const resource);
-
-		void pushUnsettedIndex(const D3D12Core::ShaderType shaderType,
-		                       const uint32_t* indexAddress,
-		                       const uint64_t location);
-
 		uint64_t getShaderConstantsWriteLocation(const D3D12Core::ShaderType shaderType) const;
 
 		uint64_t getAllShaderResourceDescsWriteLocation() const;
@@ -330,20 +324,6 @@ namespace Gear::Core
 
 			D3D12Core::ComputeState* computeState;
 		};
-
-		std::vector<Resource::ResourceBase*> volatileResourceList;
-
-		struct UnsettedIndex
-		{
-			//用于取回索引的地址
-			const uint32_t* indexAddress;
-
-			//在 shaderConstants 中的位置
-			uint64_t location;
-		};
-
-		//存储暂时未确定的索引
-		std::vector<UnsettedIndex> unsettedIndices[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
 
 		//缓存一帧需要的所有着色器常量
 		std::vector<uint32_t> shaderConstants[static_cast<uint32_t>(D3D12Core::ShaderType::TYPECOUNT)];
