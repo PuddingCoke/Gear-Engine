@@ -38,7 +38,7 @@
 //
 //			UpdateStruct getUpdateStruct() const;
 //
-//			//更新索引，返回是否真的需要更新缓冲区，这个方法会一并更新UploadHeap或数据指针指向的内容
+//			//更新索引，返回是否真的需要更新缓冲区，如果真的需要更新，那么这个方法会一并更新UploadHeap或映射指针指向的内容
 //			bool updateIndices();
 //
 //			bool getInUpdateList() const;

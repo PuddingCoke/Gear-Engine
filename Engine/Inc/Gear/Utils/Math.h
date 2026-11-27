@@ -128,6 +128,64 @@ namespace Gear::Utils::Math
 		return b && ((a & b) == b);
 	}
 
+	//无法找到时返回UINT32_MAX
+	template<typename T>
+		requires std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
+	constexpr uint32_t bitScanForward(const T value)
+	{
+		if constexpr (std::is_same_v<T, uint32_t>)
+		{
+			unsigned long index;
+
+			if (!_BitScanForward(&index, value))
+			{
+				return UINT32_MAX;
+			}
+
+			return static_cast<uint32_t>(index);
+		}
+		else
+		{
+			unsigned long index;
+
+			if (!_BitScanForward64(&index, value))
+			{
+				return UINT32_MAX;
+			}
+
+			return static_cast<uint32_t>(index);
+		}
+	}
+
+	//无法找到时返回UINT32_MAX
+	template<typename T>
+		requires std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>
+	constexpr uint32_t bitScanReverse(const T value)
+	{
+		if constexpr (std::is_same_v<T, uint32_t>)
+		{
+			unsigned long index;
+
+			if (!_BitScanReverse(&index, value))
+			{
+				return UINT32_MAX;
+			}
+
+			return static_cast<uint32_t>(index);
+		}
+		else
+		{
+			unsigned long index;
+
+			if (!_BitScanReverse64(&index, value))
+			{
+				return UINT32_MAX;
+			}
+
+			return static_cast<uint32_t>(index);
+		}
+	}
+
 	template<typename T>
 		requires std::is_floating_point_v<T> || std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
 	             std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>

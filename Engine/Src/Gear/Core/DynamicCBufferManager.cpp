@@ -10,15 +10,13 @@
 
 #include <Gear/Utils/Math.h>
 
-#include <atomic>
-
 namespace Gear::Core::DynamicCBufferManager
 {
 	class DynamicCBufferRegion
 	{
 	public:
 
-		DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t subRegionNum);
+		DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t numSubRegion);
 
 		~DynamicCBufferRegion();
 
@@ -36,35 +34,73 @@ namespace Gear::Core::DynamicCBufferManager
 
 	private:
 
+		//两级位图：第一级每个槽位1位(1表示空闲)，第二级每个第一级的字1位(1表示该字里还有空闲槽位)
+		//8192个槽位只需要128个第一级字和2个第二级字，分配和回收都是常数时间，且总能取到最低的空闲槽位
+		static constexpr uint32_t maxNumSubRegion = 8192;
+
+		static constexpr uint32_t numWord = maxNumSubRegion / 64;
+
+		static constexpr uint32_t numMaxSummaryWord = numWord / 64;
+
 		const uint64_t subRegionSize;
 
-		const uint64_t subRegionNum;
+		const uint64_t numSubRegion;
 
 		UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeap;
 
 		UniquePtr<uint8_t*[]> dataPtr;
 
-		std::vector<bool> occupied;
+		uint64_t freeMask[numWord];
 
-		uint32_t nextAllocateSearchStart;
+		uint64_t freeSummary[numMaxSummaryWord];
 
-		uint32_t updateSubRegionNum;
+		//实际用到的第一级字数量、第二级字数量，以及最后一个字中有效槽位的掩码(尾部无效位保持为0表示已占用)
+		uint32_t numUsedWord;
+
+		uint32_t numUsedSummaryWord;
+
+		uint64_t lastWordMask;
+
+		uint32_t numUpdateSubRegion;
 
 		std::mutex mutex;
 	};
 
-	DynamicCBufferRegion::DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t subRegionNum) :
+	DynamicCBufferRegion::DynamicCBufferRegion(const uint64_t subRegionSize, const uint64_t numSubRegion) :
 		subRegionSize(subRegionSize),
-		subRegionNum(subRegionNum),
+		numSubRegion(numSubRegion),
 		uploadHeap(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
 		dataPtr(makeUnique<uint8_t*[]>(Graphics::getFrameBufferCount())),
-		occupied(subRegionNum, false),
-		nextAllocateSearchStart(0),
-		updateSubRegionNum(0)
+		freeMask{},
+		freeSummary{},
+		numUsedWord(0),
+		numUsedSummaryWord(0),
+		lastWordMask(~0ull),
+		numUpdateSubRegion(0)
 	{
+		if (numSubRegion == 0ull || numSubRegion > maxNumSubRegion)
+		{
+			THROWLOG(LOGERROR() << "子区域数量必须在1到" << maxNumSubRegion << "之间");
+		}
+
+		numUsedWord = static_cast<uint32_t>((numSubRegion + 63ull) / 64ull);
+
+		numUsedSummaryWord = (numUsedWord + 63u) / 64u;
+
+		const uint32_t lastWordBits = static_cast<uint32_t>(numSubRegion & 63ull);
+
+		lastWordMask = lastWordBits ? ((1ull << lastWordBits) - 1ull) : ~0ull;
+
+		for (uint32_t wordIndex = 0; wordIndex < numUsedWord; wordIndex++)
+		{
+			freeMask[wordIndex] = (wordIndex + 1u == numUsedWord) ? lastWordMask : ~0ull;
+
+			freeSummary[wordIndex >> 6] |= 1ull << (wordIndex & 63);
+		}
+
 		for (uint32_t i = 0; i < Graphics::getFrameBufferCount(); i++)
 		{
-			uploadHeap[i] = makeUnique<D3D12Resource::UploadHeap>(subRegionSize * subRegionNum);
+			uploadHeap[i] = makeUnique<D3D12Resource::UploadHeap>(subRegionSize * numSubRegion);
 
 			//这里有个技巧，上传堆可以保持映射状态，这样可以避免每帧映射和取消映射带来的开销，但是不要忘了析构时取消映射
 			dataPtr[i] = static_cast<uint8_t*>(uploadHeap[i]->map());
@@ -89,38 +125,91 @@ namespace Gear::Core::DynamicCBufferManager
 	{
 		std::lock_guard lock(mutex);
 
-		uint32_t searchLocation = nextAllocateSearchStart;
+		//第二级只有一到两个字，这里是最多两次判定
+		uint32_t summaryIndex = 0;
 
-		while (searchLocation < subRegionNum && occupied[searchLocation])
+		while (summaryIndex < numUsedSummaryWord && freeSummary[summaryIndex] == 0ull)
 		{
-			searchLocation++;
+			summaryIndex++;
 		}
 
-		if (searchLocation == subRegionNum)
+		if (summaryIndex == numUsedSummaryWord)
 		{
 			THROWLOG(LOGERROR() << "区域已满");
 		}
 
-		occupied[searchLocation] = true;
+		const uint32_t wordIndex =
+			(summaryIndex << 6) + Utils::Math::bitScanForward(freeSummary[summaryIndex]);
 
-		nextAllocateSearchStart = searchLocation + 1;
+		const uint64_t mask = freeMask[wordIndex];
 
-		updateSubRegionNum = Utils::Math::max(updateSubRegionNum, searchLocation + 1);
+		//取最低的空闲槽位，保证已占用的最高索引尽可能低，从而减少每帧的拷贝量
+		const uint32_t subRegionIndex = (wordIndex << 6) + Utils::Math::bitScanForward(mask);
 
-		return searchLocation;
+		const uint64_t remainingMask = mask & (mask - 1ull);
+
+		freeMask[wordIndex] = remainingMask;
+
+		if (remainingMask == 0ull)
+		{
+			freeSummary[summaryIndex] &= ~(1ull << (wordIndex & 63));
+		}
+
+		if (subRegionIndex + 1u > numUpdateSubRegion)
+		{
+			numUpdateSubRegion = subRegionIndex + 1u;
+		}
+
+		return subRegionIndex;
 	}
 
-	void DynamicCBufferRegion::retire(uint32_t subRegionIndex)
+	void DynamicCBufferRegion::retire(const uint32_t subRegionIndex)
 	{
+		if (subRegionIndex >= numSubRegion)
+		{
+			THROWLOG(LOGERROR() << "非法的子区域索引");
+		}
+
 		std::lock_guard lock(mutex);
 
-		occupied[subRegionIndex] = false;
+		const uint32_t wordIndex = subRegionIndex >> 6;
 
-		nextAllocateSearchStart = Utils::Math::min(nextAllocateSearchStart, subRegionIndex);
+		const uint64_t previousMask = freeMask[wordIndex];
 
-		while (updateSubRegionNum > 0 && !occupied[updateSubRegionNum - 1])
+		freeMask[wordIndex] = previousMask | (1ull << (subRegionIndex & 63));
+
+		if (previousMask == 0ull)
 		{
-			--updateSubRegionNum;
+			freeSummary[wordIndex >> 6] |= 1ull << (wordIndex & 63);
+		}
+
+		//只有回收的是最高已用槽位时才需要回退高水位，且按"字"回退，一次判断64个槽位
+		if (subRegionIndex + 1u == numUpdateSubRegion)
+		{
+			uint32_t candidate = wordIndex;
+
+			for (;;)
+			{
+				const uint64_t validMask = (candidate + 1u == numUsedWord) ? lastWordMask : ~0ull;
+
+				if ((freeMask[candidate] & validMask) != validMask)
+				{
+					const uint64_t usedMask = ~freeMask[candidate] & validMask;
+
+					numUpdateSubRegion = (candidate << 6) + Utils::Math::bitScanReverse(usedMask) + 1u;
+
+					break;
+				}
+
+				if (candidate == 0u)
+				{
+					numUpdateSubRegion = 0u;
+
+					break;
+				}
+
+				candidate--;
+			}
 		}
 	}
 
@@ -131,7 +220,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 	uint64_t DynamicCBufferRegion::getUpdateSize() const
 	{
-		return updateSubRegionNum * subRegionSize;
+		return numUpdateSubRegion * subRegionSize;
 	}
 
 	uint64_t DynamicCBufferRegion::getSubRegionSize() const

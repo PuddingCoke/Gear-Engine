@@ -2,6 +2,8 @@
 
 #include <Gear/Core/GraphicsDevice.h>
 
+#include <Gear/Utils/Math.h>
+
 namespace Gear::Core::FMT
 {
 	PlaneCountType planeCountTable[formatTableLength] = {};
@@ -48,9 +50,12 @@ namespace Gear::Core::FMT
 						(support1 & D3D12_FORMAT_SUPPORT1_RENDER_TARGET) ? rtvFormatIndex++ : 0u;
 				}
 
-				unsigned long index = 0;
+				const uint32_t index = Utils::Math::bitScanReverse(static_cast<uint32_t>(rtvFormatIndex));
 
-				BitScanReverse(&index, rtvFormatIndex);
+				if (index == UINT32_MAX)
+				{
+					THROWLOG(LOGERROR() << "无法计算" << COLORIZEVAR(rtvFormatBits));
+				}
 
 				rtvFormatBits = index + 1u;
 			}
@@ -73,9 +78,12 @@ namespace Gear::Core::FMT
 						(support1 & D3D12_FORMAT_SUPPORT1_DEPTH_STENCIL) ? dsvFormatIndex++ : 0u;
 				}
 
-				unsigned long index = 0;
+				const uint32_t index = Utils::Math::bitScanReverse(static_cast<uint32_t>(dsvFormatIndex));
 
-				BitScanReverse(&index, dsvFormatIndex);
+				if (index == UINT32_MAX)
+				{
+					THROWLOG(LOGERROR() << "无法计算" << COLORIZEVAR(dsvFormatBits));
+				}
 
 				dsvFormatBits = index + 1u;
 			}
