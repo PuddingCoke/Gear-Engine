@@ -32,7 +32,12 @@ namespace Gear::Core::DynamicCBufferManager
 
 		D3D12Resource::UploadHeap* getUploadHeap() const;
 
+		void updateMappedData();
+
 	private:
+
+		void copyRun(const uint8_t* const srcPtr, uint8_t* const dstPtr, const uint32_t runBegin,
+		             const uint32_t runEnd) const;
 
 		//两级位图：第一级每个槽位1位(1表示空闲)，第二级每个第一级的字1位(1表示该字里还有空闲槽位)
 		//8192个槽位只需要128个第一级字和2个第二级字，分配和回收都是常数时间，且总能取到最低的空闲槽位
@@ -48,7 +53,9 @@ namespace Gear::Core::DynamicCBufferManager
 
 		UniquePtr<UniquePtr<D3D12Resource::UploadHeap>[]> uploadHeap;
 
-		UniquePtr<uint8_t*[]> dataPtr;
+		UniquePtr<uint8_t*[]> mappedDataPtr;
+
+		UniquePtr<uint8_t[]> shadowData;
 
 		uint64_t freeMask[numWord];
 
@@ -70,7 +77,8 @@ namespace Gear::Core::DynamicCBufferManager
 		subRegionSize(subRegionSize),
 		numSubRegion(numSubRegion),
 		uploadHeap(makeUnique<UniquePtr<D3D12Resource::UploadHeap>[]>(Graphics::getFrameBufferCount())),
-		dataPtr(makeUnique<uint8_t*[]>(Graphics::getFrameBufferCount())),
+		mappedDataPtr(makeUnique<uint8_t*[]>(Graphics::getFrameBufferCount())),
+		shadowData(makeUnique<uint8_t[]>(subRegionSize * numSubRegion)),
 		freeMask{},
 		freeSummary{},
 		numUsedWord(0),
@@ -103,7 +111,7 @@ namespace Gear::Core::DynamicCBufferManager
 			uploadHeap[i] = makeUnique<D3D12Resource::UploadHeap>(subRegionSize * numSubRegion);
 
 			//这里有个技巧，上传堆可以保持映射状态，这样可以避免每帧映射和取消映射带来的开销，但是不要忘了析构时取消映射
-			dataPtr[i] = static_cast<uint8_t*>(uploadHeap[i]->map());
+			mappedDataPtr[i] = static_cast<uint8_t*>(uploadHeap[i]->map());
 		}
 	}
 
@@ -155,11 +163,6 @@ namespace Gear::Core::DynamicCBufferManager
 			freeSummary[summaryIndex] &= ~(1ull << (wordIndex & 63));
 		}
 
-		if (subRegionIndex + 1u > numUpdateSubRegion)
-		{
-			numUpdateSubRegion = subRegionIndex + 1u;
-		}
-
 		return subRegionIndex;
 	}
 
@@ -182,40 +185,94 @@ namespace Gear::Core::DynamicCBufferManager
 		{
 			freeSummary[wordIndex >> 6] |= 1ull << (wordIndex & 63);
 		}
-
-		//只有回收的是最高已用槽位时才需要回退高水位，且按"字"回退，一次判断64个槽位
-		if (subRegionIndex + 1u == numUpdateSubRegion)
-		{
-			uint32_t candidate = wordIndex;
-
-			for (;;)
-			{
-				const uint64_t validMask = (candidate + 1u == numUsedWord) ? lastWordMask : ~0ull;
-
-				if ((freeMask[candidate] & validMask) != validMask)
-				{
-					const uint64_t usedMask = ~freeMask[candidate] & validMask;
-
-					numUpdateSubRegion = (candidate << 6) + Utils::Math::bitScanReverse(usedMask) + 1u;
-
-					break;
-				}
-
-				if (candidate == 0u)
-				{
-					numUpdateSubRegion = 0u;
-
-					break;
-				}
-
-				candidate--;
-			}
-		}
 	}
 
 	void* DynamicCBufferRegion::getUploadPtr(const uint32_t subRegionIndex) const
 	{
-		return dataPtr[Graphics::getFrameBufferIndex()] + subRegionIndex * subRegionSize;
+		return shadowData.get() + subRegionIndex * subRegionSize;
+	}
+
+	void DynamicCBufferRegion::updateMappedData()
+	{
+		std::lock_guard lock(mutex);
+
+		uint8_t* const dstPtr = mappedDataPtr[Graphics::getFrameBufferIndex()];
+
+		const uint8_t* const srcPtr = shadowData.get();
+
+		//待处理的连续区间[runBegin, runEnd)
+		uint32_t runBegin = 0;
+
+		uint32_t runEnd = 0;
+
+		for (uint32_t wordIndex = 0; wordIndex < numUsedWord; wordIndex++)
+		{
+			//freeMask里1表示空闲，取反就得到"已创建"的槽位
+			uint64_t mask = ~freeMask[wordIndex];
+
+			if (mask == 0ull)
+			{
+				continue;
+			}
+
+			if (wordIndex + 1u == numUsedWord)
+			{
+				mask &= lastWordMask;
+			}
+
+			while (mask)
+			{
+				const uint32_t bitIndex = Utils::Math::bitScanForward(mask);
+
+				const uint32_t runBeginCandidate = (wordIndex << 6) + bitIndex;
+
+				//从bitIndex开始连续1的数量
+				const uint64_t rest = mask >> bitIndex;
+
+				const uint32_t runLength = (rest == ~0ull)
+					? (64u - bitIndex)
+					: Utils::Math::bitScanForward(~rest);
+
+				const uint32_t runEndCandidate = runBeginCandidate + runLength;
+
+				//与上一个区间相邻(含跨字)，直接合并，稠密时就能退化成一次大拷贝
+				if (runEnd == runBeginCandidate)
+				{
+					runEnd = runEndCandidate;
+				}
+				else
+				{
+					copyRun(srcPtr, dstPtr, runBegin, runEnd);
+
+					runBegin = runBeginCandidate;
+
+					runEnd = runEndCandidate;
+				}
+
+				//只清掉这一段的位，更高位上的区间留给下一次循环
+				const uint64_t runMask = (runLength == 64u) ? ~0ull : ((1ull << runLength) - 1ull);
+
+				mask &= ~(runMask << bitIndex);
+			}
+		}
+
+		copyRun(srcPtr, dstPtr, runBegin, runEnd);
+
+		//已创建的最高槽位+1，直接供recordCommands里那条copyBufferRegion使用
+		numUpdateSubRegion = runEnd;
+	}
+
+	void DynamicCBufferRegion::copyRun(const uint8_t* const srcPtr, uint8_t* const dstPtr,
+	                                   const uint32_t runBegin, const uint32_t runEnd) const
+	{
+		if (runBegin == runEnd)
+		{
+			return;
+		}
+
+		memcpy(dstPtr + runBegin * subRegionSize,
+		       srcPtr + runBegin * subRegionSize,
+		       static_cast<size_t>(runEnd - runBegin) * subRegionSize);
 	}
 
 	uint64_t DynamicCBufferRegion::getUpdateSize() const
@@ -396,6 +453,11 @@ namespace Gear::Core::DynamicCBufferManager
 
 	void DynamicCBufferManagerImpl::recordCommands(D3D12Core::GraphicsCommandList* const commandList)
 	{
+		for (uint32_t regionIndex = 0; regionIndex < numRegion; regionIndex++)
+		{
+			bufferRegions[regionIndex]->updateMappedData();
+		}
+
 		//把大常量缓冲转变到STATE_COPY_DEST状态，用于内容更新
 		commandList->trackAndSetResourceState(buffer.get(), D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -443,7 +505,8 @@ namespace Gear::Core::DynamicCBufferManager
 	DynamicCBufferManager::AvailableLocation::AvailableLocation(const uint32_t sizeParam) :
 		regionIndex(checkAndGetRegionIndex(sizeParam)),
 		subRegionIndex(impl->requestLocation(regionIndex)),
-		size(256u << regionIndex)
+		size(256u << regionIndex),
+		uploadPtr(impl->getUploadPtr(regionIndex, subRegionIndex))
 	{
 	}
 
@@ -479,7 +542,7 @@ namespace Gear::Core::DynamicCBufferManager
 
 	void* DynamicCBufferManager::AvailableLocation::getUploadPtr() const
 	{
-		return impl->getUploadPtr(regionIndex, subRegionIndex);
+		return uploadPtr;
 	}
 
 	uint32_t DynamicCBufferManager::AvailableLocation::checkAndGetRegionIndex(const uint32_t sizeParam)

@@ -43,6 +43,9 @@ namespace Gear::Core::DynamicCBufferManager
 
 		//缓冲区实际大小
 		const uint32_t size;
+
+		void* const uploadPtr;
+
 	};
 
 	using AvailableLocationPtr = SharedPtr<AvailableLocation>;

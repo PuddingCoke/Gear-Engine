@@ -508,8 +508,6 @@ namespace Gear::Core::RenderEngine
 
 	void RenderEngineImpl::endFrame()
 	{
-		updateDynamicCBuffers();
-
 		//一些比较基础的信息的设置
 		{
 			perframeResource.deltaTime = Graphics::getDeltaTime();
@@ -596,6 +594,10 @@ namespace Gear::Core::RenderEngine
 
 			lastUsableCommandList->flushResourceBarriers();
 		}
+
+		//放置于动态常量缓冲区域的影子数据都被更新完后
+		//因为这个方法会将影子数据拷贝到映射指针指向的数据
+		updateDynamicCBuffers();
 
 		processCommandLists();
 	}
