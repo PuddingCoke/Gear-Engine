@@ -133,40 +133,40 @@ namespace Gear::Core
 		setShaderConstantBuffer<D3D12Core::ShaderType::COMPUTE>(constantBuffer);
 	}
 
-	// void GraphicsContext::setGlobalIndexTable(Resource::IndexTable& indexTable)
-	// {
-	// 	setShaderIndexTable<D3D12Core::ShaderType::ALL>(indexTable);
-	// }
+	void GraphicsContext::setGlobalConstantBuffer(Resource::IndexTable& indexTable)
+	{
+		setShaderConstantBuffer<D3D12Core::ShaderType::ALL>(indexTable);
+	}
 
-	// void GraphicsContext::setVSIndexTable(Resource::IndexTable& indexTable)
-	// {
-	// 	setShaderIndexTable<D3D12Core::ShaderType::VERTEX>(indexTable);
-	// }
+	void GraphicsContext::setVSConstantBuffer(Resource::IndexTable& indexTable)
+	{
+		setShaderConstantBuffer<D3D12Core::ShaderType::VERTEX>(indexTable);
+	}
 
-	// void GraphicsContext::setHSIndexTable(Resource::IndexTable& indexTable)
-	// {
-	// 	setShaderIndexTable<D3D12Core::ShaderType::HULL>(indexTable);
-	// }
+	void GraphicsContext::setHSConstantBuffer(Resource::IndexTable& indexTable)
+	{
+		setShaderConstantBuffer<D3D12Core::ShaderType::HULL>(indexTable);
+	}
 
-	// void GraphicsContext::setDSIndexTable(Resource::IndexTable& indexTable)
-	// {
-	// 	setShaderIndexTable<D3D12Core::ShaderType::DOMAIN>(indexTable);
-	// }
+	void GraphicsContext::setDSConstantBuffer(Resource::IndexTable& indexTable)
+	{
+		setShaderConstantBuffer<D3D12Core::ShaderType::DOMAIN>(indexTable);
+	}
 
-	// void GraphicsContext::setGSIndexTable(Resource::IndexTable& indexTable)
-	// {
-	// 	setShaderIndexTable<D3D12Core::ShaderType::GEOMETRY>(indexTable);
-	// }
+	void GraphicsContext::setGSConstantBuffer(Resource::IndexTable& indexTable)
+	{
+		setShaderConstantBuffer<D3D12Core::ShaderType::GEOMETRY>(indexTable);
+	}
 
-	// void GraphicsContext::setPSIndexTable(Resource::IndexTable& indexTable)
-	// {
-	// 	setShaderIndexTable<D3D12Core::ShaderType::PIXEL>(indexTable);
-	// }
+	void GraphicsContext::setPSConstantBuffer(Resource::IndexTable& indexTable)
+	{
+		setShaderConstantBuffer<D3D12Core::ShaderType::PIXEL>(indexTable);
+	}
 
-	// void GraphicsContext::setCSIndexTable(Resource::IndexTable& indexTable)
-	// {
-	// 	setShaderIndexTable<D3D12Core::ShaderType::COMPUTE>(indexTable);
-	// }
+	void GraphicsContext::setCSConstantBuffer(Resource::IndexTable& indexTable)
+	{
+		setShaderConstantBuffer<D3D12Core::ShaderType::COMPUTE>(indexTable);
+	}
 
 	void GraphicsContext::setPipelineState(D3D12Core::GraphicsState& graphicsPipelineState)
 	{
@@ -633,9 +633,6 @@ namespace Gear::Core
 
 	void GraphicsContext::end()
 	{
-		//拷贝描述符到全局唯一着色器可见堆，从而获得描述符索引
-		graphicsCommandExecuter->prepare();
-
 		//执行所有命令
 		if (graphicsCommands.size())
 		{
@@ -646,6 +643,8 @@ namespace Gear::Core
 
 			graphicsCommands.clear();
 		}
+
+		graphicsCommandExecuter->end();
 	}
 
 	D3D12Core::GraphicsCommandList* GraphicsContext::getCommandList() const

@@ -17,6 +17,14 @@
 
 #include <Gear/Resource/DynamicCbuffer.h>
 
+#include <Gear/Resource/IndexTable.h>
+
+#include <Gear/Resource/ImmutableIndexTable.h>
+
+#include <Gear/Resource/DefaultIndexTable.h>
+
+#include <Gear/Resource/DynamicIndexTable.h>
+
 #include <Gear/Resource/BufferView.h>
 
 #include <Gear/Resource/RenderTextureView.h>
@@ -89,6 +97,54 @@ namespace Gear::Core
 
 		static Resource::DynamicCBufferPtr createDynamicCBuffer(const uint32_t size,
 		                                                        const void* const data = nullptr);
+
+		//创建索引表，不可变类型会在此一并完成唯一的一次上传
+		template<size_t N>
+		Resource::ImmutableIndexTablePtr createImmutableIndexTable(
+			const Resource::ShaderResourceDesc (&descs)[N])
+		{
+			static_assert(N <= Resource::IndexTable::maxIndexNum);
+
+			//缓冲区固定为byteSize字节(256)，超出资源描述数量的部分填上无效索引
+			uint32_t indices[Resource::IndexTable::maxIndexNum];
+
+			for (uint32_t i = 0; i < Resource::IndexTable::maxIndexNum; i++)
+			{
+				indices[i] = UINT32_MAX;
+			}
+
+			for (uint32_t i = 0; i < N; i++)
+			{
+				indices[i] = descs[i].resourceIndex;
+			}
+
+			Resource::ImmutableCBufferPtr cbuffer =
+				createImmutableCBuffer(Resource::IndexTable::byteSize, indices);
+
+			return makeUnique<Resource::ImmutableIndexTable>(std::move(cbuffer), descs);
+		}
+
+		template<size_t N>
+		static Resource::DefaultIndexTablePtr createDefaultIndexTable(
+			const Resource::ShaderResourceDesc (&descs)[N])
+		{
+			static_assert(N <= Resource::IndexTable::maxIndexNum);
+
+			//缓冲区的内容由索引表在第一次使用时上传
+			Resource::DefaultCBufferPtr cbuffer =
+				createDefaultCBuffer(Resource::IndexTable::byteSize);
+
+			return makeUnique<Resource::DefaultIndexTable>(std::move(cbuffer), descs);
+		}
+
+		template<size_t N>
+		static Resource::DynamicIndexTablePtr createDynamicIndexTable(
+			const Resource::ShaderResourceDesc (&descs)[N])
+		{
+			static_assert(N <= Resource::IndexTable::maxIndexNum);
+
+			return makeUnique<Resource::DynamicIndexTable>(descs);
+		}
 
 		Resource::BufferViewPtr createTypedBufferView(const DXGI_FORMAT format,
 		                                              const uint64_t size,

@@ -449,12 +449,25 @@ namespace Gear::Core
 
 		vertexBufferDescs.clear();
 
-		// #ifdef _DEBUG
-		// 		if (indexTableUpdateList.size())
-		// 		{
-		// 			THROWLOG(LOGERROR() << "侦测到索引表更新列表非空！");
-		// 		}
-		// #endif
+		if (indexTableUpdateList.size())
+		{
+			THROWLOG(LOGERROR() << "侦测到索引表更新列表非空！");
+		}
+
+		if (indexTableCheckedList.size())
+		{
+			THROWLOG(LOGERROR() << "侦测到索引表检查列表非空！");
+		}
+	}
+
+	void GraphicsCommandExecuter::end()
+	{
+		for (Resource::IndexTable* const table : indexTableCheckedList)
+		{
+			table->popFromCheckedList();
+		}
+
+		indexTableCheckedList.clear();
 	}
 
 	void GraphicsCommandExecuter::resetTrackedStates()
@@ -550,16 +563,6 @@ namespace Gear::Core
 	void GraphicsCommandExecuter::pushVertexBufferDesc(const Resource::VertexBufferDesc& desc)
 	{
 		vertexBufferDescs.push_back(desc);
-	}
-
-	void GraphicsCommandExecuter::prepare()
-	{
-		// for (Resource::IndexTable* const table : indexTableCheckedList)
-		// {
-		// 	table->popFromCheckedList();
-		// }
-
-		// indexTableCheckedList.clear();
 	}
 
 	void GraphicsCommandExecuter::setPipelineState(ID3D12PipelineState* const pipelineState)
@@ -773,7 +776,7 @@ namespace Gear::Core
 
 		commandList->flushResourceBarriers();
 
-		// prepareIndexTables();
+		prepareIndexTables();
 
 		flushRootConstantBufferDescs<true>();
 
@@ -786,7 +789,7 @@ namespace Gear::Core
 	{
 		commandList->flushResourceBarriers();
 
-		// prepareIndexTables();
+		prepareIndexTables();
 
 		flushRootConstantBufferDescs<false>();
 	}
@@ -871,36 +874,34 @@ namespace Gear::Core
 		}
 	}
 
-	// void GraphicsCommandExecuter::prepareIndexTables()
-	// {
-	// 	if (indexTableUpdateList.size())
-	// 	{
-	// 		for (Resource::IndexTable* const table : indexTableUpdateList)
-	// 		{
-	// 			const Resource::IndexTable::UpdateStruct updateStruct = table->getUpdateStruct();
+	void GraphicsCommandExecuter::prepareIndexTables()
+	{
+		if (indexTableUpdateList.size())
+		{
+			for (Resource::IndexTable* const table : indexTableUpdateList)
+			{
+				const Resource::IndexTable::UpdateStruct updateStruct = table->getUpdateStruct();
 
-	// 			commandList->copyBufferRegion(
-	// 				updateStruct.buffer, 0, updateStruct.uploadHeap, 0, updateStruct.size);
+				//统一录制更新指令
+				commandList->copyBufferRegion(
+					updateStruct.buffer, 0, updateStruct.uploadHeap, 0, updateStruct.size);
 
-	// 			commandList->trackAndSetResourceState(updateStruct.buffer,
-	// 			                                      D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+				//记录转变状态，稍后统一插入资源屏障
+				commandList->trackAndSetResourceState(updateStruct.buffer,
+				                                      D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+			}
 
-	// 			if (table->getUserUpdate())
-	// 			{
-	// 				table->setUserUpdate(false);
-	// 			}
-	// 		}
+			//统一录制更新指令后，插入资源屏障，统一将缓冲区状态设置为 D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER
+			commandList->flushResourceBarriers();
 
-	// 		commandList->flushResourceBarriers();
+			for (Resource::IndexTable* const table : indexTableUpdateList)
+			{
+				table->popFromUpdateList();
+			}
 
-	// 		for (Resource::IndexTable* const table : indexTableUpdateList)
-	// 		{
-	// 			table->popFromUpdateList();
-	// 		}
-
-	// 		indexTableUpdateList.clear();
-	// 	}
-	// }
+			indexTableUpdateList.clear();
+		}
+	}
 
 	void GraphicsCommandExecuter::DepthStencilClearDesc::setHandle(
 		const D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle) noexcept

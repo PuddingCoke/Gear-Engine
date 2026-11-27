@@ -15,7 +15,7 @@
 
 #include <Gear/Core/GraphicsCommand/SetShaderConstantsCommand.h>
 
-//#include <Gear/Core/GraphicsCommand/SetShaderIndexTableCommand.h>
+#include <Gear/Core/GraphicsCommand/SetShaderIndexTableCommand.h>
 
 #include <Gear/Core/GraphicsCommand/SetVertexBuffersCommand.h>
 
@@ -134,19 +134,19 @@ namespace Gear::Core
 
 		void setCSConstantBuffer(Resource::ImmutableCBuffer& constantBuffer);
 
-		// void setGlobalIndexTable(Resource::IndexTable& indexTable);
+		void setGlobalConstantBuffer(Resource::IndexTable& indexTable);
 
-		// void setVSIndexTable(Resource::IndexTable& indexTable);
+		void setVSConstantBuffer(Resource::IndexTable& indexTable);
 
-		// void setHSIndexTable(Resource::IndexTable& indexTable);
+		void setHSConstantBuffer(Resource::IndexTable& indexTable);
 
-		// void setDSIndexTable(Resource::IndexTable& indexTable);
+		void setDSConstantBuffer(Resource::IndexTable& indexTable);
 
-		// void setGSIndexTable(Resource::IndexTable& indexTable);
+		void setGSConstantBuffer(Resource::IndexTable& indexTable);
 
-		// void setPSIndexTable(Resource::IndexTable& indexTable);
+		void setPSConstantBuffer(Resource::IndexTable& indexTable);
 
-		// void setCSIndexTable(Resource::IndexTable& indexTable);
+		void setCSConstantBuffer(Resource::IndexTable& indexTable);
 
 		void setPipelineState(D3D12Core::GraphicsState& graphicsPipelineState);
 
@@ -275,8 +275,8 @@ namespace Gear::Core
 		template<D3D12Core::ShaderType ShaderType>
 		void setShaderConstantBuffer(Resource::ImmutableCBuffer& constantBuffer);
 
-		// template<D3D12Core::ShaderType ShaderType>
-		// void setShaderIndexTable(Resource::IndexTable& indexTable);
+		template<D3D12Core::ShaderType ShaderType>
+		void setShaderConstantBuffer(Resource::IndexTable& indexTable);
 
 		GraphicsCommandExecuterPtr graphicsCommandExecuter;
 
@@ -693,119 +693,109 @@ namespace Gear::Core
 		}
 	}
 
-	// template<D3D12Core::ShaderType ShaderType>
-	// void GraphicsContext::setShaderIndexTable(Resource::IndexTable& indexTable)
-	// {
-	// 	const Resource::ShaderResourceDesc* const shaderResourceDescs =
-	// 		indexTable.getShaderResourceDescsData();
+	template<D3D12Core::ShaderType ShaderType>
+	void GraphicsContext::setShaderConstantBuffer(Resource::IndexTable& indexTable)
+	{
+		const Resource::ShaderResourceDesc* const shaderResourceDescs =
+			indexTable.getShaderResourceDescsData();
 
-	// 	const uint64_t numShaderResourceDescs = indexTable.getNumShaderResourceDescs();
+		const uint64_t numShaderResourceDescs = indexTable.getNumShaderResourceDescs();
 
-	// 	if constexpr (ShaderType == D3D12Core::ShaderType::ALL)
-	// 	{
-	// 		for (uint64_t i = 0; i < numShaderResourceDescs; i++)
-	// 		{
-	// 			graphicsCommandExecuter->pushAllShaderResourceDesc(shaderResourceDescs[i]);
-	// 		}
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::PIXEL)
-	// 	{
-	// 		for (uint64_t i = 0; i < numShaderResourceDescs; i++)
-	// 		{
-	// 			graphicsCommandExecuter->pushPixelShaderResourceDesc(shaderResourceDescs[i]);
-	// 		}
-	// 	}
-	// 	else
-	// 	{
-	// 		for (uint64_t i = 0; i < numShaderResourceDescs; i++)
-	// 		{
-	// 			graphicsCommandExecuter->pushNonPixelShaderResourceDesc(shaderResourceDescs[i]);
-	// 		}
-	// 	}
+		if constexpr (ShaderType == D3D12Core::ShaderType::ALL)
+		{
+			for (uint64_t i = 0; i < numShaderResourceDescs; i++)
+			{
+				graphicsCommandExecuter->pushAllShaderResourceDesc(shaderResourceDescs[i]);
+			}
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::PIXEL)
+		{
+			for (uint64_t i = 0; i < numShaderResourceDescs; i++)
+			{
+				graphicsCommandExecuter->pushPixelShaderResourceDesc(shaderResourceDescs[i]);
+			}
+		}
+		else
+		{
+			for (uint64_t i = 0; i < numShaderResourceDescs; i++)
+			{
+				graphicsCommandExecuter->pushNonPixelShaderResourceDesc(shaderResourceDescs[i]);
+			}
+		}
 
-	// 	for (uint64_t i = 0; i < numShaderResourceDescs; i++)
-	// 	{
-	// 		Resource::ResourceBase* const resource = shaderResourceDescs[i].resource;
+		if constexpr (ShaderType == D3D12Core::ShaderType::ALL)
+		{
+			auto* const command = SetAllShaderIndexTableCommand::acquire();
 
-	// 		if (resource && !resource->getPersistent())
-	// 		{
-	// 			graphicsCommandExecuter->pushNonPersistentResource(resource);
-	// 		}
-	// 	}
+			command->set(indexTable);
 
-	// 	if constexpr (ShaderType == D3D12Core::ShaderType::ALL)
-	// 	{
-	// 		auto* const command = SetAllShaderIndexTableCommand::acquire();
+			pushGraphicsCommand(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::VERTEX)
+		{
+			auto* const command = SetVSIndexTableCommand::acquire();
 
-	// 		command->set(indexTable);
+			command->set(indexTable);
 
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::VERTEX)
-	// 	{
-	// 		auto* const command = SetVSIndexTableCommand::acquire();
+			pushGraphicsCommand(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::HULL)
+		{
+			auto* const command = SetHSIndexTableCommand::acquire();
 
-	// 		command->set(indexTable);
+			command->set(indexTable);
 
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::HULL)
-	// 	{
-	// 		auto* const command = SetHSIndexTableCommand::acquire();
+			pushGraphicsCommand(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::DOMAIN)
+		{
+			auto* const command = SetDSIndexTableCommand::acquire();
 
-	// 		command->set(indexTable);
+			command->set(indexTable);
 
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::DOMAIN)
-	// 	{
-	// 		auto* const command = SetDSIndexTableCommand::acquire();
+			pushGraphicsCommand(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::GEOMETRY)
+		{
+			auto* const command = SetGSIndexTableCommand::acquire();
 
-	// 		command->set(indexTable);
+			command->set(indexTable);
 
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::GEOMETRY)
-	// 	{
-	// 		auto* const command = SetGSIndexTableCommand::acquire();
+			pushGraphicsCommand(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::PIXEL)
+		{
+			auto* const command = SetPSIndexTableCommand::acquire();
 
-	// 		command->set(indexTable);
+			command->set(indexTable);
 
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::PIXEL)
-	// 	{
-	// 		auto* const command = SetPSIndexTableCommand::acquire();
+			pushGraphicsCommand(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::COMPUTE)
+		{
+			auto* const command = SetCSIndexTableCommand::acquire();
 
-	// 		command->set(indexTable);
+			command->set(indexTable);
 
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::COMPUTE)
-	// 	{
-	// 		auto* const command = SetCSIndexTableCommand::acquire();
+			pushGraphicsCommand(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::AMPLIFICATION)
+		{
+			auto* const command = SetASIndexTableCommand::acquire();
 
-	// 		command->set(indexTable);
+			command->set(indexTable);
 
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::AMPLIFICATION)
-	// 	{
-	// 		auto* const command = SetASIndexTableCommand::acquire();
+			pushGraphicsCommand(command);
+		}
+		else if constexpr (ShaderType == D3D12Core::ShaderType::MESH)
+		{
+			auto* const command = SetMSIndexTableCommand::acquire();
 
-	// 		command->set(indexTable);
+			command->set(indexTable);
 
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// 	else if constexpr (ShaderType == D3D12Core::ShaderType::MESH)
-	// 	{
-	// 		auto* const command = SetMSIndexTableCommand::acquire();
-
-	// 		command->set(indexTable);
-
-	// 		pushGraphicsCommand(command);
-	// 	}
-	// }
+			pushGraphicsCommand(command);
+		}
+	}
 
 	template<size_t N>
 	inline void GraphicsContext::setRenderTargets(const Resource::RenderTargetDesc (&renderTargets)[N],
